@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "AuthExpoSupabase",
-    "slug": "AuthExpoSupabase",
+    "name": "AppExampleFrigilux",
+    "slug": "AppExampleFrigilux",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "authsupabaseapp",
+    "icon": "./assets/images/Logo.png",
+    "scheme": "appexamplefrigilux",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -17,8 +17,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/Logo.png",
         "backgroundColor": "#ffffff"
+        
       },
       "edgeToEdgeEnabled": true
     },
@@ -32,9 +33,9 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
+          "image": "./assets/images/Logo.png",
+      
+          "resizeMode": "cover",
           "backgroundColor": "#ffffff"
         }
       ],
