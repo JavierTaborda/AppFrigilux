@@ -1,82 +1,94 @@
 import { useThemeStore } from '@/stores/useThemeStore';
 import { appColors } from '@/utils/colors';
 import { Ionicons } from '@expo/vector-icons';
+import { DrawerToggleButton } from '@react-navigation/drawer';
 import { Tabs } from 'expo-router';
 
+
+// Icon mapping based on tab route name
+function getTabIcon(routeName: string, focused: boolean): keyof typeof Ionicons.glyphMap {
+  switch (routeName) {
+    case '(home)/index':
+      return focused ? 'home' : 'home-outline';
+    case '(profile)/index':
+      return focused ? 'person' : 'person-outline';
+    default:
+      return 'ellipse';
+  }
+}
+
 export default function TabLayout() {
-
-  const { theme } = useThemeStore()
-
+  const { theme } = useThemeStore();
 
   return (
-    <>
+    <Tabs
+      screenOptions={({ route }) => ({
+        animationEnabled: true,
 
+        //  Tab icon rendering based on route and focus
+        tabBarIcon: ({ focused, color, size }) => (
+          <Ionicons name={getTabIcon(route.name, focused)} size={size} color={color} />
+        ),
 
-      <Tabs
-        screenOptions={({ route }) => ({
-          animationEnabled: true,
-          //ICONS FOR TAB
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName: keyof typeof Ionicons.glyphMap;
+        // Tab bar visual styling
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 0,
+          height: 70,
+          backgroundColor: theme === 'dark' ? appColors.dark.background : appColors.background,
+          borderTopWidth: 1,
+          borderTopColor: theme === 'dark' ? appColors.dark.separator : appColors.separator,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 4,
+          elevation: 10,
+        },
 
-            if (route.name === '(home)/index') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === '(profile)/index') {
-              iconName = focused ? 'person' : 'person-outline';
-            } else {
-              iconName = 'ellipse';
-            }
+        tabBarActiveTintColor: appColors.primary.DEFAULT,
+        tabBarInactiveTintColor: appColors.mutedForeground,
 
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarStyle: {
+        //  Tab label style
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
 
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: 70,
-            backgroundColor: theme === 'dark' ? appColors.dark.background : appColors.background,
-            borderTopWidth: 1,
-            borderTopColor: theme === 'dark' ? appColors.dark.separator : appColors.separator,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.05,
-            shadowRadius: 4,
-            elevation: 10,
+        //  Tab item style 
+        tabBarItemStyle: {
+          borderRightWidth: 0,
+        },
 
+        // Header configuration
+        headerShown: true,
+        headerLeft: () => <DrawerToggleButton tintColor={ theme === 'dark' ? appColors.dark.foreground : appColors.background} />,
+        headerStyle: {
+          backgroundColor: theme === 'dark' ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT,
+        },
+        headerTintColor: theme === 'dark' ? appColors.dark.foreground : appColors.background,
+      })}
+    >
+      {/*Home tab */}
+      <Tabs.Screen
+        name="(home)/index"
+        options={{ title: 'Inicio' }}
+      />
 
+      {/* Profile tab */}
+      <Tabs.Screen
+        name="(profile)/index"
+        options={{ title: 'Perfil' }}
+      />
 
-          },
-
-          tabBarActiveTintColor: theme === 'dark' ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT,
-          tabBarInactiveTintColor: appColors.mutedForeground,
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontWeight: '600',
-          },
-          tabBarItemStyle: {
-            borderRightWidth: 0,
-          },
-
-
-
-        })}
-      >
-        <Tabs.Screen
-          name="(home)/index"
-          options={{ title: "Home", headerShown: false }}
-        />
-        <Tabs.Screen
-          name="(profile)/index"
-          options={{
-            title: "Perfil", headerShown: true, headerStyle: {
-              backgroundColor: theme === 'dark' ? appColors.dark.background : appColors.background,
-            },
-            headerTintColor: theme === 'dark' ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT,
-          }}
-        />
-      </Tabs>
-      </>
+      {/*  not shown in tab bar */}
+      <Tabs.Screen
+        name="(pays)/pays"
+        options={{
+          href: null,          // makes route invisible in tabs
+          headerShown: true,  
+          title:'Pagos'
+        }}
+      />
+    </Tabs>
   );
 }

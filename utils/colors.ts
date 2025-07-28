@@ -20,18 +20,18 @@ export const appColors = {
   success: "rgb(34, 197, 94)",
   warning: "rgb(234, 179, 8)",
   error: "rgb(239, 68, 68)",
-  background: "rgb(255, 255, 255)",
+  background:"rgb(242,242,242)", //"rgb(255, 255, 255)",
   foreground: "rgb(15, 23, 42)",
   muted: "rgb(229, 231, 235)",
   mutedForeground: "rgb(107, 114, 128)",
   overlay: "rgba(0, 0, 0, 0.05)",
   placeholdercolor:"#9CA3AF",
-  componentbg: "rgba(229, 231, 235, 0.8)",
+  componentbg: "rgba(255,255,255)",
   separator: "#e5e7eb",
 
   dark: {
     primary: {
-      DEFAULT: "rgb(35, 162, 71)",
+      DEFAULT: "rgb(20, 92, 48)",
       light: "rgb(76, 207, 120)",
       pale: "rgb(135, 255, 135)",
     },

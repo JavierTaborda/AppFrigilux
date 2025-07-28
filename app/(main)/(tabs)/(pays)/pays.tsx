@@ -126,7 +126,7 @@ export default function AuthorizationScreen() {
     .reduce((acc, item) => acc + item["Monto autorizado"], 0);
 
   return (
-    <View className="flex-1 bg-white dark:bg-background px-4 pt-4">
+    <View className="flex-1 bg-background dark:bg-dark-background px-4 pt-4">
       {/* HEADER */}
       <View className="bg-primary py-4 px-4 rounded-xl mb-4">
         <Text className="text-white font-bold text-lg">Autorización Pagos</Text>
@@ -149,13 +149,12 @@ export default function AuthorizationScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* LISTA */}
       <FlatList
         data={data}
         keyExtractor={(item, index) => `${item["Documento número"]}-${index}`}
         contentContainerStyle={{ paddingBottom: 100 }}
         renderItem={({ item }) => (
-          <View className="bg-white dark:bg-gray-900 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-4">
+          <View className="bg-componentbg dark:bg-dark-componentbg  rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-4">
             <Text className="text-base font-semibold text-black dark:text-white mb-1">{item["Beneficiario"]}</Text>
 
             <View className="flex-row flex-wrap gap-2 mb-2">

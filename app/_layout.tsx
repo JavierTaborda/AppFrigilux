@@ -13,10 +13,7 @@ export default function RootLayout() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <SafeAreaProvider>
             <StatusBar style="auto" />
-
-            <Slot/>
-
-
+            <Slot />
           </SafeAreaProvider>
         </GestureHandlerRootView>
       </AuthProvider>
