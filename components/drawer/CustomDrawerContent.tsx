@@ -28,7 +28,7 @@ export default function CustomDrawerContent(props: any) {
             </View>
 
             <Text >Planificacion de Pagos</Text>
-            <Link href="/(main)/(tabs)/[hidden]/pays" asChild>
+            <Link href="/(main)/(tabs)/(pays)/pays" asChild>
                 <TouchableOpacity className="w-10/12 bg-primary">
                     <Text>Planificacion</Text>
                 </TouchableOpacity>

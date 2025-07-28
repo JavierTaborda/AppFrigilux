@@ -1,6 +1,14 @@
 import { useThemeStore } from '@/stores/useThemeStore';
 import { Ionicons } from '@expo/vector-icons';
-import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  SafeAreaView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
 
 const data = [
   {
@@ -112,7 +120,7 @@ const data = [
     "Registrado por": "mtfigueroa"
   }
 ]
-;
+  ;
 
 export default function AuthorizationScreen() {
   const { theme } = useThemeStore();
@@ -126,83 +134,90 @@ export default function AuthorizationScreen() {
     .reduce((acc, item) => acc + item["Monto autorizado"], 0);
 
   return (
-    <View className="flex-1 bg-background dark:bg-dark-background px-4 pt-4">
+    <SafeAreaView className="flex-1 bg-primary dark:bg-dark-primary">
       {/* HEADER */}
-      <View className="bg-primary py-4 px-4 rounded-xl mb-4">
-        <Text className="text-white font-bold text-lg">Autorización Pagos</Text>
-        <Text className="text-white mt-1">1 Documentos</Text>
-        <Text className="text-white font-semibold mt-1">
+      <View className="px-4 pt-8 pb-4">
+        <Text className="text-white font-bold text-xl">Autorización de Pagos</Text>
+        <Text className="text-white text-sm mt-1">Documentos: {data.length}</Text>
+        <Text className="text-white font-medium mt-1">
           Total autorizado: {totalAutorizadoVED.toLocaleString()} VED / {totalAutorizadoUSD.toLocaleString()} $
         </Text>
       </View>
 
-      {/* BUSCADOR */}
-      <View className="flex-row items-center bg-gray-100 dark:bg-gray-800 rounded-xl px-3 py-2 mb-2">
-        <Ionicons name="search-outline" size={20} color={theme === 'dark' ? 'white' : 'black'} />
-        <TextInput
-          placeholder="Buscar..."
-          placeholderTextColor={theme === 'dark' ? '#ccc' : '#666'}
-          className="ml-2 flex-1 text-black dark:text-white"
+      {/* Blank Container */}
+      <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl p-4 shadow-lg">
+        {/* Search */}
+        <View className="flex-row items-center bg-componentbg dark:bg-dark-componentbg rounded-full px-4 py-2  mb-4">
+          <Ionicons name="search-outline" size={20} color={theme === 'dark' ? 'white' : 'black'} />
+          <TextInput
+            className="ml-2 flex-1 text-black dark:text-white"
+            placeholder="Buscar documento..."
+            placeholderTextColor={theme === 'dark' ? '#ccc' : '#666'}
+            accessibilityLabel="Campo de búsqueda"
+          />
+          <TouchableOpacity className="ml-2" accessibilityLabel="Abrir filtros">
+            <Ionicons name="filter-outline" size={22} color={theme === 'dark' ? 'white' : 'black'} />
+          </TouchableOpacity>
+        </View>
+
+        {/* LISTA DE DOCUMENTOS */}
+        <FlatList
+          data={data}
+          keyExtractor={(item, index) => `${item["Documento número"]}-${index}`}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          renderItem={({ item }) => (
+            <View className="overflow-hidden bg-componentbg dark:bg-dark-componentbg rounded-xl p-4 shadow-md border border-gray-200 dark:border-gray-700 mb-4">
+              <Text className="text-base font-semibold text-black dark:text-white mb-1">
+                {item["Beneficiario"]}
+              </Text>
+
+              <View className="flex-row flex-wrap gap-2 mb-2">
+                <Text className="text-xs text-white bg-green-600 px-2 py-0.5 rounded-full">
+                  {item["Empresa"]}
+                </Text>
+                <Text className="text-xs text-white bg-green-500 px-2 py-0.5 rounded-full">
+                  {item["Área gasto"]}
+                </Text>
+              </View>
+
+              <View className="mb-1">
+                <Text className="text-xs text-foregraund dark:text-gray-400">Saldo:</Text>
+                <Text className="text-sm font-medium text-black dark:text-white">
+                  {item["Total saldo"].toLocaleString()} {item["Moneda proveedor"] === 'DOLARES' ? '$' : 'Bs'}
+                </Text>
+              </View>
+
+              <View className="mb-1">
+                <Text className="text-xs text-foregraund dark:text-gray-400">Autorizado:</Text>
+                <Text className="text-sm font-semibold text-green-700">
+                  {item["Monto autorizado"].toLocaleString()} {item["Moneda proveedor"] === 'DOLARES' ? '$' : 'Bs'}
+                </Text>
+              </View>
+
+              <View className="flex-row justify-between mt-2">
+                <View>
+                  <Text className="text-xs text-foregraund dark:text-gray-400">Documento:</Text>
+                  <Text className="text-sm text-black dark:text-white">{item["Documento número"]}</Text>
+                </View>
+                <View>
+                  <Text className="text-xs text-foregraund dark:text-gray-400">Emisión:</Text>
+                  <Text className="text-sm text-black dark:text-white">{item["Fecha emisión"]}</Text>
+                </View>
+                <View>
+                  <Text className="text-xs text-foregraund dark:text-gray-400">Vencimiento:</Text>
+                  <Text className="text-sm text-black dark:text-white">{item["Fecha vencimiento"]}</Text>
+                </View>
+              </View>
+
+              {item["Descripción"] && (
+                <Text className="text-xs text-foregraund dark:text-gray-400 mt-2">
+                  {item["Descripción"].slice(0, 80)}{item["Descripción"].length > 80 ? '...' : ''}
+                </Text>
+              )}
+            </View>
+          )}
         />
-        <TouchableOpacity className="ml-2">
-          <Ionicons name="filter-outline" size={22} color={theme === 'dark' ? 'white' : 'black'} />
-        </TouchableOpacity>
       </View>
-
-      <FlatList
-        data={data}
-        keyExtractor={(item, index) => `${item["Documento número"]}-${index}`}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        renderItem={({ item }) => (
-          <View className="bg-componentbg dark:bg-dark-componentbg  rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-4">
-            <Text className="text-base font-semibold text-black dark:text-white mb-1">{item["Beneficiario"]}</Text>
-
-            <View className="flex-row flex-wrap gap-2 mb-2">
-              <Text className="text-xs text-white bg-green-600 px-2 py-0.5 rounded-full">
-                {item["Empresa"]}
-              </Text>
-              <Text className="text-xs text-white bg-green-500 px-2 py-0.5 rounded-full">
-                {item["Área gasto"]}
-              </Text>
-            </View>
-
-            <View className="mb-1">
-              <Text className="text-xs text-foregraund dark:text-gray-400">Saldo documento:</Text>
-              <Text className="text-sm font-medium text-black dark:text-white">
-                {item["Total saldo"].toLocaleString()} {item["Moneda proveedor"] === 'DOLARES' ? '$' : 'Bs'}
-              </Text>
-            </View>
-
-            <View className="mb-1">
-              <Text className="text-xs text-foregraund dark:text-gray-400">Monto autorizado:</Text>
-              <Text className="text-sm font-semibold text-green-700">
-                {item["Monto autorizado"].toLocaleString()} {item["Moneda proveedor"] === 'DOLARES' ? '$' : 'Bs'}
-              </Text>
-            </View>
-
-            <View className="flex-row justify-between mt-2">
-              <View>
-                <Text className="text-xs text-foregraund dark:text-gray-400">Documento:</Text>
-                <Text className="text-sm text-black dark:text-white">{item["Documento número"]}</Text>
-              </View>
-              <View>
-                <Text className="text-xs text-foregraund dark:text-gray-400">Emisión:</Text>
-                <Text className="text-sm text-black dark:text-white">{item["Fecha emisión"]}</Text>
-              </View>
-              <View>
-                <Text className="text-xs text-foregraund dark:text-gray-400">Vencimiento:</Text>
-                <Text className="text-sm text-black dark:text-white">{item["Fecha vencimiento"]}</Text>
-              </View>
-            </View>
-
-            {item["Descripción"] && (
-              <Text className="text-xs text-foregraund dark:text-gray-400 mt-2">
-                {item["Descripción"].slice(0, 80)}{item["Descripción"].length > 80 ? '...' : ''}
-              </Text>
-            )}
-          </View>
-        )}
-      />
-    </View>
+    </SafeAreaView>
   );
 }

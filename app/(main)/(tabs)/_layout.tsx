@@ -61,11 +61,25 @@ export default function TabLayout() {
 
         // Header configuration
         headerShown: true,
-        headerLeft: () => <DrawerToggleButton tintColor={ theme === 'dark' ? appColors.dark.foreground : appColors.background} />,
+        headerLeft: () => <DrawerToggleButton tintColor={theme === 'dark' ? appColors.dark.foreground : appColors.background} />,
         headerStyle: {
-          backgroundColor: theme === 'dark' ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT,
+          backgroundColor: theme === 'dark'
+            ? appColors.dark.primary.DEFAULT
+            : appColors.primary.DEFAULT,
+          borderBottomWidth: 0,
+          elevation: 4,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 6,
+
         },
-        headerTintColor: theme === 'dark' ? appColors.dark.foreground : appColors.background,
+        headerTintColor: theme === 'dark'
+          ? appColors.dark.foreground
+          : appColors.background,
+
+
+
       })}
     >
       {/*Home tab */}
@@ -85,8 +99,8 @@ export default function TabLayout() {
         name="(pays)/pays"
         options={{
           href: null,          // makes route invisible in tabs
-          headerShown: true,  
-          title:'Pagos'
+          headerShown: true,
+          title: 'Pagos'
         }}
       />
     </Tabs>
