@@ -96,11 +96,11 @@ export default function TabLayout() {
 
       {/*  not shown in tab bar */}
       <Tabs.Screen
-        name="(pays)/pays"
+        name="(pays)/authPays"
         options={{
           href: null,          // makes route invisible in tabs
           headerShown: true,
-          title: 'Pagos'
+          title: 'Autorización de Pagos'
         }}
       />
     </Tabs>
