@@ -4,17 +4,11 @@ export interface AuthPay {
   tipodocumento: string;
   numerodocumento: string;
   beneficiario: string;
-  cuentabanco: string;
-  banco: string;
-  rifproveedor: string;
-  tipoproveedor: string;
-  monedaproveedor: string;
   autorizadopagar: string;
+  registradopor: string;
   fechaemision: string;
   fechavencimiento: string;
   fecharegistro: string;
-  registradopor: string;
-  numerofactura: string;
   observacion: string;
   tasacambio: string;
   moneda: string;
@@ -22,4 +16,17 @@ export interface AuthPay {
   montosaldo: string;
   clasegasto: string;
   owneruser: string;
+  metodopago: string;
+  tasaautorizada: string;
+  montoautorizado: string;
+  monedaautorizada: string;
+  empresapagadora: string;
+  bancopagador: string;
+
+  // cuentabanco?: string;
+  // banco?: string;
+  // rifproveedor?: string;
+  // tipoproveedor?: string;
+  // monedaproveedor?: string;
+  // numerofactura?: string;
 }
