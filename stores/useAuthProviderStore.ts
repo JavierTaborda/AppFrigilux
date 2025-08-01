@@ -26,7 +26,6 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
       await signOutSoft();
       return;
     }
-
     if (session && !manualLogin) {
       const loginStatus = await getSessionStatus();
 

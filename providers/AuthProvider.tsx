@@ -15,6 +15,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const init = async () => {
       await hydrate();
       await initializeApp();
+      
     };
     init();
   }, []);
