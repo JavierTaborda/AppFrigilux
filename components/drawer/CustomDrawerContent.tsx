@@ -1,70 +1,54 @@
-import { useThemeStore } from "@/stores/useThemeStore";
-import { appColors } from "@/utils/colors";
-import { Ionicons } from "@expo/vector-icons";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
-import { Link, useRouter } from "expo-router";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { useSegments } from "expo-router";
+import { Image, Text, View } from "react-native";
+import { DrawerItem } from "./DrawerItem"; // este archivo lo creamos abajo
 
 export default function CustomDrawerContent(props: any) {
-  const { theme } = useThemeStore();
-  const isDark = theme === "dark";
-  const router = useRouter();
-
-
+  const { session } = useAuthStore();
+  const segments = useSegments();
+  const currentPath = "/" + segments.join("/");
 
   return (
     <DrawerContentScrollView
       {...props}
-      contentContainerStyle={{
-        flex: 1,
-        paddingHorizontal: 20,
-        backgroundColor: isDark ? appColors.dark.background : appColors.background,
-      }}
+      contentContainerStyle="flex-1 px-5 bg-background dark:bg-dark-background"
     >
-      {/* 🖼️ Encabezado */}
-      <View
-        style={{
-          alignItems: "center",
-          paddingVertical: 24,
-          borderBottomWidth: 1,
-          borderBottomColor: isDark ? "#444" : "#ccc",
-        }}
-      >
+      {/* Header*/}
+      <View className="items-center py-3 border-b border-b-slate-300 dark:border-b-slate-800">
         <Image
           source={require("@/assets/images/Logo.png")}
-          style={{ width: 80, height: 80, borderRadius: 40 }}
+          className="w-20 h-20 rounded-full"
         />
-        <Text style={{ fontSize: 16, fontWeight: "bold", marginTop: 8 }}>Javier</Text>
-        <Text style={{ fontSize: 14, color: appColors.mutedForeground }}>Desarrollador</Text>
+        <Text className="text-base font-bold text-foreground dark:text-dark-foreground mt-1">
+         {session?.user.email}
+        </Text>
+        <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground">
+          Rol
+        </Text>
       </View>
 
-      <View style={{ marginTop: 24 }}>
-        <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 12 }}>Navegación</Text>
+      {/* rutes */}
+      <View className="mt-2 gap-2">
+        <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
+          Planificación Pagos
+        </Text>
 
-        <Link href="/(main)/(tabs)/(pays)/authPays" asChild>
-          <TouchableOpacity
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 12,
-              paddingHorizontal: 10,
-              borderRadius: 8,
-              backgroundColor: appColors.componentbg,
-              marginBottom: 12,
-            }}
-          >
-            <Ionicons name="calendar-outline" size={20} color="#fff" />
-            <Text style={{ marginLeft: 10, color: "#fff", fontWeight: "600" }}>
-              Planificación
-            </Text>
-          </TouchableOpacity>
-        </Link>
-
-        
+        <DrawerItem
+          href="/(main)/(tabs)/(pays)/authPays"
+          icon="checkmark"
+          label="Autorización Pagos"
+          currentPath={currentPath}
+        />
+         <DrawerItem
+          href="/(main)/(tabs)/(pays)/authPays"
+          icon="checkmark"
+          label="Autorización Pagos"
+          currentPath={currentPath}
+        />
       </View>
 
-
-
+      
     </DrawerContentScrollView>
   );
 }

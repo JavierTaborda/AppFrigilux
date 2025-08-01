@@ -8,6 +8,7 @@ import { useAuthPays } from '@/modules/pays/hooks/useAuthPays';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { totalVenezuela } from '@/utils/moneyFormat';
 
+import { appColors } from '@/utils/colors';
 import AuthPayCard from '../components/AuthPayCard';
 import AuthPaysFilterModal from '../components/AuthPaysFilterModal';
 
@@ -23,8 +24,8 @@ export default function AuthorizationScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-primary dark:bg-dark-primary">
-        <ActivityIndicator size="large" />
+      <View className="flex-1 items-center justify-center bg-background dark:bg-dark-background">
+        <ActivityIndicator size="large" color={theme==='dark'? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT} />
       </View>
     );
   }

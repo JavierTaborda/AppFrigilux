@@ -13,11 +13,11 @@ export default function DrawerLayout() {
         drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
           drawerType: "front",
-          drawerStyle: {
+          drawerStyle:  {
             backgroundColor: theme === "dark"
               ? appColors.dark.background
               : appColors.background,
-            width: 280,
+
           },
         }}
       >
