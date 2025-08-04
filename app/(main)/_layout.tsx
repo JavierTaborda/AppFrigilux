@@ -21,6 +21,7 @@ export default function DrawerLayout() {
           },
         }}
       >
+        
         <Drawer.Screen name="(tabs)" options={{ headerShown: false }} />
       </Drawer>
     </>
