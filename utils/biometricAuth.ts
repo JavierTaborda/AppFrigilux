@@ -19,7 +19,7 @@ export async function authenticateWithBiometrics(): Promise<boolean | null> {
   let attempts = 0;
   let auth = false;
 
-  while (attempts < 3 && !auth) {
+  while (attempts < 2 && !auth) {
     const result = await LocalAuthentication.authenticateAsync({
       promptMessage: 'Usa tu biometría para ingresar',
       cancelLabel: 'Cancelar',
