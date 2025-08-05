@@ -8,15 +8,21 @@ import { useAuthPays } from '@/modules/pays/hooks/useAuthPays';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { totalVenezuela } from '@/utils/moneyFormat';
 
+import BottomModal from '@/components/ui/BottomModal';
 import { appColors } from '@/utils/colors';
 import AuthPayCard from '../components/AuthPayCard';
-import AuthPaysFilterModal from '../components/AuthPaysFilterModal';
+import FiltersModal from '../components/FilterModal';
 
 export default function AuthorizationScreen() {
   const { pays, loading, totalDocumentsAuth, totalAutorizadoUSD, totalAutorizadoVED } = useAuthPays();
   const [searchText, setSearchText] = useState('');
   const { theme } = useThemeStore();
   const [filterModalVisible, setFilterModalVisible] = useState(false);
+
+  const handleApplyFilters = () => {
+
+    setFilterModalVisible(false);
+  };
 
   const filteredPays = pays.filter((item) =>
     `${item.observacion} ${item.beneficiario}`.toLowerCase().includes(searchText.toLowerCase())
@@ -25,7 +31,7 @@ export default function AuthorizationScreen() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-background dark:bg-dark-background">
-        <ActivityIndicator size="large" color={theme==='dark'? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT} />
+        <ActivityIndicator size="large" color={theme === 'dark' ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT} />
       </View>
     );
   }
@@ -60,8 +66,17 @@ export default function AuthorizationScreen() {
           />
         </View>
       </View>
+      <BottomModal
+        visible={filterModalVisible}
+        onClose={() => setFilterModalVisible(false)}
+      >
+        <FiltersModal
+          onClose={() => setFilterModalVisible(false)}
+          onApply={handleApplyFilters}
+        />
+      </BottomModal>
 
-      <AuthPaysFilterModal visible={filterModalVisible} onClose={() => setFilterModalVisible(false)} />
+
     </>
   );
 }
