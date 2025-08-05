@@ -36,7 +36,7 @@ export const appColors = {
       pale: "rgb(135, 255, 135)",
     },
     secondary: {
-      DEFAULT: "rgb(167, 243, 208)",
+      DEFAULT: "rgb(80, 170, 130)",
       light: "rgb(187, 247, 208)",
     },
     accent: {
