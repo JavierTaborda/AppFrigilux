@@ -50,13 +50,13 @@ export const appColors = {
     success: "rgb(74, 222, 128)",
     warning: "rgb(252, 211, 77)",
     error: "rgb(248, 113, 113)",
-    background: "rgb(24, 24, 24)",
+    background: "rgb(24,24,26)",
     modal: "rgb(40, 40, 40)",
     foreground: "rgb(243, 244, 246)",
     muted: "rgb(31, 41, 55)",
     mutedForeground: "rgb(156, 163, 175)",
     overlay: "rgba(0,0,0,0.6)",
-    componentbg:"rgba(31, 41, 55, 0.8)",
+    componentbg:"rgb(35,35,40)",
     separator:"rgba(255,255,255, 0.1)",
   }
 }
