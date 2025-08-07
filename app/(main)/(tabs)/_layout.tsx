@@ -145,6 +145,14 @@ export default function TabLayout() {
           title: 'Autorización de Pagos',
         }}
       />
+      <Tabs.Screen
+        name="(orders)/orderApproval"
+        options={{
+          href: null,// makes route invisible in tabs
+          headerShown: true,
+          title: 'Aprobación de Pedidos',
+        }}
+      />
     </Tabs>
   );
 }

@@ -5,7 +5,7 @@ import { Image, Text, View } from "react-native";
 import { DrawerItem } from "./DrawerItem";
 
 export default function CustomDrawerContent(props: any) {
-  const { session } = useAuthStore();
+  const { session, role } = useAuthStore();
   const segments = useSegments();
   const currentPath = "/" + segments.join("/");
 
@@ -27,18 +27,28 @@ export default function CustomDrawerContent(props: any) {
           {session?.user.email}
         </Text>
         <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground">
-          {session?.user.role}
+          {role ? `${role}` : "Sin Perfil Asignado"}
         </Text>
       </View>
 
       <View className="mt-2 gap-2">
         <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
+          Pagos
         </Text>
 
         <DrawerItem
           icon="calendar-outline"
           label="Planificacion Pagos"
           href="/(main)/(tabs)/(pays)/authPays"
+          currentPath={currentPath}
+        />
+        <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
+          Pedidos
+        </Text>
+        <DrawerItem
+          icon="bag-check"
+          label="Aprobación Pedidos"
+          href="/(main)/(tabs)/(orders)/orderApproval"
           currentPath={currentPath}
         />
 

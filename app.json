@@ -39,11 +39,16 @@
           "resizeMode": "cover",
           "backgroundColor": "#ffffff",
           "dark": {
-            "image": "./assets/images/Logo-dark.png",
+            "image": "./assets/images/Logo.png",
             "backgroundColor": "#000000"
           },
           "android": {
             "statusBarTranslucent": true,
+            "backgroundColor": "#ffffff",
+            "navigationBarColor": "#ffffff",
+            "imageWidth": 400
+          },
+          "ios": {
             "backgroundColor": "#ffffff"
           }
         }

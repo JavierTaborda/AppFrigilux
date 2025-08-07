@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { getUserRole } from "@/services/AuthService";
 import { getBiometricEnabled, setBiometricEnabled } from "@/utils/biometricFlag";
 import { getSessionStatus, setSessionStatus } from "@/utils/sessionStatus";
 import { Session } from "@supabase/supabase-js";
@@ -10,9 +11,12 @@ interface AuthStore {
   session: Session | null; // Supabase session
   loading: boolean; // Auth loading status
   manualLogin: boolean; // Flag to track manual login (for biometric logic)
+  role: string | null; // User role
 
   setSession: (session: Session | null) => void; // Set user session
+  setRole: (role: string | null) => void; // Set user role
   setManualLogin: (value: boolean) => void; // Set manualLogin flag
+
 
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>; // Sign in with email/password
   sendCodeOTP: (value: string, method: "email" | "phone", redirectUri?: string) => Promise<{ error: Error | null }>; // Send OTP
@@ -29,8 +33,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   session: null,
   loading: true,
   manualLogin: false,
+  role: null,
 
   setSession: (session) => set({ session }),
+  setRole: (role) => set({ role }),
   setManualLogin: (value) => set({ manualLogin: value }),
 
   signIn: async (email, password) => {
@@ -38,9 +44,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (data.session) {
+          const role = await getUserRole(data.session.user.id);
+          //alert(`Welcome back! Your role is: ${role}`);
+          
         await setSessionStatus("active");
         await setBiometricEnabled(true);
-        set({ session: data.session, manualLogin: true });
+        set({ session: data.session, manualLogin: true, role: role });
       }
       return { error };
     } catch (err) {
@@ -77,9 +86,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const { data, error } = await supabase.auth.verifyOtp(payload);
 
       if (data?.session?.access_token && data?.session?.refresh_token) {
+         const role = await getUserRole(data.session.user.id);
         await setSessionStatus("active");
         await setBiometricEnabled(true);
-        set({ session: data.session, manualLogin: true });
+        set({ session: data.session, manualLogin: true, role: role });
       }
 
       return { error };
@@ -106,7 +116,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       const { data, error } = await supabase.auth.getSession();
       if (data?.session) {
-        set({ session: data.session, loading: false, manualLogin: true });
+        const role = await getUserRole(data.session.user.id);
+        set({ session: data.session, role:role, loading: false, manualLogin: true });
         await setSessionStatus("active");
         await setBiometricEnabled(true);
 
@@ -137,12 +148,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     await supabase.auth.signOut();
     await setSessionStatus("loggedOut");
     await setBiometricEnabled(false);
-    set({ session: null, loading: false });
+    set({ session: null, loading: false, role: null });
     router.replace("/(auth)/sign-in");
   },
 
   signOutSoft: async () => {
-    set({ session: null });
+    set({ session: null, loading: false, role: null });
     await setSessionStatus("loggedOut");
     await setBiometricEnabled(true);
     router.replace("/(auth)/sign-in");
@@ -162,7 +173,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       if (!data.session || error) {
         set({ session: null });
       } else {
-        set({ session: data.session });
+        const role = await getUserRole(data.session.user.id);
+        set({ session: data.session, role:role });
+      
       }
     } catch (err) {
       set({ session: null });

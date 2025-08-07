@@ -9,7 +9,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import BiometricToggle from '../components/BiometricView';
 
 export default function ProfileScreen() {
-  const { session, signOut, signOutSoft } = useAuthStore();
+  const { session, role,signOut, signOutSoft } = useAuthStore();
   const [isloading, setIsLoading] = useState<boolean>(false)
 
 
@@ -48,11 +48,11 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {session?.user?.role && (
+        {role && (
           <View className="items-center px-4 py-3 rounded-xl w-[80%]   bg-componentbg dark:bg-dark-componentbg">
 
             <Text className="text-lg  dark:text-white">
-              Rol: {session.user.role}
+              Rol: {role}
             </Text>
           </View>
         )}
