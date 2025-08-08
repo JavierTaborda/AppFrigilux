@@ -2,9 +2,9 @@
 import CustomPicker from '@/components/inputs/CustomPicker';
 import RateInput from '@/components/inputs/RateInput';
 import BottomModal from '@/components/ui/BottomModal';
-import { appColors } from '@/utils/colors';
+import Loader from '@/components/ui/Loader';
 import { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { AuthPay } from '../types/AuthPay';
 
 interface Props {
@@ -23,9 +23,7 @@ export default function AuthPayModal({ visible, onClose, item, onAuthorize }: Pr
 
   if (!item) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color={appColors.primary.DEFAULT} />
-      </View>
+     <Loader />
     );
   }
 

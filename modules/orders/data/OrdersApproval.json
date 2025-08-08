@@ -33,7 +33,7 @@
       "aux02": "Si",
       "tasa": "129.05000",
       "moneda": "US$   ",
-      "anulada": 0,
+      "anulada": 1,
       "co_zon": "0018  ",
       "zon_des": "BARINAS                                                     ",
       "reng_max": 1
@@ -63,7 +63,7 @@
       "dir_ent": "CALLE CAMEJO ENTRE AVENIDA GARGUERA Y ANDRES VARELA LOCAL NRO S/N SECTOR LA CAROLINA BARINAS BARINAS",
       "forma_pag": "0004  ",
       "cond_des": "CREDITO 30 DIAS                                             ",
-      "revisado": "1",
+      "revisado": "0",
       "tot_bruto": "3342.12000000000000000",
       "tot_neto": "3876.86000000000000000",
       "glob_desc": ".00000000000000000",

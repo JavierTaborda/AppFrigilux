@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native';
+import { FlatList, TouchableOpacity, View } from 'react-native';
 
 import SearchBar from '@/components/ui/SearchBar';
 import TitleText from '@/components/ui/TitleText';
@@ -8,7 +8,7 @@ import { useAuthPays } from '@/modules/pays/hooks/useAuthPays';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { totalVenezuela } from '@/utils/moneyFormat';
 
-import { appColors } from '@/utils/colors';
+import Loader from '@/components/ui/Loader';
 import AuthPayCard from '../components/AuthPayCard';
 import AuthPayModal from '../components/AuthPayModal';
 import FiltersModal from '../components/FilterModal';
@@ -49,12 +49,7 @@ export default function AuthorizationScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-background dark:bg-dark-background">
-        <ActivityIndicator
-          size="large"
-          color={theme === 'dark' ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT}
-        />
-      </View>
+      <Loader/>
     );
   }
 
