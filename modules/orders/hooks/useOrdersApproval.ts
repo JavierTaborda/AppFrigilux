@@ -1,9 +1,10 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getOrdersToApproval } from "../services/OrderApprovalService";
-import { OrderApproval } from "../types/OrderApproval";
+import { Alert, Platform, ToastAndroid } from "react-native";
+import { getOrderProducts, getOrdersToApproval } from "../services/OrderApprovalService";
+import { OrderApproval, OrderApprovalProduct } from "../types/OrderApproval";
 
-export function useAuthPays(searchText: string) {
+export function useOrderApproval(searchText: string) {
   // Estado de pedidos, loading, refrescando y control cooldown
   // Orders, loading state, refreshing state, and cooldown control
   const [ordersAproval, setOrdersAproval] = useState<OrderApproval[]>([]);
@@ -11,6 +12,7 @@ export function useAuthPays(searchText: string) {
   const [refreshing, setRefreshing] = useState(false);
   const [canRefresh, setCanRefresh] = useState(true);
   const [cooldown, setCooldown] = useState(0);
+  const [orders, setOrders] = useState<OrderApproval[]>([]);//just use locally with JSON 
 
   // Referencia para guardar el id del timeout y poder limpiarlo
   // Ref to store the timeout id for cleanup
@@ -119,20 +121,81 @@ export function useAuthPays(searchText: string) {
    */
   const { filteredOrders, totalOrders, totalUSD } = useMemo(() => {
     const search = searchText.toLowerCase().trim();
-    const filtered = ordersAproval.filter((order) =>
-      order.cli_des?.toLowerCase().includes(search)
-    );
+
+    const filtered = ordersAproval.filter((order) => {
+      const cliente = order.cli_des?.toLowerCase() || '';
+      const factura = order.fact_num?.toString() || '';
+      return cliente.includes(search) || factura.includes(search);
+    });
+
+    const totalUSD = filtered
+      .filter((order) => order.anulada !== 1)
+      .reduce((acc, order) => {
+        const monto = typeof order.tot_neto === 'string'
+          ? parseFloat(order.tot_neto)
+          : order.tot_neto || 0;
+        return acc + monto;
+      }, 0);
+
     return {
       filteredOrders: filtered,
       totalOrders: filtered.length,
-      totalUSD: filtered
-      .filter((order) => order.anulada !== 1)
-      .reduce(
-        (acc, order) => acc + (parseFloat(order.tot_neto as string) || 0), 
-        0
-      ),
+      totalUSD,
     };
   }, [ordersAproval, searchText]);
+
+  // just use locally with JSON
+  useEffect(() => {
+    setOrders(filteredOrders);
+  }, [filteredOrders]);
+
+  const handleChangeRevisado = (fact_num: number, newStatus: string) => {
+    // await updateOrderStatus(fact_num, newStatus); // replace local call with backend update
+    setOrders(prev =>
+      prev.map(order =>
+        order.fact_num === fact_num
+          ? { ...order, revisado: newStatus }
+          : order
+      )
+    );
+
+    const msg =
+      newStatus === '1'
+        ? `Pedido ${fact_num} marcado como Revisado`
+        : `Pedido ${fact_num} marcado como Por Revisar`;
+
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(msg, ToastAndroid.SHORT);
+    } else {
+      Alert.alert('Estado actualizado', msg);
+    }
+  };
+
+  //Modals and data
+  const [selectedOrder, setSelectedOrder] = useState<OrderApproval>();
+  const [modalInfoVisible, setModalInfoVisible] = useState(false);
+  const [modalProductsVisible, setModalProductsVisible] = useState(false)
+  const [selectedProducts, setSelectedProducts] = useState<OrderApprovalProduct[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+
+  const handleOpenInfoModal = (order: OrderApproval) => {
+    setSelectedOrder(order);
+    setModalInfoVisible(true);
+  };
+  const handleOpenProductsModal = async (item: OrderApproval) => {
+    try {
+      //TODO: check if item is valid 
+      setSelectedOrder(item);
+      setLoadingProducts(true);
+      const products = await getOrderProducts(item.fact_num);
+      setSelectedProducts(products);
+      setModalProductsVisible(true);
+    } catch (error) {
+      Alert.alert('Error', 'No se pudieron cargar los productos del pedido' + error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
 
   return {
     filteredOrders,
@@ -143,5 +206,16 @@ export function useAuthPays(searchText: string) {
     handleRefresh,
     canRefresh,
     cooldown,
+    orders,//just use locally with JSON
+    handleChangeRevisado,
+    handleOpenInfoModal,
+    handleOpenProductsModal,
+    modalInfoVisible,
+    setModalInfoVisible,
+    modalProductsVisible,
+    setModalProductsVisible,
+    selectedOrder,
+    selectedProducts,
+    loadingProducts
   };
 }

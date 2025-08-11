@@ -11,7 +11,7 @@ export default function ScreenHeader({ title, subtitle, rightComponent }: Screen
     <View className="px-4 flex-row justify-between items-start">
       <View className="flex-1">
         <Text className="text-white font-bold text-2xl">{title}</Text>
-        {subtitle && <Text className="text-white text-lg mt-1">{subtitle}</Text>}
+        {subtitle && <Text className="text-white font-medium text-xl mt-1 overflow-hidden">{subtitle}</Text>}
       </View>
       {rightComponent}
     </View>

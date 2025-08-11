@@ -1,3 +1,4 @@
+
 import Loader from '@/components/ui/Loader'
 import SearchBar from '@/components/ui/SearchBar'
 import TitleText from '@/components/ui/TitleText'
@@ -6,9 +7,9 @@ import { totalVenezuela } from '@/utils/moneyFormat'
 import { useState } from 'react'
 import { Alert, FlatList, Platform, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import OrderApprovalCard from '../components/OrderApprovalCard'
-import OrderApprovalDetailModal from '../components/OrderApprovalDetailModal'
-import { useAuthPays } from '../hooks/useOrdersApproval'
-import { OrderApproval } from '../types/OrderApproval'
+import OrderApprovalInfoModal from '../components/OrderAprovalInfoModal'
+import ProductListModal from '../components/ProductListModal'
+import { useOrderApproval } from '../hooks/useOrdersApproval'
 
 export default function OrderApprovalScreen() {
     const [searchText, setSearchText] = useState('')
@@ -21,25 +22,19 @@ export default function OrderApprovalScreen() {
         handleRefresh,
         canRefresh,
         cooldown,
-    } = useAuthPays(searchText)
-    const [selectedOrder, setSelectedOrder] = useState<OrderApproval | null>(null);
+        handleChangeRevisado,
+        orders, //just use locally with JSON
+        handleOpenInfoModal,
+        handleOpenProductsModal,
 
-    const [modalVisible, setModalVisible] = useState(false);
-
-    const handleOpenAuthModal = (order: OrderApproval) => {
-        setSelectedOrder(order);
-        setModalVisible(true);
-    };
-    //TODO: Implement the change of revisado
-    const handleChangeRevisado = (fact_num: number, newStatus: string) => {
-      
-        const msg = newStatus === '1' ? `Pedido ${fact_num} marcado como Revisado` : `Pedido ${fact_num} marcado como Por Revisado`;
-        if (Platform.OS === 'android') {
-            ToastAndroid.show(msg, ToastAndroid.SHORT);
-        } else {
-            Alert.alert('Estado actualizado', msg);
-        }
-    };
+        setModalInfoVisible,
+        modalInfoVisible,
+        setModalProductsVisible,
+        modalProductsVisible,
+        selectedOrder,
+        selectedProducts,
+        loadingProducts
+    } = useOrderApproval(searchText)
 
 
     const onCooldownPress = () => {
@@ -84,11 +79,15 @@ export default function OrderApprovalScreen() {
                     {/* Overlay */}
 
                     <FlatList
-                        data={filteredOrders}
+                        data={orders}//just use locally with JSON . use filteredOrders
                         keyExtractor={(item, index) => `${item.fact_num}-${index}`}
-                        renderItem={({ item }) => <OrderApprovalCard item={item} 
-                        onPress={() => handleOpenAuthModal(item)} 
-                        changeRevisado={()=>handleChangeRevisado}/>}
+                        renderItem={({ item }) =>
+                            <OrderApprovalCard item={item}
+                                onPress={() => handleOpenInfoModal(item)}
+                                detailModal={() => handleOpenProductsModal(item)}
+                                changeRevisado={(factNumber: number, newStatus: string) => handleChangeRevisado(item.fact_num, newStatus)}
+                            />
+                        }
                         contentContainerStyle={{ paddingBottom: 100 }}
                         refreshControl={
                             <RefreshControl
@@ -106,18 +105,25 @@ export default function OrderApprovalScreen() {
                                 </Text>
                             </View>
                         }
+
                     />
                 </View>
             </View>
-            {modalVisible && (
-
-                <OrderApprovalDetailModal
-                    visible={modalVisible}
-                    onClose={() => setModalVisible(false)}
+            {modalInfoVisible && (
+                <OrderApprovalInfoModal
+                    visible={modalInfoVisible}
+                    onClose={() => setModalInfoVisible(false)}
                     order={selectedOrder || undefined}
-
                 />
-
+            )}
+            {modalProductsVisible && (
+                <ProductListModal
+                    visible={modalProductsVisible}
+                    onClose={() => setModalProductsVisible(false)}
+                    products={selectedProducts}
+                    loading={loadingProducts}
+                    tasa={selectedOrder?.tasa || "1"} 
+                />
             )}
         </>
     )

@@ -37,3 +37,24 @@ export interface OrderApproval{
   zon_des: string;
   reng_max: number;
 }
+export interface OrderApprovalProduct {
+
+  fact_num: number;
+  reng_num: number;
+  co_art: string;
+  art_des: string;
+  co_alma: string;
+  alma_des: string;
+  total_art: string;
+  stotal_art: string;
+  pendiente: string;
+  uni_venta: string;
+  des_uni: string;
+  prec_vta: string;
+  prec_vta2: string;
+  reng_neto: string;
+  porc_desc: string;
+  tipo_imp: string;
+  compuesto: number;
+  ref: string;
+};
