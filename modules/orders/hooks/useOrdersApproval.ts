@@ -149,7 +149,7 @@ export function useOrderApproval(searchText: string) {
     setOrders(filteredOrders);
   }, [filteredOrders]);
 
-  const handleChangeRevisado = (fact_num: number, newStatus: string) => {
+  const handleChangeRevisado = async (fact_num: number, newStatus: string) => {
     // await updateOrderStatus(fact_num, newStatus); // replace local call with backend update
     setOrders(prev =>
       prev.map(order =>

@@ -25,14 +25,13 @@ export default function OrderModal({ visible, onClose, order }: Props) {
     return (
         <BottomModal visible={visible} onClose={onClose} heightPercentage={0.85}>
             {/* Header */}
-            <Text
-                className='text-2xl font-extrabold mb-2 text-primary dark:text-dark-foreground'
-            >
+
+            <Text className='text-3xl font-black mb-2 text-primary dark:text-dark-foreground'>
                 Pedido #{order.fact_num}
             </Text>
 
             <ScrollView showsVerticalScrollIndicator={false} className="mb-4">
-                {/* Pedido Anulado */}
+                {/* isAnulado*/}
                 {isAnulada && (
                     <View className="bg-red-100 dark:bg-red-400 border-l-4 border-red-500 dark:border-red-800 p-4 rounded-lg mb-4">
                         <View className="flex-row items-center mb-1">
@@ -72,7 +71,7 @@ export default function OrderModal({ visible, onClose, order }: Props) {
                         <Text className={`text-base font-semibold ${isRevisado ? 'text-green-700 dark:text-green-300' : 'text-yellow-700 dark:text-yellow-300'}`}>
                             {isRevisado ? 'Revisado' : 'Por Revisar'}
                         </Text>
-                    </View>  
+                    </View>
                 </View>
             </ScrollView>
 

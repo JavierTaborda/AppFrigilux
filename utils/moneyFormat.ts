@@ -1,6 +1,7 @@
 const totalVenezuela = (value: string | number): string => {
-    const numero = typeof value === "string" ? parseFloat(value) : value;
-    return numero.toLocaleString("es-VE");
+    const number = typeof value === "string" ? parseFloat(value) : value;
+    number.toFixed(2); // Ensure two decimal places
+    return number.toLocaleString("es-VE");
 };
 
 

@@ -12,7 +12,7 @@ export default function CustomDrawerContent(props: any) {
 
   return (
 
-    <DrawerContentScrollView
+    <DrawerContentScrollView bounces={false}
       {...props}
     >
 

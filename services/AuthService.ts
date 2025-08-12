@@ -5,10 +5,10 @@ export async function getUserRole(userId: string): Promise<string | null> {
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
-    .single(); 
+    .single();
   if (error) {
-    console.error("Error al obtener el rol del usuario:", error.message);
-    return null;
+ 
+    throw error;
   }
 
   return data?.role ?? null;

@@ -1,6 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { FlatList, TouchableOpacity, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 
 import SearchBar from '@/components/ui/SearchBar';
 import TitleText from '@/components/ui/TitleText';
@@ -8,6 +7,7 @@ import { useAuthPays } from '@/modules/pays/hooks/useAuthPays';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { totalVenezuela } from '@/utils/moneyFormat';
 
+import FilterButton from '@/components/ui/FilterButton';
 import Loader from '@/components/ui/Loader';
 import AuthPayCard from '../components/AuthPayCard';
 import AuthPayModal from '../components/AuthPayModal';
@@ -49,7 +49,7 @@ export default function AuthorizationScreen() {
 
   if (loading) {
     return (
-      <Loader/>
+      <Loader />
     );
   }
 
@@ -72,12 +72,9 @@ export default function AuthorizationScreen() {
               />
             </View>
             <View className="w-1/5 justify-center items-end">
-              <TouchableOpacity
-                className="mx-1 px-6 py-2.5 bg-componentbg dark:bg-dark-componentbg rounded-full"
-                onPress={() => setFilterModalVisible(true)}
-              >
-                <Ionicons name="filter" size={20} color={theme === 'dark' ? 'white' : 'grey'} />
-              </TouchableOpacity>
+
+              <FilterButton onPress={() => setFilterModalVisible(true)} />
+
             </View>
           </View>
 

@@ -1,4 +1,5 @@
 
+import FilterButton from '@/components/ui/FilterButton'
 import Loader from '@/components/ui/Loader'
 import SearchBar from '@/components/ui/SearchBar'
 import TitleText from '@/components/ui/TitleText'
@@ -8,11 +9,13 @@ import { useState } from 'react'
 import { Alert, FlatList, Platform, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import OrderApprovalCard from '../components/OrderApprovalCard'
 import OrderApprovalInfoModal from '../components/OrderAprovalInfoModal'
-import ProductListModal from '../components/ProductListModal'
+import ProductListModal from '../components/ProductListModal/ProductListModal'
 import { useOrderApproval } from '../hooks/useOrdersApproval'
 
 export default function OrderApprovalScreen() {
     const [searchText, setSearchText] = useState('')
+    const [filterVisible, setFilterVisible] = useState(false);
+    const [filters, setFilters] = useState<{ startDate?: Date; endDate?: Date; status?: string }>({});
     const {
         filteredOrders,
         loading,
@@ -34,6 +37,7 @@ export default function OrderApprovalScreen() {
         selectedOrder,
         selectedProducts,
         loadingProducts
+        
     } = useOrderApproval(searchText)
 
 
@@ -74,6 +78,9 @@ export default function OrderApprovalScreen() {
                                 setSearchText={setSearchText}
                                 placeHolderText=""
                             />
+                        </View>
+                        <View className='w-1/5 justify-center items-end'>
+                            <FilterButton onPress={() => setModalInfoVisible(true)} />
                         </View>
                     </View>
                     {/* Overlay */}
@@ -122,9 +129,14 @@ export default function OrderApprovalScreen() {
                     onClose={() => setModalProductsVisible(false)}
                     products={selectedProducts}
                     loading={loadingProducts}
-                    tasa={selectedOrder?.tasa || "1"} 
+
                 />
             )}
+            {/* <FilterModal
+                visible={filterVisible}
+                onClose={() => setFilterVisible(false)}
+                onApply={(newFilters) => setFilters(newFilters)}
+            /> */}
         </>
     )
 }
