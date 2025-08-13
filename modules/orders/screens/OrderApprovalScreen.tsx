@@ -7,6 +7,7 @@ import { appColors } from '@/utils/colors'
 import { totalVenezuela } from '@/utils/moneyFormat'
 import { useState } from 'react'
 import { Alert, FlatList, Platform, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import FilterModal from '../components/FilterModal'
 import OrderApprovalCard from '../components/OrderApprovalCard'
 import OrderApprovalInfoModal from '../components/OrderAprovalInfoModal'
 import ProductListModal from '../components/ProductListModal/ProductListModal'
@@ -80,7 +81,7 @@ export default function OrderApprovalScreen() {
                             />
                         </View>
                         <View className='w-1/5 justify-center items-end'>
-                            <FilterButton onPress={() => setModalInfoVisible(true)} />
+                            <FilterButton onPress={() => setFilterVisible(true)} />
                         </View>
                     </View>
                     {/* Overlay */}
@@ -132,11 +133,10 @@ export default function OrderApprovalScreen() {
 
                 />
             )}
-            {/* <FilterModal
+            <FilterModal
                 visible={filterVisible}
                 onClose={() => setFilterVisible(false)}
-                onApply={(newFilters) => setFilters(newFilters)}
-            /> */}
+            />
         </>
     )
 }

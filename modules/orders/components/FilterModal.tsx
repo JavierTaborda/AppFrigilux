@@ -7,10 +7,10 @@ import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
 interface FilterModalProps {
   visible: boolean;
   onClose: () => void;
-  onApply: (filters: { startDate?: Date; endDate?: Date; status?: string }) => void;
+  // onApply: (filters: { startDate?: Date; endDate?: Date; status?: string }) => void;
 }
 
-export default function FilterModal({ visible, onClose, onApply }: FilterModalProps) {
+export default function FilterModal({ visible, onClose }: FilterModalProps) {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [status, setStatus] = useState<string | undefined>();
@@ -126,7 +126,7 @@ export default function FilterModal({ visible, onClose, onApply }: FilterModalPr
             <TouchableOpacity
               className="flex-1 p-3 rounded-xl bg-primary"
               onPress={() => {
-                onApply({ startDate, endDate, status });
+                // onApply({ startDate, endDate, status });
                 onClose();
               }}
             >
