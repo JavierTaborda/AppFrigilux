@@ -47,13 +47,14 @@ export default function OrderModal({ visible, onClose, order }: Props) {
                 )}
 
                 {/* Detalles del pedido */}
-                <Row label="Fecha de Emisión" value={formatDateMMM_dot_dd_yyyy(order.fec_emis.date)} />
+                <Row label="Fecha Emisión / Vencimiento" value={`${formatDateMMM_dot_dd_yyyy(order.fec_emis.date)} / ${formatDateMMM_dot_dd_yyyy(order.fec_venc.date) }` } />
                 <Row label="Zona" value={order.zon_des} />
                 <Row label="Cliente" value={order.cli_des} multiline />
                 <Row label="Dirección Entrega" value={order.dir_ent} multiline />
                 <Row label="Tasa" value={`${order.tasa} BS`} />
                 <Row label="Condición" value={order.cond_des} />
                 <Row label="Comentario" value={order.comentario || '-'} multiline />
+                <Row label="Vendedor" value={order.ven_des || '-'} />
 
                 {/* Total Neto */}
                 <View className={`rounded-lg p-4 my-4 ${isAnulada ? 'bg-red-400' : 'bg-green-600'}`}>

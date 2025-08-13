@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { FlatList, View } from 'react-native';
 
-import SearchBar from '@/components/ui/SearchBar';
-import TitleText from '@/components/ui/TitleText';
 import { useAuthPays } from '@/modules/pays/hooks/useAuthPays';
-import { useThemeStore } from '@/stores/useThemeStore';
 import { totalVenezuela } from '@/utils/moneyFormat';
 
-import FilterButton from '@/components/ui/FilterButton';
+import ScreenSearchLayout from '@/components/screens/ScreenSearchLayout';
 import Loader from '@/components/ui/Loader';
+import { Text } from 'react-native';
 import AuthPayCard from '../components/AuthPayCard';
 import AuthPayModal from '../components/AuthPayModal';
 import FiltersModal from '../components/FilterModal';
@@ -17,7 +15,7 @@ import { AuthPay } from '../types/AuthPay';
 export default function AuthorizationScreen() {
   const { pays, loading, totalDocumentsAuth, totalAutorizadoUSD, totalAutorizadoVED } = useAuthPays();
   const [searchText, setSearchText] = useState('');
-  const { theme } = useThemeStore();
+
 
   // State Filters
   const [filterModalVisible, setFilterModalVisible] = useState(false);
@@ -55,40 +53,32 @@ export default function AuthorizationScreen() {
 
   return (
     <>
-      <View className="flex-1 bg-primary dark:bg-dark-primary pt-4 gap-3">
-        <TitleText
-          title={`${totalDocumentsAuth} Documentos`}
-          subtitle={`Total autorizado: ${totalVenezuela(totalAutorizadoVED)} VED / ${totalVenezuela(totalAutorizadoUSD)} $`}
+      <ScreenSearchLayout
+        title={`${totalDocumentsAuth} Documentos`}
+        subtitle={`Total autorizado: ${totalVenezuela(totalAutorizadoVED)} VED / ${totalVenezuela(totalAutorizadoUSD)} $`}
+        searchText={searchText}
+        setSearchText={setSearchText}
+        placeholder="Observación o Beneficiario..."
+        onFilterPress={() => setFilterModalVisible(true)}>
+
+        {/* Pay List */}
+        <FlatList
+          data={filteredPays}
+          keyExtractor={(item, index) => `${item.numerodocumento}-${index}`}
+          renderItem={({ item }) => (
+            <AuthPayCard item={item} onPress={() => handleOpenAuthModal(item)} />
+          )}
+          contentContainerStyle={{ paddingBottom: 100 }}
+
+          ListEmptyComponent={
+            <View className="flex-1 items-center justify-center py-10">
+              <Text className="text-mutedForeground dark:text-dark-mutedForeground text-center">
+                No se encontraron documentos...
+              </Text>
+            </View>
+          }
         />
-
-        <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl gap-4 px-4 pt-4 shadow-lg">
-          {/* bar search and filter button */}
-          <View className="flex-row overflow-hidden p-1">
-            <View className="w-4/5">
-              <SearchBar
-                searchText={searchText}
-                setSearchText={setSearchText}
-                placeHolderText="Observación o Beneficiario..."
-              />
-            </View>
-            <View className="w-1/5 justify-center items-end">
-
-              <FilterButton onPress={() => setFilterModalVisible(true)} />
-
-            </View>
-          </View>
-
-          {/* Pay List */}
-          <FlatList
-            data={filteredPays}
-            keyExtractor={(item, index) => `${item.numerodocumento}-${index}`}
-            renderItem={({ item }) => (
-              <AuthPayCard item={item} onPress={() => handleOpenAuthModal(item)} />
-            )}
-            contentContainerStyle={{ paddingBottom: 100 }}
-          />
-        </View>
-      </View>
+      </ScreenSearchLayout>
 
       {/* Modal Filters */}
       {filterModalVisible && (

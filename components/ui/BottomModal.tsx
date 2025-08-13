@@ -1,9 +1,8 @@
-import { useThemeStore } from '@/stores/useThemeStore';
 import React, { useEffect } from 'react';
 import { Dimensions, Modal, Platform, StatusBar, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // 👈 Importante
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type BottomModalProps = {
   visible: boolean;
@@ -18,8 +17,7 @@ export default function BottomModal({
   children,
   heightPercentage = 0.8,
 }: BottomModalProps) {
-  const { theme } = useThemeStore();
-  const isDark = theme === 'dark';
+
 
   const insets = useSafeAreaInsets(); 
   const windowHeight = Dimensions.get('window').height;

@@ -1,7 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Platform, ToastAndroid } from "react-native";
-import { getOrderProducts, getOrdersToApproval } from "../services/OrderApprovalService";
+import { getOrderProducts, getOrdersToApproval, getSellers, getZones } from "../services/OrderApprovalService";
 import { OrderApproval, OrderApprovalProduct } from "../types/OrderApproval";
 
 export function useOrderApproval(searchText: string) {
@@ -13,6 +13,10 @@ export function useOrderApproval(searchText: string) {
   const [canRefresh, setCanRefresh] = useState(true);
   const [cooldown, setCooldown] = useState(0);
   const [orders, setOrders] = useState<OrderApproval[]>([]);//just use locally with JSON 
+
+  //filters
+  const [zones, setZones] = useState<string[]>([]);
+  const [sellers, setSellers] = useState<string[]>([]);
 
   // Referencia para guardar el id del timeout y poder limpiarlo
   // Ref to store the timeout id for cleanup
@@ -53,7 +57,10 @@ export function useOrderApproval(searchText: string) {
   const fetchOrders = useCallback(() => {
     setLoading(true);
     getOrdersToApproval()
-      .then(setOrdersAproval)
+      .then((data) => {
+        setOrdersAproval(data);
+        loadFilters();
+      } )
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -78,7 +85,10 @@ export function useOrderApproval(searchText: string) {
     startCooldown(30); // Iniciar cooldown de 30 segundos
 
     getOrdersToApproval()
-      .then(setOrdersAproval)
+      .then((data)=>{
+        setOrdersAproval(data);
+        //loadFilters();
+      })
       .catch(console.error)
       .finally(() => {
         setRefreshing(false);
@@ -196,6 +206,18 @@ export function useOrderApproval(searchText: string) {
       setLoadingProducts(false);
     }
   };
+  const loadFilters = useCallback(async () => {
+    try {
+      const [zonesData, sellersData] = await Promise.all([
+        getZones(),
+        getSellers()
+      ]);
+      setZones(zonesData);
+      setSellers(sellersData);
+    } catch (error) {
+      console.error("Error cargando filtros:", error);
+    }
+  }, []);
 
   return {
     filteredOrders,
@@ -217,5 +239,6 @@ export function useOrderApproval(searchText: string) {
     selectedOrder,
     selectedProducts,
     loadingProducts
+    ,sellers, zones, loadFilters
   };
 }
