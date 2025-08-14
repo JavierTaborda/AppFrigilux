@@ -1,8 +1,10 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Platform, ToastAndroid } from "react-native";
-import { getOrderProducts, getOrdersToApproval, getSellers, getZones } from "../services/OrderApprovalService";
+import { getOrderProducts, getOrdersToApproval, getSellers, getStatus, getZones } from "../services/OrderApprovalService";
 import { OrderApproval, OrderApprovalProduct } from "../types/OrderApproval";
+import { OrderFilters, statusOptions } from "../types/OrderFilters";
+import { applyOrderFilters } from "../utils/applyOrderFilters";
 
 export function useOrderApproval(searchText: string) {
   // Estado de pedidos, loading, refrescando y control cooldown
@@ -17,6 +19,9 @@ export function useOrderApproval(searchText: string) {
   //filters
   const [zones, setZones] = useState<string[]>([]);
   const [sellers, setSellers] = useState<string[]>([]);
+  const [statusList, setStatusList] = useState<statusOptions[]>([]);
+
+  const [filters, setFilters] = useState<OrderFilters>({});
 
   // Referencia para guardar el id del timeout y poder limpiarlo
   // Ref to store the timeout id for cleanup
@@ -60,7 +65,7 @@ export function useOrderApproval(searchText: string) {
       .then((data) => {
         setOrdersAproval(data);
         loadFilters();
-      } )
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -85,7 +90,7 @@ export function useOrderApproval(searchText: string) {
     startCooldown(30); // Iniciar cooldown de 30 segundos
 
     getOrdersToApproval()
-      .then((data)=>{
+      .then((data) => {
         setOrdersAproval(data);
         //loadFilters();
       })
@@ -129,21 +134,18 @@ export function useOrderApproval(searchText: string) {
    * useMemo to filter orders and calculate totals
    * based on search text and current list.
    */
-  const { filteredOrders, totalOrders, totalUSD } = useMemo(() => {
-    const search = searchText.toLowerCase().trim();
 
-    const filtered = ordersAproval.filter((order) => {
-      const cliente = order.cli_des?.toLowerCase() || '';
-      const factura = order.fact_num?.toString() || '';
-      return cliente.includes(search) || factura.includes(search);
-    });
+
+  const { filteredOrders, totalOrders, totalUSD } = useMemo(() => {
+    const filtered = applyOrderFilters(ordersAproval, filters, searchText);
 
     const totalUSD = filtered
       .filter((order) => order.anulada !== 1)
       .reduce((acc, order) => {
-        const monto = typeof order.tot_neto === 'string'
-          ? parseFloat(order.tot_neto)
-          : order.tot_neto || 0;
+        const monto =
+          typeof order.tot_neto === "string"
+            ? parseFloat(order.tot_neto)
+            : order.tot_neto || 0;
         return acc + monto;
       }, 0);
 
@@ -152,7 +154,7 @@ export function useOrderApproval(searchText: string) {
       totalOrders: filtered.length,
       totalUSD,
     };
-  }, [ordersAproval, searchText]);
+  }, [ordersAproval, searchText, filters]);
 
   // just use locally with JSON
   useEffect(() => {
@@ -194,7 +196,7 @@ export function useOrderApproval(searchText: string) {
   };
   const handleOpenProductsModal = async (item: OrderApproval) => {
     try {
-      //TODO: check if item is valid 
+
       setSelectedOrder(item);
       setLoadingProducts(true);
       const products = await getOrderProducts(item.fact_num);
@@ -208,16 +210,23 @@ export function useOrderApproval(searchText: string) {
   };
   const loadFilters = useCallback(async () => {
     try {
-      const [zonesData, sellersData] = await Promise.all([
+      const [zonesData, sellersData, statusData] = await Promise.all([
         getZones(),
-        getSellers()
+        getSellers(),
+        getStatus(),
       ]);
       setZones(zonesData);
       setSellers(sellersData);
+      setStatusList(statusData);
     } catch (error) {
       console.error("Error cargando filtros:", error);
     }
   }, []);
+
+  const activeFiltersCount = Object.values(filters).filter(
+    (value) => value !== undefined && value !== ""
+  ).length;
+
 
   return {
     filteredOrders,
@@ -238,7 +247,13 @@ export function useOrderApproval(searchText: string) {
     setModalProductsVisible,
     selectedOrder,
     selectedProducts,
-    loadingProducts
-    ,sellers, zones, loadFilters
+    loadingProducts,
+    sellers,
+    zones,
+    loadFilters,
+    filters,
+    setFilters,
+    statusList,
+    activeFiltersCount
   };
 }

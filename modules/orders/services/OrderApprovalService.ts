@@ -1,5 +1,6 @@
 import OrderAprovalProduct from '../data/OrderApprovalProduct.json';
 import OrderAproval from '../data/OrdersApproval.json';
+import { statusOptions } from '../types/OrderFilters';
 
 export const getOrdersToApproval = async () => {
  
@@ -22,11 +23,25 @@ export const changeRevisado = async (fact_num: number, revisado: string) => {
 }
 
 export const getZones = async () => {
-  return OrderAproval.map(order => order.zon_des.trim())
+  const zones= OrderAproval.map(order => order.zon_des.trim())
     .filter((value, index, self) => self.indexOf(value) === index);
+      return ["TODOS", ...zones];
+
 }
 
 export const getSellers = async () => {
-  return OrderAproval.map(order => order.ven_des.trim())
-    .filter((value, index, self) => self.indexOf(value) === index);
+ const sellers =OrderAproval.map(order => order.ven_des.trim())
+    .filter((value, index, self) => self.indexOf(value) === index);  
+      return ["TODOS", ...sellers];
+
+}
+
+export const getStatus = async () => {
+   const statusOptionsList: statusOptions[] = [
+    { label: "Todos", value: "" },
+    { label: "Por Revisar", value: "0" },
+    { label: "Revisado", value: "1" },
+    { label: "Anulado", value: "anulada" },
+  ];
+  return statusOptionsList;
 }

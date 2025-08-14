@@ -12,6 +12,7 @@ type ScreenSearchLayoutProps = {
   placeholder?: string;
   onFilterPress: () => void;
   children: React.ReactNode;
+  filterCount?: number;
 };
 
 export default function ScreenSearchLayout({
@@ -22,6 +23,7 @@ export default function ScreenSearchLayout({
   placeholder = '',
   onFilterPress,
   children,
+  filterCount
 }: ScreenSearchLayoutProps) {
   return (
     <View className="flex-1 bg-primary dark:bg-dark-primary pt-4 gap-3">
@@ -35,10 +37,11 @@ export default function ScreenSearchLayout({
               searchText={searchText}
               setSearchText={setSearchText}
               placeHolderText={placeholder}
+             
             />
           </View>
           <View className="w-1/5 justify-center items-end">
-            <FilterButton onPress={onFilterPress} />
+            <FilterButton onPress={onFilterPress}  filterCount={filterCount}/>
           </View>
         </View>
 

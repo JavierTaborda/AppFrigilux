@@ -9,11 +9,12 @@ import OrderApprovalFilterModal from '../components/OrderApprovalFilterModal';
 import OrderApprovalInfoModal from '../components/OrderAprovalInfoModal';
 import ProductListModal from '../components/ProductListModal/ProductListModal';
 import { useOrderApproval } from '../hooks/useOrdersApproval';
+import { OrderFilters } from '../types/OrderFilters';
 
 export default function OrderApprovalScreen() {
     const [searchText, setSearchText] = useState('')
     const [filterVisible, setFilterVisible] = useState(false);
-    const [filters, setFilters] = useState<{ startDate?: Date; endDate?: Date; status?: string; seller?: string; zone?: string }>({});
+
     const {
         filteredOrders,
         loading,
@@ -36,7 +37,11 @@ export default function OrderApprovalScreen() {
         loadingProducts,
         zones,
          sellers, 
-        loadFilters
+        loadFilters,
+        filters,
+        setFilters, 
+        statusList,
+        activeFiltersCount
 
     } = useOrderApproval(searchText);
     const onCooldownPress = () => {
@@ -48,9 +53,8 @@ export default function OrderApprovalScreen() {
         }
     }
 
-    const handleApplyFilters = (newFilters: typeof filters) => {
+    const handleApplyFilters = (newFilters: OrderFilters) => {
         setFilters(newFilters);
-        alert(`Filtros aplicados: ${JSON.stringify(newFilters)}`);
         setFilterVisible(false);
     };
 
@@ -64,6 +68,7 @@ export default function OrderApprovalScreen() {
                 setSearchText={setSearchText}
                 placeholder="Cliente o número de factura..."
                 onFilterPress={() => setFilterVisible(true)}
+                filterCount={activeFiltersCount}
             >
                 {!canRefresh && cooldown > 0 && (
                     <TouchableOpacity
@@ -136,6 +141,7 @@ export default function OrderApprovalScreen() {
                 dataFilters={{
                     zones,
                     sellers,
+                    statusList
                 }}
                 onApply={handleApplyFilters}
                 
