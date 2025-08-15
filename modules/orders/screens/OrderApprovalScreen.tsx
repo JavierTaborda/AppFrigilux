@@ -36,10 +36,10 @@ export default function OrderApprovalScreen() {
         selectedProducts,
         loadingProducts,
         zones,
-         sellers, 
+        sellers,
         loadFilters,
         filters,
-        setFilters, 
+        setFilters,
         statusList,
         activeFiltersCount
 
@@ -59,6 +59,8 @@ export default function OrderApprovalScreen() {
     };
 
     if (loading) return <Loader />
+
+
     return (
         <>
             <ScreenSearchLayout
@@ -69,6 +71,7 @@ export default function OrderApprovalScreen() {
                 placeholder="Cliente o número de factura..."
                 onFilterPress={() => setFilterVisible(true)}
                 filterCount={activeFiltersCount}
+                extrafilter={true}
             >
                 {!canRefresh && cooldown > 0 && (
                     <TouchableOpacity
@@ -81,6 +84,8 @@ export default function OrderApprovalScreen() {
                         </Text>
                     </TouchableOpacity>
                 )}
+
+               
                 <FlatList
                     data={orders} //just use locally with JSON
                     keyExtractor={(item, index) => `${item.fact_num}-${index}`}
@@ -134,18 +139,18 @@ export default function OrderApprovalScreen() {
             )}
 
             {filterVisible && (
-            <OrderApprovalFilterModal
-                visible={filterVisible}
-                onClose={() => setFilterVisible(false)}
-                filters={filters}
-                dataFilters={{
-                    zones,
-                    sellers,
-                    statusList
-                }}
-                onApply={handleApplyFilters}
-                
-            />
+                <OrderApprovalFilterModal
+                    visible={filterVisible}
+                    onClose={() => setFilterVisible(false)}
+                    filters={filters}
+                    dataFilters={{
+                        zones,
+                        sellers,
+                        statusList
+                    }}
+                    onApply={handleApplyFilters}
+
+                />
             )}
         </>
     );

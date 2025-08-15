@@ -43,12 +43,12 @@ export default function OrderApprovalCard({ item, onPress, changeRevisado, detai
     <Animated.View
 
       entering={FadeInDown.duration(300).damping(100).springify()} exiting={FadeOut.duration(100)}
-      className={`rounded-xl p-4 mb-4 border shadow-sm shadow-black/10 ${isAnulada
+      className={`rounded-xl p-2 mb-2 border shadow-sm shadow-black/10 ${isAnulada
         ? 'bg-red-50 dark:bg-dark-error/20 border-red-300 dark:border-red-300'
         : 'bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700'
         }`}
     >
-      <Pressable className="flex-row gap-3" style={{ minHeight: 110 }}>
+      <Pressable className="flex-row gap-2" style={{ minHeight: 110 }}>
         {/* Band Anulado */}
         {isAnulada && (
           <Animated.View
@@ -102,7 +102,7 @@ export default function OrderApprovalCard({ item, onPress, changeRevisado, detai
           </View>
         </Pressable>
 
-        {/* Botones */}
+        {/* Buttons */}
         <View className="flex-col justify-center gap-3 w-2/6 ">
           <TouchableOpacity
             onPress={handlePressDetailsModal}

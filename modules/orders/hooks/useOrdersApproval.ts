@@ -21,7 +21,11 @@ export function useOrderApproval(searchText: string) {
   const [sellers, setSellers] = useState<string[]>([]);
   const [statusList, setStatusList] = useState<statusOptions[]>([]);
 
-  const [filters, setFilters] = useState<OrderFilters>({});
+  const [filters, setFilters] = useState<OrderFilters>({
+    // startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 dais
+    // endDate: new Date(), // hoy
+  });
+
 
   // Referencia para guardar el id del timeout y poder limpiarlo
   // Ref to store the timeout id for cleanup
@@ -225,7 +229,7 @@ export function useOrderApproval(searchText: string) {
 
   const activeFiltersCount = Object.values(filters).filter(
     (value) => value !== undefined && value !== ""
-  ).length;
+  ).length ?? 0;
 
 
   return {

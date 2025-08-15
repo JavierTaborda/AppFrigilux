@@ -35,7 +35,7 @@ export default function FilterModal({ visible, onClose, onApply, onClean, childr
                 >
                     {/* Header */}
                     <View className="flex-row justify-between items-center mb-4">
-                        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+                        <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
                             {title}
                         </Text>
                         <TouchableOpacity onPress={onClose}>
@@ -63,6 +63,7 @@ export default function FilterModal({ visible, onClose, onApply, onClean, childr
 
                         <TouchableOpacity
                             className="flex-1 p-3 rounded-xl bg-primary dark:bg-dark-primary"
+                            hitSlop={10}
                             onPress={() => {
                                 onApply();
                                 onClose();

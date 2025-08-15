@@ -8,8 +8,8 @@ interface ScreenHeaderProps {
 
 export default function ScreenHeader({ title, subtitle, rightComponent }: ScreenHeaderProps) {
   return (
-    <View className="px-4 flex-row justify-between items-start">
-      <View className="flex-1">
+    <View className="px-3 flex-row gap-0 justify-between items-start">
+      <View className="flex-1 ">
         <Text className="text-white font-bold text-2xl">{title}</Text>
         {subtitle && <Text className="text-white font-medium text-xl mt-1 overflow-hidden">{subtitle}</Text>}
       </View>

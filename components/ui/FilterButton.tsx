@@ -12,12 +12,13 @@ export default function FilterButton({ onPress, filterCount }: FilterButtonProps
   const { theme } = useThemeStore();
   return (
     <TouchableOpacity
-      className="mx-1 px-6 py-2.5 bg-componentbg dark:bg-dark-componentbg rounded-full"
+      className={`mx-0 px-6 py-2.5 rounded-full
+       bg-componentbg dark:bg-dark-componentbg `}//shadow-inner
       onPress={onPress}
     >
       <Ionicons name="filter" size={20} color={theme === 'dark' ? 'white' : 'grey'} />
-      {filterCount && filterCount > 0 && (
-        <View className="absolute -top-1 -right-1 bg-red-500 dark:bg-red-200 rounded-full px-1.5 py-0.5">
+      {typeof filterCount === 'number' && filterCount > 0 && (
+        <View  className="absolute -top-0 -right-0 bg-red-500 dark:bg-red-200 rounded-full px-1.5 py-0.5">
           <Text className="text-white text-xs font-bold overflow-hidden">{filterCount}</Text>
         </View>
       )}

@@ -45,12 +45,12 @@ export default function OrderApprovalFilterModal({
       onClose={onClose}
       onApply={() => onApply({ startDate, endDate, status, zone, seller })}
       onClean={() => {
-        setStartDate(new Date());
-        setEndDate(new Date());
+        setStartDate(undefined);
+        setEndDate(undefined);
         setStatus(undefined);
         setZone(undefined);
         setSeller(undefined);
-        onApply({});
+       
       }}
       title="Filtrar Pedidos"
     >
