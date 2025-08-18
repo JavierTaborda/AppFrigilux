@@ -1,8 +1,10 @@
 import FilterButton from '@/components/ui/FilterButton';
 import TitleText from '@/components/ui/TitleText';
 import { Ionicons } from '@expo/vector-icons';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, Easing, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import SearchBar from '../ui/SearchBar';
+
 
 type ScreenSearchLayoutProps = {
   title: string;
@@ -15,6 +17,7 @@ type ScreenSearchLayoutProps = {
   children: React.ReactNode;
   extrafilter?: boolean;
   extraFiltersComponent?: React.ReactNode;
+  headerVisible?: boolean;
 };
 
 export default function ScreenSearchLayout({
@@ -27,13 +30,43 @@ export default function ScreenSearchLayout({
   children,
   extrafilter = false,
   extraFiltersComponent,
-  filterCount
+  filterCount,
+  headerVisible = true,
+
 }: ScreenSearchLayoutProps) {
+  const animatedValue = useRef(new Animated.Value(0)).current;
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      // Set value directly without animation
+      animatedValue.setValue(headerVisible ? 1 : 0);
+      isFirstRender.current = false;
+    } else {
+      Animated.timing(animatedValue, {
+        toValue: headerVisible ? 1 : 0,
+        duration: 250,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [headerVisible]);
+
+  const animatedStyle = {
+    height: animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 55], // height by component search and filters
+    }),
+    opacity: animatedValue,
+    overflow: 'hidden' as 'hidden',
+  };
+
+
   return (
     <View className="flex-1 bg-primary dark:bg-dark-primary pt-2">
       <TitleText title={title} subtitle={subtitle} />
 
-      <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl px-3 pt-2 shadow-lg ">
+      <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl px-3 pt-2 shadow-lg ">
 
         {/* Search & Filter row */}
         <View className="flex-row items-center gap-2">
@@ -51,32 +84,33 @@ export default function ScreenSearchLayout({
             </View>
           )}
         </View>
+        <Animated.View style={animatedStyle}>
 
-        {/* Extra filters row */}
-        {extrafilter && (
-          <View className='flex-row overflow-hidden pt-1'>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
+          {/* Extra filters row */}
+          {extrafilter && (
+            <View className='flex-row overflow-hidden pt-1 pb-1'>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
 
-              contentContainerClassName="gap-3 py-1"
-            >
-              <View className="justify-center items-start">
-                <FilterButton onPress={onFilterPress} filterCount={filterCount} />
-              </View>
-              <TouchableOpacity className='flex-row items-center gap-1 px-4 py-2 rounded-full  dark:bg-dark-componentbg bg-componentbg'>
-                <Text className='text-sm text-foreground dark:text-dark-foreground'>Ordenar</Text>
-                <Ionicons name='arrow-down' size={16} color='black' />
-              </TouchableOpacity>
-              {extraFiltersComponent}
-            </ScrollView>
-          </View>
-        )}
-
+                contentContainerClassName="gap-3 py-1"
+              >
+                <View className="justify-center items-start">
+                  <FilterButton onPress={onFilterPress} filterCount={filterCount} />
+                </View>
+                <TouchableOpacity className='flex-row items-center gap-1 px-4 py-2 rounded-full  dark:bg-dark-componentbg bg-componentbg'>
+                  <Text className='text-sm text-foreground dark:text-dark-foreground'>Ordenar</Text>
+                  <Ionicons name='arrow-down' size={16} color='black' />
+                </TouchableOpacity>
+                {extraFiltersComponent}
+              </ScrollView>
+            </View>
+          )}
+        </Animated.View>
         {/* Content */}
-        <View className='pt-2'>
-          {children}
-        </View>
+
+        {children}
+
       </View>
     </View>
   );

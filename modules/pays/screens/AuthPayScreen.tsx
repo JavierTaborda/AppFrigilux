@@ -59,7 +59,9 @@ export default function AuthorizationScreen() {
         searchText={searchText}
         setSearchText={setSearchText}
         placeholder="Observación o Beneficiario..."
-        onFilterPress={() => setFilterModalVisible(true)}>
+        onFilterPress={() => setFilterModalVisible(true)}
+        headerVisible={false}>
+        
 
         {/* Pay List */}
         <FlatList
