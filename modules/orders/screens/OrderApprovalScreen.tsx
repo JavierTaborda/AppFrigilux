@@ -5,6 +5,7 @@ import { totalVenezuela } from '@/utils/moneyFormat';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useRef, useState } from 'react';
 import { Alert, Animated, FlatList, NativeScrollEvent, NativeSyntheticEvent, Platform, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import FastFilters from '../components/FastFilters';
 import OrderApprovalCard from '../components/OrderApprovalCard';
 import OrderApprovalFilterModal from '../components/OrderApprovalFilterModal';
 import OrderApprovalInfoModal from '../components/OrderAprovalInfoModal';
@@ -34,22 +35,22 @@ export default function OrderApprovalScreen() {
                 const currentY = event.nativeEvent.contentOffset.y;
                 const lastY = lastScrollY.current;
 
-                // Mostrar botón "ir al top" si baja más de 300px
+                // Show  "ir al top" button if scrolled down more than 300px
                 if (currentY > 300 && !showScrollTop) {
                     setShowScrollTop(true);
                 } else if (currentY <= 300 && showScrollTop) {
                     setShowScrollTop(false);
                 }
 
-                // Mostrar header si está en el top
+                // show header in the top
                 if (currentY <= 0 && !headerVisible) {
                     setHeaderVisible(true);
                     scrollDirection.current = 'up';
                 }
 
-                // Ocultar/mostrar header según dirección
+                // Show/Hide header by diriection
                 const delta = currentY - lastY;
-                if (Math.abs(delta) > 30) {
+                if (Math.abs(delta) > 20) {
                     if (delta > 0 && scrollDirection.current !== 'down') {
                         scrollDirection.current = 'down';
                         setHeaderVisible(false);
@@ -91,9 +92,18 @@ export default function OrderApprovalScreen() {
         filters,
         setFilters,
         statusList,
-        activeFiltersCount
+        activeFiltersCount,
+        sortDate,
+        setSortDate,
+        sortMount,
+        setSortMount,
+        showStatus,
+        setShowStatus,
+        mount,
+        setMount,
 
     } = useOrderApproval(searchText);
+
     const onCooldownPress = () => {
         const msg = `Espera ${cooldown} segundos antes de refrescar nuevamente`
         if (Platform.OS === 'android') {
@@ -123,6 +133,19 @@ export default function OrderApprovalScreen() {
                 filterCount={activeFiltersCount}
                 extrafilter={true}
                 headerVisible={headerVisible}
+                extraFiltersComponent={
+                    <FastFilters
+                        sortDate={sortDate}
+                        setSortDate={setSortDate}
+                        sortMount={sortMount}
+                        setSortMount={setSortMount}
+                        showStatus={showStatus}
+                        setShowStatus={setShowStatus}
+                        mount={mount}
+                        setMount={setMount}
+                    />
+                }
+
             >
 
 
@@ -130,7 +153,7 @@ export default function OrderApprovalScreen() {
                     <TouchableOpacity
                         onPress={onCooldownPress}
                         activeOpacity={0.8}
-                        className="absolute  bg-black/60 px-3 py-0.5 rounded-full z-10 right-4"
+                        className="absolute  bg-black/60 px-3 py-0.5 rounded-full z-10 top-0 right-4"
                     >
                         <Text className="text-white text-xs">
                             Espera {cooldown}s para refrescar
@@ -163,7 +186,7 @@ export default function OrderApprovalScreen() {
                             }
                         />
                     )}
-                    contentContainerStyle={{ paddingBottom: 140 }}
+                    contentContainerStyle={{ paddingBottom: 120 }}
                     onScroll={handleScroll} // Call handlescroll
                     scrollEventThrottle={16} //-trigger the  scroll every ~16ms (aprox 60fps).
 

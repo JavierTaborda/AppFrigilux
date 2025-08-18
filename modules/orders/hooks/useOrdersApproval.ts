@@ -21,6 +21,14 @@ export function useOrderApproval(searchText: string) {
   const [sellers, setSellers] = useState<string[]>([]);
   const [statusList, setStatusList] = useState<statusOptions[]>([]);
 
+
+  //FastFilters in Screen 
+
+  const [sortDate, setSortDate] = useState(false);
+  const [sortMount, setSortMount] = useState(false);
+  const [showStatus, setShowStatus] = useState(false);
+  const [mount, setMount] = useState(false);
+
   const [filters, setFilters] = useState<OrderFilters>({
     // startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 dais
     // endDate: new Date(), // hoy
@@ -141,15 +149,50 @@ export function useOrderApproval(searchText: string) {
 
 
   const { filteredOrders, totalOrders, totalUSD } = useMemo(() => {
-    const filtered = applyOrderFilters(ordersAproval, filters, searchText);
+    //Apply filters by backend.
+    let filtered = applyOrderFilters(ordersAproval, filters, searchText);
+
+    // Filtes Order  
+    // by Por Revisar or Revisado
+    if (showStatus) {
+      filtered = filtered.filter(order => order.revisado === '0');
+    }
+
+
+    // TODO: By range Monto
+    if (mount) {
+      filtered = filtered.filter(order => {
+        const monto = typeof order.tot_neto === "string"
+          ? parseFloat(order.tot_neto)
+          : order.tot_neto || 0;
+        return monto > 1000;
+      });
+    }
+
+    // Order by date
+    if (sortDate) {
+      filtered.sort((a, b) => {
+        const dateA = new Date(a.fec_emis.date).getTime();
+        const dateB = new Date(b.fec_emis.date).getTime();
+        return dateA-dateB  ; // most old first
+      });
+    }
+
+    // order by mount
+    if (sortMount) {
+      filtered.sort((a, b) => {
+        const montoA = typeof a.tot_neto === "string" ? parseFloat(a.tot_neto) : a.tot_neto || 0;
+        const montoB = typeof b.tot_neto === "string" ? parseFloat(b.tot_neto) : b.tot_neto || 0;
+        return montoB - montoA; // most hight amount first
+      });
+    }
 
     const totalUSD = filtered
       .filter((order) => order.anulada !== 1)
       .reduce((acc, order) => {
-        const monto =
-          typeof order.tot_neto === "string"
-            ? parseFloat(order.tot_neto)
-            : order.tot_neto || 0;
+        const monto = typeof order.tot_neto === "string"
+          ? parseFloat(order.tot_neto)
+          : order.tot_neto || 0;
         return acc + monto;
       }, 0);
 
@@ -158,7 +201,7 @@ export function useOrderApproval(searchText: string) {
       totalOrders: filtered.length,
       totalUSD,
     };
-  }, [ordersAproval, searchText, filters]);
+  }, [ordersAproval, searchText, filters, sortDate, sortMount, showStatus, setMount]);
 
   // just use locally with JSON
   useEffect(() => {
@@ -258,6 +301,13 @@ export function useOrderApproval(searchText: string) {
     filters,
     setFilters,
     statusList,
-    activeFiltersCount
+    activeFiltersCount,
+    sortDate,
+    setSortDate,
+    sortMount, setSortMount,
+    showStatus, setShowStatus,
+    mount,
+    setMount
+
   };
 }

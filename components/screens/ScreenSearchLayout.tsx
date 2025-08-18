@@ -1,8 +1,7 @@
 import FilterButton from '@/components/ui/FilterButton';
 import TitleText from '@/components/ui/TitleText';
-import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef } from 'react';
-import { Animated, Easing, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Easing, ScrollView, View } from 'react-native';
 import SearchBar from '../ui/SearchBar';
 
 
@@ -88,7 +87,7 @@ export default function ScreenSearchLayout({
 
           {/* Extra filters row */}
           {extrafilter && (
-            <View className='flex-row overflow-hidden pt-1 pb-1'>
+            <View className='flex-row  pt-1 pb-1'>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -98,11 +97,9 @@ export default function ScreenSearchLayout({
                 <View className="justify-center items-start">
                   <FilterButton onPress={onFilterPress} filterCount={filterCount} />
                 </View>
-                <TouchableOpacity className='flex-row items-center gap-1 px-4 py-2 rounded-full  dark:bg-dark-componentbg bg-componentbg'>
-                  <Text className='text-sm text-foreground dark:text-dark-foreground'>Ordenar</Text>
-                  <Ionicons name='arrow-down' size={16} color='black' />
-                </TouchableOpacity>
-                {extraFiltersComponent}
+                <View>
+                  {extraFiltersComponent}
+                </View>
               </ScrollView>
             </View>
           )}

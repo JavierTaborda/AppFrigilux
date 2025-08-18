@@ -24,8 +24,8 @@ function matchesStatus(order: OrderApproval, filters: OrderFilters): boolean {
 }
 
 function matchesSeller(order: OrderApproval, filters: OrderFilters): boolean {
-    if (filters.seller === 'TODOS'||!filters.seller) return true
-    return   order.co_ven === filters.seller;
+    if (filters.seller === 'TODOS'|| !filters.seller) return true
+    return   order.ven_des.trim() === filters.seller;
 }
 
 function matchesZone(order: OrderApproval, filters: OrderFilters): boolean {
