@@ -1,5 +1,5 @@
 {
-  "name": "authexposupabase",
+  "name": "app-example-frigilux",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {

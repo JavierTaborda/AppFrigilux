@@ -4,49 +4,46 @@
     "slug": "app-example-frigilux",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/Logo.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "appexamplefrigilux",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-
+    
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
         "NSFaceIDUsageDescription": "Esta app usa Face ID para autenticación segura."
       }
     },
-
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/Logo.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.javierdevelop.appexamplefrigilux",
+      "versionCode": 1
     },
-
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/Logo.png",
+          "image": "./assets/images/splash.png",
           "resizeMode": "cover",
           "backgroundColor": "#ffffff",
           "dark": {
-            "image": "./assets/images/Logo.png",
+            "image": "./assets/images/splash.png",
             "backgroundColor": "#000000"
           },
           "android": {
             "statusBarTranslucent": true,
             "backgroundColor": "#ffffff",
-            "navigationBarColor": "#ffffff",
-            "imageWidth": 400
+            "navigationBarColor": "#ffffff"
           },
           "ios": {
             "backgroundColor": "#ffffff"
@@ -61,9 +58,14 @@
         }
       ]
     ],
-
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a128c171-603d-4819-afda-be3da7fe86d1"
+      }
     }
   }
 }

@@ -1,24 +1,41 @@
+import { useEffect, useRef, useState } from "react";
+import { Animated, StyleSheet, View } from "react-native";
+
 import SplashScreen from "@/components/SplashScreen";
 import { useAuthProviderStore } from "@/stores/useAuthProviderStore";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { useEffect, useRef } from "react";
-import { Animated, StyleSheet, View } from "react-native";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { hydrate } = useThemeStore();
   const { showSplash, initializeApp } = useAuthProviderStore();
-  
+
   const splashOpacity = useRef(new Animated.Value(1)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
 
+  // Estado para asegurar que la UI se monte antes de init
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    const init = async () => {
-      await hydrate();
-      await initializeApp();
-      
-    };
-    init();
+    setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const init = async () => {
+      try {
+        // Pequeño delay para asegurar que UI se renderizó
+        await new Promise((res) => setTimeout(res, 500));
+
+        await hydrate();
+        await initializeApp();
+      } catch (e) {
+        console.log("Error initializing app:", e);
+      }
+    };
+
+    init();
+  }, [isMounted]);
 
   useEffect(() => {
     if (!showSplash) {
