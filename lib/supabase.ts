@@ -6,6 +6,7 @@ import { AppState } from 'react-native';
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
 
+//TODO config env for eas build
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 // Custom storage layer using AES encryption

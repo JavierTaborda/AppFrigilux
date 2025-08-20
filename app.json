@@ -1,14 +1,17 @@
 {
   "expo": {
-    "name": "AppExampleFrigilux",
-    "slug": "app-example-frigilux",
+    "name": "Frigilux App",
+    "slug": "frigiluxapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "appexamplefrigilux",
     "userInterfaceStyle": "automatic",
-    "platforms": ["ios", "android", "web"],
-
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.javierdevelop.appexamplefrigilux",
@@ -16,7 +19,6 @@
         "NSFaceIDUsageDescription": "Esta app usa Face ID para autenticación segura."
       }
     },
-
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
@@ -26,13 +28,11 @@
       "versionCode": 1,
       "edgeToEdgeEnabled": true
     },
-
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-
     "plugins": [
       "expo-router",
       [
@@ -63,15 +63,13 @@
         }
       ]
     ],
-
     "experiments": {
       "typedRoutes": true
     },
-
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "a128c171-603d-4819-afda-be3da7fe86d1"
+        "projectId": "3dd0ad5f-50d3-43a5-a923-e6eca916e4a2"
       }
     }
   }
