@@ -1,3 +1,7 @@
+const currencyDollar= '$';
+
+
+
 const totalVenezuela = (value: string | number): string => {
     const number = typeof value === "string" ? parseFloat(value) : value;
     number.toFixed(2); // Ensure two decimal places
@@ -5,5 +9,5 @@ const totalVenezuela = (value: string | number): string => {
 };
 
 
-export { totalVenezuela };
+export { currencyDollar, totalVenezuela };
 

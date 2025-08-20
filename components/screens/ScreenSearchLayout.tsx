@@ -45,7 +45,8 @@ export default function ScreenSearchLayout({
       Animated.timing(animatedValue, {
         toValue: headerVisible ? 1 : 0,
         duration: 250,
-        easing: Easing.inOut(Easing.ease),
+        easing: Easing.out(Easing.exp),
+        //easing: Easing.inOut(Easing.ease),
         useNativeDriver: false,
       }).start();
     }
@@ -54,21 +55,35 @@ export default function ScreenSearchLayout({
   const animatedStyle = {
     height: animatedValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 55], // height by component search and filters
+      outputRange: [0, 50], // altura deseada
+      extrapolate: 'clamp',
     }),
-    opacity: animatedValue,
-    overflow: 'hidden' as 'hidden',
+    opacity: animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+      extrapolate: 'clamp',
+    }),
+    transform: [
+      {
+        scaleY: animatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0.95, 1],
+          extrapolate: 'clamp',
+        }),
+      },
+    ],
+    overflow: 'hidden' as const,
   };
 
 
   return (
-    <View className="flex-1 bg-primary dark:bg-dark-primary pt-2">
+    <View className="flex-1 bg-primary dark:bg-dark-primary ">
       <TitleText title={title} subtitle={subtitle} />
 
       <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl px-3 pt-2 shadow-lg ">
 
         {/* Search & Filter row */}
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row items-center gap-2 pb-2">
           <View className={extrafilter ? "flex-1" : "w-4/5"}>
             <SearchBar
               searchText={searchText}
@@ -87,12 +102,12 @@ export default function ScreenSearchLayout({
 
           {/* Extra filters row */}
           {extrafilter && (
-            <View className='flex-row  pt-1 pb-1'>
+            <View className='flex-row'>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
 
-                contentContainerClassName="gap-3 py-1"
+                contentContainerClassName="gap-3"
               >
                 <View className="justify-center items-start">
                   <FilterButton onPress={onFilterPress} filterCount={filterCount} />

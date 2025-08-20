@@ -18,7 +18,7 @@ export default React.memo(function ProductItem({ item, index, currency }: Props)
     return (
         <Animated.View
             entering={FadeInDown.delay(index * 35).duration(250).springify()}
-            className="bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700 rounded-2xl p-1 mb-4 shadow-xs shadow-black"
+            className="bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700 rounded-2xl p-1 mb-2 shadow-xs shadow-black"
         >
             <Pressable className="flex-row items-center gap-3">
                <View className="w-2/6 ml-1 aspect-square rounded-xl bg-gray-200 dark:bg-gray-700 overflow-hidden justify-center items-center">
@@ -42,15 +42,15 @@ export default React.memo(function ProductItem({ item, index, currency }: Props)
                     </Text>
 
                     <Text className="text-sm text-foreground/80 dark:text-dark-foreground/80">
-                        Almacén: {item.co_alma.trim()}
+                        Almacén {item.co_alma.trim()}
                     </Text>
 
                     <View className="flex-row items-center">
                         <Text className="text-sm text-gray-600 dark:text-gray-400">
-                            Cantidad: {quantity.toFixed(2)}
+                            Cantidad {quantity}
                         </Text>
                         <Text className="ml-3 text-sm text-gray-600 dark:text-gray-400">
-                            Precio: {totalVenezuela(price)} {currency}
+                            Precio {totalVenezuela(price)} {currency}
                         </Text>
 
                     </View>

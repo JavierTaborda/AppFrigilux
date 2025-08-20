@@ -3,7 +3,7 @@ import Loader from '@/components/ui/Loader';
 import { appColors } from '@/utils/colors';
 import { totalVenezuela } from '@/utils/moneyFormat';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Alert, Animated, FlatList, NativeScrollEvent, NativeSyntheticEvent, Platform, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import FastFilters from '../components/FastFilters';
 import OrderApprovalCard from '../components/OrderApprovalCard';
@@ -128,7 +128,7 @@ export default function OrderApprovalScreen() {
                 subtitle={`Total ${totalVenezuela(totalUSD)} $`}
                 searchText={searchText}
                 setSearchText={setSearchText}
-                placeholder="Cliente o número de factura..."
+                placeholder="Cliente o número de pedido..."
                 onFilterPress={() => setFilterVisible(true)}
                 filterCount={activeFiltersCount}
                 extrafilter={true}

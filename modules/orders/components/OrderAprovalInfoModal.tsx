@@ -81,8 +81,8 @@ export default function OrderModal({ visible, onClose, order }: Props) {
                 onPress={onClose}
                 className="bg-primary dark:bg-dark-primary rounded-full py-3 mt-2 flex-row justify-center items-center"
             >
-                <Ionicons name="arrow-back-outline" size={20} color="white" />
-                <Text className="text-white font-semibold text-lg ml-2">Aceptar</Text>
+                {/* <Ionicons name="arrow-back-outline" size={20} color="white" /> */}
+                <Text className="text-white font-semibold text-lg ml-2">Volver</Text>
             </TouchableOpacity>
         </BottomModal>
     );

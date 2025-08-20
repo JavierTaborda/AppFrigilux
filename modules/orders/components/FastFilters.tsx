@@ -25,7 +25,7 @@ export default function FastFilters({
   setMount,
 }: Props) {
   const { isDark } = useThemeStore();
-  const iconColor = isDark ? 'white' : 'black';
+  const iconColor = isDark ? 'grey' : 'grey';
 
   const toggleExpand = () => {
     setMount(!mount);
@@ -49,7 +49,7 @@ export default function FastFilters({
     >
       <Text
         className={`text-sm ${
-          active ? 'text-white' : 'text-foreground dark:text-dark-foreground'
+          active ? 'text-white' : 'text-mutedForeground dark:text-dark-mutedForeground'
         }`}
       >
         {label}
