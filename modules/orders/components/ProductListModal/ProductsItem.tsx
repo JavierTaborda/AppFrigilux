@@ -12,7 +12,7 @@ export default React.memo(function ProductItem({ item, index, currency }: Props)
     const price = parseFloat(item.prec_vta);
     const discount = item.porc_desc.trim();
     const total = parseFloat(item.reng_neto) ;
-     // TODO add to the OrderApprovalProduct type
+     // TODO add img to the OrderApprovalProduct type
     const imageUrl = null// item.imageUrl?.trim(); 
 
     return (

@@ -27,7 +27,8 @@ export function useOrderApproval(searchText: string) {
   const [sortDate, setSortDate] = useState(false);
   const [sortMount, setSortMount] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [mount, setMount] = useState(false);
+  const [mount, setMount] = useState<number>(0);
+  const [mountEnd, setMountEnd] = useState<number>(0);
 
   const [filters, setFilters] = useState<OrderFilters>({
     // startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 dais
@@ -174,7 +175,7 @@ export function useOrderApproval(searchText: string) {
       filtered.sort((a, b) => {
         const dateA = new Date(a.fec_emis.date).getTime();
         const dateB = new Date(b.fec_emis.date).getTime();
-        return dateA-dateB  ; // most old first
+        return dateA - dateB; // most old first
       });
     }
 
@@ -184,6 +185,13 @@ export function useOrderApproval(searchText: string) {
         const montoA = typeof a.tot_neto === "string" ? parseFloat(a.tot_neto) : a.tot_neto || 0;
         const montoB = typeof b.tot_neto === "string" ? parseFloat(b.tot_neto) : b.tot_neto || 0;
         return montoB - montoA; // most hight amount first
+      });
+    }
+
+    if (mount >= 0 && mountEnd !== 0 && mountEnd > mount) {
+      filtered = filtered.filter((order) => {
+        const monto = parseFloat(order.tot_neto as string) || 0;
+        return monto >= mount && monto <= mountEnd;
       });
     }
 

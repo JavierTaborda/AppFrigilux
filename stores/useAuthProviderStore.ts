@@ -16,6 +16,9 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
 
   initializeApp: async () => {
     try {
+
+      //TODO: Delete this line if the apk crash
+      await useAuthStore.getState().initializeAuth();
       const { session, manualLogin, signOutSoft, setManualLogin } = useAuthStore.getState();
 
       // Si no hay sesión activa, salimos rápido
@@ -37,6 +40,7 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
             const result = await authenticateWithBiometrics();
             biometricSuccess = result === true;
           } catch (err) {
+            alert(err)
             console.log("Biometric authentication failed:", err);
           }
 
@@ -51,12 +55,12 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
         }
       }
 
-      // Reset login manual y ocultamos splash
+      // Reset login manual 
       setManualLogin(false);
       set({ showSplash: false });
     } catch (err) {
       console.log("Error en initializeApp:", err);
-      // Siempre ocultamos splash aunque haya error
+      // alway hide the splash
       set({ showSplash: false });
     }
   },

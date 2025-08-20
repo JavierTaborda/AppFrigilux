@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import { Tabs } from 'expo-router';
-import React from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,6 +13,8 @@ function getTabIcon(routeName: string, focused: boolean): keyof typeof Ionicons.
       return focused ? 'home' : 'home-outline';
     case '(profile)/index':
       return focused ? 'person' : 'person-outline';
+    case '(settings)/index':
+      return focused ? 'settings-sharp' : 'settings-outline';
     default:
       return 'ellipse';
   }
@@ -129,13 +130,19 @@ export default function TabLayout() {
       })}
     >
       <Tabs.Screen
+        name="(profile)/index"
+        options={{ title: 'Perfil' }}
+      />
+      <Tabs.Screen
         name="(home)/index"
         options={{ title: 'Inicio' }}
       />
       <Tabs.Screen
-        name="(profile)/index"
-        options={{ title: 'Perfil' }}
+        name="(settings)/index"
+        options={{ title: 'Ajustes' }}
       />
+
+
       {/*  not shown in tab bar */}
       <Tabs.Screen
         name="(pays)/authPays"

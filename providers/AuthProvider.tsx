@@ -12,7 +12,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const splashOpacity = useRef(new Animated.Value(1)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
 
-  // Estado para asegurar que la UI se monte antes de init
+  // wait for the first rendero 
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const init = async () => {
       try {
-        // Pequeño delay para asegurar que UI se renderizó
+        //  delay to asegurate the UI render
         await new Promise((res) => setTimeout(res, 500));
 
         await hydrate();

@@ -10,8 +10,9 @@ interface Props {
   setShowStatus: (value: boolean) => void;
   sortMount: boolean;
   setSortMount: (value: boolean) => void;
-  mount: boolean;
-  setMount: (value: boolean) => void;
+  openModalMount: boolean;
+  setModalMount: (value: boolean) => void;
+  
 }
 
 export default function FastFilters({
@@ -21,19 +22,19 @@ export default function FastFilters({
   setShowStatus,
   sortMount,
   setSortMount,
-  mount,
-  setMount,
+  openModalMount,
+  setModalMount,
 }: Props) {
   const { isDark } = useThemeStore();
   const iconColor = isDark ? 'grey' : 'grey';
 
-  const toggleExpand = () => {
-    setMount(!mount);
+  const OpenMountModal = (value:boolean) => {
+    setModalMount(value);
   };
 
   const renderButton = (
     label: string,
-    active: boolean,
+    active: boolean ,
     icon: React.ComponentProps<typeof Ionicons>['name'],
     onPress: () => void,
     rotateIcon?: boolean
@@ -68,7 +69,7 @@ export default function FastFilters({
       {renderButton('Por Revisar', showStatus, showStatus ? 'eye' : 'eye-off', () => setShowStatus(!showStatus))}
       {renderButton('Fecha', sortDate, sortDate ? 'arrow-down' : 'arrow-up', () => setSortDate(!sortDate))}
       {renderButton('Monto', sortMount, sortMount ? 'arrow-down' : 'arrow-up', () => setSortMount(!sortMount))}
-      {renderButton('Filtrar Monto', mount, 'chevron-down', toggleExpand, true)}
+      {renderButton('Filtrar Monto', openModalMount, 'chevron-down', ()=>(OpenMountModal(!openModalMount)))}
     </View>
   );
 }

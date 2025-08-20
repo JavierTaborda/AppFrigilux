@@ -1,10 +1,11 @@
 import ScreenSearchLayout from '@/components/screens/ScreenSearchLayout';
 import Loader from '@/components/ui/Loader';
+import { useScrollHeader } from '@/hooks/useScrollHeader';
 import { appColors } from '@/utils/colors';
 import { totalVenezuela } from '@/utils/moneyFormat';
 import { Ionicons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
-import { Alert, Animated, FlatList, NativeScrollEvent, NativeSyntheticEvent, Platform, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Platform, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import FastFilters from '../components/FastFilters';
 import OrderApprovalCard from '../components/OrderApprovalCard';
 import OrderApprovalFilterModal from '../components/OrderApprovalFilterModal';
@@ -12,58 +13,17 @@ import OrderApprovalInfoModal from '../components/OrderAprovalInfoModal';
 import ProductListModal from '../components/ProductListModal/ProductListModal';
 import { useOrderApproval } from '../hooks/useOrdersApproval';
 import { OrderFilters } from '../types/OrderFilters';
-
 export default function OrderApprovalScreen() {
     const [searchText, setSearchText] = useState('')
     const [filterVisible, setFilterVisible] = useState(false);
     const flatListRef = useRef<FlatList>(null);
 
-
-    //TODO: move to a hook
     //Hide the search bar and filters
-
-    const [headerVisible, setHeaderVisible] = useState(true);
-    const [showScrollTop, setShowScrollTop] = useState(false);
-    const scrollY = useRef(new Animated.Value(0)).current;
-    const scrollDirection = useRef<'up' | 'down'>('up');
-    let lastScrollY = useRef(0);
-    const handleScroll = Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        {
-            useNativeDriver: false,
-            listener: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-                const currentY = event.nativeEvent.contentOffset.y;
-                const lastY = lastScrollY.current;
-
-                // Show  "ir al top" button if scrolled down more than 300px
-                if (currentY > 300 && !showScrollTop) {
-                    setShowScrollTop(true);
-                } else if (currentY <= 300 && showScrollTop) {
-                    setShowScrollTop(false);
-                }
-
-                // show header in the top
-                if (currentY <= 0 && !headerVisible) {
-                    setHeaderVisible(true);
-                    scrollDirection.current = 'up';
-                }
-
-                // Show/Hide header by diriection
-                const delta = currentY - lastY;
-                if (Math.abs(delta) > 20) {
-                    if (delta > 0 && scrollDirection.current !== 'down') {
-                        scrollDirection.current = 'down';
-                        setHeaderVisible(false);
-                    } else if (delta < 0 && scrollDirection.current !== 'up') {
-                        scrollDirection.current = 'up';
-                        setHeaderVisible(true);
-                    }
-                }
-
-                lastScrollY.current = currentY;
-            },
-        }
-    );
+    const {
+        handleScroll,
+        headerVisible,
+        showScrollTop,
+    } = useScrollHeader();
 
 
     const {
@@ -101,6 +61,8 @@ export default function OrderApprovalScreen() {
         setShowStatus,
         mount,
         setMount,
+        // openModalMount,
+        // setModalMount,
 
     } = useOrderApproval(searchText);
 
@@ -141,8 +103,10 @@ export default function OrderApprovalScreen() {
                         setSortMount={setSortMount}
                         showStatus={showStatus}
                         setShowStatus={setShowStatus}
-                        mount={mount}
-                        setMount={setMount}
+                        openModalMount={true}
+                        setModalMount={setSortDate}
+                      // mount={mount}
+                      //  setMount={setMount}
                     />
                 }
 
@@ -209,8 +173,6 @@ export default function OrderApprovalScreen() {
                         </View>
                     }
                 />
-
-
             </ScreenSearchLayout>
 
             {/* Modales */}
