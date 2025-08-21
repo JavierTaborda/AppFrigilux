@@ -1,9 +1,8 @@
-import { useAuthStore } from '@/stores/useAuthStore';
 import { formatDatedd_dot_MMM_yyyy } from '@/utils/datesFormat';
 import { currencyDollar, totalVenezuela } from '@/utils/moneyFormat';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut } from 'react-native-reanimated';
 import { OrderApproval } from '../types/OrderApproval';
@@ -13,16 +12,14 @@ interface Props {
   onPress?: () => void;
   detailModal?: () => void;
   changeRevisado: (factNum: number, newStatus: string) => void;
+  hasPermission:boolean;
 }
 
-export default function OrderApprovalCard({ item, onPress, changeRevisado, detailModal }: Props) {
+ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPermission }: Props) {
   const isAnulada = item.anulada === 1;
   const isRevisado = item.revisado === '1';
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
-
-  //Role and permission of user 
-  const { role } = useAuthStore();
-  const hasPermission = role === 'admin' || role === 'gerenteVenta'
+  const formattedDate = useMemo(() => formatDatedd_dot_MMM_yyyy(item.fec_emis.date), [item.fec_emis.date]);
 
 
   const handlePressChangeStatus = async () => {
@@ -78,7 +75,7 @@ export default function OrderApprovalCard({ item, onPress, changeRevisado, detai
           <View className="flex-row items-center gap-2">
             {/* <Ionicons name="calendar-outline" size={14} color="gray" /> */}
             <Text className="text-sm text-gray-500 dark:text-gray-400">
-              {formatDatedd_dot_MMM_yyyy(item.fec_emis.date)}
+              {formattedDate}
             </Text>
           </View>
 
@@ -165,3 +162,4 @@ export default function OrderApprovalCard({ item, onPress, changeRevisado, detai
     </Animated.View>
   );
 }
+export default React.memo(OrderApprovalCard);

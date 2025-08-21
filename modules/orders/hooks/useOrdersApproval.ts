@@ -27,9 +27,8 @@ export function useOrderApproval(searchText: string) {
   const [sortDate, setSortDate] = useState(false);
   const [sortMount, setSortMount] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [mount, setMount] = useState<number>(0);
-  const [mountEnd, setMountEnd] = useState<number>(0);
-
+  const [mountRange, setMountRange] = useState<{ min: number | null; max: number | null }>({ min: null, max: null });
+  const [mountRangeActive, setMountRangeActive] = useState(false);
   const [filters, setFilters] = useState<OrderFilters>({
     // startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 dais
     // endDate: new Date(), // hoy
@@ -160,15 +159,8 @@ export function useOrderApproval(searchText: string) {
     }
 
 
-    // TODO: By range Monto
-    if (mount) {
-      filtered = filtered.filter(order => {
-        const monto = typeof order.tot_neto === "string"
-          ? parseFloat(order.tot_neto)
-          : order.tot_neto || 0;
-        return monto > 1000;
-      });
-    }
+
+
 
     // Order by date
     if (sortDate) {
@@ -187,13 +179,24 @@ export function useOrderApproval(searchText: string) {
         return montoB - montoA; // most hight amount first
       });
     }
-
-    if (mount >= 0 && mountEnd !== 0 && mountEnd > mount) {
+    // By range Monto
+    if (mountRange.min !== null || mountRange.max !== null) {
       filtered = filtered.filter((order) => {
         const monto = parseFloat(order.tot_neto as string) || 0;
-        return monto >= mount && monto <= mountEnd;
+
+        const minOk =
+          mountRange.min !== null ? monto >= mountRange.min : true;
+
+        const maxOk =
+          mountRange.max !== null ? monto <= mountRange.max : true;
+
+       
+
+        return minOk && maxOk;
       });
     }
+
+
 
     const totalUSD = filtered
       .filter((order) => order.anulada !== 1)
@@ -209,7 +212,15 @@ export function useOrderApproval(searchText: string) {
       totalOrders: filtered.length,
       totalUSD,
     };
-  }, [ordersAproval, searchText, filters, sortDate, sortMount, showStatus, setMount]);
+  }, [ordersAproval, searchText, filters, sortDate, sortMount, showStatus, mountRange]);
+
+  useEffect(() => {
+    if (mountRange.min !== null || mountRange.max !== null) {
+      setMountRangeActive(true);
+    } else {
+      setMountRangeActive(false);
+    }
+  }, [mountRange]);
 
   // just use locally with JSON
   useEffect(() => {
@@ -282,6 +293,19 @@ export function useOrderApproval(searchText: string) {
     (value) => value !== undefined && value !== ""
   ).length ?? 0;
 
+  // monto max in the list
+  const maxMonto = filteredOrders.length > 0
+    ? Math.max(
+      ...filteredOrders
+        .filter((order) => order.anulada !== 1)
+        .map((order) =>
+          typeof order.tot_neto === "string"
+            ? parseFloat(order.tot_neto)
+            : order.tot_neto || 0
+        )
+    )
+    : 0;
+
 
   return {
     filteredOrders,
@@ -314,8 +338,9 @@ export function useOrderApproval(searchText: string) {
     setSortDate,
     sortMount, setSortMount,
     showStatus, setShowStatus,
-    mount,
-    setMount
+    mountRange, setMountRange
+    , mountRangeActive
+    , maxMonto
 
   };
 }

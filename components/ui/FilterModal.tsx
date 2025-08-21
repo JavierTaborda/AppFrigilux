@@ -28,13 +28,15 @@ export default function FilterModal({ visible, onClose, onApply, onClean, childr
                 <Animated.View
                     entering={FadeInUp}
                     exiting={FadeOutDown}
-                    className="bg-background dark:bg-dark-background rounded-t-3xl p-5 max-h-[85%]"
+                    className="bg-background dark:bg-dark-background rounded-t-3xl p-1"
                     style={{
-                        paddingBottom: insets.bottom,
+                        paddingBottom: insets.bottom, minHeight: '50%',
+                        maxHeight: '85%',
                     }}
                 >
+
                     {/* Header */}
-                    <View className="flex-row justify-between items-center mb-4">
+                    <View className="flex-row justify-between items-center mb-1 px-4 py-1">
                         <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
                             {title}
                         </Text>
@@ -48,7 +50,7 @@ export default function FilterModal({ visible, onClose, onApply, onClean, childr
 
 
                     {/* Buttons */}
-                    <View className="flex-row gap-3 mt-3 pb-1">
+                    <View className="flex-row gap-3 mt-1 pb-1">
                         <TouchableOpacity
                             className="flex-1 p-3 rounded-xl border border-muted"
                             onPress={() => {

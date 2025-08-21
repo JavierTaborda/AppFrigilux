@@ -11,7 +11,8 @@ interface Props {
   sortMount: boolean;
   setSortMount: (value: boolean) => void;
   openModalMount: boolean;
-  setModalMount: (value: boolean) => void;
+  setModalMountVisible: (value: boolean) => void;
+  mountRangeActive:boolean;
   
 }
 
@@ -23,14 +24,12 @@ export default function FastFilters({
   sortMount,
   setSortMount,
   openModalMount,
-  setModalMount,
+  setModalMountVisible,
+  mountRangeActive
 }: Props) {
   const { isDark } = useThemeStore();
   const iconColor = isDark ? 'grey' : 'grey';
 
-  const OpenMountModal = (value:boolean) => {
-    setModalMount(value);
-  };
 
   const renderButton = (
     label: string,
@@ -44,7 +43,7 @@ export default function FastFilters({
       activeOpacity={0.7}
       accessibilityRole="button"
       accessibilityLabel={`Filtrar por ${label}`}
-      className={`flex-row items-center px-4 py-2.5 rounded-full ${
+      className={`flex-row items-center px-3 py-3  rounded-full ${
         active ? 'bg-primary dark:bg-dark-primary' : 'bg-componentbg dark:bg-dark-componentbg'
       }`}
     >
@@ -57,19 +56,19 @@ export default function FastFilters({
       </Text>
       <Ionicons
         name={icon}
-        size={rotateIcon ? 20 : 16}
+        size={rotateIcon ? 18 : 14}
         color={active ? 'white' : iconColor}
-        style={{ marginLeft: 6 }}
+        style={{ marginLeft: 3 }}
       />
     </TouchableOpacity>
   );
 
   return (
-    <View className="flex-row gap-2">
+    <View className="flex-row gap-1">
       {renderButton('Por Revisar', showStatus, showStatus ? 'eye' : 'eye-off', () => setShowStatus(!showStatus))}
       {renderButton('Fecha', sortDate, sortDate ? 'arrow-down' : 'arrow-up', () => setSortDate(!sortDate))}
       {renderButton('Monto', sortMount, sortMount ? 'arrow-down' : 'arrow-up', () => setSortMount(!sortMount))}
-      {renderButton('Filtrar Monto', openModalMount, 'chevron-down', ()=>(OpenMountModal(!openModalMount)))}
+      {renderButton('Rango Monto', mountRangeActive ,mountRangeActive ? 'cash-sharp':'cash-outline', ()=>(setModalMountVisible(!openModalMount)))}
     </View>
   );
 }

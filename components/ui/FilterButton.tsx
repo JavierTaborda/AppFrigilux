@@ -11,7 +11,7 @@ export default function FilterButton({ onPress, filterCount }: FilterButtonProps
   const { theme } = useThemeStore();
   return (
     <TouchableOpacity
-      className={`mx-0 px-6 py-2.5 rounded-full
+      className={`mx-0 px-5 py-2.5 rounded-full
        bg-componentbg dark:bg-dark-componentbg `}
       onPress={onPress}
     >

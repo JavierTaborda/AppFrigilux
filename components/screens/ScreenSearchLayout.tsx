@@ -83,7 +83,7 @@ export default function ScreenSearchLayout({
       <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl px-3 pt-2 shadow-lg ">
 
         {/* Search & Filter row */}
-        <View className="flex-row items-center gap-2 pb-2">
+        <View className="flex-row items-center gap-0 pb-2 bg-pin">
           <View className={extrafilter ? "flex-1" : "w-4/5"}>
             <SearchBar
               searchText={searchText}
@@ -93,7 +93,7 @@ export default function ScreenSearchLayout({
             />
           </View>
           {!extrafilter && (
-            <View className="w-1/5 items-center">
+            <View className="w-1/5 items-end">
               <FilterButton onPress={onFilterPress} filterCount={filterCount} />
             </View>
           )}
@@ -107,7 +107,7 @@ export default function ScreenSearchLayout({
                 horizontal
                 showsHorizontalScrollIndicator={false}
 
-                contentContainerClassName="gap-3"
+                contentContainerClassName="gap-1"
               >
                 <View className="justify-center items-start">
                   <FilterButton onPress={onFilterPress} filterCount={filterCount} />

@@ -129,13 +129,14 @@ export default function TabLayout() {
             : appColors.background,
       })}
     >
-      <Tabs.Screen
-        name="(profile)/index"
-        options={{ title: 'Perfil' }}
-      />
+   
       <Tabs.Screen
         name="(home)/index"
         options={{ title: 'Inicio' }}
+      />  
+       <Tabs.Screen
+        name="(profile)/index"
+        options={{ title: 'Perfil' }}
       />
       <Tabs.Screen
         name="(settings)/index"
