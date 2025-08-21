@@ -1,13 +1,9 @@
 import FilterModal from "@/components/ui/FilterModal";
+import { useThemeStore } from "@/stores/useThemeStore";
+import { appColors } from "@/utils/colors";
+import Slider from "@react-native-community/slider";
 import { useEffect, useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  TextInput,
-  View
-} from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 interface Props {
   visible: boolean;
@@ -22,31 +18,28 @@ export default function MountRangeModal({
   visible,
   onClose,
   onApply,
-  initialMin = null,
+  initialMin = 0,
   initialMax = null,
-  maxMonto = null,
+  maxMonto = 1000,
 }: Props) {
-  const [min, setMin] = useState(initialMin ? initialMin.toString() : "");
-  const [max, setMax] = useState(initialMax ? initialMax.toString() : "");
+  const { isDark } = useThemeStore();
+  const [min, setMin] = useState(initialMin || 0);
+  const [max, setMax] = useState(initialMax || maxMonto || 1000);
 
   useEffect(() => {
-    setMin(initialMin ? initialMin.toString() : "");
-    setMax(initialMax ? initialMax.toString() : "");
+    setMin(initialMin || 0);
+    setMax(initialMax || maxMonto || 1000);
   }, [initialMin, initialMax, visible]);
 
-  const minValue = min ? Number(min) : null;
-  const maxValue = max ? Number(max) : null;
-  const isInvalidRange = minValue !== null && maxValue !== null && minValue > maxValue;
-
   const handleApply = () => {
-    if (isInvalidRange) return alert("Rango inválido");
-    onApply(minValue, maxValue);
+    if (min > max) return alert("Rango inválido");
+    onApply(min, max);
     onClose();
   };
 
   const handleClear = () => {
-    setMin("");
-    setMax("");
+    setMin(0);
+    setMax(maxMonto || 1000);
     onApply(null, null);
     onClose();
   };
@@ -62,55 +55,33 @@ export default function MountRangeModal({
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
-        keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
       >
-        <ScrollView
-          bounces={false}
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start' }}
-          keyboardShouldPersistTaps="handled"
-          className="px-4 py-1"
-        >
-          <View className="flex-row gap-4 mb-6">
-            <View className="flex-1">
-              <Text className="mb-1 text-sm">Mínimo</Text>
-              <TextInput
-                testID="min-input"
-                accessibilityLabel="Monto mínimo"
-                accessibilityHint="Ingresa el monto mínimo para filtrar"
-                keyboardType="numeric"
-                value={min}
-                onChangeText={setMin}
-                placeholder="0"
-                className={`border rounded px-3 py-2 ${
-                  isInvalidRange ? "border-red-500" : "border-gray-300 dark:border-dark-mutedForeground"
-                }`}
-              />
-            </View>
-            <View className="flex-1">
-              <Text className="mb-1 text-sm">Máximo</Text>
-              <TextInput
-                testID="max-input"
-                accessibilityLabel="Monto máximo"
-                accessibilityHint="Ingresa el monto máximo para filtrar"
-                keyboardType="numeric"
-                value={max}
-                onChangeText={setMax}
-                placeholder={maxMonto ? maxMonto.toString() : "∞"}
-                className={`border rounded px-3 py-2 ${
-                  isInvalidRange ? "border-red-500" : "border-gray-300 dark:border-dark-mutedForeground"
-                }`}
-              />
-            </View>
-          </View>
+        <View className="px-4 py-2">
+          <Text className="mb-2">Monto mínimo: {min}</Text>
+          <Slider
+            minimumValue={0}
+            maximumValue={maxMonto || 1000}
+            step={1}
+            value={min}
+            onValueChange={setMin}
+            minimumTrackTintColor={isDark ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT}
+            maximumTrackTintColor={isDark ? appColors.dark.placeholdercolor : appColors.componentbg}
 
-          {isInvalidRange && (
-            <Text className="text-red-500 text-xs mb-4">
-              El mínimo no puede ser mayor que el máximo
-            </Text>
-          )}
+            thumbTintColor={isDark ? appColors.dark.error : appColors.componentbg}
+          />
 
-          <View className="h-10" />
-        </ScrollView>
+          <Text className="mb-2 mt-6">Monto máximo: {max}</Text>
+          <Slider
+            minimumValue={0}
+            maximumValue={maxMonto || 1000}
+            step={1}
+            value={max}
+            onValueChange={setMax}
+            minimumTrackTintColor="#2563eb"
+            maximumTrackTintColor="#d1d5db"
+            thumbTintColor='red'
+          />
+        </View>
       </KeyboardAvoidingView>
     </FilterModal>
   );

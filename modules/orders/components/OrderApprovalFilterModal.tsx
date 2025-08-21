@@ -57,7 +57,7 @@ export default function OrderApprovalFilterModal({
       <ScrollView
         showsVerticalScrollIndicator={true}
 
-        className="bg-background dark:bg-dark-background"
+        className="bg-background dark:bg-dark-background px-4"
 
       >
         <View className="gap-2">

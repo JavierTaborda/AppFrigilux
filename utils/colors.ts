@@ -57,6 +57,7 @@ export const appColors = {
     mutedForeground: "rgb(156, 163, 175)",
     overlay: "rgba(0,0,0,0.6)",
     componentbg:"rgb(40,40,44)",
+     placeholdercolor:"#9CA3AF",
     separator:"rgba(255,255,255, 0.1)",
   }
 }
