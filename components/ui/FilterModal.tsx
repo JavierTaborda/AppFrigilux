@@ -30,7 +30,7 @@ export default function FilterModal({ visible, onClose, onApply, onClean, childr
                     exiting={FadeOutDown}
                     className="bg-background dark:bg-dark-background rounded-t-3xl p-1"
                     style={{
-                        paddingBottom: insets.bottom, minHeight: '50%',
+                        paddingBottom: insets.bottom, minHeight: '40%',
                         maxHeight: '85%',
                     }}
                 >
@@ -54,7 +54,6 @@ export default function FilterModal({ visible, onClose, onApply, onClean, childr
                         <TouchableOpacity
                             className="flex-1 p-3 rounded-xl border border-muted"
                             onPress={() => {
-
                                 onClean();
                             }}
                         >
@@ -67,8 +66,7 @@ export default function FilterModal({ visible, onClose, onApply, onClean, childr
                             className="flex-1 p-3 rounded-xl bg-primary dark:bg-dark-primary"
                             hitSlop={10}
                             onPress={() => {
-                                onApply();
-                                onClose();
+                                onApply(); 
                             }}
                         >
                             <Text className="text-center text-white font-semibold">

@@ -1,8 +1,9 @@
 import FilterModal from "@/components/ui/FilterModal";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
+import { currencyDollar } from "@/utils/moneyFormat";
 import Slider from "@react-native-community/slider";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 interface Props {
@@ -20,26 +21,60 @@ export default function MountRangeModal({
   onApply,
   initialMin = 0,
   initialMax = null,
-  maxMonto = 1000,
+  maxMonto = 30000,
 }: Props) {
   const { isDark } = useThemeStore();
-  const [min, setMin] = useState(initialMin || 0);
-  const [max, setMax] = useState(initialMax || maxMonto || 1000);
+  const safeMaxMonto = maxMonto ?? 30000;
+
+  // Final state , in final slide
+  const [min, setMin] = useState(initialMin ?? 0);
+  const [max, setMax] = useState(initialMax ?? safeMaxMonto);
+
+  // Show preview
+  const [dragMin, setDragMin] = useState(min);
+  const [dragMax, setDragMax] = useState(max);
+
+  // refs without  re-renders
+  const minRef = useRef(min);
+  const maxRef = useRef(max);
 
   useEffect(() => {
-    setMin(initialMin || 0);
-    setMax(initialMax || maxMonto || 1000);
+    const newMin = initialMin ?? 0;
+    const newMax = initialMax ?? safeMaxMonto;
+    setMin(newMin);
+    setMax(newMax);
+    setDragMin(newMin);
+    setDragMax(newMax);
+    minRef.current = newMin;
+    maxRef.current = newMax;
   }, [initialMin, initialMax, visible]);
 
+  const sliderColors = useMemo(
+    () => ({
+      minTrack: isDark
+        ? appColors.dark.primary.DEFAULT
+        : appColors.primary.DEFAULT,
+      maxTrack: isDark
+        ? appColors.dark.placeholdercolor
+        : appColors.placeholdercolor,
+      thumb: isDark ? appColors.dark.mutedForeground : appColors.componentbg,
+    }),
+    [isDark]
+  );
+
   const handleApply = () => {
-    if (min > max) return alert("Rango inválido");
-    onApply(min, max);
-    onClose();
+    if (min > max) { return alert("Rango inválido, verifique que el monto mínimo sea menor."); }
+    else {
+      onApply(min, max);
+      onClose();
+    }
   };
 
   const handleClear = () => {
     setMin(0);
-    setMax(maxMonto || 1000);
+    setMax(safeMaxMonto);
+    setDragMin(0);
+    setDragMax(safeMaxMonto);
     onApply(null, null);
     onClose();
   };
@@ -53,33 +88,50 @@ export default function MountRangeModal({
       title="Rango de Montos a Filtrar"
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
       >
         <View className="px-4 py-2">
-          <Text className="mb-2">Monto mínimo: {min}</Text>
+          {/* min */}
+          <Text className="mb-2 text-foreground dark:text-dark-foreground font-medium">
+            Monto mínimo: {dragMin} {currencyDollar}
+          </Text>
           <Slider
             minimumValue={0}
-            maximumValue={maxMonto || 1000}
-            step={1}
+            maximumValue={safeMaxMonto}
+            step={50}
             value={min}
-            onValueChange={setMin}
-            minimumTrackTintColor={isDark ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT}
-            maximumTrackTintColor={isDark ? appColors.dark.placeholdercolor : appColors.componentbg}
-
-            thumbTintColor={isDark ? appColors.dark.error : appColors.componentbg}
+            onValueChange={(val) => {
+              minRef.current = val;
+              setDragMin(val); // preview
+            }}
+            onSlidingComplete={(val) => {
+              setMin(val); // save to end drag
+            }}
+            minimumTrackTintColor={sliderColors.minTrack}
+            maximumTrackTintColor={sliderColors.maxTrack}
+            thumbTintColor={sliderColors.thumb}
           />
 
-          <Text className="mb-2 mt-6">Monto máximo: {max}</Text>
+          {/* Nax */}
+          <Text className="mb-2 mt-6 text-foreground dark:text-dark-foreground font-medium">
+            Monto máximo: {dragMax} {currencyDollar}
+          </Text>
           <Slider
             minimumValue={0}
-            maximumValue={maxMonto || 1000}
-            step={1}
+            maximumValue={safeMaxMonto}
+            step={50}
             value={max}
-            onValueChange={setMax}
-            minimumTrackTintColor="#2563eb"
-            maximumTrackTintColor="#d1d5db"
-            thumbTintColor='red'
+            onValueChange={(val) => {
+              maxRef.current = val;
+              setDragMax(val); 
+            }}
+            onSlidingComplete={(val) => {
+              setMax(val); 
+            }}
+            minimumTrackTintColor={sliderColors.minTrack}
+            maximumTrackTintColor={sliderColors.maxTrack}
+            thumbTintColor={sliderColors.thumb}
           />
         </View>
       </KeyboardAvoidingView>

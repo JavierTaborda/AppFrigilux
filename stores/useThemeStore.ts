@@ -21,18 +21,18 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
   theme: "light",
   isDark: false,
 
-  getisDark() {
-    return get().theme === "dark";
-  },
-
   setTheme: (theme) => {
     colorScheme.set(theme);
-    set({ theme });
+    set({
+      theme,
+      isDark: theme === "dark"
+    });
   },
 
   toggleTheme: () => {
     const next = get().theme === "dark" ? "light" : "dark";
     get().setTheme(next);
+
     AsyncStorage.setItem(STORAGE_KEY, next);
   },
 
@@ -40,6 +40,7 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     const stored = await AsyncStorage.getItem(STORAGE_KEY);
     const systemTheme = Appearance.getColorScheme() || "light";
     get().setTheme((stored as Theme) ?? systemTheme);
+
   },
 
 }))
