@@ -1,12 +1,10 @@
 import ScreenSearchLayout from '@/components/screens/ScreenSearchLayout';
+import CustomFlatList from '@/components/ui/CustomFlatList';
 import Loader from '@/components/ui/Loader';
-import { useScrollHeader } from '@/hooks/useScrollHeader';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { appColors } from '@/utils/colors';
 import { totalVenezuela } from '@/utils/moneyFormat';
-import { Ionicons } from '@expo/vector-icons';
-import { useCallback, useRef, useState } from 'react';
-import { Alert, FlatList, Platform, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { Text, View } from 'react-native';
 import FastFilters from '../components/FastFilters';
 import OrderApprovalCard from '../components/OrderApprovalCard';
 import OrderApprovalFilterModal from '../components/OrderApprovalFilterModal';
@@ -17,20 +15,13 @@ import { useOrderApproval } from '../hooks/useOrdersApproval';
 import { OrderApproval } from '../types/OrderApproval';
 import { OrderFilters } from '../types/OrderFilters';
 export default function OrderApprovalScreen() {
+
     const { role } = useAuthStore();
     const [searchText, setSearchText] = useState('')
     const [filterVisible, setFilterVisible] = useState(false);
     const [modalMountVisible, setModalMountVisible] = useState(false);
-    const flatListRef = useRef<FlatList>(null);
-
     const hasPermission = role === 'admin' || role === 'gerenteVenta'
-
-    //Hide the search bar and filters
-    const {
-        handleScroll,
-        headerVisible,
-        showScrollTop,
-    } = useScrollHeader();
+    const [headerVisible, setHeaderVisible] = useState(true);//// Only if use extrafilter={true} on ScreenSearchLayout
 
 
     const {
@@ -73,14 +64,6 @@ export default function OrderApprovalScreen() {
 
     } = useOrderApproval(searchText);
 
-    const onCooldownPress = () => {
-        const msg = `Espera ${cooldown} segundos antes de refrescar nuevamente`
-        if (Platform.OS === 'android') {
-            ToastAndroid.show(msg, ToastAndroid.SHORT)
-        } else {
-            Alert.alert('Aviso', msg)
-        }
-    }
 
     const handleApplyFilters = (newFilters: OrderFilters) => {
         setFilters(newFilters);
@@ -89,7 +72,6 @@ export default function OrderApprovalScreen() {
     const handleApplyMountRange = (min: number | null, max: number | null) => {
         setMountRange({ min, max });
     };
-
 
     const renderOrderItem = useCallback(
         ({ item }: { item: OrderApproval }) => (
@@ -135,68 +117,19 @@ export default function OrderApprovalScreen() {
                 }
 
             >
-
-
-                {!canRefresh && cooldown > 0 && (
-                    <TouchableOpacity
-                        onPress={onCooldownPress}
-                        activeOpacity={0.8}
-                        className="absolute  bg-black/60 px-3 py-0.5 rounded-full z-10 top-0 right-4"
-                    >
-                        <Text className="text-white text-xs">
-                            Espera {cooldown}s para refrescar
-                        </Text>
-                    </TouchableOpacity>
-                )}
-
-                {showScrollTop && (
-                    <TouchableOpacity
-                        onPress={() => flatListRef.current?.scrollToOffset({ offset: 0, animated: true })}
-                        className="absolute   bg-primary dark:bg-dark-primary p-4 rounded-full right-4 bottom-28 z-20 shadow-lg"
-                    >
-                        <Ionicons name="arrow-up" size={24} color="white" />
-                    </TouchableOpacity>
-                )}
-
-                <FlatList
-                    ref={flatListRef}
+                <CustomFlatList
                     data={orders}
-                    keyExtractor={(item, index) => `${item.fact_num}-${index}`}
                     renderItem={renderOrderItem}
-                    initialNumToRender={10}
-                    maxToRenderPerBatch={10}
-                    windowSize={5}
-                    contentContainerStyle={{ paddingBottom: 145 }}
-                    onScroll={handleScroll}
-                    scrollEventThrottle={16}
-                    progressViewOffset={100}
-                  
-                    refreshControl={
-                        canRefresh ? (
-                            <RefreshControl
-                                refreshing={refreshing}
-                                onRefresh={handleRefresh}
-                                {...(Platform.OS === 'android' && {
-                                    enabled: canRefresh,
-                                    progressViewOffset: 100,
-                                    colors: [
-                                        appColors.primary.DEFAULT,
-                                        appColors.primary.light,
-                                        appColors.secondary.DEFAULT,
-                                    ],
-                                })}
-                                tintColor={appColors.primary.DEFAULT}
-                                title='Recargando Pedidos...'
-                                titleColor={appColors.primary.DEFAULT}
-                            />
-                        ) : undefined
-                    }
-              
+                    keyExtractor={(item, index) => `${item.fact_num}-${index}`}
+                    refreshing={refreshing}
+                    canRefresh={canRefresh}
+                    handleRefresh={handleRefresh}
+                    cooldown={cooldown}
+                    onHeaderVisibleChange={setHeaderVisible}// Only if use extrafilter={true} on ScreenSearchLayout
+
                     ListEmptyComponent={
-                        <View className="flex-1 items-center justify-center py-10">
-                            <Text className="text-mutedForeground dark:text-dark-mutedForeground text-center">
-                                No se encontraron pedidos...
-                            </Text>
+                        <View className="p-10 items-center">
+                            <Text>No se encontraron pedidos...</Text>
                         </View>
                     }
                 />

@@ -55,7 +55,7 @@ export default function MountRangeModal({
         ? appColors.dark.primary.DEFAULT
         : appColors.primary.DEFAULT,
       maxTrack: isDark
-        ? appColors.dark.placeholdercolor
+        ? appColors.dark.componentbg
         : appColors.placeholdercolor,
       thumb: isDark ? appColors.dark.mutedForeground : appColors.componentbg,
     }),
