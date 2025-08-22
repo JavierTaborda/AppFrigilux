@@ -91,8 +91,8 @@ interface Props {
             </Text>
           </View>
 
-          <View className="flex-row items-center gap-2">
-            {/* <Text className="text-sm text-gray-500 dark:text-gray-400">Total</Text> */}
+          <View className="flex-row items-center justify-normal gap-2">
+            <Text className="text-sm pt-1 text-gray-500 dark:text-gray-400">Total</Text>
             {/* <Ionicons name="cash-outline" size={14} color="gray" /> */}
             <Text
               className={`text-xl font-bold ${isAnulada
@@ -123,7 +123,7 @@ interface Props {
             style={{ minWidth: 100 }}
           >
             {/* <Ionicons name="list" size={16} color="#fff" /> */}
-            <Text className="text-sm font-semibold text-white ml-1">Ver Detalles</Text>
+            <Text className="text-sm font-semibold text-white ml-1">Ver detalles</Text>
           </TouchableOpacity>
 
           {!isAnulada && (
@@ -151,7 +151,7 @@ interface Props {
                       : 'text-yellow-700 dark:text-yellow-300'
                       }`}
                   >
-                    {isRevisado ? 'Revisado' : 'Por Revisar'}
+                    {isRevisado ? 'Revisado' : 'Por revisar'}
                   </Text>
                 </>
               )}

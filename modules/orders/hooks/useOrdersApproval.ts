@@ -29,10 +29,7 @@ export function useOrderApproval(searchText: string) {
   const [showStatus, setShowStatus] = useState(false);
   const [mountRange, setMountRange] = useState<{ min: number | null; max: number | null }>({ min: null, max: null });
   const [mountRangeActive, setMountRangeActive] = useState(false);
-  const [filters, setFilters] = useState<OrderFilters>({
-    // startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 dais
-    // endDate: new Date(), // hoy
-  });
+  const [filters, setFilters] = useState<OrderFilters>({});
 
 
   // Referencia para guardar el id del timeout y poder limpiarlo

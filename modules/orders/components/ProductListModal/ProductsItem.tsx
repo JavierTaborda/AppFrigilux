@@ -11,8 +11,8 @@ export default React.memo(function ProductItem({ item, index, currency }: Props)
     const quantity = parseFloat(item.total_art);
     const price = parseFloat(item.prec_vta);
     const discount = item.porc_desc.trim();
-    const total = parseFloat(item.reng_neto) ;
-     // TODO add img to the OrderApprovalProduct type
+    const total = parseFloat(item.reng_neto);
+    // TODO add img to the OrderApprovalProduct type
     const imageUrl = null// item.imageUrl?.trim(); 
 
     return (
@@ -21,7 +21,7 @@ export default React.memo(function ProductItem({ item, index, currency }: Props)
             className="bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700 rounded-2xl p-1 mb-2 shadow-xs shadow-black"
         >
             <Pressable className="flex-row items-center gap-3">
-               <View className="w-2/6 ml-1 aspect-square rounded-xl bg-gray-200 dark:bg-gray-700 overflow-hidden justify-center items-center">
+                <View className="w-2/6 ml-1 aspect-square rounded-xl bg-gray-200 dark:bg-gray-700 overflow-hidden justify-center items-center">
                     {imageUrl ? (
                         <Image
                             source={{ uri: imageUrl }}
@@ -63,10 +63,14 @@ export default React.memo(function ProductItem({ item, index, currency }: Props)
                             </View>
                         )}
                     </View>
-
-                    <Text className="text-xl font-bold text-primary dark:text-dark-primary">
-                        {totalVenezuela(total)} {currency}
-                    </Text>
+                    <View className="flex-row items-center gap-2">
+                        <Text className="text-sm text-gray-600 dark:text-gray-400 text-end">
+                            Total
+                        </Text>
+                        <Text className="text-xl font-bold text-primary dark:text-dark-primary">
+                            {totalVenezuela(total)} {currency}
+                        </Text>
+                    </View>
                 </View>
             </Pressable>
         </Animated.View>

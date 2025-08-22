@@ -14,6 +14,7 @@ type Props = {
   products: OrderApprovalProduct[];
   loading?: boolean;
   error?: boolean;
+  total?: number;
 };
 
 export default function ProductListModal({
@@ -22,6 +23,7 @@ export default function ProductListModal({
   products,
   loading,
   error,
+  total
 }: Props) {
   useEffect(() => {
     if (error) {
@@ -33,10 +35,7 @@ export default function ProductListModal({
     }
   }, [error]);
 
-  const totalFactura = products.reduce(
-    (acc, item) => acc + parseFloat(item.reng_neto) * 1.16,
-    0
-  ).toFixed(2);
+  const totalFactura = total?.toFixed(2);
   const facturaNumero = products[0]?.fact_num ?? "N/A";
 
 
@@ -66,12 +65,12 @@ export default function ProductListModal({
         ) : (
           <>
 
-            <Text className='text-3xl font-black mb-1 text-primary dark:text-dark-foreground'>
+            <Text className='text-2xl font-semibold mb-2 text-foreground dark:text-dark-foreground'>
               Pedido #{facturaNumero}
             </Text>
 
             <Text className="text-sm font-medium text-gray-600 dark:text-gray-400 ">
-              {products.length} {products.length === 1 ? 'artículo' : 'artículos'} en el pedido.
+              {products.length} {products.length === 1 ? 'artículo' : 'artículos'} 
             </Text>
 
 
@@ -87,10 +86,10 @@ export default function ProductListModal({
 
             <View className="absolute bottom-20 left-0 right-0 px-6 py-4 bg-componentbg dark:bg-dark-componentbg flex-row justify-between items-center rounded-t-xl shadow-sm shadow-black/10">
               <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
-                Total Pedido
+                Total 
               </Text>
               <Text className="text-xl font-extrabold text-primary dark:text-dark-primary">
-                {totalVenezuela(totalFactura)} {currencyDollar}
+                {totalVenezuela(totalFactura || 0)} {currencyDollar}
               </Text>
             </View>
 
@@ -100,7 +99,7 @@ export default function ProductListModal({
               className="bg-primary dark:bg-dark-primary rounded-full py-4 px-6  mx-5 flex-row justify-center items-center shadow-sm"
             >
               {/* <Ionicons name="arrow-back-outline" size={20} color="white" /> */}
-              <Text className="text-white font-bold text-lg ml-2">Volver</Text>
+              <Text className="text-white font-bold text-lg ml-2">Cerrar</Text>
             </TouchableOpacity>
           </>
         )}

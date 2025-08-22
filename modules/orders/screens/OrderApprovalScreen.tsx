@@ -92,7 +92,7 @@ export default function OrderApprovalScreen() {
     return (
         <>
             <ScreenSearchLayout
-                title={`${totalOrders} Pedidos`}
+                title={`${totalOrders} pedidos`}
                 subtitle={`Total ${totalVenezuela(totalUSD)} $`}
                 searchText={searchText}
                 setSearchText={setSearchText}
@@ -153,6 +153,7 @@ export default function OrderApprovalScreen() {
                         onClose={() => setModalProductsVisible(false)}
                         products={selectedProducts}
                         loading={loadingProducts}
+                        total={selectedOrder &&  parseFloat(selectedOrder?.tot_neto)}
                     />
                 )
             }
