@@ -17,7 +17,7 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
   initializeApp: async () => {
     try {
 
-      //TODO: Delete this line if the apk crash
+      
       await useAuthStore.getState().initializeAuth();
       const { session, manualLogin, signOutSoft, setManualLogin } = useAuthStore.getState();
 
@@ -41,11 +41,11 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
             biometricSuccess = result === true;
           } catch (err) {
             alert(err)
-            console.log("Biometric authentication failed:", err);
+            //console.log("Biometric authentication failed:", err);
           }
 
           if (!biometricSuccess) {
-            console.log("Autenticación biométrica fallida, cerrando sesión...");
+            //console.log("Autenticación biométrica fallida, cerrando sesión...");
             set({ showSplash: false });
             await signOutSoft();
             return;

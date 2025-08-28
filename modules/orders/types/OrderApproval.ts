@@ -1,4 +1,4 @@
-export interface OrderApproval{
+export type OrderApproval={
   fact_num: number;
   estatus: string;
   comentario: string;
@@ -37,7 +37,7 @@ export interface OrderApproval{
   zon_des: string;
   reng_max: number;
 }
-export interface OrderApprovalProduct {
+export type OrderApprovalProduct ={
 
   fact_num: number;
   reng_num: number;

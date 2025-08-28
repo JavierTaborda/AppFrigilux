@@ -9,7 +9,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import BiometricToggle from '../components/BiometricView';
 
 export default function ProfileScreen() {
-  const { session, role,signOut, signOutSoft } = useAuthStore();
+  const { session, role,token, signOut, signOutSoft } = useAuthStore();
   const [isloading, setIsLoading] = useState<boolean>(false)
 
 
@@ -37,7 +37,7 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView className="flex-1 p-6 bg-background dark:bg-dark-background" alwaysBounceVertical={true} indicatorStyle={'black'}>
-      <View className='items-center gap-4'>
+      <View className='items-center gap-4 pb-60'>
 
 
         {session?.user?.email && (
@@ -56,6 +56,14 @@ export default function ProfileScreen() {
             </Text>
           </View>
         )}
+        {token && (
+          <View className="items-center px-4 py-3 rounded-xl w-[80%]   bg-componentbg dark:bg-dark-componentbg">
+
+            <Text className="text-lg  dark:text-white">
+              TokenSupabase: {token}
+            </Text>
+          </View>
+        )}
 
 
         <BiometricToggle />
@@ -63,7 +71,7 @@ export default function ProfileScreen() {
 
 
         <TouchableOpacity
-          className="flex-row items-center bg-error/10 p-3 rounded-lg border border-error/20"
+          className="flex-row items-center bg-error/10 p-3 rounded-lg border border-error/20 "
           onPress={() => handleSignOut()}
           activeOpacity={0.7}
           disabled={isloading}

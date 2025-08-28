@@ -61,7 +61,10 @@ export function useSignIn() {
     }
 
     setIsLoading(false);
-    if (res?.error) Alert.alert('Error', res.error.message);
+    if (res?.error){ 
+      Alert.alert('Ups... Ocurrió un error.', res.error.message);
+      //console.log(res.error.message)
+    }
     else redirect();
   };
 
