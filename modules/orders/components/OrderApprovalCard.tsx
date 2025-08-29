@@ -19,7 +19,7 @@ interface Props {
   const isAnulada = item.anulada === 1;
   const isRevisado = item.revisado === '1';
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
-  const formattedDate = useMemo(() => formatDatedd_dot_MMM_yyyy(item.fec_emis.date), [item.fec_emis.date]);
+  const formattedDate = useMemo(() => formatDatedd_dot_MMM_yyyy(item.fec_emis), [item.fec_emis]);
 
 
   const handlePressChangeStatus = async () => {
@@ -27,7 +27,7 @@ interface Props {
 
     try {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-      await changeRevisado(item.fact_num, isRevisado ? '0' : '1');
+      await changeRevisado(item.fact_num, isRevisado ? ' ' : '1');
     } catch (error) {
       Alert.alert('Error', 'Ocurrió un error al actualizar el estado. Por favor intente de nuevo.');
     } finally {

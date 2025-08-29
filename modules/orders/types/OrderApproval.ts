@@ -3,16 +3,8 @@ export type OrderApproval={
   estatus: string;
   comentario: string;
   saldo: string;
-  fec_emis: {
-    date: string;
-    timezone_type: number;
-    timezone: string;
-  };
-  fec_venc: {
-    date: string;
-    timezone_type: number;
-    timezone: string;
-  };
+  fec_emis:string;
+  fec_venc:  string;
   co_cli: string;
   cli_des: string;
   credito: number;
@@ -36,6 +28,7 @@ export type OrderApproval={
   co_zon: string;
   zon_des: string;
   reng_max: number;
+  reg_ped:OrderApprovalProduct[]
 }
 export type OrderApprovalProduct ={
 
@@ -47,14 +40,14 @@ export type OrderApprovalProduct ={
   alma_des: string;
   total_art: string;
   stotal_art: string;
-  pendiente: string;
+ // pendiente: string;
   uni_venta: string;
-  des_uni: string;
+  //des_uni: string;
   prec_vta: string;
   prec_vta2: string;
   reng_neto: string;
   porc_desc: string;
   tipo_imp: string;
-  compuesto: number;
-  ref: string;
+  //compuesto: number;
+  //ref: string;
 };

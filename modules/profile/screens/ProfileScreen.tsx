@@ -56,14 +56,14 @@ export default function ProfileScreen() {
             </Text>
           </View>
         )}
-        {token && (
+        {/* {token && (
           <View className="items-center px-4 py-3 rounded-xl w-[80%]   bg-componentbg dark:bg-dark-componentbg">
 
             <Text className="text-lg  dark:text-white">
               TokenSupabase: {token}
             </Text>
           </View>
-        )}
+        )} */}
 
 
         <BiometricToggle />

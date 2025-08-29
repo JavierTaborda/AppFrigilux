@@ -3,5 +3,9 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+    
+  }, "editor.formatOnPaste": true,
+    "editor.wordWrap": "on",
+    "material-icon-theme.activeIconPack": "nest"
+
 }

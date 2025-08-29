@@ -152,7 +152,7 @@ export function useOrderApproval(searchText: string) {
     // Filtes Order  
     // by Por Revisar or Revisado
     if (showStatus) {
-      filtered = filtered.filter(order => order.revisado === '0');
+      filtered = filtered.filter(order => order.revisado === ' ');
     }
 
 
@@ -162,8 +162,8 @@ export function useOrderApproval(searchText: string) {
     // Order by date
     if (sortDate) {
       filtered.sort((a, b) => {
-        const dateA = new Date(a.fec_emis.date).getTime();
-        const dateB = new Date(b.fec_emis.date).getTime();
+        const dateA = new Date(a.fec_emis).getTime();
+        const dateB = new Date(b.fec_emis).getTime();
         return dateA - dateB; // most old first
       });
     }
@@ -220,9 +220,9 @@ export function useOrderApproval(searchText: string) {
   }, [mountRange]);
 
   // just use locally with JSON
-  useEffect(() => {
-    setOrders(filteredOrders);
-  }, [filteredOrders]);
+  // useEffect(() => {
+  //   setOrders(filteredOrders);
+  // }, [filteredOrders]);
 
   const handleChangeRevisado = async (fact_num: number, newStatus: string) => {
     // await updateOrderStatus(fact_num, newStatus); // replace local call with backend update

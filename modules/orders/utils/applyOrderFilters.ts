@@ -7,7 +7,7 @@ function parseFecha(fecha: string): Date {
 }
 
 function matchesDate(order: OrderApproval, filters: OrderFilters): boolean {
-    const fechaPedido = parseFecha(order.fec_emis.date);
+    const fechaPedido = parseFecha(order.fec_emis);
     if (filters.startDate && fechaPedido < filters.startDate) return false;
     if (filters.endDate && fechaPedido > filters.endDate) return false;
     return true;

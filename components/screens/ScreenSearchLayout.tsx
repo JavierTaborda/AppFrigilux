@@ -1,5 +1,4 @@
 import FilterButton from '@/components/ui/FilterButton';
-import TitleText from '@/components/ui/TitleText';
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, ScrollView, View } from 'react-native';
 import SearchBar from '../ui/SearchBar';
@@ -77,11 +76,10 @@ export default function ScreenSearchLayout({
 
 
   return (
-    <View className="flex-1 bg-primary dark:bg-dark-primary ">
-      <TitleText title={title} subtitle={subtitle} />
+    <View className="flex-1 pt-1 bg-primary dark:bg-dark-primary ">
+      {/* <TitleText title={title} subtitle={subtitle} /> */}
 
-      <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl px-3 pt-2 shadow-lg ">
-
+      <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl px-3 pt-2 ">
         {/* Search & Filter row */}
         <View className="flex-row items-center gap-0 pb-2 bg-pin">
           <View className={extrafilter ? "flex-1" : "w-4/5"}>
@@ -99,22 +97,22 @@ export default function ScreenSearchLayout({
           )}
         </View>
         <Animated.View style={animatedStyle}>
-
           {/* Extra filters row */}
           {extrafilter && (
-            <View className='flex-row'>
+            <View className="flex-row">
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-
                 contentContainerClassName="gap-1"
               >
                 <View className="justify-center items-start">
-                  <FilterButton onPress={onFilterPress} filterCount={filterCount} />
+                  <FilterButton
+                    onPress={onFilterPress}
+                    filterCount={filterCount}
+                    title={extrafilter}
+                  />
                 </View>
-                <View>
-                  {extraFiltersComponent}
-                </View>
+                <View>{extraFiltersComponent}</View>
               </ScrollView>
             </View>
           )}
@@ -122,7 +120,6 @@ export default function ScreenSearchLayout({
         {/* Content */}
 
         {children}
-
       </View>
     </View>
   );

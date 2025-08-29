@@ -24,20 +24,24 @@ export function formatDateMMM_dot_dd_yyyy(dateString: string): string {
 
   return `${capitalizedMonth}. ${day} - ${year}`;
 }
-export function formatDatedd_dot_MMM_yyyy(dateString: string): string {
+export function formatDatedd_dot_MMM_yyyy(dateString?: string): string {
+  if (!dateString) return ""; 
 
   const date = new Date(dateString);
-  const formatter = new Intl.DateTimeFormat('es-ES', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+  if (isNaN(date.getTime())) return ""; 
+
+  const formatter = new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
 
-  const formatted = formatter.format(date); // ex: "18 jun 2025"
-  const [day, month, year] = formatted.split(' ');
+  const formatted = formatter.format(date); // ej: "18 jun 2025"
+  const [day, month, year] = formatted.split(" ");
+
   const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
 
-  return ` ${day} - ${capitalizedMonth}. ${year}`;
+  return `${day} - ${capitalizedMonth}. ${year}`;
 }
 
 

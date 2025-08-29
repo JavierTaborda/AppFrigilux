@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import TitleText from "./TitleText";
 
 type Props<T> = {
   data: T[];
@@ -24,6 +25,9 @@ type Props<T> = {
   cooldown: number;
   ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
   onHeaderVisibleChange?: (visible: boolean) => void;
+  showtitle:boolean
+  title?:string;
+  subtitle?:string;
 };
 
 export default function CustomFlatList<T>({
@@ -36,6 +40,9 @@ export default function CustomFlatList<T>({
   cooldown,
   ListEmptyComponent,
   onHeaderVisibleChange,
+  showtitle=true,
+  title,
+  subtitle
 }: Props<T>) {
   const flatListRef = useRef<FlatList<T>>(null);
 
@@ -111,6 +118,11 @@ export default function CustomFlatList<T>({
             />
           ) : undefined
         }
+        ListHeaderComponent={
+          
+          showtitle ? <TitleText title={title} subtitle={subtitle} /> : undefined
+        }
+
         ListEmptyComponent={
           ListEmptyComponent ?? (
             <View className="flex-1 items-center justify-center py-10">

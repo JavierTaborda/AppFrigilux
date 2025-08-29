@@ -68,7 +68,7 @@ export default function FastFilters({
       {renderButton('Por revisar', showStatus, showStatus ? 'eye' : 'eye-off', () => setShowStatus(!showStatus))}
       {renderButton('Fecha', sortDate, sortDate ? 'arrow-down' : 'arrow-up', () => setSortDate(!sortDate))}
       {renderButton('Monto', sortMount, sortMount ? 'arrow-down' : 'arrow-up', () => setSortMount(!sortMount))}
-      {renderButton('Rango Monto', mountRangeActive ,mountRangeActive ? 'cash-sharp':'cash-outline', ()=>(setModalMountVisible(!openModalMount)))}
+      {/* {renderButton('Rango Monto', mountRangeActive ,mountRangeActive ? 'cash-sharp':'cash-outline', ()=>(setModalMountVisible(!openModalMount)))} */}
     </View>
   );
 }
