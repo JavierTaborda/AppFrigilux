@@ -1,7 +1,5 @@
 import api from "@/lib/axios";
-import OrderAprovalProduct from "../data/OrderApprovalProduct.json";
-import OrderAproval from "../data/OrdersApproval.json";
-import { statusOptions } from "../types/OrderFilters";
+import { statusOptions, Vendors, Zones } from "../types/OrderFilters";
 
 export const getOrdersToApproval = async () => {
   const response = await api.get("orders/approval");
@@ -34,29 +32,49 @@ export const getPedidosFiltrados = async ({
 };
 
 export const getOrderProducts = async (fact_num: number) => {
-  //const response = await API.get(`/pagos/pendientes/${co_cli}`);
-  // return response.data;
-  return OrderAprovalProduct.filter((item) => item.fact_num === fact_num);
+  const response = await api.get(`/orders/rengpedidos/${fact_num}`);
+   return response.data;
+
 };
 
-export const changeRevisado = async (fact_num: number, revisado: string) => {
-  //const response = await API.put(`/pagos/pendientes/${co_cli}`, { revisado });
-  //return response.data;
-  return { success: true, message: "Revisado actualizado correctamente" };
+export const changeRevisado = async (fact_num: number, status: string) => {
+  try {
+    const response = await api.patch(`/orders/${fact_num}`, {
+      status,
+    });
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    return { success: false, error };
+  }
 };
 
 export const getZones = async () => {
-  const zones = OrderAproval.map((order) => order.zon_des.trim()).filter(
-    (value, index, self) => self.indexOf(value) === index
-  );
-  return ["TODOS", ...zones];
+  const response =  await api.get("/zones");
+  const zones: Zones[] = response.data;
+   const filterZones = zones
+     .map((zon: Zones) =>
+       typeof zon.zon_des === "string" ? zon.zon_des.trim() : ""
+     )
+     .filter((value, index, self) => value && self.indexOf(value) === index);
+  return ["TODOS", ...filterZones];
 };
 
-export const getSellers = async () => {
-  const sellers = OrderAproval.map((order) => order.ven_des.trim()).filter(
-    (value, index, self) => self.indexOf(value) === index
-  );
-  return ["TODOS", ...sellers];
+
+
+export const getVendors = async () => {
+  const response = await api.get("/vendors");
+  const vendors: Vendors[] = response.data;
+
+  const sellerNames = vendors
+    .map((ven: Vendors) =>
+      typeof ven.ven_des === "string" ? ven.ven_des.trim() : ""
+    )
+    .filter((value, index, self) => value && self.indexOf(value) === index);
+
+  return ["TODOS", ...sellerNames];
 };
 
 export const getStatus = async () => {

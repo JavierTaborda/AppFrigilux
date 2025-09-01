@@ -1,7 +1,13 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Platform, ToastAndroid } from "react-native";
-import { getOrderProducts, getOrdersToApproval, getSellers, getStatus, getZones } from "../services/OrderApprovalService";
+import {
+  changeRevisado,
+  getOrdersToApproval,
+  getStatus,
+  getVendors,
+  getZones,
+} from "../services/OrderApprovalService";
 import { OrderApproval, OrderApprovalProduct } from "../types/OrderApproval";
 import { OrderFilters, statusOptions } from "../types/OrderFilters";
 import { applyOrderFilters } from "../utils/applyOrderFilters";
@@ -14,23 +20,24 @@ export function useOrderApproval(searchText: string) {
   const [refreshing, setRefreshing] = useState(false);
   const [canRefresh, setCanRefresh] = useState(true);
   const [cooldown, setCooldown] = useState(0);
-  const [orders, setOrders] = useState<OrderApproval[]>([]);//just use locally with JSON 
+  const [orders, setOrders] = useState<OrderApproval[]>([]); //just use locally with JSON
 
   //filters
   const [zones, setZones] = useState<string[]>([]);
   const [sellers, setSellers] = useState<string[]>([]);
   const [statusList, setStatusList] = useState<statusOptions[]>([]);
 
-
-  //FastFilters in Screen 
+  //FastFilters in Screen
 
   const [sortDate, setSortDate] = useState(false);
   const [sortMount, setSortMount] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [mountRange, setMountRange] = useState<{ min: number | null; max: number | null }>({ min: null, max: null });
+  const [mountRange, setMountRange] = useState<{
+    min: number | null;
+    max: number | null;
+  }>({ min: null, max: null });
   const [mountRangeActive, setMountRangeActive] = useState(false);
   const [filters, setFilters] = useState<OrderFilters>({});
-
 
   // Referencia para guardar el id del timeout y poder limpiarlo
   // Ref to store the timeout id for cleanup
@@ -90,7 +97,6 @@ export function useOrderApproval(searchText: string) {
    */
   const handleRefresh = useCallback(() => {
     if (!canRefresh) {
-
       return;
     }
 
@@ -144,20 +150,15 @@ export function useOrderApproval(searchText: string) {
    * based on search text and current list.
    */
 
-
   const { filteredOrders, totalOrders, totalUSD } = useMemo(() => {
     //Apply filters by backend.
     let filtered = applyOrderFilters(ordersAproval, filters, searchText);
 
-    // Filtes Order  
+    // Filtes Order
     // by Por Revisar or Revisado
     if (showStatus) {
-      filtered = filtered.filter(order => order.revisado === ' ');
+      filtered = filtered.filter((order) => order.revisado === " ");
     }
-
-
-
-
 
     // Order by date
     if (sortDate) {
@@ -171,8 +172,14 @@ export function useOrderApproval(searchText: string) {
     // order by mount
     if (sortMount) {
       filtered.sort((a, b) => {
-        const montoA = typeof a.tot_neto === "string" ? parseFloat(a.tot_neto) : a.tot_neto || 0;
-        const montoB = typeof b.tot_neto === "string" ? parseFloat(b.tot_neto) : b.tot_neto || 0;
+        const montoA =
+          typeof a.tot_neto === "string"
+            ? parseFloat(a.tot_neto)
+            : a.tot_neto || 0;
+        const montoB =
+          typeof b.tot_neto === "string"
+            ? parseFloat(b.tot_neto)
+            : b.tot_neto || 0;
         return montoB - montoA; // most hight amount first
       });
     }
@@ -181,26 +188,21 @@ export function useOrderApproval(searchText: string) {
       filtered = filtered.filter((order) => {
         const monto = parseFloat(order.tot_neto as string) || 0;
 
-        const minOk =
-          mountRange.min !== null ? monto >= mountRange.min : true;
+        const minOk = mountRange.min !== null ? monto >= mountRange.min : true;
 
-        const maxOk =
-          mountRange.max !== null ? monto <= mountRange.max : true;
-
-       
+        const maxOk = mountRange.max !== null ? monto <= mountRange.max : true;
 
         return minOk && maxOk;
       });
     }
 
-
-
     const totalUSD = filtered
       .filter((order) => order.anulada !== 1)
       .reduce((acc, order) => {
-        const monto = typeof order.tot_neto === "string"
-          ? parseFloat(order.tot_neto)
-          : order.tot_neto || 0;
+        const monto =
+          typeof order.tot_neto === "string"
+            ? parseFloat(order.tot_neto)
+            : order.tot_neto || 0;
         return acc + monto;
       }, 0);
 
@@ -209,7 +211,15 @@ export function useOrderApproval(searchText: string) {
       totalOrders: filtered.length,
       totalUSD,
     };
-  }, [ordersAproval, searchText, filters, sortDate, sortMount, showStatus, mountRange]);
+  }, [
+    ordersAproval,
+    searchText,
+    filters,
+    sortDate,
+    sortMount,
+    showStatus,
+    mountRange,
+  ]);
 
   useEffect(() => {
     if (mountRange.min !== null || mountRange.max !== null) {
@@ -225,48 +235,71 @@ export function useOrderApproval(searchText: string) {
   // }, [filteredOrders]);
 
   const handleChangeRevisado = async (fact_num: number, newStatus: string) => {
-    // await updateOrderStatus(fact_num, newStatus); // replace local call with backend update
-    setOrders(prev =>
-      prev.map(order =>
-        order.fact_num === fact_num
-          ? { ...order, revisado: newStatus }
-          : order
-      )
-    );
+    try {
+      if (newStatus !== "1" && newStatus !== " ") {
+        throw new Error(
+          'Estado inválido. Usa "1" para Revisado o " " para Por Revisar.'
+        );
+      }
 
-    const msg =
-      newStatus === '1'
-        ? `Pedido ${fact_num} marcado como Revisado`
-        : `Pedido ${fact_num} marcado como Por Revisar`;
+      const response = await changeRevisado(fact_num, newStatus);
+      let msg: string;
+      if (response.success) {
+        setOrdersAproval((prev) =>
+          prev.map((order) =>
+            order.fact_num === fact_num
+              ? { ...order, revisado: newStatus }
+              : order
+          )
+        );
 
-    if (Platform.OS === 'android') {
-      ToastAndroid.show(msg, ToastAndroid.SHORT);
-    } else {
-      Alert.alert('Estado actualizado', msg);
+        msg =
+          newStatus === "1"
+            ? `Pedido ${fact_num} marcado como Revisado`
+            : `Pedido ${fact_num} marcado como Por Revisar`;
+        if (Platform.OS === "android") {
+          ToastAndroid.show(msg, ToastAndroid.SHORT);
+        } else {
+          Alert.alert("Estado actualizado", msg);
+        }
+      }
+    } catch (error) {
+      const errorMsg = `Error al actualizar el pedido ${fact_num}: ${error}`;
+      if (Platform.OS === "android") {
+        ToastAndroid.show(errorMsg, ToastAndroid.LONG);
+      } else {
+        Alert.alert("Error", errorMsg);
+      }
     }
   };
 
   //Modals and data
   const [selectedOrder, setSelectedOrder] = useState<OrderApproval>();
   const [modalInfoVisible, setModalInfoVisible] = useState(false);
-  const [modalProductsVisible, setModalProductsVisible] = useState(false)
-  const [selectedProducts, setSelectedProducts] = useState<OrderApprovalProduct[]>([]);
+  const [modalProductsVisible, setModalProductsVisible] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState<
+    OrderApprovalProduct[]
+  >([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
 
   const handleOpenInfoModal = (order: OrderApproval) => {
+    console.log(order);
     setSelectedOrder(order);
     setModalInfoVisible(true);
   };
   const handleOpenProductsModal = async (item: OrderApproval) => {
     try {
-
       setSelectedOrder(item);
       setLoadingProducts(true);
-      const products = await getOrderProducts(item.fact_num);
-      setSelectedProducts(products);
+      //const products = await getOrderProducts(item.fact_num);
+      //setSelectedProducts(products);
+      setSelectedProducts(item.reng_ped);
       setModalProductsVisible(true);
     } catch (error) {
-      Alert.alert('Error', 'No se pudieron cargar los productos del pedido' + error);
+      Alert.alert(
+        "Error",
+        "No se pudieron cargar los productos del pedido" + error
+      );
     } finally {
       setLoadingProducts(false);
     }
@@ -275,7 +308,7 @@ export function useOrderApproval(searchText: string) {
     try {
       const [zonesData, sellersData, statusData] = await Promise.all([
         getZones(),
-        getSellers(),
+        getVendors(),
         getStatus(),
       ]);
       setZones(zonesData);
@@ -286,23 +319,24 @@ export function useOrderApproval(searchText: string) {
     }
   }, []);
 
-  const activeFiltersCount = Object.values(filters).filter(
-    (value) => value !== undefined && value !== ""
-  ).length ?? 0;
+  const activeFiltersCount =
+    Object.values(filters).filter(
+      (value) => value !== undefined && value !== ""
+    ).length ?? 0;
 
   // monto max in the list
-  const maxMonto = filteredOrders.length > 0
-    ? Math.max(
-      ...filteredOrders
-        .filter((order) => order.anulada !== 1)
-        .map((order) =>
-          typeof order.tot_neto === "string"
-            ? parseFloat(order.tot_neto)
-            : order.tot_neto || 0
+  const maxMonto =
+    filteredOrders.length > 0
+      ? Math.max(
+          ...filteredOrders
+            .filter((order) => order.anulada !== 1)
+            .map((order) =>
+              typeof order.tot_neto === "string"
+                ? parseFloat(order.tot_neto)
+                : order.tot_neto || 0
+            )
         )
-    )
-    : 0;
-
+      : 0;
 
   return {
     filteredOrders,
@@ -313,7 +347,7 @@ export function useOrderApproval(searchText: string) {
     handleRefresh,
     canRefresh,
     cooldown,
-    orders,//just use locally with JSON
+    orders, //just use locally with JSON
     handleChangeRevisado,
     handleOpenInfoModal,
     handleOpenProductsModal,
@@ -333,11 +367,13 @@ export function useOrderApproval(searchText: string) {
     activeFiltersCount,
     sortDate,
     setSortDate,
-    sortMount, setSortMount,
-    showStatus, setShowStatus,
-    mountRange, setMountRange
-    , mountRangeActive
-    , maxMonto
-
+    sortMount,
+    setSortMount,
+    showStatus,
+    setShowStatus,
+    mountRange,
+    setMountRange,
+    mountRangeActive,
+    maxMonto,
   };
 }

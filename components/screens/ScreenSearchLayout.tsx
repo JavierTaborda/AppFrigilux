@@ -5,8 +5,6 @@ import SearchBar from '../ui/SearchBar';
 
 
 type ScreenSearchLayoutProps = {
-  title: string;
-  subtitle: string;
   searchText: string;
   setSearchText: (text: string) => void;
   placeholder?: string;
@@ -19,8 +17,7 @@ type ScreenSearchLayoutProps = {
 };
 
 export default function ScreenSearchLayout({
-  title,
-  subtitle,
+
   searchText,
   setSearchText,
   placeholder = '',
@@ -54,7 +51,7 @@ export default function ScreenSearchLayout({
   const animatedStyle = {
     height: animatedValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 50], // altura deseada
+      outputRange: [0, 45], // altura deseada
       extrapolate: 'clamp',
     }),
     opacity: animatedValue.interpolate({
@@ -81,7 +78,7 @@ export default function ScreenSearchLayout({
 
       <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl px-3 pt-2 ">
         {/* Search & Filter row */}
-        <View className="flex-row items-center gap-0 pb-2 bg-pin">
+        <View className="flex-row items-center gap-0 pb-2 ">
           <View className={extrafilter ? "flex-1" : "w-4/5"}>
             <SearchBar
               searchText={searchText}

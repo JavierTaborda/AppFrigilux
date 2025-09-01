@@ -25,9 +25,9 @@ type Props<T> = {
   cooldown: number;
   ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
   onHeaderVisibleChange?: (visible: boolean) => void;
-  showtitle:boolean
-  title?:string;
-  subtitle?:string;
+  showtitle: boolean;
+  title?: string;
+  subtitle?: string;
 };
 
 export default function CustomFlatList<T>({
@@ -40,16 +40,15 @@ export default function CustomFlatList<T>({
   cooldown,
   ListEmptyComponent,
   onHeaderVisibleChange,
-  showtitle=true,
+  showtitle = true,
   title,
-  subtitle
+  subtitle,
 }: Props<T>) {
   const flatListRef = useRef<FlatList<T>>(null);
 
+  const { handleScroll, showScrollTop, headerVisible } = useScrollHeader();
 
-  const { handleScroll, showScrollTop,headerVisible } = useScrollHeader();
-
-    useEffect(() => {
+  useEffect(() => {
     if (onHeaderVisibleChange) {
       onHeaderVisibleChange(headerVisible);
     }
@@ -94,7 +93,7 @@ export default function CustomFlatList<T>({
         data={data}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 145 }}
+        contentContainerStyle={{ paddingBottom: 145, }}
         onScroll={handleScroll}
         scrollEventThrottle={16}
         progressViewOffset={100}
@@ -119,10 +118,12 @@ export default function CustomFlatList<T>({
           ) : undefined
         }
         ListHeaderComponent={
-          
-          showtitle ? <TitleText title={title} subtitle={subtitle} /> : undefined
+          showtitle ? (
+            <View className="pb-1">
+              <TitleText title={title} subtitle={subtitle} />
+            </View>
+          ) : undefined
         }
-
         ListEmptyComponent={
           ListEmptyComponent ?? (
             <View className="flex-1 items-center justify-center py-10">

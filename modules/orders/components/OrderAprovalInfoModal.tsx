@@ -56,7 +56,7 @@ export default function OrderModal({ visible, onClose, order }: Props) {
                 <Row label="Comentario" value={order.comentario || '-'} multiline />
 
                 <Row label="Condición" value={order.cond_des} />
-                <Row label="Fecha Emisión / Vencimiento" value={`${formatDateMMM_dot_dd_yyyy(order.fec_emis.date)} / ${formatDateMMM_dot_dd_yyyy(order.fec_venc.date)}`} />
+                <Row label="Fecha Emisión / Vencimiento" value={`${formatDateMMM_dot_dd_yyyy(order.fec_emis)} / ${formatDateMMM_dot_dd_yyyy(order.fec_venc)}`} />
                 <Row label="Tasa" value={`${parseFloat(order.tasa).toFixed(2)} BS`} />
                 {/* Total Neto */}
                 <View className={`rounded-lg p-4 my-4 ${isAnulada ? 'bg-red-400' : 'bg-green-600'}`}>

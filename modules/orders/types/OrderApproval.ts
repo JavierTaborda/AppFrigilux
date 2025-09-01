@@ -28,7 +28,7 @@ export type OrderApproval={
   co_zon: string;
   zon_des: string;
   reng_max: number;
-  reg_ped:OrderApprovalProduct[]
+  reng_ped:OrderApprovalProduct[] 
 }
 export type OrderApprovalProduct ={
 

@@ -93,8 +93,6 @@ export default function OrderApprovalScreen() {
   return (
     <>
       <ScreenSearchLayout
-        title={`${totalOrders} pedidos`}
-        subtitle={`Total ${totalVenezuela(totalUSD)} $`}
         searchText={searchText}
         setSearchText={setSearchText}
         placeholder="Cliente o número de pedido..."
@@ -128,7 +126,7 @@ export default function OrderApprovalScreen() {
           onHeaderVisibleChange={setHeaderVisible} // Only if use extrafilter={true} on ScreenSearchLayout
           showtitle={true}
           title={`${totalOrders} pedidos`}
-          subtitle={`total ${totalVenezuela(totalUSD)} $`}
+          subtitle={`con total ${totalVenezuela(totalUSD)}$`}
           ListEmptyComponent={
             <View className="p-10 items-center">
               <Text>No se encontraron pedidos...</Text>

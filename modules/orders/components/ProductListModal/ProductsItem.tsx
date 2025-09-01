@@ -10,7 +10,7 @@ type Props = { item: OrderApprovalProduct; index: number; currency: string };
 export default React.memo(function ProductItem({ item, index, currency }: Props) {
     const quantity = parseFloat(item.total_art);
     const price = parseFloat(item.prec_vta);
-    const discount = item.porc_desc.trim();
+    const discount = item.porc_desc?.trim();
     const total = parseFloat(item.reng_neto);
     // TODO add img to the OrderApprovalProduct type
     const imageUrl = null// item.imageUrl?.trim(); 
@@ -38,11 +38,11 @@ export default React.memo(function ProductItem({ item, index, currency }: Props)
                         className="text-base font-medium text-foreground dark:text-dark-foreground"
                         numberOfLines={2}
                     >
-                        {item.co_art.trim()} - {item.art_des.trim()}
+                        {item.co_art?.trim()} - {item.art_des?.trim() ?? 'SIN DESCRIPCIÓN'}
                     </Text>
 
                     <Text className="text-sm text-foreground/80 dark:text-dark-foreground/80">
-                        Almacén {item.co_alma.trim()}
+                        Almacén {item.co_alma?.trim()}
                     </Text>
 
                     <View className="flex-row items-center">
