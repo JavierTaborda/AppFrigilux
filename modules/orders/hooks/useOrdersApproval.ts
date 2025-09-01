@@ -283,7 +283,6 @@ export function useOrderApproval(searchText: string) {
   const [loadingProducts, setLoadingProducts] = useState(false);
 
   const handleOpenInfoModal = (order: OrderApproval) => {
-    console.log(order);
     setSelectedOrder(order);
     setModalInfoVisible(true);
   };
