@@ -1,13 +1,18 @@
-const currencyDollar= '$';
-
-
+const currencyDollar = "$";
 
 const totalVenezuela = (value: string | number): string => {
-    const number = typeof value === "string" ? parseFloat(value) : value;
-    number.toFixed(2); // Ensure two decimal places
-    return number.toLocaleString("es-VE");
-};
+  // Convert to number
+  const number = typeof value === "string" ? parseFloat(value) : value;
 
+  // two decimals
+  const fixedNumber = Number(number.toFixed(2));
+
+  // Format with thousands and decimal commas
+  return `${currencyDollar} ${fixedNumber.toLocaleString("es-VE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
 
 export { currencyDollar, totalVenezuela };
 

@@ -8,7 +8,7 @@ export default function DrawerLayout() {
   const { theme } = useThemeStore();
 
   return (
-    <>
+    
       <Drawer
         drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
@@ -24,6 +24,6 @@ export default function DrawerLayout() {
         
         <Drawer.Screen name="(tabs)" options={{ headerShown: false }} />
       </Drawer>
-    </>
+    
   );
 }
