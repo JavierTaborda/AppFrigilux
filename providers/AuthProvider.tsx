@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, View } from "react-native";
 
 import SplashScreen from "@/components/SplashScreen";
+import { supabase } from "@/lib/supabase";
 import { useAuthProviderStore } from "@/stores/useAuthProviderStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -12,11 +14,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const splashOpacity = useRef(new Animated.Value(1)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
 
-  // wait for the first rendero 
+  // wait for the first rendero
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  // Refresh the JWT when supabase doit
+  useEffect(() => {
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "TOKEN_REFRESHED" && session) {
+          // 🔄 Actualizas el JWT en tu Zustand store
+          useAuthStore.getState().setSession(session);
+          useAuthStore.getState().setToken(session.access_token);
+        }
+      }
+    );
+
+    return () => {
+      subscription.subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -57,12 +76,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <View className="flex-1 bg-background dark:bg-dark-background">
       {showSplash && (
-        <Animated.View style={[styles.absoluteFill, { opacity: splashOpacity }]}>
+        <Animated.View
+          style={[styles.absoluteFill, { opacity: splashOpacity }]}
+        >
           <SplashScreen />
         </Animated.View>
       )}
       {!showSplash && (
-        <Animated.View style={[styles.absoluteFill, { opacity: contentOpacity }]}>
+        <Animated.View
+          style={[styles.absoluteFill, { opacity: contentOpacity }]}
+        >
           {children}
         </Animated.View>
       )}

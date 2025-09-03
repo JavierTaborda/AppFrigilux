@@ -17,7 +17,7 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
   initializeApp: async () => {
     try {
 
-      
+     
       await useAuthStore.getState().initializeAuth();
       const { session, manualLogin, signOutSoft, setManualLogin } = useAuthStore.getState();
 

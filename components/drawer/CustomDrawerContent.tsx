@@ -32,7 +32,7 @@ export default function CustomDrawerContent(props: any) {
       </View>
 
       <View className="mt-2 gap-2">
-        <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
+        {/* <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
           Pagos
         </Text>
 
@@ -41,7 +41,8 @@ export default function CustomDrawerContent(props: any) {
           label="Planificacion Pagos"
           href="/(main)/(tabs)/(pays)/authPays"
           currentPath={currentPath}
-        />
+        /> */}
+        
         <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
           Pedidos
         </Text>
