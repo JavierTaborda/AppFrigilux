@@ -1,10 +1,14 @@
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
+import { emojis } from "@/utils/emojis";
 import { totalVenezuela } from "@/utils/moneyFormat";
 import { router } from "expo-router";
-import { Dimensions, Pressable, ScrollView, Text, View } from "react-native";
+import { Dimensions, ScrollView, Text, View } from "react-native";
 import { LineChart } from "react-native-chart-kit";
+import HomeSkeleton from "../components/HomeSkeleton";
+import { InfoCard } from "../components/InfoCard";
+import { ModuleButton } from "../components/ModuleButton";
 import { useHomeScreen } from "../hooks/useHomeScreen";
 
 export default function HomeScreen() {
@@ -41,49 +45,52 @@ export default function HomeScreen() {
     },
   };
 
-  // Skeleton mientras carga
+  // Skeleton
   if (loading) {
-    return (
-      <View className="flex-1 p-4 bg-background dark:bg-dark-background">
-        <View className="h-6 w-2/3 bg-gray-300 dark:bg-gray-700 rounded mb-4 animate-pulse" />
-        <View className="flex-row justify-between mb-4">
-          <View className="flex-1 h-20 rounded-lg p-4 mr-2 bg-gray-300 dark:bg-gray-700 animate-pulse" />
-          <View className="flex-1 h-20 rounded-lg p-4 ml-2 bg-gray-300 dark:bg-gray-700 animate-pulse" />
-        </View>
-        <View className="h-6 w-1/2 bg-gray-300 dark:bg-gray-700 rounded mb-2 animate-pulse" />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View className="h-[250px] w-[300px] bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
-        </ScrollView>
-      </View>
-    );
+    return <HomeSkeleton />;
   }
 
   return (
     <ScrollView className="flex-1 p-4 bg-background dark:bg-dark-background">
-      <Text className="text-black dark:text-white text-xl mb-4">
-        Bienvenido {session?.user.email}
-      </Text>
-
-      {/* Cards principales */}
-      <View className="flex-row justify-between mb-4">
-        <View className="flex-1 h-20 rounded-lg p-4 mr-2 bg-primary dark:bg-dark-primary">
-          <Text className="text-white font-bold">Total Pedidos</Text>
-          <Text className="text-white text-xl font-semibold">
-            {totalPedidos}
-          </Text>
-        </View>
-        <View className="flex-1 h-20 rounded-lg p-4 ml-2 bg-secondary dark:bg-dark-secondary">
-          <Text className="text-white font-bold">Total Neto</Text>
-          <Text className="text-white text-xl font-semibold">
-            {totalVenezuela(totalNeto)}
-          </Text>
-        </View>
+      <View className="flex-row items-center mt-2 mb-4">
+        <Text className="text-black dark:text-white text-xl font-semibold">
+          {emojis.user} Bienvenido
+        </Text>
+        <Text className=" text-xl font-light"> {session?.user.email}</Text>
       </View>
 
-      {/* Gráfica */}
-      <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold mb-2">
+      <View className="flex-row flex-wrap justify-between gap-4 mb-4">
+        <InfoCard
+          icon={emojis.package}
+          title="Total Pedidos"
+          value={totalPedidos}
+          bgColor="bg-primary dark:bg-dark-primary"
+        />
+        <InfoCard
+          icon={emojis.money}
+          title="Total Neto"
+          value={totalVenezuela(totalNeto)}
+          bgColor="bg-secondary dark:bg-dark-secondary"
+        />
+      </View>
+
+      <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold mb-2 mt-2">
         📈 Pedidos del mes actual
       </Text>
+      {/* <View className="flex-row mb-2">
+        <View className="flex-row items-center mr-4">
+          <View className="w-4 h-4 bg-primary rounded-full mr-2" />
+          <Text className="text-foreground dark:text-dark-foreground">
+            Pedidos
+          </Text>
+        </View>
+        <View className="flex-row items-center">
+          <View className="w-4 h-4 bg-secondary rounded-full mr-2" />
+          <Text className="text-foreground dark:text-dark-foreground">
+            Ventas
+          </Text>
+        </View>
+      </View> */}
 
       {totalsByDate.length > 0 ? (
         <ScrollView horizontal showsHorizontalScrollIndicator>
@@ -117,21 +124,22 @@ export default function HomeScreen() {
       )}
 
       {/* Módulos principales */}
-      <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold pt-1 mb-2">
-        Módulos principales
+      <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold pt-1 mb-2 mt-2">
+        🔍 Módulos principales
       </Text>
+
       <View className="flex-row justify-between">
-        <Pressable
+        <ModuleButton
+          icon={emojis.approved}
+          label="Aprobación Pedidos"
           onPress={() => router.push("/(main)/(tabs)/(orders)/orderApproval")}
-          className="flex-1 h-32 rounded-lg mr-2 items-center justify-center bg-primary dark:bg-dark-primary"
-        >
-          <Text className="text-white text-center text-lg font-bold">
-            Aprobación Pedidos
-          </Text>
-        </Pressable>
-        <View className="flex-1 h-32 rounded-lg ml-2 items-center justify-center bg-gray-300 dark:bg-gray-700">
-          <Text className="text-white text-lg font-bold">Crear Pedido</Text>
-        </View>
+          bgColor=" bg-primary dark:bg-dark-primary"
+        />
+        <ModuleButton
+          icon={emojis.bags}
+          label="Crear Pedido"
+          bgColor="bg-gray-300 dark:bg-gray-700"
+        />
       </View>
     </ScrollView>
   );
