@@ -129,7 +129,7 @@ export default function OrderApprovalScreen() {
           subtitle={`con total ${totalVenezuela(totalUSD)}$`}
           ListEmptyComponent={
             <View className="p-10 items-center">
-              <Text>No se encontraron pedidos...</Text>
+              <Text className="text-foreground dark:text-dark-foreground">No se encontraron pedidos...</Text>
             </View>
           }
         />

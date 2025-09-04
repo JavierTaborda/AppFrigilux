@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { getPedidos } from "../services/HomeScreenServices";
 import Pedidos from "../types/Pedidos";
 
-// Función para mostrar Mil / Millón
+// show Mil / Millón
 const formatAbbreviated = (value: number | string): string => {
   const number = typeof value === "string" ? parseFloat(value) : value;
   if (number >= 1_000_000) return `$ ${(number / 1_000_000).toFixed(1)} Mill`;
@@ -13,12 +13,19 @@ const formatAbbreviated = (value: number | string): string => {
 export function useHomeScreen() {
   const [pedidos, setPedidos] = useState<Pedidos[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const getData = useCallback(() => {
+    
     setLoading(true);
+    setError(null)
     getPedidos()
-      .then((data) => setPedidos(data || [])) // evita undefined
-      .catch(console.error)
+      .then((data) => setPedidos(data || []))
+      .catch((err) => {
+        console.error(err);
+        setError("Ocurrió un error al cargar los datos...");
+      })
+
       .finally(() => setLoading(false));
   }, []);
 
@@ -26,14 +33,17 @@ export function useHomeScreen() {
     getData();
   }, [getData]);
 
-  // Totales sumados por día + etiquetas
+  // Totals  by day + labels
   const totalsByDate = useMemo(() => {
-    const grouped: Record<string, number> = pedidos.reduce((acc, pedido) => {
-      const date = pedido.fec_emis?.split("T")[0];
-      const tot = Number(pedido.tot_neto) || 0; // <-- nunca NaN
-      if (date) acc[date] = (acc[date] || 0) + tot;
-      return acc;
-    }, {} as Record<string, number>);
+    const grouped: Record<string, number> = pedidos.reduce(
+      (acc, pedido) => {
+        const date = pedido.fec_emis?.split("T")[0];
+        const tot = Number(pedido.tot_neto) || 0;
+        if (date) acc[date] = (acc[date] || 0) + tot;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     return Object.entries(grouped)
       .map(([x, y]) => ({
@@ -45,14 +55,18 @@ export function useHomeScreen() {
       .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
   }, [pedidos]);
 
-  // Totales generales
+  // Totals
   const totalPedidos = pedidos.length;
-  const totalNeto = pedidos.reduce((acc, p) => acc + (Number(p.tot_neto) || 0), 0);
+  const totalNeto = pedidos.reduce(
+    (acc, p) => acc + (Number(p.tot_neto) || 0),
+    0
+  );
 
   return {
     getData,
     pedidos,
     loading,
+    error,
     totalsByDate,
     totalPedidos,
     totalNeto,

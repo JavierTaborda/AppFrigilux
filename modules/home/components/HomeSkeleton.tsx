@@ -16,10 +16,10 @@ export default class HomeSkeleton extends Component {
         <View className="h-6 w-1/2 bg-gray-300 dark:bg-gray-700 rounded mt-2 mb-2 animate-pulse" />
 
         <View>
-          <View className="h-[250px] w-[300px] bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
+          <View className="h-[250px] w-[320px] bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
         </View>
 
-        <View className="h-6 w-1/2 bg-gray-300 dark:bg-gray-700 rounded mt-4 mb-2 animate-pulse" />
+        <View className="h-6 w-1/2 bg-gray-300 dark:bg-gray-700 rounded mt-6 mb-2 animate-pulse" />
         
         <View className="flex-row justify-between mb-4">
           <View className="flex-1 h-24 rounded-lg p-4 mr-2 bg-gray-300 dark:bg-gray-700 animate-pulse" />

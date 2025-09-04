@@ -4,7 +4,7 @@ import { appColors } from "@/utils/colors";
 import { emojis } from "@/utils/emojis";
 import { totalVenezuela } from "@/utils/moneyFormat";
 import { router } from "expo-router";
-import { Dimensions, ScrollView, Text, View } from "react-native";
+import { Dimensions, Pressable, ScrollView, Text, View } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import HomeSkeleton from "../components/HomeSkeleton";
 import { InfoCard } from "../components/InfoCard";
@@ -14,7 +14,8 @@ import { useHomeScreen } from "../hooks/useHomeScreen";
 export default function HomeScreen() {
   const { session } = useAuthStore();
   const { isDark } = useThemeStore();
-  const { loading, totalsByDate, totalPedidos, totalNeto } = useHomeScreen();
+  const { loading, error, totalsByDate, totalPedidos, totalNeto, getData } =
+    useHomeScreen();
 
   const screenWidth = Dimensions.get("window").width;
 
@@ -50,13 +51,34 @@ export default function HomeScreen() {
     return <HomeSkeleton />;
   }
 
+  if (error) {
+    return (
+      <View className="flex-1 p-2  bg-background dark:bg-dark-background">
+        <View className="items-center mt-20 ">
+          <Text className="text-6xl pt-1">{emojis.invalid}</Text>
+          <Text className="text-4xl font-extrabold text-red-500 dark:text-red-400 mb-2">
+            Ups,
+          </Text>
+          <Text className="text-red-500 dark:text-red-400 mb-2">{error}</Text>
+
+          <Pressable className="p-4 bg-warning dark:bg-dark-warning rounded-full" onPress={getData}>
+            <Text className="text-foreground  font-semibold">Reintentar</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <ScrollView className="flex-1 p-4 bg-background dark:bg-dark-background">
       <View className="flex-row items-center mt-2 mb-4">
         <Text className="text-black dark:text-white text-xl font-semibold">
           {emojis.user} Bienvenido
         </Text>
-        <Text className=" text-xl font-light"> {session?.user.email}</Text>
+        <Text className=" text-xl text-black dark:text-white font-light">
+          {" "}
+          {session?.user.email}
+        </Text>
       </View>
 
       <View className="flex-row flex-wrap justify-between gap-4 mb-4">
@@ -75,7 +97,7 @@ export default function HomeScreen() {
       </View>
 
       <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold mb-2 mt-2">
-        📈 Pedidos del mes actual
+        {emojis.chartUp} Pedidos del mes actual
       </Text>
       {/* <View className="flex-row mb-2">
         <View className="flex-row items-center mr-4">
@@ -103,15 +125,23 @@ export default function HomeScreen() {
             withOuterLines={false}
             withHorizontalLabels={false}
             formatYLabel={(y) => y}
-            renderDotContent={({ x, y, index }) => (
-              <Text
-                key={index}
-                style={{ position: "absolute", top: y - 20, left: x - 15 }}
-                className="text-xs font-bold text-secondary dark:text-dark-secondary"
-              >
-                {totalsByDate[index].label}
-              </Text>
-            )}
+            renderDotContent={({ x, y, index }) => {
+              if (x == null || y == null) return null;
+              return (
+                <Text
+                  key={`dot-${index}`}
+                  style={{
+                    position: "absolute",
+                    top: y - 20,
+                    left: x - 15,
+                    zIndex: 10,
+                  }}
+                  className="text-xs font-bold text-secondary dark:text-dark-secondary"
+                >
+                  {totalsByDate[index]?.label}
+                </Text>
+              );
+            }}
             chartConfig={chartConfig}
             style={{ borderRadius: 8, paddingVertical: 2, marginTop: 5 }}
             bezier
@@ -125,7 +155,7 @@ export default function HomeScreen() {
 
       {/* Módulos principales */}
       <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold pt-1 mb-2 mt-2">
-        🔍 Módulos principales
+        {emojis.search} Módulos principales
       </Text>
 
       <View className="flex-row justify-between">

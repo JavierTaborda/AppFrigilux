@@ -14,7 +14,7 @@ export const InfoCard = ({ icon, title, value, bgColor }: InfoCardProps) => (
     `}
   >
     <View className="flex-row items-center">
-      <Text className="text-white text-2xl mr-2 shadow-sm">{icon}</Text>
+      <Text className="text-white text-2xl mr-1 shadow-sm">{icon}</Text>
       <Text
         className="text-white text-lg font-bold flex-1"
         numberOfLines={1}

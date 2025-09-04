@@ -9,7 +9,7 @@ export const emojis = {
   chartBar: "📊",
   invoice: "🧾",
   bank: "🏦",
-  bags:"🛍️",
+  bags: "🛍️",
 
   // 👥 Users
   user: "👤",
@@ -28,8 +28,9 @@ export const emojis = {
   screen: "🖥️",
   dark: "🌙",
   light: "☀️",
+  search: "🔍",
 
-  // ✅ status
+  // ✅ Status
   approved: "✅",
   pending: "⏳",
   rejected: "🚫",
@@ -37,7 +38,15 @@ export const emojis = {
   active: "🟢",
   inactive: "🔴",
 
-  // others
+  // 🧩 Error / Alerts
+  error: "❌",
+  warning: "⚠️",
+  blocked: "🛑",
+  invalid: "😕",
+  crash: "🧨",
+  alert: "📛",
+
+  // Others
   home: "🏠",
   modules: "🗂️",
   calendar: "📅",
