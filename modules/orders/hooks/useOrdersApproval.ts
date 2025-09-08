@@ -39,6 +39,8 @@ export function useOrderApproval(searchText: string) {
   const [mountRangeActive, setMountRangeActive] = useState(false);
   const [filters, setFilters] = useState<OrderFilters>({});
 
+  //error
+  const [error, setError] = useState<string | null>(null);
   // Referencia para guardar el id del timeout y poder limpiarlo
   // Ref to store the timeout id for cleanup
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -77,12 +79,18 @@ export function useOrderApproval(searchText: string) {
    */
   const fetchOrders = useCallback(() => {
     setLoading(true);
+    setError(null);
     getOrdersToApproval()
       .then((data) => {
         setOrdersAproval(data);
         loadFilters();
       })
-      .catch(console.error)
+      .catch((err) => {
+        console.error(err);
+        setError(
+          "No logramos acceder a los pedidos... intenta de nuevo en un momento"
+        );
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -99,6 +107,7 @@ export function useOrderApproval(searchText: string) {
     if (!canRefresh) {
       return;
     }
+    setError(null);
 
     setRefreshing(true);
     setCanRefresh(false);
@@ -109,7 +118,11 @@ export function useOrderApproval(searchText: string) {
         setOrdersAproval(data);
         //loadFilters();
       })
-      .catch(console.error)
+      .catch((err) => {
+        console.error(err);
+        setError("Ocurrió un error al cargar los datos...");
+      })
+
       .finally(() => {
         setRefreshing(false);
         timeoutRef.current = setTimeout(() => {
@@ -374,5 +387,7 @@ export function useOrderApproval(searchText: string) {
     setMountRange,
     mountRangeActive,
     maxMonto,
+    error,
+    fetchOrders,
   };
 }

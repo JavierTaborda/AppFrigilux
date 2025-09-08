@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FlatList, View } from 'react-native';
 
 import { useAuthPays } from '@/modules/pays/hooks/useAuthPays';
-import { totalVenezuela } from '@/utils/moneyFormat';
 
 import ScreenSearchLayout from '@/components/screens/ScreenSearchLayout';
 import Loader from '@/components/ui/Loader';
@@ -54,8 +53,8 @@ export default function AuthorizationScreen() {
   return (
     <>
       <ScreenSearchLayout
-        title={`${totalDocumentsAuth} Documentos`}
-        subtitle={`Total autorizado: ${totalVenezuela(totalAutorizadoVED)} VED / ${totalVenezuela(totalAutorizadoUSD)} $`}
+        // title={`${totalDocumentsAuth} Documentos`}
+        // subtitle={`Total autorizado: ${totalVenezuela(totalAutorizadoVED)} VED / ${totalVenezuela(totalAutorizadoUSD)} $`}
         searchText={searchText}
         setSearchText={setSearchText}
         placeholder="Observación o Beneficiario..."

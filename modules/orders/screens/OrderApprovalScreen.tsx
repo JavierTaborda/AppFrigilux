@@ -1,5 +1,6 @@
 import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
 import CustomFlatList from "@/components/ui/CustomFlatList";
+import ErrorView from "@/components/ui/errorView";
 import Loader from "@/components/ui/Loader";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { totalVenezuela } from "@/utils/moneyFormat";
@@ -59,6 +60,8 @@ export default function OrderApprovalScreen() {
     setMountRange,
     mountRangeActive,
     maxMonto,
+    error,
+    fetchOrders,
   } = useOrderApproval(searchText);
 
   const handleApplyFilters = (newFilters: OrderFilters) => {
@@ -89,6 +92,11 @@ export default function OrderApprovalScreen() {
     ]
   );
   if (loading) return <Loader />;
+
+    if (error) {
+      return <ErrorView error={error} getData={fetchOrders} />;
+    }
+  
 
   return (
     <>

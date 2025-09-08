@@ -1,10 +1,11 @@
+import ErrorView from "@/components/ui/errorView";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
 import { emojis } from "@/utils/emojis";
 import { totalVenezuela } from "@/utils/moneyFormat";
 import { router } from "expo-router";
-import { Dimensions, Pressable, ScrollView, Text, View } from "react-native";
+import { Dimensions, ScrollView, Text, View } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import HomeSkeleton from "../components/HomeSkeleton";
 import { InfoCard } from "../components/InfoCard";
@@ -53,19 +54,7 @@ export default function HomeScreen() {
 
   if (error) {
     return (
-      <View className="flex-1 p-2  bg-background dark:bg-dark-background">
-        <View className="items-center mt-20 ">
-          <Text className="text-6xl pt-1">{emojis.invalid}</Text>
-          <Text className="text-4xl font-extrabold text-red-500 dark:text-red-400 mb-2">
-            Ups,
-          </Text>
-          <Text className="text-red-500 dark:text-red-400 mb-2">{error}</Text>
-
-          <Pressable className="p-4 bg-warning dark:bg-dark-warning rounded-full" onPress={getData}>
-            <Text className="text-foreground  font-semibold">Reintentar</Text>
-          </Pressable>
-        </View>
-      </View>
+     <ErrorView error={error} getData={getData} />
     );
   }
 

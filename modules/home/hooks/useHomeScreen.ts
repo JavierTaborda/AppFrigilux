@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { getPedidos } from "../services/HomeScreenServices";
 import Pedidos from "../types/Pedidos";
 
-// show Mil / Millón
+// show Mil / Millon
 const formatAbbreviated = (value: number | string): string => {
   const number = typeof value === "string" ? parseFloat(value) : value;
   if (number >= 1_000_000) return `$ ${(number / 1_000_000).toFixed(1)} Mill`;
