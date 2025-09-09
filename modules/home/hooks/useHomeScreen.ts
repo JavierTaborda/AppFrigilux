@@ -13,14 +13,17 @@ const formatAbbreviated = (value: number | string): string => {
 export function useHomeScreen() {
   const [pedidos, setPedidos] = useState<Pedidos[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chartText, setChartText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const getData = useCallback(() => {
-    
     setLoading(true);
-    setError(null)
+    setError(null);
     getPedidos()
-      .then((data) => setPedidos(data || []))
+      .then((data) => {
+        setPedidos(data || []);
+        setChartText("Pedidos del mes actual");
+      })
       .catch((err) => {
         console.error(err);
         setError("Ocurrió un error al cargar los datos...");
@@ -55,6 +58,11 @@ export function useHomeScreen() {
       .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
   }, [pedidos]);
 
+  // Labels and values for the chart
+  const labels = totalsByDate.map((t) => t.dayLabel);
+  const values = totalsByDate.map((t) => t.y);
+  const dotLabels = totalsByDate.map((t) => t.label);
+
   // Totals
   const totalPedidos = pedidos.length;
   const totalNeto = pedidos.reduce(
@@ -70,5 +78,9 @@ export function useHomeScreen() {
     totalsByDate,
     totalPedidos,
     totalNeto,
+    labels,
+    values,
+    dotLabels,
+    chartText,
   };
 }

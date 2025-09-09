@@ -1,6 +1,7 @@
 import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
 import CustomFlatList from "@/components/ui/CustomFlatList";
-import ErrorView from "@/components/ui/errorView";
+
+import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { totalVenezuela } from "@/utils/moneyFormat";

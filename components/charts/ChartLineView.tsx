@@ -1,0 +1,111 @@
+
+import { appColors } from "@/utils/colors";
+import { Dimensions, ScrollView, Text, View } from "react-native";
+import { LineChart } from "react-native-chart-kit";
+
+interface Props {
+  labels: string[];
+  values: number[];
+  dotLabels?: string[]; // labels on every point
+  isDark: boolean;
+  title?: string;
+}
+
+export const ChartLineView = ({
+  labels,
+  values,
+  dotLabels = [],
+  isDark,
+  title,
+}: Props) => {
+  const screenWidth = Dimensions.get("window").width;
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        data: values,
+        color: () => appColors.primary.DEFAULT,
+      },
+    ],
+  };
+
+  const chartConfig = {
+    backgroundColor: isDark
+      ? appColors.dark.componentbg
+      : appColors.componentbg,
+    backgroundGradientFrom: isDark
+      ? appColors.dark.componentbg
+      : appColors.componentbg,
+    backgroundGradientTo: isDark
+      ? appColors.dark.componentbg
+      : appColors.componentbg,
+    decimalPlaces: 0,
+    color: () =>
+      isDark ? appColors.dark.mutedForeground : appColors.mutedForeground,
+    labelColor: () =>
+      isDark ? appColors.dark.foreground : appColors.foreground || "#000",
+    barPercentage: 1,
+    propsForDots: {
+      r: "5",
+      strokeWidth: "4",
+    },
+  };
+
+  if (values.length === 0) {
+    return (
+      <View className="flex items-center justify-center py-6">
+        <Text className="text-base text-muted dark:text-dark-muted">
+          No hay datos disponibles.
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className="bg-componentbg dark:bg-dark-componentbg rounded-xl py-2">
+      {title && (
+        <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold mb-2 mt-2 px-2">
+          {title}
+        </Text>
+      )}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ borderRadius: 12, marginTop: 5 }}
+      >
+        <LineChart
+          data={data}
+          width={Math.max(labels.length * 25, screenWidth)}
+          height={250}
+          verticalLabelRotation={0}
+          withInnerLines={false}
+          withOuterLines={true}
+          withHorizontalLabels={false}
+          formatYLabel={(y) => y}
+          renderDotContent={({ x, y, index }) => {
+            if (x == null || y == null || !dotLabels[index]) return null;
+            return (
+              <Text
+                key={`dot-${index}`}
+                style={{
+                  position: "absolute",
+                  top: y - 20,
+                  left: x - 15,
+                  zIndex: 10,
+                }}
+                className="text-xs font-bold text-secondary dark:text-dark-secondary"
+              >
+                {dotLabels[index]}
+              </Text>
+            );
+          }}
+          chartConfig={chartConfig}
+          style={{ borderRadius: 8, paddingVertical: 2, marginTop: 5 }}
+          bezier
+          withShadow={false}
+        />
+      </ScrollView>
+    </View>
+  );
+};

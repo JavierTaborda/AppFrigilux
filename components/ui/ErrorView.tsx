@@ -9,7 +9,7 @@ type ErrorViewProps = {
 export default function ErrorView({ error, getData }: ErrorViewProps) {
   return (
     <View className="flex-1 p-4 bg-background dark:bg-dark-background justify-center">
-      <View className="items-center space-y-4">
+      <View className="items-center ">
         <Text className="text-6xl">{emojis.invalid || "❌"}</Text>
 
         <Text className="text-4xl font-extrabold text-red-500 dark:text-red-400">

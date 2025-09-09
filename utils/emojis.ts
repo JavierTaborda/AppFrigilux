@@ -45,6 +45,7 @@ export const emojis = {
   invalid: "😕",
   crash: "🧨",
   alert: "📛",
+  signal: "🚧",
 
   // Others
   home: "🏠",
