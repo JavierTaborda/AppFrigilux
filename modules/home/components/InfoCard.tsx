@@ -24,7 +24,7 @@ export const InfoCard = ({ icon, title, value, bgColor }: InfoCardProps) => (
         {title}
       </Text>
     </View>
-    <Text className="text-white text-2xl font-semibold">{value}</Text>
+    <Text className="text-white text-xl font-semibold">{value}</Text>
   </View>
 );
 

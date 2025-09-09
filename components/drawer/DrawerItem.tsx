@@ -5,7 +5,8 @@ import { Text, TouchableOpacity } from "react-native";
 
 type DrawerItemProps = {
   href: Href;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon?: keyof typeof Ionicons.glyphMap;
+  emoji?: string;
   label: string;
   currentPath: string;
 };
@@ -15,6 +16,7 @@ export function DrawerItem({
   icon,
   label,
   currentPath,
+  emoji,
 }: DrawerItemProps) {
   const { theme } = useThemeStore();
   const router = useRouter();
@@ -32,9 +34,16 @@ export function DrawerItem({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className={`flex-row items-center py-3 px-3 rounded-2xl ${bgClass}`}
+      className={`flex-row items-center py-2 px-3 rounded-2xl ${bgClass}`}
     >
-      <Ionicons name={icon} size={20} color={isDark ? "white" : "black"} />
+      {icon && (
+        <Ionicons name={icon} size={24} color={isDark ? "white" : "black"} />
+      )}
+      {emoji && (
+        <>
+          <Text className="text-xl"> {emoji}</Text>
+        </>
+      )}
       <Text className="ms-2 font-medium text-sm text-foreground dark:text-dark-foreground">
         {label}
       </Text>

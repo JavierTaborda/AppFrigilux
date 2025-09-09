@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/stores/useAuthStore";
+import { emojis } from "@/utils/emojis";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { useSegments } from "expo-router";
 import { Image, Text, View } from "react-native";
@@ -9,14 +10,8 @@ export default function CustomDrawerContent(props: any) {
   const segments = useSegments();
   const currentPath = "/" + segments.join("/");
 
-
   return (
-
-    <DrawerContentScrollView bounces={false}
-      {...props}
-    >
-
-
+    <DrawerContentScrollView bounces={false} {...props}>
       {/* Header*/}
       <View className="items-center py-3 border-b border-b-slate-300 dark:border-b-slate-800">
         <Image
@@ -31,7 +26,7 @@ export default function CustomDrawerContent(props: any) {
         </Text>
       </View>
 
-      <View className="mt-2 gap-2">
+      <View className="mt-2 gap-2 pe-4">
         {/* <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
           Pagos
         </Text>
@@ -42,7 +37,7 @@ export default function CustomDrawerContent(props: any) {
           href="/(main)/(tabs)/(pays)/authPays"
           currentPath={currentPath}
         /> */}
-        
+
         <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
           Pedidos
         </Text>
@@ -52,12 +47,20 @@ export default function CustomDrawerContent(props: any) {
           href="/(main)/(tabs)/(orders)/orderApproval"
           currentPath={currentPath}
         />
-
-
-
+        <DrawerItem
+          emoji={emojis.package}
+          // icon="bag-check"
+          label="Aprobación Pedidos"
+          href="/(main)/(tabs)/(orders)/orderApproval"
+          currentPath={currentPath}
+        />
+        <DrawerItem
+          emoji={emojis.bags}
+          label="Crear Pedido"
+          href="/(main)/(tabs)/(orders)/orderApproval"
+          currentPath={currentPath}
+        />
       </View>
-
-    </DrawerContentScrollView >
+    </DrawerContentScrollView>
   );
-
 }

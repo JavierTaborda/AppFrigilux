@@ -4,7 +4,7 @@ import { View } from 'react-native';
 export default class HomeSkeleton extends Component {
   render() {
     return (
-      <View className="flex-1 p-4 bg-background dark:bg-dark-background">
+      <View className="flex-1 p-4 pt-2 bg-background dark:bg-dark-background">
 
         <View className="h-6 w-2/3 bg-gray-300 dark:bg-gray-700 rounded mt-2 mb-4 animate-pulse" />
 

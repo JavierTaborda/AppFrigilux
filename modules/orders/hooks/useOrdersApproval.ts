@@ -88,7 +88,7 @@ export function useOrderApproval(searchText: string) {
       .catch((err) => {
         console.error(err);
         setError(
-          "No logramos acceder a los pedidos... intenta de nuevo en un momento"
+          "No logramos acceder a los pedidos... Intenta de nuevo en un momento"
         );
       })
       .finally(() => setLoading(false));

@@ -39,11 +39,11 @@ export default function HomeScreen() {
     <ScrollView
       contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
       keyboardShouldPersistTaps="handled"
-      className="bg-background dark:bg-dark-background px-4"
+      className="bg-background dark:bg-dark-background px-4 pt-2"
     >
       <View>
         {/* Welcome */}
-        <View className="flex-row items-center mt-2 mb-4">
+        <View className="flex-row items-center mt-2 mb-2">
           <Text className="text-black dark:text-white text-xl font-semibold">
             {emojis.user} Bienvenido
           </Text>
@@ -81,22 +81,29 @@ export default function HomeScreen() {
         />
 
         {/* Modules */}
-        <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold pt-1 mb-2 mt-2">
+        <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold pt-2 mb-2 mt-2">
           {emojis.search} Módulos principales
         </Text>
-        <View className="flex-row justify-between">
-          <ModuleButton
-            icon={emojis.approved}
-            label="Aprobación Pedidos"
-            onPress={() => router.push("/(main)/(tabs)/(orders)/orderApproval")}
-            bgColor="bg-primary dark:bg-dark-primary"
-          />
-          <ModuleButton
-            icon={emojis.bags}
-            label="Crear Pedido"
-            bgColor="bg-gray-300 dark:bg-gray-700"
-            isComingSoon
-          />
+        <View className="flex-row flex-wrap justify-between">
+          <View className="w-[49%] mb-4">
+            <ModuleButton
+              icon={emojis.approved}
+              label="Aprobación Pedidos"
+              onPress={() =>
+                router.push("/(main)/(tabs)/(orders)/orderApproval")
+              }
+              bgColor="bg-primary dark:bg-dark-primary"
+            />
+          </View>
+          <View className="w-[49%] mb-4">
+            <ModuleButton
+              icon={emojis.bags}
+              label="Crear Pedido"
+              bgColor="bg-gray-300 dark:bg-gray-700"
+              isComingSoon
+            />
+          </View>
+       
         </View>
       </View>
     </ScrollView>
