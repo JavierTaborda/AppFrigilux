@@ -156,9 +156,17 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(orders)/orderApproval"
         options={{
-          href: null,// makes route invisible in tabs
+          href: null,
           headerShown: true,
           title: 'Aprobación de Pedidos',
+        }}
+      />
+      <Tabs.Screen
+        name="(createOrder)/index"
+        options={{
+          href: null,
+          headerShown: true,
+          title: 'Crear Pedido',
         }}
       />
     </Tabs>
