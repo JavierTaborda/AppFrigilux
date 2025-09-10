@@ -18,9 +18,9 @@ export function useScrollHeader() {
         const currentY = event.nativeEvent.contentOffset.y;
         const lastY = lastScrollY.current;
 
-        if (currentY > 300 && !showScrollTop) {
+        if (currentY > 200 && !showScrollTop) {
           setShowScrollTop(true);
-        } else if (currentY <= 300 && showScrollTop) {
+        } else if (currentY <= 200 && showScrollTop) {
           setShowScrollTop(false);
         }
 

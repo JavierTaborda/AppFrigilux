@@ -1,4 +1,3 @@
-// components/ui/ScreenFlatList.tsx
 import { useScrollHeader } from "@/hooks/useScrollHeader";
 import { appColors } from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,6 +7,7 @@ import {
   FlatListProps,
   Platform,
   RefreshControl,
+  StyleSheet,
   Text,
   ToastAndroid,
   TouchableOpacity,
@@ -22,15 +22,17 @@ type Props<T> = {
   refreshing: boolean;
   canRefresh: boolean;
   handleRefresh: () => void;
-  cooldown: number;
+  cooldown?: number;
   ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
   onHeaderVisibleChange?: (visible: boolean) => void;
-  showtitle: boolean;
+  showtitle?: boolean;
   title?: string;
   subtitle?: string;
+  numColumns?: number;
+  showScrollTopButton?: boolean;
 };
 
-export default function CustomFlatList<T>({
+function CustomFlatList<T>({
   data,
   renderItem,
   keyExtractor,
@@ -43,6 +45,8 @@ export default function CustomFlatList<T>({
   showtitle = true,
   title,
   subtitle,
+  numColumns = 1,
+  showScrollTopButton = true,
 }: Props<T>) {
   const flatListRef = useRef<FlatList<T>>(null);
 
@@ -65,38 +69,49 @@ export default function CustomFlatList<T>({
 
   return (
     <>
-      {!canRefresh && cooldown > 0 && (
+      {/* Aviso de cooldown */}
+      {!canRefresh && cooldown ? (
         <TouchableOpacity
           onPress={onCooldownPress}
           activeOpacity={0.8}
-          className="absolute bg-black/60 px-3 py-0.5 rounded-full z-10 top-0 right-4"
+          style={styles.cooldownBadge}
         >
-          <Text className="text-white text-xs">
+          <Text style={styles.cooldownText}>
             Espera {cooldown}s para refrescar
           </Text>
         </TouchableOpacity>
-      )}
+      ) : null}
 
-      {showScrollTop && (
+      {/* Botón scroll top */}
+      {showScrollTop && showScrollTopButton && (
         <TouchableOpacity
           onPress={() =>
             flatListRef.current?.scrollToOffset({ offset: 0, animated: true })
           }
-          className="absolute bg-primary dark:bg-dark-primary p-4 rounded-full right-4 bottom-28 z-20 shadow-lg"
+          style={styles.scrollTopButton}
+          className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg"
+          accessibilityLabel="Subir al inicio"
+          accessibilityRole="button"
         >
           <Ionicons name="arrow-up" size={24} color="white" />
         </TouchableOpacity>
       )}
 
+      {/* Lista */}
       <FlatList
         ref={flatListRef}
         data={data}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 145, }}
+        contentContainerStyle={styles.listContent}
         onScroll={handleScroll}
         scrollEventThrottle={16}
         progressViewOffset={100}
+        key={numColumns} // fuerza re-render al cambiar columnas
+        numColumns={numColumns}
+        columnWrapperStyle={
+          numColumns > 1 ? { justifyContent: "space-between" } : undefined
+        }
         refreshControl={
           canRefresh ? (
             <RefreshControl
@@ -126,14 +141,59 @@ export default function CustomFlatList<T>({
         }
         ListEmptyComponent={
           ListEmptyComponent ?? (
-            <View className="flex-1 items-center justify-center py-10">
-              <Text className="text-mutedForeground dark:text-dark-mutedForeground text-center">
-                No se encontraron datos...
-              </Text>
+            <View style={styles.emptyWrapper}>
+              <Text style={styles.emptyText}>No se encontraron datos...</Text>
             </View>
           )
         }
+        initialNumToRender={10}
+        windowSize={5}
+        maxToRenderPerBatch={10}
+        removeClippedSubviews
       />
     </>
   );
 }
+
+export default React.memo(CustomFlatList) as typeof CustomFlatList;
+
+const styles = StyleSheet.create({
+  cooldownBadge: {
+    position: "absolute",
+    top: 0,
+    right: 16,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
+    zIndex: 10,
+  },
+  cooldownText: {
+    color: "#fff",
+    fontSize: 12,
+  },
+  scrollTopButton: {
+    position: "absolute",
+    bottom: 100,
+    right: 20,
+    zIndex: 1000,
+    elevation: 10,
+  },
+  listContent: {
+    paddingBottom: 170,
+    paddingHorizontal: 10,
+  },
+  headerWrapper: {
+    paddingBottom: 4,
+  },
+  emptyWrapper: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#888",
+  },
+});

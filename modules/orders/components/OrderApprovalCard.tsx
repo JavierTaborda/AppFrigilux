@@ -46,7 +46,7 @@ interface Props {
     <Animated.View
 
       entering={FadeInDown.duration(300).damping(200).springify()} exiting={FadeOut.duration(100)}
-      className={`rounded-xl p-2 mb-2 border shadow-sm shadow-black/10 ${isAnulada
+      className={`rounded-xl py-2 px-3 mb-2 border shadow-sm shadow-black/10 ${isAnulada
         ? 'bg-red-50 dark:bg-dark-error/20 border-red-300 dark:border-red-300'
         : 'bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700'
         }`}

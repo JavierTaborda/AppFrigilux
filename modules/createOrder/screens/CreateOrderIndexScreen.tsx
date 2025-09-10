@@ -1,45 +1,25 @@
-import { useState } from 'react';
-import { FlatList, View } from 'react-native';
+import { useState } from "react";
+import { Text, View } from "react-native";
 
-
-import ScreenSearchLayout from '@/components/screens/ScreenSearchLayout';
-import ProductCard from '../components/ProductCard';
+import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
+import CustomFlatList from "@/components/ui/CustomFlatList";
+import Loader from "@/components/ui/Loader";
+import ProductCard from "../components/ProductCard";
+import useCreateOrder from "../hooks/useCreateOrder";
 
 export default function AuthorizationScreen() {
-  
-  const [searchText, setSearchText] = useState('');
+  const { loading, error, createOrder, products, handleRefresh, refreshing, canRefresh } = useCreateOrder();
 
-  // State Filters
+  const [searchText, setSearchText] = useState("");
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-
-  // States Auth
-  const [authModalVisible, setAuthModalVisible] = useState(false);
 
   const handleApplyFilters = () => {
     setFilterModalVisible(false);
   };
 
-
-//   if (loading) {
-//     return (
-//       <Loader />
-//     );
-//   }
-const products = [
-  {
-    id: "1",
-    title: "Camisa Vintage",
-    price: 39.99,
-    image: "https://via.placeholder.com/300x200",
-  },
-  {
-    id: "2",
-    title: "Zapatillas Urbanas",
-    price: 89.99,
-    image: "https://via.placeholder.com/300x200",
-  },
-];
-
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <ScreenSearchLayout
@@ -50,19 +30,52 @@ const products = [
       headerVisible={false}
       extrafilter={false}
     >
-      <View className="flex-1 px-4 items-center">
-        <FlatList
+      <View className="flex-1 items-center pt-1">
+        <CustomFlatList
+          
           data={products}
-          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ProductCard
+              code={item.code}
               title={item.title}
               price={item.price}
               image={item.image}
             />
           )}
-          contentContainerStyle={{ padding: 16 }}
+          keyExtractor={(item, index) => `${item.code}-${index}`}
+          refreshing={refreshing}
+          canRefresh={canRefresh}
+          handleRefresh={handleRefresh}
+          //onHeaderVisibleChange={setHeaderVisible} // Only if use extrafilter={true} on ScreenSearchLayout
+          showtitle={true}
+          //title={`${totalOrders} pedidos`}
+          //subtitle={`con total ${totalVenezuela(totalUSD)}$`}
+          ListEmptyComponent={
+            <View className="p-10 items-center">
+              <Text className="text-foreground dark:text-dark-foreground">
+                No se encontraron prooductos...
+              </Text>
+            </View>
+          }
+            numColumns={2}
         />
+
+        {/*       
+        <FlatList
+          data={products}
+          keyExtractor={(item) => item.code}
+          numColumns={2}
+          renderItem={({ item }) => (
+            <ProductCard
+              code={item.code}
+              title={item.title}
+              price={item.price}
+              image={item.image}
+            />
+          )}
+          columnWrapperStyle={{ justifyContent: "space-between" }}
+          contentContainerStyle={{ padding:4, paddingBottom: 140 }}
+        /> */}
       </View>
     </ScreenSearchLayout>
   );
