@@ -2,6 +2,7 @@ import api from "@/lib/axios";
 import { statusOptions, Vendors, Zones } from "../types/OrderFilters";
 
 export const getOrdersToApproval = async () => {
+
   const response = await api.get("orders/approval");
   return response.data;
 };
@@ -52,6 +53,8 @@ export const changeRevisado = async (fact_num: number, status: string) => {
 };
 
 export const getZones = async () => {
+
+
   const response =  await api.get("/zones");
   const zones: Zones[] = response.data;
    const filterZones = zones
@@ -65,6 +68,8 @@ export const getZones = async () => {
 
 
 export const getVendors = async () => {
+
+ 
   const response = await api.get("/vendors");
   const vendors: Vendors[] = response.data;
 

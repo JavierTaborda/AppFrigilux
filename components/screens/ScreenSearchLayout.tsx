@@ -76,9 +76,9 @@ export default function ScreenSearchLayout({
     <View className="flex-1 pt-0.5 bg-primary dark:bg-dark-primary ">
       {/* <TitleText title={title} subtitle={subtitle} /> */}
 
-      <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl pt-2 ">
+      <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl pt-3 ">
         {/* Search & Filter row */}
-        <View className="flex-row items-center gap-0 pb-2 px-2.5">
+        <View className="flex-row items-center gap-0 pb-2 px-4">
           <View className={extrafilter ? "flex-1" : "w-4/5"}>
             <SearchBar
               searchText={searchText}
@@ -93,7 +93,7 @@ export default function ScreenSearchLayout({
             </View>
           )}
         </View>
-        <Animated.View style={animatedStyle} className="px-2.5">
+        <Animated.View style={animatedStyle} className="px-4">
           {/* Extra filters row */}
           {extrafilter && (
             <View className="flex-row">

@@ -1,17 +1,27 @@
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
 import CustomFlatList from "@/components/ui/CustomFlatList";
 import Loader from "@/components/ui/Loader";
+import { Ionicons } from "@expo/vector-icons";
 import ProductCard from "../components/ProductCard";
 import useCreateOrder from "../hooks/useCreateOrder";
 
 export default function AuthorizationScreen() {
-  const { loading, error, createOrder, products, handleRefresh, refreshing, canRefresh } = useCreateOrder();
+  const {
+    loading,
+    error,
+    createOrder,
+    products,
+    handleRefresh,
+    refreshing,
+    canRefresh,
+  } = useCreateOrder();
 
   const [searchText, setSearchText] = useState("");
   const [filterModalVisible, setFilterModalVisible] = useState(false);
+   const [headerVisible, setHeaderVisible] = useState(true); 
 
   const handleApplyFilters = () => {
     setFilterModalVisible(false);
@@ -20,19 +30,34 @@ export default function AuthorizationScreen() {
   if (loading) {
     return <Loader />;
   }
-
+  if (error) {
+    return (
+      <View className="flex-1 justify-center items-center p-4">
+        <Text className="text-red-500">Error al cargar productos: {error}</Text>
+      </View>
+    );
+  }
   return (
     <ScreenSearchLayout
       searchText={searchText}
       setSearchText={setSearchText}
       placeholder="Código o descripción..."
       onFilterPress={() => setFilterModalVisible(true)}
-      headerVisible={false}
-      extrafilter={false}
+      headerVisible={headerVisible}
+      extrafilter={true}
     >
-      <View className="flex-1 items-center pt-1">
+      <View className="flex-1  pt-1">
+        <TouchableOpacity
+          onPress={() => alert("Ver Orden")}
+          className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg "
+          style={{ position: "absolute", zIndex: 50,  right: 20, bottom: 160 }}
+          accessibilityHint="Ver Orden"
+          accessibilityLabel="Ver Orden"
+          accessibilityRole="button"
+        >
+          <Ionicons name="bag" size={24} color="white" />
+        </TouchableOpacity>
         <CustomFlatList
-          
           data={products}
           renderItem={({ item }) => (
             <ProductCard
@@ -46,7 +71,7 @@ export default function AuthorizationScreen() {
           refreshing={refreshing}
           canRefresh={canRefresh}
           handleRefresh={handleRefresh}
-          //onHeaderVisibleChange={setHeaderVisible} // Only if use extrafilter={true} on ScreenSearchLayout
+          onHeaderVisibleChange={setHeaderVisible}  
           showtitle={true}
           //title={`${totalOrders} pedidos`}
           //subtitle={`con total ${totalVenezuela(totalUSD)}$`}
@@ -57,25 +82,8 @@ export default function AuthorizationScreen() {
               </Text>
             </View>
           }
-            numColumns={2}
-        />
-
-        {/*       
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item.code}
           numColumns={2}
-          renderItem={({ item }) => (
-            <ProductCard
-              code={item.code}
-              title={item.title}
-              price={item.price}
-              image={item.image}
-            />
-          )}
-          columnWrapperStyle={{ justifyContent: "space-between" }}
-          contentContainerStyle={{ padding:4, paddingBottom: 140 }}
-        /> */}
+        />
       </View>
     </ScreenSearchLayout>
   );

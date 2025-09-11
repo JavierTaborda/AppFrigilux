@@ -107,7 +107,7 @@ function CustomFlatList<T>({
         onScroll={handleScroll}
         scrollEventThrottle={16}
         progressViewOffset={100}
-        key={numColumns} // fuerza re-render al cambiar columnas
+        key={numColumns} // force  re-render to change numColumns
         numColumns={numColumns}
         columnWrapperStyle={
           numColumns > 1 ? { justifyContent: "space-between" } : undefined
@@ -180,8 +180,8 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   listContent: {
-    paddingBottom: 170,
-    paddingHorizontal: 10,
+    paddingBottom: 200,
+    paddingHorizontal: 16,
   },
   headerWrapper: {
     paddingBottom: 4,

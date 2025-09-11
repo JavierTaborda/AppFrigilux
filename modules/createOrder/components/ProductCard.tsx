@@ -6,6 +6,12 @@ type ProductCardProps = {
   title: string;
   price: number;
   image: string;
+  available?: number;
+  onPress?: () => void;
+  onAdd?: () => void;
+  onRemove?: () => void;
+  quantity?: number; 
+  isInOrder?: boolean;
 };
 
 export default function ProductCard({
@@ -37,10 +43,10 @@ export default function ProductCard({
       </Text>
 
       <View className="flex-row items-center justify-between pt-1">
-        <Text className="text-lg font-semibold text-primary dark:text-primary-dark">
+        <Text className="text-lg font-semibold text-foreground  dark:text-dark-foreground">
           {totalVenezuela(price)}
         </Text>
-        <TouchableOpacity className="flex-row items-center justify-center bg-primary dark:bg-primary-dark rounded-xl active:opacity-80">
+        <TouchableOpacity className="flex-row items-center justify-center bg-primary dark:bg-primary- dark:bg-dark-primary rounded-xl active:opacity-80">
           <Text className="text-white text-center font-semibold text-xl py-1 px-4">
             +
           </Text>
