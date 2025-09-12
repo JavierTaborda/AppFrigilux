@@ -1,8 +1,15 @@
 import FilterButton from '@/components/ui/FilterButton';
-import { useEffect, useRef } from 'react';
-import { Animated, Easing, ScrollView, View } from 'react-native';
+import { useEffect } from 'react';
+import { ScrollView, View } from 'react-native';
 import SearchBar from '../ui/SearchBar';
 
+// Reanimated v4
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 type ScreenSearchLayoutProps = {
   searchText: string;
@@ -17,7 +24,6 @@ type ScreenSearchLayoutProps = {
 };
 
 export default function ScreenSearchLayout({
-
   searchText,
   setSearchText,
   placeholder = '',
@@ -27,50 +33,26 @@ export default function ScreenSearchLayout({
   extraFiltersComponent,
   filterCount,
   headerVisible = true,
-
 }: ScreenSearchLayoutProps) {
-  const animatedValue = useRef(new Animated.Value(0)).current;
-  const isFirstRender = useRef(true);
+  // Usar useSharedValue en vez de useRef(new Animated.Value(0))
+  const animatedValue = useSharedValue(headerVisible ? 1 : 0);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      // Set value directly without animation
-      animatedValue.setValue(headerVisible ? 1 : 0);
-      isFirstRender.current = false;
-    } else {
-      Animated.timing(animatedValue, {
-        toValue: headerVisible ? 1 : 0,
-        duration: 250,
-        easing: Easing.out(Easing.exp),
-        //easing: Easing.inOut(Easing.ease),
-        useNativeDriver: false,
-      }).start();
-    }
+    animatedValue.value = withTiming(headerVisible ? 1 : 0, {
+      duration: 250,
+      easing: Easing.out(Easing.exp),
+    });
   }, [headerVisible]);
 
-  const animatedStyle = {
-    height: animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 45], // altura deseada
-      extrapolate: 'clamp',
-    }),
-    opacity: animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-      extrapolate: 'clamp',
-    }),
+  // Use useAnimatedStyle 
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: animatedValue.value * 45,
+    opacity: animatedValue.value,
     transform: [
-      {
-        scaleY: animatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0.95, 1],
-          extrapolate: 'clamp',
-        }),
-      },
+      { scaleY: 0.95 + 0.05 * animatedValue.value },
     ],
-    overflow: 'hidden' as const,
-  };
-
+    overflow: 'hidden',
+  }));
 
   return (
     <View className="flex-1 pt-0.5 bg-primary dark:bg-dark-primary ">

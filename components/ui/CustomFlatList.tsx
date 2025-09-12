@@ -3,7 +3,6 @@ import { appColors } from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef } from "react";
 import {
-  FlatList,
   FlatListProps,
   Platform,
   RefreshControl,
@@ -11,8 +10,9 @@ import {
   Text,
   ToastAndroid,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
+import Animated from "react-native-reanimated";
 import TitleText from "./TitleText";
 
 type Props<T> = {
@@ -32,6 +32,8 @@ type Props<T> = {
   showScrollTopButton?: boolean;
 };
 
+const AnimatedFlatList = Animated.FlatList;
+
 function CustomFlatList<T>({
   data,
   renderItem,
@@ -48,7 +50,7 @@ function CustomFlatList<T>({
   numColumns = 1,
   showScrollTopButton = true,
 }: Props<T>) {
-  const flatListRef = useRef<FlatList<T>>(null);
+  const flatListRef = useRef<any>(null); // Cambia el tipo a 'any' para Animated.FlatList
 
   const { handleScroll, showScrollTop, headerVisible } = useScrollHeader();
 
@@ -86,7 +88,7 @@ function CustomFlatList<T>({
       {showScrollTop && showScrollTopButton && (
         <TouchableOpacity
           onPress={() =>
-            flatListRef.current?.scrollToOffset({ offset: 0, animated: true })
+            flatListRef.current?.scrollToIndex({ index: 0, animated: true })
           }
           style={styles.scrollTopButton}
           className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg"
@@ -98,13 +100,13 @@ function CustomFlatList<T>({
       )}
 
       {/* Lista */}
-      <FlatList
-        ref={flatListRef}
+      <AnimatedFlatList
+        ref={flatListRef} // Asegúrate que AnimatedFlatList use esta ref
         data={data}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
-        onScroll={handleScroll}
+        onScroll={handleScroll} // ahora sí funciona con useAnimatedScrollHandler
         scrollEventThrottle={16}
         progressViewOffset={100}
         key={numColumns} // force  re-render to change numColumns

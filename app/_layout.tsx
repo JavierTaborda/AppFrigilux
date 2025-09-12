@@ -7,13 +7,13 @@ import "../global.css";
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <AuthProvider>
           <StatusBar style="auto" />
           <Slot />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
-    </AuthProvider>
+        </AuthProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

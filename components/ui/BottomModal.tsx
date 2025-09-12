@@ -1,15 +1,36 @@
-import React, { useEffect } from 'react';
-import { Dimensions, Modal, Platform, StatusBar, View } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { forwardRef, useEffect } from "react";
+import {
+  Dimensions,
+  Modal,
+  Platform,
+  StatusBar,
+  View,
+  ViewProps,
+} from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type BottomModalProps = {
   visible: boolean;
   onClose: () => void;
-  heightPercentage?: number; // % height
+  heightPercentage?: number;
   children: React.ReactNode;
 };
+
+// SDK 54
+const AnimatedView = forwardRef<View, ViewProps>((props, ref) => (
+  <Animated.View ref={ref} {...props} />
+));
 
 export default function BottomModal({
   visible,
@@ -17,14 +38,12 @@ export default function BottomModal({
   children,
   heightPercentage = 0.8,
 }: BottomModalProps) {
-
-
-  const insets = useSafeAreaInsets(); 
-  const windowHeight = Dimensions.get('window').height;
-  const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0;
-
-
-  const modalHeight = (windowHeight - statusBarHeight) * heightPercentage + insets.bottom;
+  const insets = useSafeAreaInsets();
+  const windowHeight = Dimensions.get("window").height;
+  const statusBarHeight =
+    Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+  const modalHeight =
+    (windowHeight - statusBarHeight) * heightPercentage + insets.bottom;
 
   const translateY = useSharedValue(modalHeight);
   const ANIMATION_CONFIG = {
@@ -36,16 +55,10 @@ export default function BottomModal({
     restSpeedThreshold: 0.01,
   };
 
-  // Show/Hide Modal
   useEffect(() => {
-    if (visible) {
-      translateY.value = withSpring(0, ANIMATION_CONFIG);
-    } else {
-      translateY.value = withSpring(modalHeight, ANIMATION_CONFIG);
-    }
+    translateY.value = withSpring(visible ? 0 : modalHeight, ANIMATION_CONFIG);
   }, [visible, modalHeight]);
 
-  // Drag and close
   const dragGesture = Gesture.Pan()
     .onUpdate((event) => {
       if (event.translationY > 0) {
@@ -60,7 +73,6 @@ export default function BottomModal({
       }
     });
 
-  // animate
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
     bottom: 0,
@@ -71,18 +83,18 @@ export default function BottomModal({
   return (
     <Modal
       visible={visible}
-      transparent={true}
+      transparent
       animationType="fade"
       onRequestClose={onClose}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <View className="flex-1 justify-end bg-overlay dark:bg-dark-overlay">
-          <Animated.View
+          <AnimatedView
             style={[
               sheetStyle,
               {
                 height: modalHeight,
-                paddingBottom: insets.bottom, //space fo home iindicator or navigation button 
+                paddingBottom: insets.bottom,
               },
             ]}
             className="px-5 rounded-t-3xl bg-background dark:bg-dark-background"
@@ -93,7 +105,7 @@ export default function BottomModal({
               </View>
             </GestureDetector>
             {children}
-          </Animated.View>
+          </AnimatedView>
         </View>
       </GestureHandlerRootView>
     </Modal>

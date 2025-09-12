@@ -1,49 +1,47 @@
-
-import { useRef, useState } from 'react';
-import { Animated, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { useState } from 'react';
+import { runOnJS, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 export function useScrollHeader() {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const scrollDirection = useRef<'up' | 'down'>('up');
-  const lastScrollY = useRef(0);
+  const scrollY = useSharedValue(0);
+  const lastScrollY = useSharedValue(0);
+  const scrollDirection = useSharedValue<'up' | 'down'>('up');
 
-  const handleScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-    {
-      useNativeDriver: false,
-      listener: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const currentY = event.nativeEvent.contentOffset.y;
-        const lastY = lastScrollY.current;
+  const handleScroll = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      const currentY = event.contentOffset.y;
+      const lastY = lastScrollY.value;
 
-        if (currentY > 200 && !showScrollTop) {
-          setShowScrollTop(true);
-        } else if (currentY <= 200 && showScrollTop) {
-          setShowScrollTop(false);
+      // Para mostrar botón scroll top
+      if (currentY > 200 && !showScrollTop) {
+        runOnJS(setShowScrollTop)(true);
+      } else if (currentY <= 200 && showScrollTop) {
+        runOnJS(setShowScrollTop)(false);
+      }
+
+      // Mostrar/ocultar header
+      if (currentY <= 0 && !headerVisible) {
+        runOnJS(setHeaderVisible)(true);
+        scrollDirection.value = 'up';
+      }
+
+      const delta = currentY - lastY;
+      if (Math.abs(delta) > 15) {
+        if (delta > 0 && scrollDirection.value !== 'down') {
+          scrollDirection.value = 'down';
+          runOnJS(setHeaderVisible)(false);
+        } else if (delta < 0 && scrollDirection.value !== 'up') {
+          scrollDirection.value = 'up';
+          runOnJS(setHeaderVisible)(true);
         }
+      }
 
-        if (currentY <= 0 && !headerVisible) {
-          setHeaderVisible(true);
-          scrollDirection.current = 'up';
-        }
-
-        const delta = currentY - lastY;
-        if (Math.abs(delta) > 15) {
-          if (delta > 0 && scrollDirection.current !== 'down') {
-            scrollDirection.current = 'down';
-            setHeaderVisible(false);
-          } else if (delta < 0 && scrollDirection.current !== 'up') {
-            scrollDirection.current = 'up';
-            setHeaderVisible(true);
-          }
-        }
-
-        lastScrollY.current = currentY;
-      },
-    }
-  );
+      lastScrollY.value = currentY;
+      scrollY.value = currentY;
+    },
+  });
 
   return {
     scrollY,

@@ -1,5 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 import SplashScreen from "@/components/SplashScreen";
 import { supabase } from "@/lib/supabase";
@@ -11,90 +17,82 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { hydrate } = useThemeStore();
   const { showSplash, initializeApp } = useAuthProviderStore();
 
-  const splashOpacity = useRef(new Animated.Value(1)).current;
-  const contentOpacity = useRef(new Animated.Value(0)).current;
+  // valores compartidos en Reanimated
+  const splashOpacity = useSharedValue(1);
+  const contentOpacity = useSharedValue(0);
 
-  // wait for the first rendero
+  // estilos animados
+  const splashStyle = useAnimatedStyle(() => ({
+    ...StyleSheet.absoluteFillObject,
+    opacity: splashOpacity.value,
+  }));
+
+  const contentStyle = useAnimatedStyle(() => ({
+    ...StyleSheet.absoluteFillObject,
+    opacity: contentOpacity.value,
+  }));
+
+  // esperar primer render
   const [isMounted, setIsMounted] = useState(false);
-
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Refresh the JWT when supabase doit
+  // refresh de sesión en supabase
   useEffect(() => {
     const { data: subscription } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === "TOKEN_REFRESHED" && session) {
-          // 🔄 Actualizas el JWT en tu Zustand store
           useAuthStore.getState().setSession(session);
           useAuthStore.getState().setToken(session.access_token);
         }
       }
     );
-
     return () => {
       subscription.subscription.unsubscribe();
     };
   }, []);
 
+  // init de la app
   useEffect(() => {
     if (!isMounted) return;
 
     const init = async () => {
       try {
-        //  delay to asegurate the UI render
-        await new Promise((res) => setTimeout(res, 500));
-
+        await new Promise((res) => setTimeout(res, 500)); // delay pequeño
         await hydrate();
         await initializeApp();
       } catch (e) {
         console.log("Error initializing app:", e);
       }
     };
-
     init();
   }, [isMounted]);
 
+  // animaciones splash → contenido
   useEffect(() => {
     if (!showSplash) {
-      Animated.sequence([
-        Animated.timing(splashOpacity, {
-          toValue: 0,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(contentOpacity, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      splashOpacity.value = withTiming(0, {
+        duration: 400,
+        easing: Easing.ease,
+      });
+      contentOpacity.value = withTiming(1, {
+        duration: 400,
+        easing: Easing.ease,
+      });
     }
   }, [showSplash]);
 
   return (
     <View className="flex-1 bg-background dark:bg-dark-background">
       {showSplash && (
-        <Animated.View
-          style={[styles.absoluteFill, { opacity: splashOpacity }]}
-        >
+        <Animated.View style={splashStyle}>
           <SplashScreen />
         </Animated.View>
       )}
       {!showSplash && (
-        <Animated.View
-          style={[styles.absoluteFill, { opacity: contentOpacity }]}
-        >
-          {children}
-        </Animated.View>
+        <Animated.View style={contentStyle}>{children}</Animated.View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  absoluteFill: {
-    ...StyleSheet.absoluteFillObject,
-  },
-});

@@ -4,8 +4,7 @@ import { getBiometricEnabled } from '@/utils/biometricFlag';
 import { appColors } from '@/utils/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import BiometricToggle from '../components/BiometricView';
 
 export default function ProfileScreen() {
