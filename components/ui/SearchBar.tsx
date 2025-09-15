@@ -1,15 +1,20 @@
 import { useThemeStore } from "@/stores/useThemeStore";
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Animated,
   Keyboard,
   Platform,
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
 type Props = {
   searchText: string;
@@ -28,18 +33,19 @@ export default function SearchBar({
   const [isFocused, setIsFocused] = useState(false);
   const [inputValue, setInputValue] = useState(searchText);
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const inputWidthAnim = useRef(new Animated.Value(1)).current;
+  // shared values
+  const fadeAnim = useSharedValue(0);
+  const scaleAnim = useSharedValue(0);
+  const inputWidthAnim = useSharedValue(1);
 
   const inputHeight = Platform.select({ android: 40, ios: 38 });
 
-  // Sync internal state when searchText changes externally
+  // Sync external changes
   useEffect(() => {
     setInputValue(searchText);
   }, [searchText]);
 
-  // Debounce search updates
+  // Debounce
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchText(inputValue);
@@ -49,26 +55,16 @@ export default function SearchBar({
 
   // Show/hide clear button
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: inputValue.length > 0 ? 1 : 0,
+    fadeAnim.value = withTiming(inputValue.length > 0 ? 1 : 0, {
       duration: 200,
-      useNativeDriver: true,
-    }).start();
-
-    Animated.spring(scaleAnim, {
-      toValue: inputValue.length > 0 ? 1 : 0,
-      useNativeDriver: true,
-    }).start();
+    });
+    scaleAnim.value = withSpring(inputValue.length > 0 ? 1 : 0);
   }, [inputValue]);
 
-  // Animate width when needed
+  // Animate width
   useEffect(() => {
     if (!isFull) return;
-    Animated.timing(inputWidthAnim, {
-      toValue: isFocused ? 0.95 : 1,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
+    inputWidthAnim.value = withTiming(isFocused ? 0.95 : 1, { duration: 200 });
   }, [isFocused, isFull]);
 
   const handleCancel = () => {
@@ -76,14 +72,21 @@ export default function SearchBar({
     setIsFocused(false);
   };
 
+  //  Animated styles
+  const clearButtonStyle = useAnimatedStyle(() => ({
+    opacity: fadeAnim.value,
+    transform: [{ scale: scaleAnim.value }],
+  }));
+
+  const inputContainerStyle = useAnimatedStyle(() => ({
+    flex: inputWidthAnim.value,
+  }));
+
   return (
     <View className="flex-row items-center py-1">
       <Animated.View
-        className="flex-row items-center px-4 bg-componentbg dark:bg-dark-componentbg rounded-full "//shadow-sm shadow-black/10
-        style={{
-          flex: inputWidthAnim,
-          //elevation: Platform.OS === "android" ? 2 : 0,
-        }}
+        className="flex-row items-center px-4 bg-componentbg dark:bg-dark-componentbg rounded-full"
+        style={inputContainerStyle}
       >
         <Ionicons
           name="search-outline"
@@ -102,12 +105,7 @@ export default function SearchBar({
           returnKeyType="search"
           autoCorrect={false}
         />
-        <Animated.View
-          style={{
-            opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }],
-          }}
-        >
+        <Animated.View style={clearButtonStyle}>
           <TouchableOpacity
             onPress={() => setInputValue("")}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

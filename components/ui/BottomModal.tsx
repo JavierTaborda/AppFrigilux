@@ -13,12 +13,12 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
 
+import { scheduleOnRN } from "react-native-worklets";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -69,7 +69,7 @@ export default function BottomModal({
     })
     .onEnd((event) => {
       if (event.translationY > 120 || event.velocityY > 800) {
-        runOnJS(onClose)();
+        scheduleOnRN(onClose);
       } else {
         translateY.value = withSpring(0, ANIMATION_CONFIG);
       }
