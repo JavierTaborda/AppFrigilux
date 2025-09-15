@@ -34,7 +34,7 @@ export default function ScreenSearchLayout({
   filterCount,
   headerVisible = true,
 }: ScreenSearchLayoutProps) {
-  // Usar useSharedValue en vez de useRef(new Animated.Value(0))
+
   const animatedValue = useSharedValue(headerVisible ? 1 : 0);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function ScreenSearchLayout({
 
   // Use useAnimatedStyle 
   const animatedStyle = useAnimatedStyle(() => ({
-    height: animatedValue.value * 45,
+    height: animatedValue.value * 48,
     opacity: animatedValue.value,
     transform: [
       { scaleY: 0.95 + 0.05 * animatedValue.value },

@@ -8,28 +8,16 @@ import { Ionicons } from "@expo/vector-icons";
 import ProductCard from "../components/ProductCard";
 import useCreateOrder from "../hooks/useCreateOrder";
 
-export default function AuthorizationScreen() {
-  const {
-    loading,
-    error,
-    createOrder,
-    products,
-    handleRefresh,
-    refreshing,
-    canRefresh,
-  } = useCreateOrder();
+export default function CreateOrderScreen() {
+  const { loading, error, products, handleRefresh, refreshing, canRefresh } =
+    useCreateOrder();
 
   const [searchText, setSearchText] = useState("");
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-   const [headerVisible, setHeaderVisible] = useState(true); 
+  const [headerVisible, setHeaderVisible] = useState(true);
 
-  const handleApplyFilters = () => {
-    setFilterModalVisible(false);
-  };
+  if (loading) return <Loader />;
 
-  if (loading) {
-    return <Loader />;
-  }
   if (error) {
     return (
       <View className="flex-1 justify-center items-center p-4">
@@ -37,6 +25,7 @@ export default function AuthorizationScreen() {
       </View>
     );
   }
+
   return (
     <ScreenSearchLayout
       searchText={searchText}
@@ -46,45 +35,36 @@ export default function AuthorizationScreen() {
       headerVisible={headerVisible}
       extrafilter={true}
     >
-      <View className="flex-1  pt-1">
-        <TouchableOpacity
-          onPress={() => alert("Ver Orden")}
-          className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg "
-          style={{ position: "absolute", zIndex: 50,  right: 20, bottom: 160 }}
-          accessibilityHint="Ver Orden"
-          accessibilityLabel="Ver Orden"
-          accessibilityRole="button"
-        >
-          <Ionicons name="bag" size={24} color="white" />
-        </TouchableOpacity>
-        <CustomFlatList
-          data={products}
-          renderItem={({ item }) => (
-            <ProductCard
-              code={item.code}
-              title={item.title}
-              price={item.price}
-              image={item.image}
-            />
-          )}
-          keyExtractor={(item, index) => `${item.code}-${index}`}
-          refreshing={refreshing}
-          canRefresh={canRefresh}
-          handleRefresh={handleRefresh}
-          onHeaderVisibleChange={setHeaderVisible}  
-          showtitle={true}
-          //title={`${totalOrders} pedidos`}
-          //subtitle={`con total ${totalVenezuela(totalUSD)}$`}
-          ListEmptyComponent={
-            <View className="p-10 items-center">
-              <Text className="text-foreground dark:text-dark-foreground">
-                No se encontraron prooductos...
-              </Text>
-            </View>
-          }
-          numColumns={2}
-        />
-      </View>
+      <CustomFlatList
+        data={products}
+        renderItem={({ item }) => (
+          <ProductCard
+            code={item.code}
+            title={item.title}
+            price={item.price}
+            image={item.image}
+          />
+        )}
+        keyExtractor={(item, index) => `${item.code}-${index}`}
+        refreshing={refreshing}
+        canRefresh={canRefresh}
+        handleRefresh={handleRefresh}
+        onHeaderVisibleChange={setHeaderVisible}
+        showtitle={true}
+        numColumns={2}
+      />
+
+      {/* Botón flotante de ver orden */}
+      <TouchableOpacity
+        onPress={() => alert("Ver Orden")}
+        className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg"
+        style={{ position: "absolute", zIndex: 50, right: 20, bottom: 160 }}
+        accessibilityHint="Ver Orden"
+        accessibilityLabel="Ver Orden"
+        accessibilityRole="button"
+      >
+        <Ionicons name="bag" size={24} color="white" />
+      </TouchableOpacity>
     </ScreenSearchLayout>
   );
 }

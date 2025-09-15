@@ -1,50 +1,46 @@
-import { useState } from 'react';
-import { runOnJS, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import { useCallback, useRef, useState } from "react";
+import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
 export function useScrollHeader() {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const lastScrollY = useRef(0);
+  const scrollDirection = useRef<"up" | "down">("up");
 
-  const scrollY = useSharedValue(0);
-  const lastScrollY = useSharedValue(0);
-  const scrollDirection = useSharedValue<'up' | 'down'>('up');
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const currentY = event.nativeEvent.contentOffset.y;
 
-  const handleScroll = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      const currentY = event.contentOffset.y;
-      const lastY = lastScrollY.value;
-
-      // Para mostrar botón scroll top
+      // Show scroll-to-top button
       if (currentY > 200 && !showScrollTop) {
-        runOnJS(setShowScrollTop)(true);
+        setShowScrollTop(true);
       } else if (currentY <= 200 && showScrollTop) {
-        runOnJS(setShowScrollTop)(false);
+        setShowScrollTop(false);
       }
 
-      // Mostrar/ocultar header
+      // Show/hide header
       if (currentY <= 0 && !headerVisible) {
-        runOnJS(setHeaderVisible)(true);
-        scrollDirection.value = 'up';
+        setHeaderVisible(true);
+        scrollDirection.current = "up";
       }
 
-      const delta = currentY - lastY;
+      const delta = currentY - lastScrollY.current;
       if (Math.abs(delta) > 15) {
-        if (delta > 0 && scrollDirection.value !== 'down') {
-          scrollDirection.value = 'down';
-          runOnJS(setHeaderVisible)(false);
-        } else if (delta < 0 && scrollDirection.value !== 'up') {
-          scrollDirection.value = 'up';
-          runOnJS(setHeaderVisible)(true);
+        if (delta > 0 && scrollDirection.current !== "down") {
+          scrollDirection.current = "down";
+          setHeaderVisible(false);
+        } else if (delta < 0 && scrollDirection.current !== "up") {
+          scrollDirection.current = "up";
+          setHeaderVisible(true);
         }
       }
 
-      lastScrollY.value = currentY;
-      scrollY.value = currentY;
+      lastScrollY.current = currentY;
     },
-  });
+    [headerVisible, showScrollTop]
+  );
 
   return {
-    scrollY,
     handleScroll,
     headerVisible,
     showScrollTop,

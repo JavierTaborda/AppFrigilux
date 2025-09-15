@@ -18,6 +18,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+
+
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type BottomModalProps = {

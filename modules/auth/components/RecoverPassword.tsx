@@ -1,17 +1,10 @@
-import EmailInput from '@/components/inputs/EmailImput';
 import { useState } from 'react';
 import {
   Dimensions,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+  TouchableOpacity
 } from 'react-native';
-import Modal from 'react-native-modal';
 const { height } = Dimensions.get('window');
 
 export default function PasswordRecoveryModal() {
@@ -38,7 +31,7 @@ export default function PasswordRecoveryModal() {
       </TouchableOpacity>
 
       {/* Modal  swipe */}
-      <Modal
+      {/* <Modal
         isVisible={visible}
         swipeDirection="down"
         onSwipeComplete={() => setVisible(false)}
@@ -98,7 +91,7 @@ export default function PasswordRecoveryModal() {
             </View>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
-      </Modal>
+      </Modal> */}
     </>
   );
 }

@@ -41,12 +41,12 @@ export default function CustomDrawerContent(props: any) {
         <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
           Pedidos
         </Text>
-        <DrawerItem
+        {/* <DrawerItem
           icon="bag-check"
           label="Aprobación Pedidos"
           href="/(main)/(tabs)/(orders)/orderApproval"
           currentPath={currentPath}
-        />
+        /> */}
         <DrawerItem
           emoji={emojis.package}
           // icon="bag-check"
