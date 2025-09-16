@@ -3,26 +3,34 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
 import CustomFlatList from "@/components/ui/CustomFlatList";
+import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import ProductCard from "../components/ProductCard";
 import useCreateOrder from "../hooks/useCreateOrder";
 
 export default function CreateOrderScreen() {
-  const { loading, error, products, handleRefresh, refreshing, canRefresh } =
-    useCreateOrder();
+  const {
+    loading,
+    error,
+    products,
+    handleRefresh,
+    refreshing,
+    canRefresh,
+    createOrder,
+  } = useCreateOrder();
 
   const [searchText, setSearchText] = useState("");
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
+  const router = useRouter();
 
   if (loading) return <Loader />;
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center p-4">
-        <Text className="text-red-500">Error al cargar productos: {error}</Text>
-      </View>
+      <ErrorView error={error} getData={handleRefresh}/>
     );
   }
 
@@ -43,6 +51,7 @@ export default function CreateOrderScreen() {
             title={item.title}
             price={item.price}
             image={item.image}
+            available={item.available}
           />
         )}
         keyExtractor={(item, index) => `${item.code}-${index}`}
@@ -52,19 +61,36 @@ export default function CreateOrderScreen() {
         onHeaderVisibleChange={setHeaderVisible}
         showtitle={true}
         numColumns={2}
+        showScrollTopButton={false}
       />
 
-      {/* Botón flotante de ver orden */}
-      <TouchableOpacity
-        onPress={() => alert("Ver Orden")}
-        className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg"
-        style={{ position: "absolute", zIndex: 50, right: 20, bottom: 160 }}
-        accessibilityHint="Ver Orden"
-        accessibilityLabel="Ver Orden"
-        accessibilityRole="button"
+      <View
+    
+        style={{ position: "absolute", zIndex: 50, bottom: 120, paddingHorizontal:20 }}
+        className="flex-row gap-3 w-full "
       >
-        <Ionicons name="bag" size={24} color="white" />
-      </TouchableOpacity>
+        <TouchableOpacity
+          className="bg-primary dark:bg-dark-primary p-4 flex-1 items-center justify-center rounded-full shadow-lg  shadow-inherit"
+          onPress={() => router.push('/(main)/(tabs)/(createOrder)/order-summary')}
+        >
+          <View className="flex-row gap-1 items-center">
+            <Ionicons name="checkmark-sharp" size={24} color="white" />
+            <Text className="text-lg font-semibold text-white">
+              Confirmar pedido
+            </Text>
+          </View>
+        </TouchableOpacity>
+        {/*  Confirmar pedido */}
+        <TouchableOpacity
+          onPress={() => alert("Ver Pedido")}
+          className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg"
+          accessibilityHint="Ver Pedido"
+          accessibilityLabel="Ver Pedido"
+          accessibilityRole="button"
+        >
+          <Ionicons name="bag" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
     </ScreenSearchLayout>
   );
 }

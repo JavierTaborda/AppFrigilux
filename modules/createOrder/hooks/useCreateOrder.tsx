@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { order } from "../types/order";
+
 
 const useCreateOrder = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [neworder, setOrders] = useState<order[]>([]);
   const [canRefresh, setCanRefresh] = useState(true);
 
   const products = [
@@ -12,12 +15,14 @@ const useCreateOrder = () => {
       title: "Cocina Frigilux 4 Hornillas a Gas",
       price: 230.99,
       image: "https://frigilux.com/wp-content/uploads/2025/08/01-COFS-4I.jpg",
+      available: 12,
     },
     {
       code: "HEGFR-2IX",
       title: "Horno P/Emp. Mixto Mod.",
       price: 388.79,
       image: "https://frigilux.com/wp-content/uploads/2025/08/01-HEFR-4IX.jpg",
+      available: 5,
     },
     {
       code: "CACFRQD-60X",
@@ -25,6 +30,7 @@ const useCreateOrder = () => {
       price: 388.79,
       image:
         "https://frigilux.com/wp-content/uploads/2024/06/01-CACFRQD-60X-1000x1000-1.jpg",
+      available: 10,
     },
     {
       code: "HEGFR-2IX3",
@@ -38,6 +44,7 @@ const useCreateOrder = () => {
       price: 388.79,
       image:
         "https://frigilux.com/wp-content/uploads/2025/08/01-TCFR-85STC.jpg",
+      available: 15,
     },
     {
       code: "RVFR-392IX",
@@ -45,6 +52,7 @@ const useCreateOrder = () => {
       price: 388.79,
       image:
         "https://frigilux.com/wp-content/uploads/2025/08/01-RVFR-392IX.jpg",
+      available: 3,
     },
   ];
 
@@ -88,6 +96,7 @@ const useCreateOrder = () => {
     handleRefresh,
     products,
     refreshing,
+    neworder,
   };
 };
 

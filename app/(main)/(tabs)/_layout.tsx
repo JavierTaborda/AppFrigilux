@@ -26,23 +26,35 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      backBehavior="history"
       screenOptions={({ route }) => ({
         animationEnabled: true,
 
         tabBarIcon: ({ focused, color, size }) => (
-          <Ionicons name={getTabIcon(route.name, focused)} size={size} color={color} />
+          <Ionicons
+            name={getTabIcon(route.name, focused)}
+            size={size}
+            color={color}
+          />
         ),
         //Button styles of tab
         tabBarButton: (props: BottomTabBarButtonProps) => {
-          const { onPress, onLongPress, accessibilityState, accessibilityLabel, testID, children } = props;
+          const {
+            onPress,
+            onLongPress,
+            accessibilityState,
+            accessibilityLabel,
+            testID,
+            children,
+          } = props;
           const focused = accessibilityState?.selected ?? false;
 
-          //Color  ripple 
+          //Color  ripple
           const rippleColor = focused
             ? appColors.primary.DEFAULT
-            : theme === 'dark'
-              ? 'rgba(255,255,255,0.15)'
-              : 'rgba(0,0,0,0.08)';
+            : theme === "dark"
+              ? "rgba(255,255,255,0.15)"
+              : "rgba(0,0,0,0.08)";
           return (
             <Pressable
               onPress={onPress}
@@ -55,15 +67,14 @@ export default function TabLayout() {
                 borderless: false,
                 radius: 60,
               }}
-
             >
               <View
                 style={{
                   borderRadius: 40,
                   paddingVertical: 8,
                   paddingHorizontal: 12,
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 {children}
@@ -73,20 +84,16 @@ export default function TabLayout() {
         },
         // Tab bar visual styling
         tabBarStyle: {
-          position: 'absolute',
+          position: "absolute",
           bottom: 0,
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom,
           backgroundColor:
-            theme === 'dark'
-              ? appColors.dark.background
-              : appColors.background,
+            theme === "dark" ? appColors.dark.background : appColors.background,
           borderTopWidth: 1,
           borderTopColor:
-            theme === 'dark'
-              ? appColors.dark.separator
-              : appColors.separator,
-          shadowColor: '#000',
+            theme === "dark" ? appColors.dark.separator : appColors.separator,
+          shadowColor: "#000",
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.05,
           shadowRadius: 4,
@@ -95,17 +102,17 @@ export default function TabLayout() {
 
         tabBarActiveTintColor: appColors.primary.DEFAULT,
         tabBarInactiveTintColor: appColors.mutedForeground,
-        //  Tab item style 
+        //  Tab item style
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '600',
+          fontWeight: "600",
         },
         // Header configuration
         headerShown: true,
         headerLeft: () => (
           <DrawerToggleButton
             tintColor={
-              theme === 'dark'
+              theme === "dark"
                 ? appColors.dark.foreground
                 : appColors.background
             }
@@ -113,44 +120,31 @@ export default function TabLayout() {
         ),
         headerStyle: {
           backgroundColor:
-            theme === 'dark'
+            theme === "dark"
               ? appColors.dark.primary.DEFAULT
               : appColors.primary.DEFAULT,
           borderBottomWidth: 0,
           elevation: 4,
-          shadowColor: '#000',
+          shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.08,
           shadowRadius: 2,
         },
         headerTintColor:
-          theme === 'dark'
-            ? appColors.dark.foreground
-            : appColors.background,
+          theme === "dark" ? appColors.dark.foreground : appColors.background,
       })}
     >
-   
-      <Tabs.Screen
-        name="(home)/index"
-        options={{ title: 'Inicio' }}
-      />  
-       <Tabs.Screen
-        name="(profile)/index"
-        options={{ title: 'Perfil' }}
-      />
-      <Tabs.Screen
-        name="(settings)/index"
-        options={{ title: 'Ajustes' }}
-      />
-
+      <Tabs.Screen name="(home)/index" options={{ title: "Inicio" }} />
+      <Tabs.Screen name="(profile)/index" options={{ title: "Perfil" }} />
+      <Tabs.Screen name="(settings)/index" options={{ title: "Ajustes" }} />
 
       {/*  not shown in tab bar */}
       <Tabs.Screen
         name="(pays)/authPays"
         options={{
-          href: null,// makes route invisible in tabs
+          href: null, // makes route invisible in tabs
           headerShown: true,
-          title: 'Autorización de Pagos',
+          title: "Autorización de Pagos",
         }}
       />
       <Tabs.Screen
@@ -158,7 +152,7 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: true,
-          title: 'Aprobación de Pedidos',
+          title: "Aprobación de Pedidos",
         }}
       />
       <Tabs.Screen
@@ -166,7 +160,15 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: true,
-          title: 'Crear Pedido',
+          title: "Crear Pedido",
+        }}
+      />
+      <Tabs.Screen
+        name="(createOrder)/order-summary"
+        options={{
+          href: null,
+          headerShown: true,
+          title: "Crear Pedido",
         }}
       />
     </Tabs>

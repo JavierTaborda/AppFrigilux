@@ -19,13 +19,14 @@ export default function ProductCard({
   price,
   image,
   code,
+  available,
 }: ProductCardProps) {
   return (
     <View className="bg-white dark:bg-dark-componentbg rounded-2xl  p-4 mb-4 w-[48%] shadow shadow-gray-200 dark:shadow-black/20">
       <Image
         source={{ uri: image }}
-        className="h-32 w-full rounded-xl mb-2"// bg-stone-200/60 dark:bg-stone-100
-        resizeMode='cover' // contain
+        className="h-32 w-full rounded-xl mb-2" // bg-stone-200/60 dark:bg-stone-100
+        resizeMode="cover" // contain
       />
       <Text
         className="text-base text-foreground dark:text-dark-foreground  overflow-hidden"
@@ -53,7 +54,7 @@ export default function ProductCard({
         </TouchableOpacity>
       </View>
       <Text className="text-xs text-gray-400 dark:text-gray-500">
-        Disponibles 12
+        Disponibles {available}
       </Text>
     </View>
   );
