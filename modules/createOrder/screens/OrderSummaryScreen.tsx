@@ -12,9 +12,9 @@ export default function OrderSummaryScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background dark:bg-dark-background px-6 pt-10">
-      {/* Encabezado */}
+
       <View className="mb-6">
-        <Text className="text-2xl font-bold text-foreground text-dark-foreground">
+        <Text className="text-2xl font-bold text-foreground dark:text-dark-foreground">
           Detalles del pedido
         </Text>
         <Text className="text-base text-gray-500 dark:text-gray-400">
@@ -22,7 +22,7 @@ export default function OrderSummaryScreen() {
         </Text>
       </View>
       <View className="mb-3 flex-row justify-start items-center gap-2">
-        <Text className="text-lg font-bold text-foreground text-dark-foreground">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
           Condicion del pago
         </Text>
         <Text className="text-base text-white bg-primary rounded-full p-2">
@@ -30,17 +30,17 @@ export default function OrderSummaryScreen() {
         </Text>
       </View>
       <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground text-dark-foreground">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
           Dirección de entrega{" "}
         </Text>
       </View>
       <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground text-dark-foreground">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
           Comentario
         </Text>
       </View>
       <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground text-dark-foreground">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
           Artículos
         </Text>
       </View>
@@ -65,28 +65,28 @@ export default function OrderSummaryScreen() {
       </View>
 
       <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground text-dark-foreground">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
           Descuento
         </Text>
       </View>
 
       <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground text-dark-foreground">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
           Subtotal
         </Text>
       </View>
       <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground text-dark-foreground">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
           IVA
         </Text>
       </View>
       <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground text-dark-foreground">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
           Total
         </Text>
       </View>
       <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground text-dark-foreground">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
           Precio final
         </Text>
       </View>
