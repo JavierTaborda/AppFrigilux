@@ -1,5 +1,6 @@
 import { totalVenezuela } from "@/utils/moneyFormat";
 import { Image, Text, TouchableOpacity, View } from "react-native";
+import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 type ProductCardProps = {
   code: string;
@@ -7,39 +8,35 @@ type ProductCardProps = {
   price: number;
   image: string;
   available?: number;
-  onPress?: () => void;
-  onAdd?: () => void;
-  onRemove?: () => void;
-  quantity?: number; 
-  isInOrder?: boolean;
 };
 
 export default function ProductCard({
+  code,
   title,
   price,
   image,
-  code,
   available,
 }: ProductCardProps) {
+  const cartItem = useCreateOrderStore((s) =>
+    s.items.find((i) => i.code === code)
+  );
+  const addItem = useCreateOrderStore((s) => s.addItem);
+  const increase = useCreateOrderStore((s) => s.increase);
+  const decrease = useCreateOrderStore((s) => s.decrease);
+
+  const quantity = cartItem?.quantity ?? 0;
+
   return (
     <View className="bg-white dark:bg-dark-componentbg rounded-2xl  p-4 mb-4 w-[48%] shadow shadow-gray-200 dark:shadow-black/20">
       <Image
         source={{ uri: image }}
-        className="h-32 w-full rounded-xl mb-2" // bg-stone-200/60 dark:bg-stone-100
-        resizeMode="cover" // contain
+        className="h-32 w-full rounded-xl mb-2"
+        resizeMode="cover"
       />
-      <Text
-        className="text-base text-foreground dark:text-dark-foreground  overflow-hidden"
-        numberOfLines={2}
-        lineBreakMode="tail"
-      >
+      <Text className="text-base text-foreground dark:text-dark-foreground">
         {code}
       </Text>
-      <Text
-        className="text-sm text-foreground dark:text-dark-foreground "
-        numberOfLines={2}
-        ellipsizeMode="middle"
-      >
+      <Text className="text-sm text-foreground dark:text-dark-foreground">
         {title}
       </Text>
 
@@ -47,14 +44,39 @@ export default function ProductCard({
         <Text className="text-lg font-semibold text-foreground  dark:text-dark-foreground">
           {totalVenezuela(price)}
         </Text>
-        <TouchableOpacity className="flex-row items-center justify-center bg-primary dark:bg-primary- dark:bg-dark-primary rounded-xl active:opacity-80">
-          <Text className="text-white text-center font-semibold text-xl py-1 px-4">
-            +
-          </Text>
-        </TouchableOpacity>
+
+        {quantity > 0 ? (
+          
+          <View className="flex-row items-center">
+            <TouchableOpacity
+              onPress={() => decrease(code)}
+              className="px-3 py-1 border rounded"
+            >
+              <Text>-</Text>
+            </TouchableOpacity>
+            <Text className="mx-2">{quantity}</Text>
+            <TouchableOpacity
+              onPress={() => increase(code)}
+              className="px-3 py-1 border rounded"
+            >
+              <Text>+</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            onPress={() => addItem({
+              code, title, price, image, available,
+              quantity: 1
+            })}
+            className="bg-primary rounded-xl py-2 px-4"
+          >
+            <Text className="text-white font-bold">+</Text>
+          </TouchableOpacity>
+        )}
       </View>
+
       <Text className="text-xs text-gray-400 dark:text-gray-500">
-        Disponibles {available}
+        Disponibles {available ?? "—"}
       </Text>
     </View>
   );

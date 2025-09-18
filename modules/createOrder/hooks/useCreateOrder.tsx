@@ -13,7 +13,7 @@ const useCreateOrder = () => {
     {
       code: "COFS-4I",
       title: "Cocina Frigilux 4 Hornillas a Gas",
-      price: 230.99,
+      price: 2300.99,
       image: "https://frigilux.com/wp-content/uploads/2025/08/01-COFS-4I.jpg",
       available: 12,
     },
