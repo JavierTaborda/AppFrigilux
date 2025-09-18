@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { order } from "../types/order";
 
-
 const useCreateOrder = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -56,15 +55,14 @@ const useCreateOrder = () => {
     },
   ];
 
-  const createOrder = async (orderData: any) => {
+  const createOrder = async () => {
     setLoading(true);
-    setError(null);
-
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (err) {
-      setError("Error creating order");
+      // Simulación API: aquí harías fetch a tu backend NestJS
+      await new Promise((res) => setTimeout(res, 1000));
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: "No se pudo crear el pedido." };
     } finally {
       setLoading(false);
     }

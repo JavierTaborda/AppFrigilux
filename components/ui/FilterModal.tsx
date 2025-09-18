@@ -1,81 +1,96 @@
 import { appColors } from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface FilterModalProps {
-    visible: boolean;
-    onClose: () => void;
-    onApply: () => void;
-    onClean: () => void;
-    children?: React.ReactNode;
-    title?: string;
-
+  visible: boolean;
+  onClose: () => void;
+  onApply: () => void;
+  onClean: () => void;
+  children?: React.ReactNode;
+  title?: string;
 }
 
-export default function FilterModal({ visible, onClose, onApply, onClean, children, title = 'Filtrar' }: FilterModalProps) {
-    const insets = useSafeAreaInsets();
+export default function FilterModal({
+  visible,
+  onClose,
+  onApply,
+  onClean,
+  children,
+  title = "Filtrar",
+}: FilterModalProps) {
+  const insets = useSafeAreaInsets();
 
-    return (
-        <Modal
-            transparent
-            visible={visible}
-            animationType="fade"
-            statusBarTranslucent
+  return (
+    <Modal
+      transparent
+      visible={visible}
+      animationType="fade"
+      statusBarTranslucent
+    >
+      <BlurView intensity={40} tint="dark" className="absolute inset-0">
+        <TouchableOpacity
+          className="flex-1"
+          activeOpacity={1}
+          onPress={onClose}
+        />
+      </BlurView>
+       <View className="flex-1  justify-end"> {/*bg-black/50 */}
+        <Animated.View
+          entering={FadeInUp}
+          exiting={FadeOutDown}
+          className="bg-background dark:bg-dark-background rounded-t-3xl p-1"
+          style={{
+            paddingBottom: insets.bottom,
+            minHeight: "40%",
+            maxHeight: "85%",
+          }}
         >
-            <View className="flex-1 bg-black/50 justify-end">
-                <Animated.View
-                    entering={FadeInUp}
-                    exiting={FadeOutDown}
-                    className="bg-background dark:bg-dark-background rounded-t-3xl p-1"
-                    style={{
-                        paddingBottom: insets.bottom, minHeight: '40%',
-                        maxHeight: '85%',
-                    }}
-                >
+          {/* Header */}
+          <View className="flex-row justify-between items-center mb-1 px-4 py-4">
+            <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
+              {title}
+            </Text>
+            <TouchableOpacity onPress={onClose}>
+              <Ionicons
+                name="close"
+                size={24}
+                color={appColors.mutedForeground}
+              />
+            </TouchableOpacity>
+          </View>
+          {children}
 
-                    {/* Header */}
-                    <View className="flex-row justify-between items-center mb-1 px-4 py-1">
-                        <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
-                            {title}
-                        </Text>
-                        <TouchableOpacity onPress={onClose}>
-                            <Ionicons name="close" size={24} color={appColors.mutedForeground} />
-                        </TouchableOpacity>
-                    </View>
-                    {
-                        children
-                    }
+          {/* Buttons */}
+          <View className="flex-row gap-3 mt-1 pb-1">
+            <TouchableOpacity
+              className="flex-1 p-3 rounded-xl border border-muted"
+              onPress={() => {
+                onClean();
+              }}
+            >
+              <Text className="text-center text-foreground dark:text-dark-foreground font-semibold">
+                Limpiar
+              </Text>
+            </TouchableOpacity>
 
-
-                    {/* Buttons */}
-                    <View className="flex-row gap-3 mt-1 pb-1">
-                        <TouchableOpacity
-                            className="flex-1 p-3 rounded-xl border border-muted"
-                            onPress={() => {
-                                onClean();
-                            }}
-                        >
-                            <Text className="text-center text-foreground dark:text-dark-foreground font-semibold">
-                                Limpiar
-                            </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            className="flex-1 p-3 rounded-xl bg-primary dark:bg-dark-primary"
-                            hitSlop={10}
-                            onPress={() => {
-                                onApply(); 
-                            }}
-                        >
-                            <Text className="text-center text-white font-semibold">
-                                Aplicar
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </Animated.View>
-            </View>
-        </Modal>
-    );
+            <TouchableOpacity
+              className="flex-1 p-3 rounded-xl bg-primary dark:bg-dark-primary"
+              hitSlop={10}
+              onPress={() => {
+                onApply();
+              }}
+            >
+              <Text className="text-center text-white font-semibold">
+                Aplicar
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </View>
+    </Modal>
+  );
 }
