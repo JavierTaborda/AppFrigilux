@@ -17,7 +17,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { emojis } from "@/utils/emojis";
-import { totalVenezuela } from "@/utils/moneyFormat";
+import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
 
@@ -75,14 +75,14 @@ const OrderModal: React.FC<OrderModalProps> = ({
             position: "absolute",
             right: 0,
             bottom: 100,
-            height: height * 0.65,
+            height: height * 0.70,
             width: "100%",
             padding: 10,
           },
           animatedStyle,
         ]}
       >
-        <View className="flex-1 rounded-3xl bg-background dark:bg-dark-background p-5 shadow-lg backdrop-blur-md">
+        <View className="flex-1 rounded-3xl bg-componentbg dark:bg-dark-componentbg p-5 shadow-lg backdrop-blur-md">
           {/* Header */}
           <View className="flex-row justify-between items-center mb-3">
             <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
@@ -109,25 +109,26 @@ const OrderModal: React.FC<OrderModalProps> = ({
               data={items}
               keyExtractor={(item: OrderItem, index) => `${item.code}-${index}`}
               renderItem={({ item }) => (
-                <View className="flex-row items-center my-2">
+                <View className="flex-row items-center my-1 p-2 rounded-xl">
                   <Image
                     source={{ uri: item.image }}
                     className="w-14 h-14 rounded-xl bg-gray-200"
                   />
                   <View className="flex-1 ml-3">
                     <Text
-                      className="text-sm font-semibold text-gray-900 dark:text-gray-100"
-                      numberOfLines={1}
+                      className="text-md font-semibold text-gray-900 dark:text-gray-100"
+                      numberOfLines={2}
                     >
-                      {item.title}
+                      {item.code} - {item.title}
                     </Text>
-                    <Text className="text-xs text-gray-500">{item.code}</Text>
+                    <Text className="text-sm text-gray-500"> Almacen 0001 - {item.price} {currencyDollar}</Text>
+
                   </View>
                   <View className="items-end">
                     <Text className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                       x{item.quantity}
                     </Text>
-                    <Text className="text-sm text-gray-600 dark:text-gray-300">
+                    <Text className="text-md text-gray-600 dark:text-gray-300">
                       {totalVenezuela(item.price * (item.quantity ?? 1))}
                     </Text>
                   </View>
@@ -138,10 +139,19 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
           {/* Footer */}
           <View className="border-t border-white/30 mt-3 pt-3">
+
+            <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+              Descuento {totalVenezuela(total)}
+            </Text>
+            <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+              Subtotal {totalVenezuela(total)}
+            </Text>
+            <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+              IVA
+            </Text>
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-3">
               Total: {totalVenezuela(total)}
             </Text>
-
             
             <TouchableOpacity
               className={`rounded-full py-4 items-center ${
