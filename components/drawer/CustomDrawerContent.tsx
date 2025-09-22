@@ -55,9 +55,16 @@ export default function CustomDrawerContent(props: any) {
           currentPath={currentPath}
         />
         <DrawerItem
+          emoji={emojis.list}
+          // icon="bag-check"
+          label="Consultar Pedidos"
+          href="/(main)/(tabs)/(orders)/orderSearch"
+          currentPath={currentPath}
+        />
+        <DrawerItem
           emoji={emojis.bags}
           label="Crear Pedido"
-          href="/(main)/(tabs)/(createOrder)"
+          href="/(main)/(tabs)/(createOrder)/create-order"
           currentPath={currentPath}
         />
       </View>

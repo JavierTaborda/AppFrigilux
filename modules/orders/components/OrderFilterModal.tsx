@@ -5,7 +5,7 @@ import { Platform, ScrollView, Text, TouchableOpacity, View } from "react-native
 import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
 import { OrderFilters, OrderStatus, statusOptions } from "../types/OrderFilters";
 
-interface OrderApprovalFilterModalProps {
+interface OrderFilterModalProps {
   visible: boolean;
   onClose: () => void;
   dataFilters: {
@@ -18,13 +18,13 @@ interface OrderApprovalFilterModalProps {
   onApply: (newFilters: OrderFilters) => void;
 }
 
-export default function OrderApprovalFilterModal({
+export default function OrderFilterModal({
   visible,
   onClose,
   onApply,
   filters,
   dataFilters,
-}: OrderApprovalFilterModalProps) {
+}: OrderFilterModalProps) {
   const [startDate, setStartDate] = useState<Date | undefined>(filters.startDate);
   const [endDate, setEndDate] = useState<Date | undefined>(filters.endDate);
   const [status, setStatus] = useState<OrderStatus>(filters.status);

@@ -26,7 +26,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      backBehavior="history"
+      // backBehavior="history"
       screenOptions={({ route }) => ({
         animationEnabled: true,
 
@@ -156,7 +156,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(createOrder)/index"
+        name="(orders)/orderSearch"
+        options={{
+          href: null,
+          headerShown: true,
+          title: "Consultar Pedidos",
+        }}
+      />
+      <Tabs.Screen
+        name="(createOrder)/create-order"
         options={{
           href: null,
           headerShown: true,

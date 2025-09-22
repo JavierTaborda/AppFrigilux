@@ -8,6 +8,7 @@ type ProductCardProps = {
   price: number;
   image: string;
   available?: number;
+  almacen:string;
 };
 
 export default function ProductCard({
@@ -16,6 +17,7 @@ export default function ProductCard({
   price,
   image,
   available,
+  almacen
 }: ProductCardProps) {
   const cartItem = useCreateOrderStore((s) =>
     s.items.find((i) => i.code === code)

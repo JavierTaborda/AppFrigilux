@@ -7,17 +7,14 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { totalVenezuela } from "@/utils/moneyFormat";
 import { useCallback, useState } from "react";
 import { Text, View } from "react-native";
-import FastFilters from "../components/FastFilters";
-import OrderApprovalCard from "../components/OrderApprovalCard";
 import OrderApprovalInfoModal from "../components/OrderAprovalInfoModal";
 import OrderFilterModal from "../components/OrderFilterModal";
+import OrderSearchCard from "../components/OrderSearchCard";
 import ProductListModal from "../components/ProductListModal/ProductListModal";
-import MountRangeModal from "../components/RangeMountModal";
 import { useOrderApproval } from "../hooks/useOrdersApproval";
 import { OrderApproval } from "../types/OrderApproval";
 import { OrderFilters } from "../types/OrderFilters";
-
-export default function OrderApprovalScreen() {
+export default function OrderSearchScreen() {
   const { role } = useAuthStore();
   const [searchText, setSearchText] = useState("");
   const [filterVisible, setFilterVisible] = useState(false);
@@ -70,26 +67,20 @@ export default function OrderApprovalScreen() {
     setFilters(newFilters);
     setFilterVisible(false);
   };
-  const handleApplyMountRange = (min: number | null, max: number | null) => {
-    setMountRange({ min, max });
-  };
+
 
   const renderOrderItem = useCallback(
     ({ item }: { item: OrderApproval }) => (
-      <OrderApprovalCard
+      <OrderSearchCard
         item={item}
         onPress={() => handleOpenInfoModal(item)}
         detailModal={() => handleOpenProductsModal(item)}
-        changeRevisado={(factNumber, newStatus) =>
-          handleChangeRevisado(item.fact_num, newStatus)
-        }
         hasPermission={hasPermission}
       />
     ),
     [
       handleOpenInfoModal,
       handleOpenProductsModal,
-      handleChangeRevisado,
       hasPermission,
     ]
   );
@@ -107,21 +98,21 @@ export default function OrderApprovalScreen() {
         placeholder="Cliente o número de pedido..."
         onFilterPress={() => setFilterVisible(true)}
         filterCount={activeFiltersCount}
-        extrafilter={true}
-        headerVisible={headerVisible}
-        extraFiltersComponent={
-          <FastFilters
-            sortDate={sortDate}
-            setSortDate={setSortDate}
-            sortMount={sortMount}
-            setSortMount={setSortMount}
-            showStatus={showStatus}
-            setShowStatus={setShowStatus}
-            openModalMount={modalMountVisible}
-            setModalMountVisible={setModalMountVisible}
-            mountRangeActive={mountRangeActive}
-          />
-        }
+        extrafilter={false}
+        headerVisible={false}
+        // extraFiltersComponent={
+        //   <FastFilters
+        //     sortDate={sortDate}
+        //     setSortDate={setSortDate}
+        //     sortMount={sortMount}
+        //     setSortMount={setSortMount}
+        //     showStatus={showStatus}
+        //     setShowStatus={setShowStatus}
+        //     openModalMount={modalMountVisible}
+        //     setModalMountVisible={setModalMountVisible}
+        //     mountRangeActive={mountRangeActive}
+        //   />
+        //}
       >
         <CustomFlatList
           //data={orders}
@@ -132,7 +123,6 @@ export default function OrderApprovalScreen() {
           canRefresh={canRefresh}
           handleRefresh={handleRefresh}
           cooldown={cooldown}
-          onHeaderVisibleChange={setHeaderVisible} // Only if use extrafilter={true} on ScreenSearchLayout
           showtitle={true}
           title={`${totalOrders} pedidos`}
           subtitle={`con total ${totalVenezuela(totalUSD)}$`}
@@ -178,16 +168,7 @@ export default function OrderApprovalScreen() {
           onApply={handleApplyFilters}
         />
       )}
-      {modalMountVisible && (
-        <MountRangeModal
-          visible={modalMountVisible}
-          onClose={() => setModalMountVisible(false)}
-          onApply={handleApplyMountRange}
-          initialMin={mountRange?.min}
-          initialMax={mountRange?.max}
-          maxMonto={maxMonto}
-        />
-      )}
+
     </>
   );
 }

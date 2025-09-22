@@ -10,6 +10,7 @@ export const emojis = {
   invoice: "🧾",
   bank: "🏦",
   bags: "🛍️",
+  list:"📋",
 
   // 👥 Users
   user: "👤",

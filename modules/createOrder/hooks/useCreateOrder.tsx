@@ -15,6 +15,7 @@ const useCreateOrder = () => {
       price: 2300.99,
       image: "https://frigilux.com/wp-content/uploads/2025/08/01-COFS-4I.jpg",
       available: 12,
+      almacen: "Almacen 0001",
     },
     {
       code: "HEGFR-2IX",
@@ -22,6 +23,7 @@ const useCreateOrder = () => {
       price: 388.79,
       image: "https://frigilux.com/wp-content/uploads/2025/08/01-HEFR-4IX.jpg",
       available: 5,
+      almacen: "Almacen 0001",
     },
     {
       code: "CACFRQD-60X",
@@ -30,12 +32,14 @@ const useCreateOrder = () => {
       image:
         "https://frigilux.com/wp-content/uploads/2024/06/01-CACFRQD-60X-1000x1000-1.jpg",
       available: 10,
+      almacen: "Almacen 0001",
     },
     {
       code: "HEGFR-2IX3",
       title: "Horno P/Emp. Mixto Mod.",
       price: 388.79,
       image: "https://frigilux.com/wp-content/uploads/2025/08/01-HEFR-4IX.jpg",
+      almacen: "Almacen 0001",
     },
     {
       code: "TCFR-85STC",
@@ -44,6 +48,7 @@ const useCreateOrder = () => {
       image:
         "https://frigilux.com/wp-content/uploads/2025/08/01-TCFR-85STC.jpg",
       available: 15,
+      almacen: "Almacen 0001",
     },
     {
       code: "RVFR-392IX",
@@ -52,6 +57,7 @@ const useCreateOrder = () => {
       image:
         "https://frigilux.com/wp-content/uploads/2025/08/01-RVFR-392IX.jpg",
       available: 3,
+      almacen: "Almacen 0001",
     },
   ];
 

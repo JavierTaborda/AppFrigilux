@@ -8,7 +8,7 @@ const totalVenezuela = (value: string | number): string => {
   const fixedNumber = Number(number.toFixed(2));
 
   // Format with thousands and decimal commas
-  return `${currencyDollar} ${fixedNumber.toLocaleString("es-VE", {
+  return `${fixedNumber.toLocaleString("es-VE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;

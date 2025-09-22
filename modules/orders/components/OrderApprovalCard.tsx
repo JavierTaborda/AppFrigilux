@@ -15,28 +15,40 @@ interface Props {
   hasPermission:boolean;
 }
 
- function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPermission }: Props) {
+function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPermission }: Props) {
   const isAnulada = item.anulada === 1;
   const isRevisado = item.revisado === '1';
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
   const formattedDate = useMemo(() => formatDatedd_dot_MMM_yyyy(item.fec_emis), [item.fec_emis]);
 
-
-  const handlePressChangeStatus = async () => {
-    setIsLoadingStatus(true);
-
-    try {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-      await changeRevisado(item.fact_num, isRevisado ? ' ' : '1');
-    } catch (error) {
-      Alert.alert('Error', 'Ocurrió un error al actualizar el estado. Por favor intente de nuevo.');
-    } finally {
-      setIsLoadingStatus(false);
-    }
-  }
+  const handlePressChangeStatus = () => {
+    const actionLabel = isRevisado ? 'eliminar la revisión' : 'marcar como revisado';
+    Alert.alert(
+      'Confirmación',
+      `¿Deseas ${actionLabel} el pedido #${item.fact_num}?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Confirmar',
+          onPress: async () => {
+            setIsLoadingStatus(true);
+            try {
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+              await changeRevisado(item.fact_num, isRevisado ? ' ' : '1');
+            } catch (error) {
+              Alert.alert('Error', 'Ocurrió un error al actualizar el estado. Por favor intente de nuevo.');
+            } finally {
+              setIsLoadingStatus(false);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   const handlePressInfoModal = () => {
-    onPress?.();//check if onPress is defined
+    onPress?.(); // check if onPress is defined
   };
   const handlePressDetailsModal = () => {
     detailModal?.();
@@ -44,8 +56,8 @@ interface Props {
 
   return (
     <Animated.View
-
-      entering={FadeInDown.duration(300).damping(200).springify()} exiting={FadeOut.duration(100)}
+      entering={FadeInDown.duration(300).damping(200).springify()}
+      exiting={FadeOut.duration(100)}
       className={`rounded-xl py-2 px-3 mb-2 border shadow-sm shadow-black/10 ${isAnulada
         ? 'bg-red-50 dark:bg-dark-error/20 border-red-300 dark:border-red-300'
         : 'bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700'
