@@ -4,54 +4,48 @@ import { Alert, Platform, ToastAndroid } from "react-native";
 import {
   changeRevisado,
   getOrdersToApproval,
-  getStatus,
-  getVendors,
-  getZones,
-} from "../services/OrderApprovalService";
-import { OrderApproval, OrderApprovalProduct } from "../types/OrderApproval";
-import { OrderFilters, statusOptions } from "../types/OrderFilters";
+  getPedidosFiltrados
+} from "../services/OrderService";
+import { OrderApproval } from "../types/OrderApproval";
 import { applyOrderFilters } from "../utils/applyOrderFilters";
+import { useOrderFilters } from "./useOrderFilters";
+import { useOrderModals } from "./useOrderModals";
 
 export function useOrderApproval(searchText: string) {
-  // Estado de pedidos, loading, refrescando y control cooldown
-  // Orders, loading state, refreshing state, and cooldown control
+  /* -------------------------------------------------------------------------- */
+  /*                                  ESTADOS                                  */
+  /* -------------------------------------------------------------------------- */
   const [ordersAproval, setOrdersAproval] = useState<OrderApproval[]>([]);
+  const [orders, setOrders] = useState<OrderApproval[]>([]); // uso local con JSON
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // control de cooldown
   const [canRefresh, setCanRefresh] = useState(true);
   const [cooldown, setCooldown] = useState(0);
-  const [orders, setOrders] = useState<OrderApproval[]>([]); //just use locally with JSON
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  //filters
-  const [zones, setZones] = useState<string[]>([]);
-  const [sellers, setSellers] = useState<string[]>([]);
-  const [statusList, setStatusList] = useState<statusOptions[]>([]);
-
-  //FastFilters in Screen
+  // filtros
 
   const [sortDate, setSortDate] = useState(false);
   const [sortMount, setSortMount] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [mountRange, setMountRange] = useState<{
-    min: number | null;
-    max: number | null;
-  }>({ min: null, max: null });
+  const [mountRange, setMountRange] = useState<{ min: number | null; max: number | null }>({
+    min: null,
+    max: null,
+  });
   const [mountRangeActive, setMountRangeActive] = useState(false);
-  const [filters, setFilters] = useState<OrderFilters>({});
 
-  //error
-  const [error, setError] = useState<string | null>(null);
-  // Referencia para guardar el id del timeout y poder limpiarlo
-  // Ref to store the timeout id for cleanup
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  /**
-   * startCooldown inicia un contador regresivo de segundos usando setTimeout recursivo.
-   * Disminuye el estado cooldown cada segundo hasta llegar a 0 y limpia el timeout.
-   *
-   * startCooldown starts a countdown timer using recursive setTimeout.
-   * It decreases cooldown state every second until reaching 0, then clears the timeout.
-   */
+  const { filters, loadFilters, sellers, zones, statusList, setFilters, } = useOrderFilters();
+
+  const modalsData = useOrderModals();
+
+
+  /* -------------------------------------------------------------------------- */
+  /*                               UTILS - HELPERS                              */
+  /* -------------------------------------------------------------------------- */
   function startCooldown(seconds: number) {
     setCooldown(seconds);
 
@@ -72,72 +66,97 @@ export function useOrderApproval(searchText: string) {
     timeoutRef.current = setTimeout(tick, 1000);
   }
 
-  /**
-   * fetchOrders carga la lista de pedidos desde el backend y actualiza estados de carga.
-   *
-   * fetchOrders loads the order list from backend and updates loading states.
-   */
+  /* -------------------------------------------------------------------------- */
+  /*                            DATA FETCHING FUNCTIONS                         */
+  /* -------------------------------------------------------------------------- */
+
+
   const fetchOrders = useCallback(() => {
     setLoading(true);
     setError(null);
+
     getOrdersToApproval()
       .then((data) => {
         setOrdersAproval(data);
         loadFilters();
       })
-      .catch((err) => {
-        console.error(err);
-        setError(
-          "No logramos acceder a los pedidos... Intenta de nuevo en un momento"
-        );
-      })
+      .catch(() =>
+        setError("No logramos acceder a los pedidos... Intenta de nuevo en un momento")
+      )
       .finally(() => setLoading(false));
-  }, []);
+  }, [loadFilters]);
 
-  /**
-   * handleRefresh maneja el evento de refrescar (pull-to-refresh).
-   * Si el cooldown está activo, muestra un toast o alerta.
-   * Si no, inicia la recarga y el cooldown.
-   *
-   * handleRefresh handles the pull-to-refresh event.
-   * If cooldown is active, shows a toast or alert.
-   * Otherwise, triggers reload and starts cooldown.
-   */
-  const handleRefresh = useCallback(() => {
-    if (!canRefresh) {
-      return;
-    }
+  const getOrders = useCallback(() => {
+    setLoading(true);
     setError(null);
+    console.log("hola")
 
+    getPedidosFiltrados(filters)
+      .then((data) => {
+        setOrders(data);
+        loadFilters();
+      })
+      .catch(() =>
+        setError("No logramos acceder a los pedidos... Intenta de nuevo en un momento")
+      )
+      .finally(() => setLoading(false));
+  }, [filters, loadFilters]);
+
+  /* -------------------------------------------------------------------------- */
+  /*                               USER INTERACTION                             */
+  /* -------------------------------------------------------------------------- */
+  const handleRefresh = useCallback(() => {
+    if (!canRefresh) return;
+
+    setError(null);
     setRefreshing(true);
     setCanRefresh(false);
-    startCooldown(30); // Iniciar cooldown de 30 segundos
+    startCooldown(30);
 
     getOrdersToApproval()
-      .then((data) => {
-        setOrdersAproval(data);
-        //loadFilters();
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Ocurrió un error al cargar los datos...");
-      })
-
+      .then((data) => setOrdersAproval(data))
+      .catch(() => setError("Ocurrió un error al cargar los datos..."))
       .finally(() => {
         setRefreshing(false);
-        timeoutRef.current = setTimeout(() => {
-          setCanRefresh(true);
-        }, 30000);
+        timeoutRef.current = setTimeout(() => setCanRefresh(true), 30000);
       });
-  }, [canRefresh, cooldown]);
+  }, [canRefresh]);
 
-  /**
-   * useEffect para limpiar el timeout cuando el hook o componente se desmonta,
-   * evitando fugas de memoria.
-   *
-   * useEffect cleans up the timeout when hook/component unmounts,
-   * preventing memory leaks.
-   */
+  const handleChangeRevisado = async (fact_num: number, newStatus: string) => {
+    try {
+      if (newStatus !== "1" && newStatus !== " ") {
+        throw new Error('Estado inválido. Usa "1" para Revisado o " " para Por Revisar.');
+      }
+
+      const response = await changeRevisado(fact_num, newStatus);
+      if (response.success) {
+        setOrdersAproval((prev) =>
+          prev.map((order) =>
+            order.fact_num === fact_num ? { ...order, revisado: newStatus } : order
+          )
+        );
+
+        const msg =
+          newStatus === "1"
+            ? `Pedido ${fact_num} marcado como Revisado`
+            : `Pedido ${fact_num} marcado como Por Revisar`;
+
+        Platform.OS === "android"
+          ? ToastAndroid.show(msg, ToastAndroid.SHORT)
+          : Alert.alert("Estado actualizado", msg);
+      }
+    } catch (error) {
+      const errorMsg = `Error al actualizar el pedido ${fact_num}: ${error}`;
+      Platform.OS === "android"
+        ? ToastAndroid.show(errorMsg, ToastAndroid.LONG)
+        : Alert.alert("Error", errorMsg);
+    }
+  };
+
+
+  /* -------------------------------------------------------------------------- */
+  /*                                 USE EFFECTS                                */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -147,235 +166,100 @@ export function useOrderApproval(searchText: string) {
     };
   }, []);
 
-  // Refrescar la lista cuando la pantalla gana foco
-  // Refresh the list when screen gains focus
   useFocusEffect(
     useCallback(() => {
       fetchOrders();
     }, [fetchOrders])
   );
 
-  /**
-   * useMemo para filtrar pedidos y calcular totales
-   * según texto de búsqueda y lista actual.
-   *
-   * useMemo to filter orders and calculate totals
-   * based on search text and current list.
-   */
+  useEffect(() => {
+    setMountRangeActive(mountRange.min !== null || mountRange.max !== null);
+  }, [mountRange]);
 
+  /* -------------------------------------------------------------------------- */
+  /*                                   MEMOS                                    */
+  /* -------------------------------------------------------------------------- */
   const { filteredOrders, totalOrders, totalUSD } = useMemo(() => {
-    //Apply filters by backend.
     let filtered = applyOrderFilters(ordersAproval, filters, searchText);
 
-    // Filtes Order
-    // by Por Revisar or Revisado
     if (showStatus) {
       filtered = filtered.filter((order) => order.revisado === " ");
     }
 
-    // Order by date
     if (sortDate) {
+      filtered.sort((a, b) => new Date(a.fec_emis).getTime() - new Date(b.fec_emis).getTime());
+    }
+
+    if (sortMount) {
       filtered.sort((a, b) => {
-        const dateA = new Date(a.fec_emis).getTime();
-        const dateB = new Date(b.fec_emis).getTime();
-        return dateA - dateB; // most old first
+        const montoA = parseFloat(a.tot_neto as string) || 0;
+        const montoB = parseFloat(b.tot_neto as string) || 0;
+        return montoB - montoA;
       });
     }
 
-    // order by mount
-    if (sortMount) {
-      filtered.sort((a, b) => {
-        const montoA =
-          typeof a.tot_neto === "string"
-            ? parseFloat(a.tot_neto)
-            : a.tot_neto || 0;
-        const montoB =
-          typeof b.tot_neto === "string"
-            ? parseFloat(b.tot_neto)
-            : b.tot_neto || 0;
-        return montoB - montoA; // most hight amount first
-      });
-    }
-    // By range Monto
     if (mountRange.min !== null || mountRange.max !== null) {
       filtered = filtered.filter((order) => {
         const monto = parseFloat(order.tot_neto as string) || 0;
-
         const minOk = mountRange.min !== null ? monto >= mountRange.min : true;
-
         const maxOk = mountRange.max !== null ? monto <= mountRange.max : true;
-
         return minOk && maxOk;
       });
     }
 
     const totalUSD = filtered
       .filter((order) => order.anulada !== 1)
-      .reduce((acc, order) => {
-        const monto =
-          typeof order.tot_neto === "string"
-            ? parseFloat(order.tot_neto)
-            : order.tot_neto || 0;
-        return acc + monto;
-      }, 0);
+      .reduce((acc, order) => acc + (parseFloat(order.tot_neto as string) || 0), 0);
 
-    return {
-      filteredOrders: filtered,
-      totalOrders: filtered.length,
-      totalUSD,
-    };
-  }, [
-    ordersAproval,
-    searchText,
-    filters,
-    sortDate,
-    sortMount,
-    showStatus,
-    mountRange,
-  ]);
-
-  useEffect(() => {
-    if (mountRange.min !== null || mountRange.max !== null) {
-      setMountRangeActive(true);
-    } else {
-      setMountRangeActive(false);
-    }
-  }, [mountRange]);
-
-  // just use locally with JSON
-  // useEffect(() => {
-  //   setOrders(filteredOrders);
-  // }, [filteredOrders]);
-
-  const handleChangeRevisado = async (fact_num: number, newStatus: string) => {
-    try {
-      if (newStatus !== "1" && newStatus !== " ") {
-        throw new Error(
-          'Estado inválido. Usa "1" para Revisado o " " para Por Revisar.'
-        );
-      }
-
-      const response = await changeRevisado(fact_num, newStatus);
-      let msg: string;
-      if (response.success) {
-        setOrdersAproval((prev) =>
-          prev.map((order) =>
-            order.fact_num === fact_num
-              ? { ...order, revisado: newStatus }
-              : order
-          )
-        );
-
-        msg =
-          newStatus === "1"
-            ? `Pedido ${fact_num} marcado como Revisado`
-            : `Pedido ${fact_num} marcado como Por Revisar`;
-        if (Platform.OS === "android") {
-          ToastAndroid.show(msg, ToastAndroid.SHORT);
-        } else {
-          Alert.alert("Estado actualizado", msg);
-        }
-      }
-    } catch (error) {
-      const errorMsg = `Error al actualizar el pedido ${fact_num}: ${error}`;
-      if (Platform.OS === "android") {
-        ToastAndroid.show(errorMsg, ToastAndroid.LONG);
-      } else {
-        Alert.alert("Error", errorMsg);
-      }
-    }
-  };
-
-  //Modals and data
-  const [selectedOrder, setSelectedOrder] = useState<OrderApproval>();
-  const [modalInfoVisible, setModalInfoVisible] = useState(false);
-  const [modalProductsVisible, setModalProductsVisible] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState<
-    OrderApprovalProduct[]
-  >([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-
-  const handleOpenInfoModal = (order: OrderApproval) => {
-    setSelectedOrder(order);
-    setModalInfoVisible(true);
-  };
-  const handleOpenProductsModal = async (item: OrderApproval) => {
-    try {
-      setSelectedOrder(item);
-      setLoadingProducts(true);
-      //const products = await getOrderProducts(item.fact_num);
-      //setSelectedProducts(products);
-      setSelectedProducts(item.reng_ped);
-      setModalProductsVisible(true);
-    } catch (error) {
-      Alert.alert(
-        "Error",
-        "No se pudieron cargar los productos del pedido" + error
-      );
-    } finally {
-      setLoadingProducts(false);
-    }
-  };
-  const loadFilters = useCallback(async () => {
-    try {
-      const [zonesData, sellersData, statusData] = await Promise.all([
-        getZones(),
-        getVendors(),
-        getStatus(),
-      ]);
-      setZones(zonesData);
-      setSellers(sellersData);
-      setStatusList(statusData);
-    } catch (error) {
-      console.error("Error cargando filtros:", error);
-    }
-  }, []);
+    return { filteredOrders: filtered, totalOrders: filtered.length, totalUSD };
+  }, [ordersAproval, searchText, filters, sortDate, sortMount, showStatus, mountRange]);
 
   const activeFiltersCount =
-    Object.values(filters).filter(
-      (value) => value !== undefined && value !== ""
-    ).length ?? 0;
+    Object.values(filters).filter((value) => value !== undefined && value !== "").length ?? 0;
 
-  // monto max in the list
   const maxMonto =
     filteredOrders.length > 0
       ? Math.max(
-          ...filteredOrders
-            .filter((order) => order.anulada !== 1)
-            .map((order) =>
-              typeof order.tot_neto === "string"
-                ? parseFloat(order.tot_neto)
-                : order.tot_neto || 0
-            )
-        )
+        ...filteredOrders
+          .filter((order) => order.anulada !== 1)
+          .map((order) => parseFloat(order.tot_neto as string) || 0)
+      )
       : 0;
 
+
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  RETURN                                    */
+  /* -------------------------------------------------------------------------- */
   return {
+    // orders
     filteredOrders,
-    loading,
-    refreshing,
     totalOrders,
     totalUSD,
+    orders, // JSON local
+    loading,
+    refreshing,
+    error,
+
+    // refresh
     handleRefresh,
     canRefresh,
     cooldown,
-    orders, //just use locally with JSON
+    fetchOrders,
+
+    // revisar
     handleChangeRevisado,
-    handleOpenInfoModal,
-    handleOpenProductsModal,
-    modalInfoVisible,
-    setModalInfoVisible,
-    modalProductsVisible,
-    setModalProductsVisible,
-    selectedOrder,
-    selectedProducts,
-    loadingProducts,
+
+    // modales
+
+    ...modalsData,
+
+    // filtros
     sellers,
     zones,
-    loadFilters,
+    statusList,
     filters,
     setFilters,
-    statusList,
     activeFiltersCount,
     sortDate,
     setSortDate,
@@ -387,7 +271,5 @@ export function useOrderApproval(searchText: string) {
     setMountRange,
     mountRangeActive,
     maxMonto,
-    error,
-    fetchOrders,
   };
 }

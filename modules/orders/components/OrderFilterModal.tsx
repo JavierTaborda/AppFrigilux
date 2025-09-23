@@ -1,9 +1,21 @@
 import CustomDateTimePicker from "@/components/inputs/CustomDateTimePicker";
 import FilterModal from "@/components/ui/FilterModal";
+import { appColors } from "@/utils/colors";
 import React, { useState } from "react";
-import { Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Switch } from "react-native-gesture-handler";
 import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
-import { OrderFilters, OrderStatus, statusOptions } from "../types/OrderFilters";
+import {
+  OrderFilters,
+  OrderStatus,
+  statusOptions,
+} from "../types/OrderFilters";
 
 interface OrderFilterModalProps {
   visible: boolean;
@@ -12,7 +24,6 @@ interface OrderFilterModalProps {
     zones: string[];
     sellers: string[];
     statusList: statusOptions[];
-
   };
   filters: OrderFilters;
   onApply: (newFilters: OrderFilters) => void;
@@ -25,40 +36,45 @@ export default function OrderFilterModal({
   filters,
   dataFilters,
 }: OrderFilterModalProps) {
-  const [startDate, setStartDate] = useState<Date | undefined>(filters.startDate);
+  const [startDate, setStartDate] = useState<Date | undefined>(
+    filters.startDate
+  );
   const [endDate, setEndDate] = useState<Date | undefined>(filters.endDate);
   const [status, setStatus] = useState<OrderStatus>(filters.status);
   const [zone, setZone] = useState<string | undefined>(filters.zone);
   const [seller, setSeller] = useState<string | undefined>(filters.seller);
+const [anulado, setAnulado] = useState<boolean | undefined>(filters.cancelled);
 
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
-
-
-
-  
-
 
   return (
     <FilterModal
       visible={visible}
       onClose={onClose}
-      onApply={() => onApply({ startDate, endDate, status, zone, seller })}
+      onApply={() =>
+        onApply({
+          startDate,
+          endDate,
+          status,
+          zone,
+          seller,
+          cancelled: anulado,
+        })
+      }
       onClean={() => {
         setStartDate(undefined);
         setEndDate(undefined);
         setStatus(undefined);
         setZone(undefined);
         setSeller(undefined);
-       
+        setAnulado(undefined);
       }}
       title="Filtrar Pedidos"
     >
       <ScrollView
         showsVerticalScrollIndicator={true}
-
         className="bg-background dark:bg-dark-background px-4"
-
       >
         <View className="gap-2">
           {/* Fecha inicial */}
@@ -74,16 +90,15 @@ export default function OrderFilterModal({
             </Text>
           </TouchableOpacity>
           {showStartPicker && (
-           
-           <ShowDateIos onPress={()=>setShowStartPicker(false)}>
+            <ShowDateIos onPress={() => setShowStartPicker(false)}>
               <CustomDateTimePicker
                 value={startDate || new Date()}
                 onChange={(event, selectedDate) => {
                   if (selectedDate) setStartDate(selectedDate);
                 }}
-                onClose={() => setShowStartPicker(false)} />
+                onClose={() => setShowStartPicker(false)}
+              />
             </ShowDateIos>
-          
           )}
 
           {/* Fecha final */}
@@ -99,7 +114,7 @@ export default function OrderFilterModal({
             </Text>
           </TouchableOpacity>
 
-          {showEndPicker &&
+          {showEndPicker && (
             <ShowDateIos onPress={() => setShowEndPicker(false)}>
               <CustomDateTimePicker
                 value={endDate || new Date()}
@@ -107,58 +122,77 @@ export default function OrderFilterModal({
                   if (selectedDate) setEndDate(selectedDate);
                 }}
                 onClose={() => setShowEndPicker(false)}
-
               />
-
             </ShowDateIos>
-          }
+          )}
 
           {/* Estatus */}
           <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
             Estatus
           </Text>
-          <View className="flex-row flex-wrap gap-2 mb-5">
+          <View className="flex-row flex-wrap gap-2 mb-3">
             {dataFilters.statusList.map((opt) => (
               <TouchableOpacity
                 key={opt.value}
-                className={`px-4 py-2 rounded-full border ${status === opt.value
-                  ? "bg-primary border-primary"
-                  : "bg-transparent border-muted"
-                  }`}
+                className={`px-4 py-2 rounded-full border ${
+                  status === opt.value
+                    ? "bg-primary border-primary"
+                    : "bg-transparent border-muted"
+                }`}
                 onPress={() => setStatus(opt.value)}
               >
                 <Text
-                  className={`text-sm ${status === opt.value
-                    ? "text-white"
-                    : "text-foreground dark:text-dark-foreground"
-                    }`}
+                  className={`text-sm ${
+                    status === opt.value
+                      ? "text-white"
+                      : "text-foreground dark:text-dark-foreground"
+                  }`}
                 >
                   {opt.label}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
+          <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
+            Anulado
+          </Text>
+          <View className="flex-row flex-wrap gap-2 mb-2">
+            <Switch
+              value={anulado === true}
+              onValueChange={() => setAnulado(anulado ? undefined : true)}
+              thumbColor={
+                anulado
+                  ? Platform.select({ android: appColors.error })
+                  : Platform.select({ android: appColors.muted })
+              }
+              trackColor={{
+                true: Platform.select({ android: appColors.error }),
+              }}
+            />
+          </View>
 
           {/* Zona */}
           <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
-             {`Zona ${zone? ': '+zone :''  } `  } 
+            {`Zona ${zone ? ": " + zone : ""} `}
           </Text>
           <View className="bg-muted dark:bg-dark-muted p-3 rounded-xl mb-3">
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {dataFilters.zones.map((value) => (
                 <TouchableOpacity
                   key={value}
-                  className={`px-4 py-2 rounded-full border ${zone === value
-                    ? "bg-primary border-primary"
-                    : "bg-transparent border-muted"
-                    } mr-2`}
+                  className={`px-4 py-2 rounded-full border ${
+                    zone === value
+                      ? "bg-primary border-primary"
+                      : "bg-transparent border-muted"
+                  } mr-2`}
                   onPress={() => setZone(value)}
                 >
                   <Text
-                    className={`text-sm ${zone === value
-                      ? "text-white"
-                      : "text-foreground dark:text-dark-foreground"
-                      }`}
+                    className={`text-sm ${
+                      zone === value
+                        ? "text-white"
+                        : "text-foreground dark:text-dark-foreground"
+                    }`}
                   >
                     {value}
                   </Text>
@@ -169,24 +203,26 @@ export default function OrderFilterModal({
 
           {/* Vendedor */}
           <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
-            {`Vendedor ${seller? ': '+seller :''  } `  } 
+            {`Vendedor ${seller ? ": " + seller : ""} `}
           </Text>
           <View className="bg-muted dark:bg-dark-muted p-3 rounded-xl mb-3">
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {dataFilters.sellers.map((value) => (
                 <TouchableOpacity
                   key={value}
-                  className={`px-4 py-2 rounded-full border ${seller === value
-                    ? "bg-primary border-primary"
-                    : "bg-transparent border-muted"
-                    } mr-2`}
+                  className={`px-4 py-2 rounded-full border ${
+                    seller === value
+                      ? "bg-primary border-primary"
+                      : "bg-transparent border-muted"
+                  } mr-2`}
                   onPress={() => setSeller(value)}
                 >
                   <Text
-                    className={`text-sm ${seller === value
-                      ? "text-white"
-                      : "text-foreground dark:text-dark-foreground"
-                      }`}
+                    className={`text-sm ${
+                      seller === value
+                        ? "text-white"
+                        : "text-foreground dark:text-dark-foreground"
+                    }`}
                   >
                     {value}
                   </Text>
@@ -196,19 +232,18 @@ export default function OrderFilterModal({
           </View>
         </View>
       </ScrollView>
-    </FilterModal >
+    </FilterModal>
   );
 }
 
 interface PropsShowDateIos {
   onPress: () => void;
-  children: React.ReactNode
-
+  children: React.ReactNode;
 }
 
 export function ShowDateIos({ onPress, children }: PropsShowDateIos) {
   if (Platform.OS !== "ios") return <>{children}</>;
-  
+
   return (
     <Animated.View
       entering={FadeInUp}
@@ -224,7 +259,3 @@ export function ShowDateIos({ onPress, children }: PropsShowDateIos) {
     </Animated.View>
   );
 }
-
-
-
-

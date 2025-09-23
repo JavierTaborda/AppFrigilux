@@ -11,19 +11,16 @@ import OrderApprovalInfoModal from "../components/OrderAprovalInfoModal";
 import OrderFilterModal from "../components/OrderFilterModal";
 import OrderSearchCard from "../components/OrderSearchCard";
 import ProductListModal from "../components/ProductListModal/ProductListModal";
-import { useOrderApproval } from "../hooks/useOrdersApproval";
+import { useOrderSearch } from "../hooks/useOrdersSearch";
 import { OrderApproval } from "../types/OrderApproval";
 import { OrderFilters } from "../types/OrderFilters";
 export default function OrderSearchScreen() {
   const { role } = useAuthStore();
   const [searchText, setSearchText] = useState("");
   const [filterVisible, setFilterVisible] = useState(false);
-  const [modalMountVisible, setModalMountVisible] = useState(false);
   const hasPermission = role === "admin" || role === "gerenteVenta";
-  const [headerVisible, setHeaderVisible] = useState(true); //// Only if use extrafilter={true} on ScreenSearchLayout
 
   const {
-    filteredOrders,
     loading,
     refreshing,
     totalOrders,
@@ -31,8 +28,8 @@ export default function OrderSearchScreen() {
     handleRefresh,
     canRefresh,
     cooldown,
-    handleChangeRevisado,
-    orders, //just use locally with JSON
+
+    orders,
     handleOpenInfoModal,
     handleOpenProductsModal,
     setModalInfoVisible,
@@ -44,24 +41,14 @@ export default function OrderSearchScreen() {
     loadingProducts,
     zones,
     sellers,
-    loadFilters,
     filters,
     setFilters,
     statusList,
     activeFiltersCount,
-    sortDate,
-    setSortDate,
-    sortMount,
-    setSortMount,
-    showStatus,
-    setShowStatus,
-    mountRange,
-    setMountRange,
-    mountRangeActive,
-    maxMonto,
+
     error,
     fetchOrders,
-  } = useOrderApproval(searchText);
+  } = useOrderSearch(searchText);
 
   const handleApplyFilters = (newFilters: OrderFilters) => {
     setFilters(newFilters);
@@ -100,23 +87,10 @@ export default function OrderSearchScreen() {
         filterCount={activeFiltersCount}
         extrafilter={false}
         headerVisible={false}
-        // extraFiltersComponent={
-        //   <FastFilters
-        //     sortDate={sortDate}
-        //     setSortDate={setSortDate}
-        //     sortMount={sortMount}
-        //     setSortMount={setSortMount}
-        //     showStatus={showStatus}
-        //     setShowStatus={setShowStatus}
-        //     openModalMount={modalMountVisible}
-        //     setModalMountVisible={setModalMountVisible}
-        //     mountRangeActive={mountRangeActive}
-        //   />
-        //}
+
       >
         <CustomFlatList
-          //data={orders}
-          data={filteredOrders}
+          data={orders}
           renderItem={renderOrderItem}
           keyExtractor={(item, index) => `${item.fact_num}-${index}`}
           refreshing={refreshing}

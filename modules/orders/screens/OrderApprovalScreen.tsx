@@ -35,7 +35,6 @@ export default function OrderApprovalScreen() {
     canRefresh,
     cooldown,
     handleChangeRevisado,
-    orders, //just use locally with JSON
     handleOpenInfoModal,
     handleOpenProductsModal,
     setModalInfoVisible,
@@ -45,11 +44,10 @@ export default function OrderApprovalScreen() {
     selectedOrder,
     selectedProducts,
     loadingProducts,
-    zones,
-    sellers,
-    loadFilters,
-    filters,
-    setFilters,
+     zones,
+     sellers,
+     filters,
+     setFilters,
     statusList,
     activeFiltersCount,
     sortDate,
@@ -124,7 +122,6 @@ export default function OrderApprovalScreen() {
         }
       >
         <CustomFlatList
-          //data={orders}
           data={filteredOrders}
           renderItem={renderOrderItem}
           keyExtractor={(item, index) => `${item.fact_num}-${index}`}

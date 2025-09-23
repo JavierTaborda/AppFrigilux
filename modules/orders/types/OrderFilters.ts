@@ -1,9 +1,10 @@
-export type OrderStatus = "0" | "1" | "anulada" | "" | undefined;
+export type OrderStatus = "0" | "1" | "" | undefined;
 
 export type OrderFilters = {
   startDate?: Date;
   endDate?: Date;
   status?: OrderStatus;
+  cancelled?: boolean;
   seller?: string;
   zone?: string;
 };

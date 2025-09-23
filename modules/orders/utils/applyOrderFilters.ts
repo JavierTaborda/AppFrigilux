@@ -16,12 +16,18 @@ function matchesDate(order: OrderApproval, filters: OrderFilters): boolean {
 function matchesStatus(order: OrderApproval, filters: OrderFilters): boolean {
     if (!filters.status) return true;
 
-    if (filters.status === "anulada") {
-        return order.anulada === 1;
-    }
-
     return String(order.revisado) === filters.status;
 }
+function matchesAnulado(order: OrderApproval, filters: OrderFilters): boolean {
+    if (filters.cancelled === undefined) return true; 
+
+    if (filters.cancelled) {
+        return order.anulada === 1; 
+    }
+
+    return order.anulada !== 1; 
+}
+
 
 function matchesSeller(order: OrderApproval, filters: OrderFilters): boolean {
     if (filters.seller === 'TODOS'|| !filters.seller) return true
@@ -48,6 +54,7 @@ export function applyOrderFilters(
     return orders.filter(order =>
         matchesDate(order, filters) &&
         matchesStatus(order, filters) &&
+        matchesAnulado(order, filters) &&
         matchesSeller(order, filters) &&
         matchesZone(order, filters) &&
         matchesText(order, searchText)
