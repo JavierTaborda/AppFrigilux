@@ -1,3 +1,4 @@
+import { emojis } from "@/utils/emojis";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Platform, ToastAndroid } from "react-native";
@@ -89,7 +90,7 @@ export function useOrderApproval(searchText: string) {
   const getOrders = useCallback(() => {
     setLoading(true);
     setError(null);
-    console.log("hola")
+    
 
     getPedidosFiltrados(filters)
       .then((data) => {
@@ -141,9 +142,11 @@ export function useOrderApproval(searchText: string) {
             ? `Pedido ${fact_num} marcado como Revisado`
             : `Pedido ${fact_num} marcado como Por Revisar`;
 
+
+
         Platform.OS === "android"
           ? ToastAndroid.show(msg, ToastAndroid.SHORT)
-          : Alert.alert("Estado actualizado", msg);
+          : Alert.alert(`${emojis.approved} Estado actualizado`, msg);
       }
     } catch (error) {
       const errorMsg = `Error al actualizar el pedido ${fact_num}: ${error}`;

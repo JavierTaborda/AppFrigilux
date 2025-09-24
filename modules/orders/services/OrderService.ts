@@ -9,8 +9,8 @@ export const getOrdersToApproval = async () => {
 
 
 export const getPedidosFiltrados = async (filters: OrderFilters) => {
-  try {
 
+  try {
     const adaptedFilters = {
       dateIni: filters.startDate
         ? filters.startDate.toISOString().split("T")[0]
@@ -21,7 +21,9 @@ export const getPedidosFiltrados = async (filters: OrderFilters) => {
       estatus: filters.status,
       vendor: filters.seller,
       cancelled: filters.cancelled, 
+      zone:filters.zone
     };
+
 
     const response = await api.get("orders/filters", {
       params: adaptedFilters, 

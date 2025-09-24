@@ -1,4 +1,5 @@
 import { formatDatedd_dot_MMM_yyyy } from '@/utils/datesFormat';
+import { emojis } from '@/utils/emojis';
 import { currencyDollar, totalVenezuela } from '@/utils/moneyFormat';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -24,12 +25,12 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPerm
   const handlePressChangeStatus = () => {
     const actionLabel = isRevisado ? 'eliminar la revisión' : 'marcar como revisado';
     Alert.alert(
-      'Confirmación',
+      `${emojis.warning} Confirmación`,
       `¿Deseas ${actionLabel} el pedido #${item.fact_num}?`,
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: `${emojis.rejected }Cancelar`, style: 'cancel' },
         {
-          text: 'Confirmar',
+          text: `${emojis.approved} Confirmar`,
           onPress: async () => {
             setIsLoadingStatus(true);
             try {

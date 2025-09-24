@@ -61,7 +61,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
   return (
     <View className="absolute inset-0 z-50">
-      <BlurView intensity={50} tint="dark" className="absolute inset-0">
+      <BlurView intensity={40} tint="dark" className="absolute inset-0">
         <TouchableOpacity
           className="flex-1"
           activeOpacity={1}

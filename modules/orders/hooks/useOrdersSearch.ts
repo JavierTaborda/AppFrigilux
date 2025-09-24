@@ -59,7 +59,6 @@ export function useOrderSearch(searchText: string) {
     const fetchOrders = useCallback(() => {
         setLoading(true);
         setError(null);
-        console.log("hola")
 
         getPedidosFiltrados(filters)
             .then((data) => {
