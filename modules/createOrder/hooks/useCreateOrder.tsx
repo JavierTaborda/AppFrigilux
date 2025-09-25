@@ -39,6 +39,7 @@ const useCreateOrder = () => {
       title: "Horno P/Emp. Mixto Mod.",
       price: 388.79,
       image: "https://frigilux.com/wp-content/uploads/2025/08/01-HEFR-4IX.jpg",
+      available:9,
       almacen: "Almacen 0001",
     },
     {

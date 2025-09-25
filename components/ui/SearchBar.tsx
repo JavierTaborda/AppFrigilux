@@ -45,14 +45,6 @@ export default function SearchBar({
     setInputValue(searchText);
   }, [searchText]);
 
-  // Debounce
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setSearchText(inputValue);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [inputValue]);
-
   // Show/hide clear button
   useEffect(() => {
     fadeAnim.value = withTiming(inputValue.length > 0 ? 1 : 0, {
@@ -97,7 +89,10 @@ export default function SearchBar({
           style={{ height: inputHeight }}
           className="ml-2 flex-1 text-black dark:text-white"
           value={inputValue}
-          onChangeText={setInputValue}
+          onChangeText={(text) => {
+            setInputValue(text);
+            setSearchText(text);
+          }}
           placeholder={placeHolderText}
           placeholderTextColor={isDark ? "#ccc" : "#666"}
           onFocus={() => setIsFocused(true)}
@@ -107,7 +102,10 @@ export default function SearchBar({
         />
         <Animated.View style={clearButtonStyle}>
           <TouchableOpacity
-            onPress={() => setInputValue("")}
+            onPress={() => {
+              setInputValue("");
+              setSearchText("");
+            }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             accessibilityLabel="Borrar texto"
             accessibilityHint="Limpia el texto de búsqueda"

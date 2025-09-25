@@ -93,7 +93,7 @@ export default function OrderSummaryScreen() {
 
       <View className="mt-4">
         <CustomTouchableOpacity
-          onPress={() => router.back()}
+          onPress={() =>  router.push("/(main)/(tabs)/(createOrder)/create-order")}
           label="↩️ Volver"
         />
       </View>

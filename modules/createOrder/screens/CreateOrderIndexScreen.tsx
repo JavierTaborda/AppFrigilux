@@ -107,10 +107,12 @@ export default function CreateOrderScreen() {
             bottom: 120,
             paddingHorizontal: 20,
             width: "100%",
+            flexDirection: "row",
+            gap:12
+
           },
           animatedStyle,
         ]}
-        className="flex-row gap-3"
       >
         {/* Confirmar pedido */}
         <TouchableOpacity

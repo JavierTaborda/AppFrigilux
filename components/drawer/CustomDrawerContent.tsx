@@ -14,10 +14,14 @@ export default function CustomDrawerContent(props: any) {
     <DrawerContentScrollView bounces={false} {...props}>
       {/* Header*/}
       <View className="items-center py-3 border-b border-b-slate-300 dark:border-b-slate-800">
-        <Image
-          source={require("@/assets/images/Logo.png")}
-          className="w-20 h-20 rounded-full"
-        />
+        <View className="w-20 h-20 rounded-full overflow-hidden">
+          <Image
+            source={require("@/assets/images/Logo.png")}
+            className="w-full h-full"
+            resizeMode='contain'
+          />
+        </View>
+
         <Text className="text-base font-bold text-foreground dark:text-dark-foreground mt-1">
           {session?.user.email}
         </Text>

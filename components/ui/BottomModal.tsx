@@ -20,6 +20,8 @@ import Animated, {
 
 import { scheduleOnRN } from "react-native-worklets";
 
+import { useThemeStore } from "@/stores/useThemeStore";
+import { appColors } from "@/utils/colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type BottomModalProps = {
@@ -46,7 +48,7 @@ export default function BottomModal({
     Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
   const modalHeight =
     (windowHeight - statusBarHeight) * heightPercentage + insets.bottom;
-
+  const {isDark} = useThemeStore()
   const translateY = useSharedValue(modalHeight);
   const ANIMATION_CONFIG = {
     damping: 20,
@@ -81,6 +83,7 @@ export default function BottomModal({
     left: 0,
     right: 0,
   }));
+  
 
   return (
     <Modal
@@ -97,9 +100,14 @@ export default function BottomModal({
               {
                 height: modalHeight,
                 paddingBottom: insets.bottom,
+                paddingHorizontal: 20,
+                backgroundColor: isDark
+                  ? appColors.dark.background
+                  : appColors.background,
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
               },
             ]}
-            className="px-5 rounded-t-3xl bg-background dark:bg-dark-background"
           >
             <GestureDetector gesture={dragGesture}>
               <View>

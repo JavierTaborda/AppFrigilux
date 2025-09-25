@@ -1,9 +1,11 @@
+import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 
 interface FilterModalProps {
   visible: boolean;
@@ -23,6 +25,7 @@ export default function FilterModal({
   title = "Filtrar",
 }: FilterModalProps) {
   const insets = useSafeAreaInsets();
+  const {isDark} = useThemeStore()
 
   return (
     <Modal
@@ -38,12 +41,16 @@ export default function FilterModal({
           onPress={onClose}
         />
       </BlurView>
-       <View className="flex-1  justify-end">  
+      <View className="flex-1  justify-end">
         <Animated.View
           entering={FadeInUp}
           exiting={FadeOutDown}
           className="bg-background dark:bg-dark-background rounded-t-3xl p-1"
           style={{
+            backgroundColor: isDark  ? appColors.dark.background : appColors.background,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            padding: 4,
             paddingBottom: insets.bottom,
             minHeight: "40%",
             maxHeight: "85%",

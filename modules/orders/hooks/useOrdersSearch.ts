@@ -2,7 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     getOrdersToApproval,
-    getPedidosFiltrados
+    getPedidosFiltrados,
 } from "../services/OrderService";
 import { OrderApproval } from "../types/OrderApproval";
 import { useOrderFilters } from "./useOrderFilters";
@@ -12,8 +12,8 @@ export function useOrderSearch(searchText: string) {
     /* -------------------------------------------------------------------------- */
     /*                                  ESTADOS                                  */
     /* -------------------------------------------------------------------------- */
-   
-    const [orders, setOrders] = useState<OrderApproval[]>([]); 
+
+    const [orders, setOrders] = useState<OrderApproval[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -24,8 +24,8 @@ export function useOrderSearch(searchText: string) {
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // filtros
-
-    const { filters, loadFilters, sellers, zones, statusList, setFilters, } = useOrderFilters();
+    const { filters, loadFilters, sellers, zones, statusList, setFilters } =
+        useOrderFilters();
     const modalsData = useOrderModals();
 
     /* -------------------------------------------------------------------------- */
@@ -55,7 +55,6 @@ export function useOrderSearch(searchText: string) {
     /*                            DATA FETCHING FUNCTIONS                         */
     /* -------------------------------------------------------------------------- */
 
-
     const fetchOrders = useCallback(() => {
         setLoading(true);
         setError(null);
@@ -66,7 +65,9 @@ export function useOrderSearch(searchText: string) {
                 loadFilters();
             })
             .catch(() =>
-                setError("No logramos acceder a los pedidos... Intenta de nuevo en un momento")
+                setError(
+                    "No logramos acceder a los pedidos... Intenta de nuevo en un momento"
+                )
             )
             .finally(() => setLoading(false));
     }, [filters, loadFilters]);
@@ -112,23 +113,43 @@ export function useOrderSearch(searchText: string) {
     /* -------------------------------------------------------------------------- */
     /*                                   MEMOS                                    */
     /* -------------------------------------------------------------------------- */
-    const { totalOrders, totalUSD } = useMemo(() => {
-    
-        const totalUSD = orders
-            .filter((order) => order.anulada !== 1)
-            .reduce((acc, order) => acc + (parseFloat(order.tot_neto as string) || 0), 0);
+    const filteredOrders = useMemo(() => {
+        if (!searchText || searchText.length < 5) return orders;
 
-        return { totalOrders: orders.length, totalUSD };
-    }, [orders, searchText, filters]);
+        return orders.filter((order) => {
+            const cliente = order.co_cli?.toLowerCase() || "";
+            const nombre = order.cli_des?.toLowerCase() || "";
+            const numero = order.fact_num?.toString().toLowerCase() || "";
+
+            return (
+                cliente.includes(searchText.toLowerCase()) ||
+                nombre.includes(searchText.toLowerCase()) ||
+                numero.includes(searchText.toLowerCase())
+            );
+        });
+    }, [orders, searchText]);
+
+    const { totalOrders, totalUSD } = useMemo(() => {
+        const totalUSD = filteredOrders
+            .filter((order) => order.anulada !== 1)
+            .reduce(
+                (acc, order) => acc + (parseFloat(order.tot_neto as string) || 0),
+                0
+            );
+
+        return { totalOrders: filteredOrders.length, totalUSD };
+    }, [filteredOrders]);
 
     const activeFiltersCount =
-        Object.values(filters).filter((value) => value !== undefined && value !== "").length ?? 0;
+        Object.values(filters).filter(
+            (value) => value !== undefined && value !== ""
+        ).length ?? 0;
 
     /* -------------------------------------------------------------------------- */
     /*                                  RETURN                                    */
     /* -------------------------------------------------------------------------- */
     return {
-        orders,
+        orders: filteredOrders, // 👈 ya filtrados
         totalOrders,
         totalUSD,
         loading,
@@ -142,7 +163,6 @@ export function useOrderSearch(searchText: string) {
         fetchOrders,
 
         // modales
-
         ...modalsData,
 
         // filtros
