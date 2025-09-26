@@ -87,7 +87,6 @@ export default function OrderSearchScreen() {
         filterCount={activeFiltersCount}
         extrafilter={false}
         headerVisible={false}
-
       >
         <CustomFlatList
           data={orders}
@@ -140,9 +139,9 @@ export default function OrderSearchScreen() {
             statusList,
           }}
           onApply={handleApplyFilters}
+          hasPermission={hasPermission}
         />
       )}
-
     </>
   );
 }

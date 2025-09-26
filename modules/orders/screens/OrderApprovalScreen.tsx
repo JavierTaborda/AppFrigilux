@@ -173,6 +173,7 @@ export default function OrderApprovalScreen() {
             statusList,
           }}
           onApply={handleApplyFilters}
+          hasPermission={hasPermission}
         />
       )}
       {modalMountVisible && (

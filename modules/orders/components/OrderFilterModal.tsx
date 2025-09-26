@@ -1,5 +1,6 @@
 import CustomDateTimePicker from "@/components/inputs/CustomDateTimePicker";
 import FilterModal from "@/components/ui/FilterModal";
+import ScrollSelect from "@/components/ui/ScrollSelect";
 import { appColors } from "@/utils/colors";
 import React, { useState } from "react";
 import {
@@ -27,6 +28,7 @@ interface OrderFilterModalProps {
   };
   filters: OrderFilters;
   onApply: (newFilters: OrderFilters) => void;
+  hasPermission: boolean;
 }
 
 export default function OrderFilterModal({
@@ -35,15 +37,19 @@ export default function OrderFilterModal({
   onApply,
   filters,
   dataFilters,
+  hasPermission,
 }: OrderFilterModalProps) {
   const [startDate, setStartDate] = useState<Date | undefined>(
     filters.startDate
   );
   const [endDate, setEndDate] = useState<Date | undefined>(filters.endDate);
   const [status, setStatus] = useState<OrderStatus>(filters.status);
+  const [procesado, setProcesado] = useState<string>();
   const [zone, setZone] = useState<string | undefined>(filters.zone);
   const [seller, setSeller] = useState<string | undefined>(filters.seller);
-const [anulado, setAnulado] = useState<boolean | undefined>(filters.cancelled);
+  const [anulado, setAnulado] = useState<boolean | undefined>(
+    filters.cancelled
+  );
 
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
@@ -128,7 +134,7 @@ const [anulado, setAnulado] = useState<boolean | undefined>(filters.cancelled);
 
           {/* Estatus */}
           <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
-            Estatus
+            Revisado
           </Text>
           <View className="flex-row flex-wrap gap-2 mb-3">
             {dataFilters.statusList.map((opt) => (
@@ -153,6 +159,13 @@ const [anulado, setAnulado] = useState<boolean | undefined>(filters.cancelled);
               </TouchableOpacity>
             ))}
           </View>
+      
+          <ScrollSelect
+            label="Estatus"
+            selectedValue={procesado}
+            options={["Por Procesar", "ParcProcesado", "Procesado"]}
+            onSelect={setProcesado}
+          />
           <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
             Anulado
           </Text>
@@ -166,70 +179,28 @@ const [anulado, setAnulado] = useState<boolean | undefined>(filters.cancelled);
                   : Platform.select({ android: appColors.muted })
               }
               trackColor={{
-                true: Platform.select({ android: appColors.error }),
+                true: appColors.error,
               }}
             />
           </View>
 
-          {/* Zona */}
-          <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
-            {`Zona ${zone ? ": " + zone : ""} `}
-          </Text>
-          <View className="bg-muted dark:bg-dark-muted p-3 rounded-xl mb-3">
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {dataFilters.zones.map((value) => (
-                <TouchableOpacity
-                  key={value}
-                  className={`px-4 py-2 rounded-full border ${
-                    zone === value
-                      ? "bg-primary border-primary"
-                      : "bg-transparent border-muted"
-                  } mr-2`}
-                  onPress={() => setZone(value)}
-                >
-                  <Text
-                    className={`text-sm ${
-                      zone === value
-                        ? "text-white"
-                        : "text-foreground dark:text-dark-foreground"
-                    }`}
-                  >
-                    {value}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
+          {hasPermission && (
+            <>
+              <ScrollSelect
+                label="Zona"
+                selectedValue={zone}
+                options={dataFilters.zones}
+                onSelect={setZone}
+              />
 
-          {/* Vendedor */}
-          <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
-            {`Vendedor ${seller ? ": " + seller : ""} `}
-          </Text>
-          <View className="bg-muted dark:bg-dark-muted p-3 rounded-xl mb-3">
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {dataFilters.sellers.map((value) => (
-                <TouchableOpacity
-                  key={value}
-                  className={`px-4 py-2 rounded-full border ${
-                    seller === value
-                      ? "bg-primary border-primary"
-                      : "bg-transparent border-muted"
-                  } mr-2`}
-                  onPress={() => setSeller(value)}
-                >
-                  <Text
-                    className={`text-sm ${
-                      seller === value
-                        ? "text-white"
-                        : "text-foreground dark:text-dark-foreground"
-                    }`}
-                  >
-                    {value}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
+              <ScrollSelect
+                label="Vendedor"
+                selectedValue={seller}
+                options={dataFilters.sellers}
+                onSelect={setSeller}
+              />
+            </>
+          )}
         </View>
       </ScrollView>
     </FilterModal>

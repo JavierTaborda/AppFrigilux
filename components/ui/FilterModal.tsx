@@ -6,7 +6,6 @@ import { Modal, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-
 interface FilterModalProps {
   visible: boolean;
   onClose: () => void;
@@ -25,7 +24,7 @@ export default function FilterModal({
   title = "Filtrar",
 }: FilterModalProps) {
   const insets = useSafeAreaInsets();
-  const {isDark} = useThemeStore()
+  const { isDark } = useThemeStore();
 
   return (
     <Modal
@@ -34,7 +33,17 @@ export default function FilterModal({
       animationType="fade"
       statusBarTranslucent
     >
-      <BlurView intensity={40} tint="dark" className="absolute inset-0">
+      <BlurView
+        intensity={40}
+        tint="dark"
+        style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+        }}
+      >
         <TouchableOpacity
           className="flex-1"
           activeOpacity={1}
@@ -47,7 +56,9 @@ export default function FilterModal({
           exiting={FadeOutDown}
           className="bg-background dark:bg-dark-background rounded-t-3xl p-1"
           style={{
-            backgroundColor: isDark  ? appColors.dark.background : appColors.background,
+            backgroundColor: isDark
+              ? appColors.dark.background
+              : appColors.background,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
             padding: 4,
