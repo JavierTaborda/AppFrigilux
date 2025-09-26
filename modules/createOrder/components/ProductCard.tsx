@@ -1,7 +1,10 @@
-import { totalVenezuela } from "@/utils/moneyFormat";
+import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import * as Haptics from "expo-haptics";
+import { useRef } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
+  BounceIn,
+  BounceOut,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -30,10 +33,13 @@ export default function ProductCard({
   const addItem = useCreateOrderStore((s) => s.addItem);
   const increase = useCreateOrderStore((s) => s.increase);
   const decrease = useCreateOrderStore((s) => s.decrease);
+  const removeItem = useCreateOrderStore((s) => s.removeItem);
 
   const quantity = cartItem?.quantity ?? 0;
 
   // animations
+  const pressedLong = useRef(false);
+
   const btnScale = useSharedValue(1);
   const qtyScale = useSharedValue(1);
   const addScale = useSharedValue(1);
@@ -53,22 +59,11 @@ export default function ProductCard({
   const ANIM_DURATION = 100; //   ms
 
   const handleIncrease = () => {
+    if (pressedLong.current) {
+      pressedLong.current = false;
+      return;
+    }
     increase(code);
-    Haptics.selectionAsync();
-    btnScale.value = withTiming(
-      1.1,
-      { duration: ANIM_DURATION },
-      () => (btnScale.value = 1)
-    );
-    qtyScale.value = withTiming(
-      1.2,
-      { duration: ANIM_DURATION },
-      () => (qtyScale.value = 1)
-    );
-  };
-
-  const handleDecrease = () => {
-    decrease(code);
     Haptics.selectionAsync();
     btnScale.value = withTiming(
       0.9,
@@ -76,13 +71,32 @@ export default function ProductCard({
       () => (btnScale.value = 1)
     );
     qtyScale.value = withTiming(
-      1.2,
+      1.1,
       { duration: ANIM_DURATION },
       () => (qtyScale.value = 1)
     );
   };
 
+  const handleDecrease = () => {
+    if (pressedLong.current) {
+      pressedLong.current = false;
+      return; // Evita que se dispare después del long press
+    }
+    decrease(code);
+    Haptics.selectionAsync();
+    btnScale.value = withTiming(
+      0.9,
+      { duration: ANIM_DURATION },
+      () => (btnScale.value = 1)
+    );
+  };
+
   const handleAdd = () => {
+    if (pressedLong.current) {
+      pressedLong.current = false;
+      return;
+    }
+
     addItem({ code, title, price, image, available, quantity: 1 });
     Haptics.selectionAsync();
     addScale.value = withTiming(
@@ -91,26 +105,47 @@ export default function ProductCard({
       () => (addScale.value = 1)
     );
   };
+  const handleRemove = () => {
+    pressedLong.current = true;
+    removeItem(code);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  };
+  const handleMaxIncrease = () => {
+    pressedLong.current = true;
+    if (available && available > quantity) {
+      increase(code, available - quantity);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      qtyScale.value = withTiming(
+        1.1,
+        { duration: ANIM_DURATION },
+        () => (qtyScale.value = 1)
+      );
+    }
+  };
 
   return (
-    <View className="bg-white dark:bg-dark-componentbg rounded-2xl p-4 mb-4 w-[48%] shadow shadow-gray-200 dark:shadow-black/20">
+    <View className="bg-white dark:bg-dark-componentbg rounded-xl p-2 mb-4 w-[48%] shadow shadow-gray-200 dark:shadow-black/20">
       <Image
         source={{ uri: image }}
-        className="h-32 w-full rounded-xl mb-2"
+        className="h-32 w-full rounded-md mb-1"
         resizeMode="cover"
       />
-
-      <Text className="text-xs text-gray-500 dark:text-gray-400">{code}</Text>
-      <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mb-1">
+      <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground  ">
+        {code}
+      </Text>
+      <Text
+        className="text-sm font-normal text-foreground dark:text-dark-foreground  w-full leading-snug break-words min-h-10"
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
         {title}
       </Text>
-
-      <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-1">
-        {totalVenezuela(price)}
+      <Text className="text-base font-bold text-foreground dark:text-dark-foreground ">
+        {totalVenezuela(price)} {currencyDollar}
       </Text>
 
       {/* Stock  */}
-      <Text className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+      <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1 ">
         Disponibles: {available ?? "—"}
       </Text>
 
@@ -122,29 +157,44 @@ export default function ProductCard({
         >
           <TouchableOpacity
             onPress={handleDecrease}
+            onLongPress={handleRemove}
+            onPressOut={() => (pressedLong.current = false)}
+            delayLongPress={300}
             className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 items-center justify-center"
           >
-            <Text className="text-lg font-bold">-</Text>
+            <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+              -
+            </Text>
           </TouchableOpacity>
 
-          <Animated.Text
-            style={qtyStyle}
-          >
-            <Text className="mx-2 font-semibold text-lg">{quantity}</Text>
-          </Animated.Text>
-
+          <Animated.View entering={BounceIn} exiting={BounceOut.duration(150)}>
+            <Text className="mx-2 font-semibold text-lg text-center text-foreground dark:text-dark-foreground">
+              {quantity}
+            </Text>
+          </Animated.View>
           <TouchableOpacity
             onPress={handleIncrease}
+            onLongPress={handleMaxIncrease}
+            onPressOut={() => (pressedLong.current = false)}
+            delayLongPress={300}
             className="w-8 h-8 rounded-full bg-primary items-center justify-center"
           >
-            <Text className="text-white text-lg font-bold">+</Text>
+            <Text className="text-white text-md font-bold">+</Text>
           </TouchableOpacity>
         </Animated.View>
       ) : (
         <Animated.View style={addStyle}>
           <TouchableOpacity
-            onPress={handleAdd}
-            className="flex-1 bg-primary rounded-xl py-2 items-center justify-center"
+            onPress={() => {
+              if (pressedLong.current) return;
+              handleAdd();
+            }}
+            onPressOut={() => {
+              setTimeout(() => {
+                pressedLong.current = false;
+              }, 100);
+            }}
+            className="flex-1 rounded-2xl py-2 items-center justify-center bg-primary dark:bg-dark-primary"
           >
             <Text className="text-white font-bold">Agregar</Text>
           </TouchableOpacity>

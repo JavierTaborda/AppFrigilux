@@ -1,5 +1,6 @@
 import { authenticateWithBiometrics } from "@/utils/biometricAuth";
 import { getSessionStatus } from "@/utils/sessionStatus";
+import { Platform } from "react-native";
 import { create } from "zustand";
 import { useAuthStore } from "./useAuthStore";
 
@@ -29,7 +30,7 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
       }
 
       // Solo intentamos biometría si hay sesión y login no manual
-      if (session && !manualLogin) {
+      if (session && !manualLogin && Platform.OS !='web') {
         const loginStatus = await getSessionStatus();
 
         if (loginStatus === "active") {
@@ -53,6 +54,10 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
 
           set({ hasAuthenticated: true });
         }
+      }
+      else if ( session && !manualLogin && Platform.OS==='web')
+      {
+        set({ hasAuthenticated: true });
       }
 
       // Reset login manual 

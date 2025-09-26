@@ -53,7 +53,7 @@ const useCreateOrder = () => {
     },
     {
       code: "RVFR-392IX",
-      title: "CONGELADOR VERTICAL 392L",
+      title: "CONGELADOR ",
       price: 388.79,
       image:
         "https://frigilux.com/wp-content/uploads/2025/08/01-RVFR-392IX.jpg",

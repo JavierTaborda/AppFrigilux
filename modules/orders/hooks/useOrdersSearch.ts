@@ -1,8 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-    getOrdersToApproval,
-    getPedidosFiltrados,
+    getPedidosFiltrados
 } from "../services/OrderService";
 import { OrderApproval } from "../types/OrderApproval";
 import { useOrderFilters } from "./useOrderFilters";
@@ -75,6 +74,8 @@ export function useOrderSearch(searchText: string) {
     /* -------------------------------------------------------------------------- */
     /*                               USER INTERACTION                             */
     /* -------------------------------------------------------------------------- */
+
+    //TODO: refact thiis handle for use global
     const handleRefresh = useCallback(() => {
         if (!canRefresh) return;
 
@@ -83,7 +84,7 @@ export function useOrderSearch(searchText: string) {
         setCanRefresh(false);
         startCooldown(30);
 
-        getOrdersToApproval()
+        getPedidosFiltrados(filters)
             .then((data) => setOrders(data))
             .catch(() => setError("Ocurrió un error al cargar los datos..."))
             .finally(() => {
@@ -114,7 +115,7 @@ export function useOrderSearch(searchText: string) {
     /*                                   MEMOS                                    */
     /* -------------------------------------------------------------------------- */
     const filteredOrders = useMemo(() => {
-        if (!searchText || searchText.length < 5) return orders;
+        if (!searchText || searchText.length < 4) return orders;
 
         return orders.filter((order) => {
             const cliente = order.co_cli?.toLowerCase() || "";
