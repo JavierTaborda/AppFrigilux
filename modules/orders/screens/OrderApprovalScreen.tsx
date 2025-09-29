@@ -44,11 +44,12 @@ export default function OrderApprovalScreen() {
     selectedOrder,
     selectedProducts,
     loadingProducts,
-     zones,
-     sellers,
-     filters,
-     setFilters,
+    zones,
+    sellers,
+    filters,
+    setFilters,
     statusList,
+    procesadoslist,
     activeFiltersCount,
     sortDate,
     setSortDate,
@@ -171,6 +172,7 @@ export default function OrderApprovalScreen() {
             zones,
             sellers,
             statusList,
+            procesadoslist,
           }}
           onApply={handleApplyFilters}
           hasPermission={hasPermission}

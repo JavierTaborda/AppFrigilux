@@ -3,7 +3,7 @@ import { Platform, ScrollView, Text, TouchableOpacity, View } from "react-native
 interface FilterSelectorProps {
   label: string;
   selectedValue: string | undefined;
-  options: string[];
+  options: string[] | any[];
   onSelect: (value: string) => void;
 }
 

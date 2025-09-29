@@ -44,6 +44,7 @@ export default function OrderSearchScreen() {
     filters,
     setFilters,
     statusList,
+    procesadoslist,
     activeFiltersCount,
 
     error,
@@ -137,6 +138,7 @@ export default function OrderSearchScreen() {
             zones,
             sellers,
             statusList,
+            procesadoslist
           }}
           onApply={handleApplyFilters}
           hasPermission={hasPermission}

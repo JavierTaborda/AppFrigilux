@@ -14,7 +14,9 @@ import { Switch } from "react-native-gesture-handler";
 import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
 import {
   OrderFilters,
+  OrderProcesado,
   OrderStatus,
+  procesadosOptions,
   statusOptions,
 } from "../types/OrderFilters";
 
@@ -25,6 +27,7 @@ interface OrderFilterModalProps {
     zones: string[];
     sellers: string[];
     statusList: statusOptions[];
+    procesadoslist:procesadosOptions[];
   };
   filters: OrderFilters;
   onApply: (newFilters: OrderFilters) => void;
@@ -44,7 +47,7 @@ export default function OrderFilterModal({
   );
   const [endDate, setEndDate] = useState<Date | undefined>(filters.endDate);
   const [status, setStatus] = useState<OrderStatus>(filters.status);
-  const [procesado, setProcesado] = useState<string>();
+  const [procesado, setProcesado] = useState<OrderProcesado>(filters.procesado);
   const [zone, setZone] = useState<string | undefined>(filters.zone);
   const [seller, setSeller] = useState<string | undefined>(filters.seller);
   const [anulado, setAnulado] = useState<boolean | undefined>(
@@ -63,6 +66,7 @@ export default function OrderFilterModal({
           startDate,
           endDate,
           status,
+          procesado,
           zone,
           seller,
           cancelled: anulado,
@@ -72,6 +76,7 @@ export default function OrderFilterModal({
         setStartDate(undefined);
         setEndDate(undefined);
         setStatus(undefined);
+        setProcesado(undefined);
         setZone(undefined);
         setSeller(undefined);
         setAnulado(undefined);
@@ -132,7 +137,7 @@ export default function OrderFilterModal({
             </ShowDateIos>
           )}
 
-          {/* Estatus */}
+          {/* Revisado */}
           <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
             Revisado
           </Text>
@@ -159,13 +164,34 @@ export default function OrderFilterModal({
               </TouchableOpacity>
             ))}
           </View>
-      
-          <ScrollSelect
-            label="Estatus"
-            selectedValue={procesado}
-            options={["Por Procesar", "ParcProcesado", "Procesado"]}
-            onSelect={setProcesado}
-          />
+
+          <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
+            Procesado
+          </Text>
+          <View className="flex-row flex-wrap gap-2 mb-3">
+            {dataFilters.procesadoslist.map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                className={`px-4 py-2 rounded-full border ${
+                  procesado === opt.value
+                    ? "bg-primary border-primary"
+                    : "bg-transparent border-muted"
+                }`}
+                onPress={() => setProcesado(opt.value)}
+              >
+                <Text
+                  className={`text-sm ${
+                    procesado === opt.value
+                      ? "text-white"
+                      : "text-foreground dark:text-dark-foreground"
+                  }`}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
             Anulado
           </Text>

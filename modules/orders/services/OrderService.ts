@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { OrderFilters, statusOptions, Vendors, Zones } from "../types/OrderFilters";
+import { OrderFilters, procesadosOptions, statusOptions, Vendors, Zones } from "../types/OrderFilters";
 
 export const getOrdersToApproval = async () => {
 
@@ -18,7 +18,8 @@ export const getPedidosFiltrados = async (filters: OrderFilters) => {
       dateEnd: filters.endDate
         ? filters.endDate.toISOString().split("T")[0]
         : undefined,
-      estatus: filters.status,
+      revisado: filters.status,
+      procesado: filters.procesado,
       vendor: filters.seller,
       cancelled: filters.cancelled, 
       zone:filters.zone
@@ -93,4 +94,13 @@ export const getStatus = async () => {
     { label: "Revisado", value: "1" },
   ];
   return statusOptionsList;
+};
+
+export const getProcesados= async () => {
+  const procesadosOptions: procesadosOptions[] = [
+    { label: "Por Procesar", value: "0" },
+    { label: "ParcProcesado", value: "1" },
+    { label: "Procesado", value: "2" },
+  ];
+  return procesadosOptions;
 };

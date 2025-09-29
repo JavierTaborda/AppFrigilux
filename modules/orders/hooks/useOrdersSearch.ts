@@ -23,7 +23,7 @@ export function useOrderSearch(searchText: string) {
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // filtros
-    const { filters, loadFilters, sellers, zones, statusList, setFilters } =
+    const { filters, loadFilters, sellers, zones, statusList, procesadoslist, setFilters } =
         useOrderFilters();
     const modalsData = useOrderModals();
 
@@ -170,6 +170,7 @@ export function useOrderSearch(searchText: string) {
         sellers,
         zones,
         statusList,
+        procesadoslist,
         filters,
         setFilters,
         activeFiltersCount,

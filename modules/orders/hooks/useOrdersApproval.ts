@@ -39,7 +39,7 @@ export function useOrderApproval(searchText: string) {
   const [mountRangeActive, setMountRangeActive] = useState(false);
 
 
-  const { filters, loadFilters, sellers, zones, statusList, setFilters, } = useOrderFilters();
+  const { filters, loadFilters, sellers, zones, statusList,procesadoslist, setFilters, } = useOrderFilters();
 
   const modalsData = useOrderModals();
 
@@ -261,6 +261,7 @@ export function useOrderApproval(searchText: string) {
     sellers,
     zones,
     statusList,
+    procesadoslist,
     filters,
     setFilters,
     activeFiltersCount,

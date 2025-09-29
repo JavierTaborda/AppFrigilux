@@ -18,6 +18,11 @@ function matchesStatus(order: OrderApproval, filters: OrderFilters): boolean {
 
     return String(order.revisado) === filters.status;
 }
+function matchesProcesado(order: OrderApproval, filters: OrderFilters): boolean {
+    if (!filters.procesado) return true;
+
+    return String(order.estatus) === filters.procesado;
+}
 function matchesAnulado(order: OrderApproval, filters: OrderFilters): boolean {
     if (filters.cancelled === undefined) return true; 
 
@@ -54,6 +59,7 @@ export function applyOrderFilters(
     return orders.filter(order =>
         matchesDate(order, filters) &&
         matchesStatus(order, filters) &&
+        matchesProcesado(order, filters) &&
         matchesAnulado(order, filters) &&
         matchesSeller(order, filters) &&
         matchesZone(order, filters) &&
