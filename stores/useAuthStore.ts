@@ -209,7 +209,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         set({ session: null });
       } else {
         const role = await getUserRoleJWT(data.session?.access_token);
-     
+        console.log(role)
         //const role = await getUserRole(data.session.user.id);
 
         set({
@@ -217,7 +217,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           role: role,
           token: data.session?.access_token,
         });   
-        //console.log(data.session.access_token)
+       // console.log(data.session.access_token)
       }
     } catch (err) {
       set({ session: null });

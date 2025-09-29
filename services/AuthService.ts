@@ -26,3 +26,11 @@ export async function getUserRoleJWT(token: string): Promise<string> {
 
   return role;
 }
+export async function getVenCode(token: string): Promise<string> {
+  const decoded = jwtDecode<CustomJwtPayload>(token);
+
+  const code = decoded["codven"];
+
+  return code;
+}
+ 

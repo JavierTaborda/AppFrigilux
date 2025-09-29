@@ -59,25 +59,27 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPerm
     <Animated.View
       entering={FadeInDown.duration(300).damping(200).springify()}
       exiting={FadeOut.duration(100)}
-      className={`rounded-xl py-2 px-3 mb-2 border shadow-sm shadow-black/10 ${isAnulada
-        ? 'bg-red-50 dark:bg-dark-error/20 border-red-300 dark:border-red-300'
-        : 'bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700'
-        }`}
+      className={`rounded-xl py-2 px-3 mb-2 border shadow-sm shadow-black/10 ${
+        isAnulada
+          ? "bg-red-50 dark:bg-dark-error/20 border-red-300 dark:border-red-300"
+          : "bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700"
+      }`}
     >
       <Pressable className="flex-row gap-2" style={{ minHeight: 110 }}>
         {/* Band Anulado */}
         {isAnulada && (
           <Animated.View
             entering={FadeIn.duration(300)}
-
             className="absolute top-1 right-2 bg-red-500/80 dark:bg-red-600/50 rounded-full px-2 z-10"
           >
             <Text className="text-xs text-white font-bold">Anulado</Text>
           </Animated.View>
         )}
 
-
-        <Pressable className="flex-1  gap-1 w-4/6" onPress={handlePressInfoModal}>
+        <Pressable
+          className="flex-1  gap-1 w-4/6"
+          onPress={handlePressInfoModal}
+        >
           <View className="flex-row items-center gap-2">
             {/* <Ionicons name="document-text-outline" size={16} color="gray" /> */}
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
@@ -98,34 +100,36 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPerm
               className="text-base text-foreground dark:text-dark-foreground flex-shrink"
               numberOfLines={2}
               ellipsizeMode="tail"
-
             >
               {item.co_cli.trim()} - {item.cli_des}
             </Text>
           </View>
 
           <View className="flex-row items-center justify-normal gap-2">
-            <Text className="text-sm pt-1 text-gray-500 dark:text-gray-400">Total</Text>
+            <Text className="text-sm pt-1 text-gray-500 dark:text-gray-400">
+              Total
+            </Text>
             {/* <Ionicons name="cash-outline" size={14} color="gray" /> */}
             <Text
-              className={`text-xl font-bold ${isAnulada
-                ? 'line-through text-error dark:text-dark-error'
-                : 'text-primary dark:text-dark-primary'
-                }`}
+              className={`text-xl font-bold ${
+                isAnulada
+                  ? "line-through text-error dark:text-dark-error"
+                  : "text-primary dark:text-dark-primary"
+              }`}
             >
               {totalVenezuela(item.tot_neto)} {currencyDollar}
             </Text>
           </View>
 
-          {hasPermission ?
+          {hasPermission ? (
             <View className="flex-row items-center gap-2">
-             
               <Text
                 className={`text-xs font-normal text-gray-500 dark:text-gray-400`}
               >
                 {item.zon_des.trim()} - {item.ven_des.trim()}
               </Text>
-            </View> : null}
+            </View>
+          ) : null}
         </Pressable>
 
         {/* Buttons */}
@@ -136,35 +140,42 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPerm
             style={{ minWidth: 100 }}
           >
             {/* <Ionicons name="list" size={16} color="#fff" /> */}
-            <Text className="text-sm font-semibold text-white ml-1">Ver detalles</Text>
+            <Text className="text-sm font-semibold text-white ml-1">
+              Ver detalles
+            </Text>
           </TouchableOpacity>
 
           {!isAnulada && (
             <TouchableOpacity
-              onPress={handlePressChangeStatus}
+              onPress={hasPermission ? handlePressChangeStatus : undefined}
               disabled={isLoadingStatus}
-              className={`flex-row items-center justify-center px-4 py-2 rounded-full ${isRevisado
-                ? 'bg-green-100 dark:bg-green-700/40'
-                : 'bg-yellow-100 dark:bg-yellow-700/40'
-                }`}
+              className={`flex-row items-center justify-center px-4 py-2 rounded-full ${
+                isRevisado
+                  ? "bg-green-100 dark:bg-green-700/40"
+                  : "bg-yellow-100 dark:bg-yellow-700/40"
+              }`}
               style={{ minWidth: 100 }}
             >
               {isLoadingStatus ? (
-                <ActivityIndicator size="small" color={isRevisado ? 'green' : 'orange'} />
+                <ActivityIndicator
+                  size="small"
+                  color={isRevisado ? "green" : "orange"}
+                />
               ) : (
                 <>
                   <Ionicons
-                    name={isRevisado ? 'checkmark-circle' : 'alert-circle'}
+                    name={isRevisado ? "checkmark-circle" : "alert-circle"}
                     size={16}
-                    color={isRevisado ? 'green' : 'orange'}
+                    color={isRevisado ? "green" : "orange"}
                   />
                   <Text
-                    className={`ml-1 font-semibold ${isRevisado
-                      ? 'text-green-700 dark:text-green-300'
-                      : 'text-yellow-700 dark:text-yellow-300'
-                      }`}
+                    className={`ml-1 font-semibold ${
+                      isRevisado
+                        ? "text-green-700 dark:text-green-300"
+                        : "text-yellow-700 dark:text-yellow-300"
+                    }`}
                   >
-                    {isRevisado ? 'Revisado' : 'Por revisar'}
+                    {isRevisado ? "Revisado" : "Por revisar"}
                   </Text>
                 </>
               )}

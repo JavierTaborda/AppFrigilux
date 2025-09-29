@@ -2,22 +2,19 @@ import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React, { useEffect } from "react";
 import {
-  Dimensions,
-  FlatList,
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Text,
+    TouchableOpacity,
+    View
 } from "react-native";
 import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming
 } from "react-native-reanimated";
 
 import { emojis } from "@/utils/emojis";
-import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
 
@@ -27,12 +24,14 @@ type OrderModalProps = {
   visible: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  item: OrderItem;
 };
 
 const OrderModal: React.FC<OrderModalProps> = ({
   visible,
   onClose,
   onConfirm,
+  item
 }) => {
   const { items } = useCreateOrderStore();
 
@@ -96,63 +95,11 @@ const OrderModal: React.FC<OrderModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          {/* Lista de productos */}
-          {items.length === 0 ? (
-            <View className="flex-1 justify-center items-center">
-              <Ionicons name="bag-outline" size={42} color="#aaa" />
-              <Text className="text-base text-gray-400 mt-2">
-                No tienes productos.
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              data={items}
-              keyExtractor={(item: OrderItem, index) => `${item.code}-${index}`}
-              renderItem={({ item }) => (
-                <View className="flex-row items-center my-1 py-2 rounded-xl">
-                  <Image
-                    source={{ uri: item.image }}
-                    className="w-14 h-14 rounded-xl bg-gray-200"
-                  />
-                  <View className="flex-1 ml-2">
-                    <Text
-                      className="text-md font-semibold text-gray-900 dark:text-gray-100"
-                      numberOfLines={2}
-                    >
-                      {item.code} - {item.title}
-                    </Text>
-                    <Text className="text-sm text-gray-500">
-                      Almacen 0001 - {item.price} {currencyDollar}
-                    </Text>
-                  </View>
-                  <View className="items-end">
-                    <Text className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                      x{item.quantity}
-                    </Text>
-                    <Text className="text-md text-gray-600 dark:text-gray-300">
-                      {totalVenezuela(item.price * (item.quantity ?? 1))}
-                    </Text>
-                  </View>
-                </View>
-              )}
-            />
-          )}
+          {/* Item */}
 
           {/* Footer */}
           <View className="border-t border-white/30 mt-1">
-            <Text className="text-base font-semibold text-foreground dark:text-dark-foreground">
-              Descuento {totalVenezuela(total)} {currencyDollar}
-            </Text>
-            <Text className="text-base font-semibold text-foreground dark:text-dark-foreground">
-              Subtotal {totalVenezuela(total)} {currencyDollar}
-            </Text>
-            <Text className="text-base font-semibold text-foreground dark:text-dark-foreground">
-              IVA {currencyDollar}
-            </Text>
-            <Text className="text-xl font-semibold text-foreground dark:text-dark-foreground mb-3">
-              Total {totalVenezuela(total)} {currencyDollar}
-            </Text>
-
+            
             <TouchableOpacity
               className={`rounded-full py-4 items-center ${
                 items.length === 0

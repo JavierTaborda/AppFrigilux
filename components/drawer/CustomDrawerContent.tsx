@@ -25,9 +25,9 @@ export default function CustomDrawerContent(props: any) {
         <Text className="text-base font-bold text-foreground dark:text-dark-foreground mt-1">
           {session?.user.email}
         </Text>
-        <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground">
+        {/* <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground">
           {role ? `${role}` : "Sin Perfil Asignado"}
-        </Text>
+        </Text> */}
       </View>
 
       <View className="mt-2 gap-2 pe-4">

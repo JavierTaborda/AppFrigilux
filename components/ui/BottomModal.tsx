@@ -4,6 +4,7 @@ import {
   Modal,
   Platform,
   StatusBar,
+  TouchableOpacity,
   View,
   ViewProps,
 } from "react-native";
@@ -22,6 +23,7 @@ import { scheduleOnRN } from "react-native-worklets";
 
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
+import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type BottomModalProps = {
@@ -93,7 +95,24 @@ export default function BottomModal({
       onRequestClose={onClose}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <View className="flex-1 justify-end bg-overlay dark:bg-dark-overlay">
+        <View className="flex-1 justify-end">
+               <BlurView
+                  intensity={40}
+                  tint="dark"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                  }}
+                >
+                  <TouchableOpacity
+                    className="flex-1"
+                    activeOpacity={1}
+                    onPress={onClose}
+                  />
+                </BlurView>
           <AnimatedView
             style={[
               sheetStyle,

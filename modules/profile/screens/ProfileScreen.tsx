@@ -47,14 +47,14 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {role && (
+        {/* {role && (
           <View className="items-center px-4 py-3 rounded-xl w-[80%]   bg-componentbg dark:bg-dark-componentbg">
 
             <Text className="text-lg  dark:text-white">
               Rol: {role}
             </Text>
           </View>
-        )}
+        )} */}
         {/* {token && (
           <View className="items-center px-4 py-3 rounded-xl w-[80%]   bg-componentbg dark:bg-dark-componentbg">
 

@@ -22,7 +22,7 @@ export default function OrderApprovalScreen() {
   const [searchText, setSearchText] = useState("");
   const [filterVisible, setFilterVisible] = useState(false);
   const [modalMountVisible, setModalMountVisible] = useState(false);
-  const hasPermission = role === "admin" || role === "gerenteVenta";
+  const hasPermission = role === "1" || role === "2";
   const [headerVisible, setHeaderVisible] = useState(true); //// Only if use extrafilter={true} on ScreenSearchLayout
 
   const {

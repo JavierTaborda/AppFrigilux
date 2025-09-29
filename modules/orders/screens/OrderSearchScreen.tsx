@@ -18,7 +18,7 @@ export default function OrderSearchScreen() {
   const { role } = useAuthStore();
   const [searchText, setSearchText] = useState("");
   const [filterVisible, setFilterVisible] = useState(false);
-  const hasPermission = role === "admin" || role === "gerenteVenta";
+  const hasPermission = role === "1" || role === "2";
 
   const {
     loading,
