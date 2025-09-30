@@ -3,8 +3,14 @@ import { OrderFilters, procesadosOptions, statusOptions, Vendors, Zones } from "
 
 export const getOrdersToApproval = async () => {
 
+  try{
   const response = await api.get("orders/approval");
   return response.data;
+  }
+  catch (error) {
+    console.error("Error obteniendo pedidos", error);
+    throw error;
+  }
 };
 
 

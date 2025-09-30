@@ -22,14 +22,14 @@ interface CustomJwtPayload {
 export async function getUserRoleJWT(token: string): Promise<string> {
   const decoded = jwtDecode<CustomJwtPayload>(token);
 
-  const role = decoded["app-role"];
+  const role = String(decoded["app-role"]);
 
   return role;
 }
 export async function getVenCode(token: string): Promise<string> {
   const decoded = jwtDecode<CustomJwtPayload>(token);
 
-  const code = decoded["codven"];
+  const code = String(decoded["codven"]);
 
   return code;
 }

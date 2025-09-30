@@ -22,7 +22,7 @@ export default function OrderApprovalScreen() {
   const [searchText, setSearchText] = useState("");
   const [filterVisible, setFilterVisible] = useState(false);
   const [modalMountVisible, setModalMountVisible] = useState(false);
-  const hasPermission = role === "1" || role === "2";
+  const hasPermission = role === '1' || role === '2';
   const [headerVisible, setHeaderVisible] = useState(true); //// Only if use extrafilter={true} on ScreenSearchLayout
 
   const {
@@ -69,10 +69,11 @@ export default function OrderApprovalScreen() {
     setFilters(newFilters);
     setFilterVisible(false);
   };
+
   const handleApplyMountRange = (min: number | null, max: number | null) => {
     setMountRange({ min, max });
   };
-
+  
   const renderOrderItem = useCallback(
     ({ item }: { item: OrderApproval }) => (
       <OrderApprovalCard
