@@ -2,7 +2,7 @@
   "expo": {
     "name": "Frigilux App",
     "slug": "frigiluxapp",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "appexamplefrigilux",
@@ -14,7 +14,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.javierdevelop.appexamplefrigilux",
+      "bundleIdentifier": "com.frigiluxsge.mobile",
       "infoPlist": {
         "NSFaceIDUsageDescription": "Esta app usa Face ID para autenticación segura."
       }
@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.javierdevelop.appexamplefrigilux",
+      "package": "com.frigiluxsge.mobile",
       "versionCode": 1,
       "edgeToEdgeEnabled": true
     },

@@ -1,8 +1,7 @@
 {
   "cli": {
     "version": ">= 10.0.0",
-     "appVersionSource": "local"
-
+    "appVersionSource": "local"
   },
   "build": {
     "preview": {
@@ -12,10 +11,12 @@
       },
       "ios": {
         "simulator": true
-      }
+      },
+      "environment": "preview"
     },
     "production": {
       "distribution": "store",
+      "environment": "production",
       "android": {
         "buildType": "app-bundle"
       },
