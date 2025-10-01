@@ -18,7 +18,7 @@ export default function CustomDrawerContent(props: any) {
           <Image
             source={require("@/assets/images/Logo.png")}
             className="w-full h-full"
-            resizeMode='contain'
+            resizeMode="contain"
           />
         </View>
 
@@ -52,21 +52,21 @@ export default function CustomDrawerContent(props: any) {
           currentPath={currentPath}
         /> */}
         <DrawerItem
-          emoji={emojis.package}
+          emoji={emojis.approved}
           // icon="bag-check"
           label="Aprobación Pedidos"
           href="/(main)/(tabs)/(orders)/orderApproval"
           currentPath={currentPath}
         />
         <DrawerItem
-          emoji={emojis.list}
+          emoji={emojis.approved}
           // icon="bag-check"
           label="Consultar Pedidos"
           href="/(main)/(tabs)/(orders)/orderSearch"
           currentPath={currentPath}
         />
         <DrawerItem
-          emoji={emojis.bags}
+          emoji={emojis.approved}
           label="Crear Pedido"
           href="/(main)/(tabs)/(createOrder)/create-order"
           currentPath={currentPath}

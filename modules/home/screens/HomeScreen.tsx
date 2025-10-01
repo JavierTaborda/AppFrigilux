@@ -97,13 +97,20 @@ export default function HomeScreen() {
           </View>
           <View className="w-[49%] mb-4">
             <ModuleButton
-              icon={emojis.bags}
+              icon={emojis.approved}
+              label="Consultar Pedidos"
+              onPress={() => router.push("/(main)/(tabs)/(orders)/orderSearch")}
+              bgColor="bg-secondary dark:bg-dark-secondary"
+            />
+          </View>
+          <View className="w-[49%] mb-4">
+            <ModuleButton
+              icon={emojis.approved}
               label="Crear Pedido"
               bgColor="bg-gray-300 dark:bg-gray-700"
               isComingSoon
             />
           </View>
-       
         </View>
       </View>
     </ScrollView>

@@ -9,7 +9,7 @@ import { Session } from "@supabase/supabase-js";
 import { router } from "expo-router";
 import { Platform } from "react-native";
 import { create } from "zustand";
-//TODO: renew jwt when supabase do it
+
 interface AuthStore {
   session: Session | null; // Supabase session
   loading: boolean; // Auth loading status
@@ -209,7 +209,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         set({ session: null });
       } else {
         const role = await getUserRoleJWT(data.session?.access_token);
-        console.log(role)
+        //console.log(role)
         //const role = await getUserRole(data.session.user.id);
 
         set({

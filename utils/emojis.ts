@@ -33,6 +33,7 @@ export const emojis = {
 
   // ✅ Status
   approved: "✅",
+  approved2:"✔",
   pending: "⏳",
   rejected: "🚫",
   processing: "🔄",
