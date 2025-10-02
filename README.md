@@ -1,50 +1,87 @@
-# Welcome to your Expo app 👋
+# 📱 Frigilux App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<p align="center">
+  <img width="183" height="360" alt="Phone" src="https://github.com/user-attachments/assets/3fd3a740-d493-40b7-98d2-e8b4d934f65f" />
+</p>
+<p align="center"> <img src="https://frigilux.com/wp-content/uploads/2024/05/FRIGILUX-LOGO-02-1536x287.png" alt="Frigilux Logo" width="300"/> </p> <p align="center"> <b>Aplicación móvil empresarial para la gestión comercial de Frigilux en Venezuela</b><br/> <i>Enterprise mobile app for commercial management of Frigilux in Venezuela</i> </p> <p align="center"> <a href="https://frigilux.com">🌐 Sitio oficial / Official Website</a> 
+   
+### ✨ Características / Features
 
-## Get started
+📊 Gestión comercial completa / Full commercial management: pedidos, ventas y autorización de pagos
 
-1. Install dependencies
+📲 Acceso móvil seguro / Secure mobile access: múltiples métodos de login (correo, contraseña, OTP, biometría)
 
-   ```bash
-   npm install
-   ```
+✅ Roles y permisos / Roles & permissions: admin, gerentes, vendedores
 
-2. Start the app
+🎨 UI/UX moderna / Modern UI/UX: soporte tema claro/oscuro, animaciones fluidas y responsive
 
-   ```bash
-   npx expo start
-   ```
+🔒 Seguridad / Security: integración con Supabase + autenticación biométrica
 
-In the output, you'll find options to open the app in a
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+### 🛠 Tecnologías Utilizadas / Tech Stack
 
-When you're ready, run:
+| Categoría / Category        | Tecnologías / Technologies                                                                                                                                                                                                                                                                  |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend**                | ![Expo](https://img.shields.io/badge/Expo%20SDK-54-000020?logo=expo\&logoColor=white) ![React Native](https://img.shields.io/badge/React%20Native-0.81.4-61DAFB?logo=react\&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript\&logoColor=white) |
+| **Estilos / Styling**       | ![NativeWind](https://img.shields.io/badge/NativeWind-TailwindCSS-38B2AC?logo=tailwind-css\&logoColor=white)                                                                                                                                                                                |
+| **Navegación / Navigation** | ![Expo Router](https://img.shields.io/badge/Expo%20Router-File%20Based%20Routing-blue?logo=reactrouter\&logoColor=white)                                                                                                                                                                    |
+| **Backend**                 | ![NestJS](https://img.shields.io/badge/NestJS-E0234E?logo=nestjs\&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-Auth%20+%20DB-3ECF8E?logo=supabase\&logoColor=white)                                                                                                   |
+| **Estado / State Mgmt.**    | ![Zustand](https://img.shields.io/badge/Zustand-FF9900?logo=react\&logoColor=white)                                                                                                                                                                                                         |
+| **Iconos / Icons**          | ![@expo/vector-icons](https://img.shields.io/badge/%40expo/vector--icons-Icon%20Pack-blueviolet)                                                                                                                                                                                            |
+| **Gráficos / Charts**       | ![Chart Kit](https://img.shields.io/badge/react--native--chart--kit-Graphs-orange)                                                                                                                                                                                                          |
 
-```bash
-npm run reset-project
+
+### 🏗 Estructura Modular / Modular Architecture
+```
+frigiluxapp/
+├── app/                 # Rutas (Expo Router) / Routes
+├── components/          # Componentes reutilizables / Reusable components
+├── modules/             # Módulos de funcionalidad / Feature modules
+│   ├── auth/            # Autenticación / Authentication
+│   ├── home/            # Dashboard
+│   ├── orders/          # Gestión de pedidos / Order management
+│   ├── pays/            # Autorización de pagos / Payments
+│   └── profile/         # Perfil de usuario / User profile
+├── stores/              # Estado global (Zustand) / Global state
+├── utils/               # Utilidades y helpers / Utilities
+└── lib/                 # Configuraciones externas / External configs
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+### 📸 Demo / Screenshots
 
-To learn more about developing your project with Expo, look at the following resources:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+<p align="center">
+<img src="https://github.com/user-attachments/assets/8dd1265d-f379-4712-a22e-258202a54141" alt="Login" width="200" style="margin: 10px;" />
+  <br><em>✔ Login</em>
+</p>
 
-## Join the community
 
-Join our community of developers creating universal apps.
+<p align="center">
+<img src="https://github.com/user-attachments/assets/ca5d9116-5414-48ee-bc5b-8ae82b742da3" alt="Login" width="200" style="margin: 10px;" />
+  <br><em>📲 Home </em>
+</p>
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/842842f4-4e8b-4f49-a85e-678ca7aabe40" alt="Drawer" width="200" style="margin: 10px;" />
+  <br><em>📂 Menú lateral (Drawer)</em>
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/adc9a11c-e09a-4fa0-8545-38799a7d5228" alt="Order Approval 1" width="200" style="margin: 10px;" />
+  <img src="https://github.com/user-attachments/assets/6face753-311f-49e2-8718-1adb162cdbc5" alt="Order Approval 2" width="200" style="margin: 10px;" />
+  <img src="https://github.com/user-attachments/assets/0027a03a-62ae-4787-b0e6-1c8468d23209" alt="Order Approval 3" width="200" style="margin: 10px;" />
+  <img src="https://github.com/user-attachments/assets/2ab66e71-33d4-427e-b607-cbd47b996ff2" alt="Order Approval 4" width="200" style="margin: 10px;" />
+
+
+
+  <br><em>✅ Pantalla de aprobación de pedidos</em>
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/99d86828-512a-424e-bcc4-1af6c4d06146" alt="Create Order" width="200" style="margin: 10px;" />
+  <br><em>📝 Pantalla para crear nuevos pedidos</em>
+</p>
+
