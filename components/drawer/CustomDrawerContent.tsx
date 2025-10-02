@@ -52,6 +52,7 @@ export default function CustomDrawerContent(props: any) {
           currentPath={currentPath}
         /> */}
         <DrawerItem
+          //emoji={emojis.package}
           emoji={emojis.approved}
           // icon="bag-check"
           label="Aprobación Pedidos"
@@ -59,6 +60,7 @@ export default function CustomDrawerContent(props: any) {
           currentPath={currentPath}
         />
         <DrawerItem
+          //emoji={emojis.list}
           emoji={emojis.approved}
           // icon="bag-check"
           label="Consultar Pedidos"
@@ -66,14 +68,15 @@ export default function CustomDrawerContent(props: any) {
           currentPath={currentPath}
         />
 
-       {role === '1' && (
-        <DrawerItem
-          emoji={emojis.approved}
-          label="Crear Pedido"
-          href="/(main)/(tabs)/(createOrder)/create-order"
-          currentPath={currentPath}
-        />
-       )}
+        {role === "1" && (
+          <DrawerItem
+           // emoji={emojis.bags}
+            emoji={emojis.approved}
+            label="Crear Pedido"
+            href="/(main)/(tabs)/(createOrder)/create-order"
+            currentPath={currentPath}
+          />
+        )}
       </View>
     </DrawerContentScrollView>
   );

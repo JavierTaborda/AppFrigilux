@@ -84,13 +84,7 @@ export function useOrderSearch(searchText: string) {
         setCanRefresh(false);
         startCooldown(30);
 
-        getPedidosFiltrados(filters)
-            .then((data) => setOrders(data))
-            .catch(() => setError("Ocurrió un error al cargar los datos..."))
-            .finally(() => {
-                setRefreshing(false);
-                timeoutRef.current = setTimeout(() => setCanRefresh(true), 30000);
-            });
+        fetchOrders();
     }, [canRefresh]);
 
     /* -------------------------------------------------------------------------- */
