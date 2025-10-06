@@ -37,7 +37,6 @@ export type OrderApprovalProduct ={
   co_art: string;
   art_des: string;
   co_alma: string;
-  alma_des: string;
   total_art: string;
   stotal_art: string;
  // pendiente: string;
@@ -48,6 +47,8 @@ export type OrderApprovalProduct ={
   reng_neto: string;
   porc_desc: string;
   tipo_imp: string;
+  prec_vta_desc: number;
+  des_sub:string;
   //compuesto: number;
   //ref: string;
 };

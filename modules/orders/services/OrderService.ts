@@ -37,6 +37,7 @@ export const getPedidosFiltrados = async (filters: OrderFilters) => {
     });
 
     return response.data;
+  
   } catch (error) {
     console.error("Error obteniendo pedidos filtrados:", error);
     throw error;

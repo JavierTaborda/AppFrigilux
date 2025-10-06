@@ -144,7 +144,7 @@ export function useOrderSearch(searchText: string) {
     /*                                  RETURN                                    */
     /* -------------------------------------------------------------------------- */
     return {
-        orders: filteredOrders, // 👈 ya filtrados
+        orders: filteredOrders, 
         totalOrders,
         totalUSD,
         loading,
