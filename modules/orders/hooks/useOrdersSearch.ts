@@ -76,16 +76,23 @@ export function useOrderSearch(searchText: string) {
     /* -------------------------------------------------------------------------- */
 
     //TODO: refact thiis handle for use global
-    const handleRefresh = useCallback(() => {
-        if (!canRefresh) return;
+ const handleRefresh = useCallback(() => {
+    if (!canRefresh) return;
 
-        setError(null);
-        setRefreshing(true);
-        setCanRefresh(false);
-        startCooldown(30);
+    setError(null);
+    setRefreshing(true);
+    setCanRefresh(false);
+    startCooldown(30);
 
-        fetchOrders();
-    }, [canRefresh]);
+
+     getPedidosFiltrados(filters)
+      .then((data) => setOrders(data))
+      .catch(() => setError("Ocurrió un error al cargar los datos..."))
+      .finally(() => {
+        setRefreshing(false);
+        timeoutRef.current = setTimeout(() => setCanRefresh(true), 30000);
+      });
+  }, [canRefresh]);
 
     /* -------------------------------------------------------------------------- */
     /*                                 USE EFFECTS                                */
@@ -126,7 +133,7 @@ export function useOrderSearch(searchText: string) {
 
     const { totalOrders, totalUSD } = useMemo(() => {
         const totalUSD = filteredOrders
-            .filter((order) => order.anulada !== 1)
+            .filter((order) => order.anulada !== true)
             .reduce(
                 (acc, order) => acc + (parseFloat(order.tot_neto as string) || 0),
                 0

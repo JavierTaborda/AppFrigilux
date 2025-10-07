@@ -5,7 +5,7 @@ import ProductItem from "./ProductsItem";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { OrderApprovalProduct } from "../../types/OrderApproval";
 
 type Props = {
@@ -41,11 +41,12 @@ export default function ProductListModal({
 
   return (
     <BottomModal visible={visible} onClose={onClose} heightPercentage={0.85}>
-
       <View className="flex-1 pt-2">
         {loading ? (
           <>
-            <Text className="text-center font-light pb-2 text-foreground dark:text-dark-foreground">Cargando Detalles...</Text>
+            <Text className="text-center font-light pb-2 text-foreground dark:text-dark-foreground">
+              Cargando Detalles...
+            </Text>
             <ProductSkeleton count={5} />
           </>
         ) : products.length === 0 ? (
@@ -64,29 +65,32 @@ export default function ProductListModal({
           </View>
         ) : (
           <>
-
-            <Text className='text-2xl font-semibold mb-2 text-foreground dark:text-dark-foreground'>
+            <Text className="text-2xl font-semibold mb-2 text-foreground dark:text-dark-foreground">
               Pedido #{facturaNumero}
             </Text>
 
             <Text className="text-sm font-medium text-gray-600 dark:text-gray-400 ">
-              {products.length} {products.length === 1 ? 'artículo' : 'artículos'} 
+              {products.length}{" "}
+              {products.length === 1 ? "artículo" : "artículos"}
             </Text>
 
-
-            <ScrollView className="pt-3"
-              showsVerticalScrollIndicator={false}
-             
+            <FlatList className="pt-1"
+              data={products}
+              keyExtractor={(item) => item.reng_num.toString()}
+              renderItem={({ item, index }) => (
+                <ProductItem
+                  item={item}
+                  index={index}
+                  currency={currencyDollar}
+                />
+              )}
               contentContainerStyle={{ paddingBottom: 100 }}
-            >
-              {products.map((item, i) => (
-                <ProductItem key={item.reng_num} item={item} index={i} currency={currencyDollar} />
-              ))}
-            </ScrollView>
+              showsVerticalScrollIndicator={false}
+            />
 
             <View className="absolute bottom-20 left-0 right-0 px-6 py-4 bg-componentbg dark:bg-dark-componentbg flex-row justify-between items-center rounded-t-xl shadow-sm shadow-black/10">
               <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
-                Total 
+                Total
               </Text>
               <Text className="text-xl font-extrabold text-primary dark:text-dark-primary">
                 {totalVenezuela(totalFactura || 0)} {currencyDollar}

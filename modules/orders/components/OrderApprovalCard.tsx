@@ -17,7 +17,7 @@ interface Props {
 }
 
 function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPermission }: Props) {
-  const isAnulada = item.anulada === 1;
+  const isAnulada = item.anulada === true;
   const isRevisado = item.revisado === '1';
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
   const formattedDate = useMemo(() => formatDatedd_dot_MMM_yyyy(item.fec_emis), [item.fec_emis]);

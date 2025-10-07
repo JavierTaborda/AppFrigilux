@@ -211,7 +211,7 @@ export function useOrderApproval(searchText: string) {
     }
 
     const totalUSD = filtered
-      .filter((order) => order.anulada !== 1)
+      .filter((order) => order.anulada !== true)
       .reduce((acc, order) => acc + (parseFloat(order.tot_neto as string) || 0), 0);
 
     return { filteredOrders: filtered, totalOrders: filtered.length, totalUSD };
@@ -224,7 +224,7 @@ export function useOrderApproval(searchText: string) {
     filteredOrders.length > 0
       ? Math.max(
         ...filteredOrders
-          .filter((order) => order.anulada !== 1)
+          .filter((order) => order.anulada !== true)
           .map((order) => parseFloat(order.tot_neto as string) || 0)
       )
       : 0;

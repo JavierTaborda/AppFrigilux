@@ -28,6 +28,7 @@ export const appColors = {
   placeholdercolor:"#9CA3AF",
   componentbg: "rgb(255, 255, 255)",
   separator: "#e5e7eb",
+  bgimages:"rgb(245, 245, 245)",
 
   dark: {
     primary: {

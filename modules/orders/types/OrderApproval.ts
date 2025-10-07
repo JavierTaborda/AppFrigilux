@@ -24,7 +24,7 @@ export type OrderApproval={
   aux02: string;
   tasa: string;
   moneda: string;
-  anulada: number;
+  anulada: boolean;
   co_zon: string;
   zon_des: string;
   reng_max: number;

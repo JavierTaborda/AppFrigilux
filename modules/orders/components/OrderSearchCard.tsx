@@ -14,7 +14,7 @@ interface Props {
 }
 
 function OrderSearchCard({ item, onPress, detailModal, hasPermission }: Props) {
-  const isAnulada = item.anulada === 1;
+  const isAnulada = item.anulada === true;
   const formattedDate = useMemo(
     () => formatDatedd_dot_MMM_yyyy(item.fec_emis),
     [item.fec_emis]
