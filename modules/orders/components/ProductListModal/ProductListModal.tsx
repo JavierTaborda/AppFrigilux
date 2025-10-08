@@ -4,7 +4,7 @@ import ProductItem from "./ProductsItem";
 
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { OrderApprovalProduct } from "../../types/OrderApproval";
 
@@ -37,7 +37,12 @@ export default function ProductListModal({
 
   const totalFactura = total?.toFixed(2);
   const facturaNumero = products[0]?.fact_num ?? "N/A";
-
+const renderProductItem = useCallback(
+  ({ item, index }: { item: OrderApprovalProduct; index: number }) => (
+    <ProductItem item={item} index={index} currency={currencyDollar} />
+  ),
+  [currencyDollar]
+);
 
   return (
     <BottomModal visible={visible} onClose={onClose} heightPercentage={0.85}>
@@ -74,18 +79,17 @@ export default function ProductListModal({
               {products.length === 1 ? "artículo" : "artículos"}
             </Text>
 
-            <FlatList className="pt-1"
+            <FlatList
+              className="pt-1"
               data={products}
               keyExtractor={(item) => item.reng_num.toString()}
-              renderItem={({ item, index }) => (
-                <ProductItem
-                  item={item}
-                  index={index}
-                  currency={currencyDollar}
-                />
-              )}
+              renderItem={renderProductItem}
               contentContainerStyle={{ paddingBottom: 100 }}
               showsVerticalScrollIndicator={false}
+              initialNumToRender={10}
+              maxToRenderPerBatch={10}
+              windowSize={10}
+              removeClippedSubviews={true}
             />
 
             <View className="absolute bottom-20 left-0 right-0 px-6 py-4 bg-componentbg dark:bg-dark-componentbg flex-row justify-between items-center rounded-t-xl shadow-sm shadow-black/10">
