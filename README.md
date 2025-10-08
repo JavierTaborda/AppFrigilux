@@ -5,17 +5,27 @@
 </p>
 <p align="center"> <img src="https://frigilux.com/wp-content/uploads/2024/05/FRIGILUX-LOGO-02-1536x287.png" alt="Frigilux Logo" width="300"/> </p> <p align="center"> <b>Aplicación móvil empresarial para la gestión comercial de Frigilux en Venezuela</b><br/> <i>Enterprise mobile app for commercial management of Frigilux in Venezuela</i> </p> <p align="center"> <a href="https://frigilux.com">🌐 Sitio oficial / Official Website</a> 
    
-### ✨ Características / Features
+## 🌟 Características / Features
 
-📊 Gestión comercial completa / Full commercial management: pedidos, ventas y autorización de pagos
+📊 **Gestión comercial completa** / **Full commercial management**  
+Pedidos, ventas y autorización de pagos.  
+Orders, sales, and payment authorization.
 
-📲 Acceso móvil seguro / Secure mobile access: múltiples métodos de login (correo, contraseña, OTP, biometría)
+📲 **Acceso móvil seguro** / **Secure mobile access**  
+Múltiples métodos de login: correo, contraseña, OTP, biometría.  
+Multiple login methods: email, password, OTP, biometrics.
 
-✅ Roles y permisos / Roles & permissions: admin, gerentes, vendedores
+✅ **Roles y permisos** / **Roles & permissions**  
+Admin, gerentes, vendedores.  
+Admin, managers, salespeople.
 
-🎨 UI/UX moderna / Modern UI/UX: soporte tema claro/oscuro, animaciones fluidas y responsive
+🎨 **UI/UX moderna** / **Modern UI/UX**  
+Soporte para tema claro/oscuro, animaciones fluidas y diseño responsive.  
+Support for light/dark theme, smooth animations, and responsive design.
 
-🔒 Seguridad / Security: integración con Supabase + autenticación biométrica
+🔒 **Seguridad** / **Security**  
+Integración con Supabase + autenticación biométrica.  
+Integration with Supabase + biometric authentication.
 
 
 
@@ -36,7 +46,7 @@
 ### 🏗 Estructura Modular / Modular Architecture
 ```
 frigiluxapp/
-├── app/                 # Rutas (Expo Router) / Routes
+├── app/                 # Rutas (Expo Router)/ Routes
 ├── components/          # Componentes reutilizables / Reusable components
 ├── modules/             # Módulos de funcionalidad / Feature modules
 │   ├── auth/            # Autenticación / Authentication
@@ -66,22 +76,20 @@ frigiluxapp/
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/842842f4-4e8b-4f49-a85e-678ca7aabe40" alt="Drawer" width="200" style="margin: 10px;" />
-  <br><em>📂 Menú lateral (Drawer)</em>
+  <br><em>📂 Drawer Menu</em>
 </p>
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/adc9a11c-e09a-4fa0-8545-38799a7d5228" alt="Order Approval 1" width="200" style="margin: 10px;" />
-  <img src="https://github.com/user-attachments/assets/6face753-311f-49e2-8718-1adb162cdbc5" alt="Order Approval 2" width="200" style="margin: 10px;" />
-  <img src="https://github.com/user-attachments/assets/0027a03a-62ae-4787-b0e6-1c8468d23209" alt="Order Approval 3" width="200" style="margin: 10px;" />
-  <img src="https://github.com/user-attachments/assets/2ab66e71-33d4-427e-b607-cbd47b996ff2" alt="Order Approval 4" width="200" style="margin: 10px;" />
-
-
-
-  <br><em>✅ Pantalla de aprobación de pedidos</em>
+  <img src="https://github.com/user-attachments/assets/0027a03a-62ae-4787-b0e6-1c8468d23209" alt="Order Approval 2" width="200" style="margin: 10px;" /> 
+  <img src="https://github.com/user-attachments/assets/e5e06dde-9dd2-400c-b435-cfb4c03cd1cb" alt="Order Approval 3" width="200" style="margin: 10px;" />
+  <img src="https://github.com/user-attachments/assets/6face753-311f-49e2-8718-1adb162cdbc5" alt="Order Approval 4" width="200" style="margin: 10px;" />
+  <img src="https://github.com/user-attachments/assets/2ab66e71-33d4-427e-b607-cbd47b996ff2" alt="Order Approval 5" width="200" style="margin: 10px;" />
+  <br><em>✅ Orders Screens: Approval Orders, Details Order, Filters and Searchs </em>
 </p>
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/99d86828-512a-424e-bcc4-1af6c4d06146" alt="Create Order" width="200" style="margin: 10px;" />
-  <br><em>📝 Pantalla para crear nuevos pedidos</em>
+  <br><em>📝 Create Order Screen</em>
 </p>
 
