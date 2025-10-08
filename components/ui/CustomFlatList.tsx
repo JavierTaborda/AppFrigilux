@@ -100,12 +100,12 @@ function CustomFlatList<T>({
 
       {/* Lista */}
       <FlatList
-        ref={flatListRef} // 
+        ref={flatListRef} //
         data={data}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
-        onScroll={handleScroll} // 
+        onScroll={handleScroll} //
         scrollEventThrottle={16}
         progressViewOffset={100}
         key={numColumns} // force  re-render to change numColumns
@@ -114,24 +114,23 @@ function CustomFlatList<T>({
           numColumns > 1 ? { justifyContent: "space-between" } : undefined
         }
         refreshControl={
-          canRefresh ? (
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              {...(Platform.OS === "android" && {
-                enabled: canRefresh,
-                progressViewOffset: 100,
-                colors: [
-                  appColors.primary.DEFAULT,
-                  appColors.primary.light,
-                  appColors.secondary.DEFAULT,
-                ],
-              })}
-              tintColor={appColors.primary.DEFAULT}
-              title="Recargando..."
-              titleColor={appColors.primary.DEFAULT}
-            />
-          ) : undefined
+          <RefreshControl
+            refreshing={canRefresh ? refreshing : false} // spinner dont show while cooldown is active
+            onRefresh={canRefresh ? handleRefresh : undefined} // block handdle refresh 
+            enabled={canRefresh} // block refreshing
+            {...(Platform.OS === "android" && {
+              enabled: canRefresh,
+              progressViewOffset: 100,
+              colors: [
+                appColors.primary.DEFAULT,
+                appColors.primary.light,
+                appColors.secondary.DEFAULT,
+              ],
+            })}
+            tintColor={appColors.primary.DEFAULT}
+            title="Recargando..."
+            titleColor={appColors.primary.DEFAULT}
+          />
         }
         ListHeaderComponent={
           showtitle ? (

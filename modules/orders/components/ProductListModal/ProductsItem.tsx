@@ -31,7 +31,7 @@ export default React.memo(
           onLongPress={toggleExpand}
         >
           <Animated.View
-            layout={LinearTransition.duration(180)}
+            
             className={`${isExpanded ? "p-3" : "p-3 flex-row items-center gap-4"}`}
           >
             {/* Imagen */}
@@ -49,6 +49,7 @@ export default React.memo(
                     <View className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
                   )}
                   <Image
+                 
                     source={{ uri: img }}
                     contentFit="contain"
                     transition={100}

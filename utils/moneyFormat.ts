@@ -10,7 +10,7 @@ const totalVenezuela = (value: string | number): string => {
   // Format with thousands and decimal commas
   return `${number.toLocaleString("es-VE", {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 3,
+    maximumFractionDigits: 2,
   })}`;
 };
 

@@ -5,9 +5,9 @@ import Pedidos from "../types/Pedidos";
 // show Mil / Millon
 const formatAbbreviated = (value: number | string): string => {
   const number = typeof value === "string" ? parseFloat(value) : value;
-  if (number >= 1_000_000) return `$ ${(number / 1_000_000).toFixed(1)} Mill`;
-  if (number >= 1_000) return `$ ${(number / 1_000).toFixed(1)} Mil`;
-  return `$ ${number.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (number >= 1_000_000) return `$${(number / 1_000_000).toFixed(0)}Mill`;
+  if (number >= 1_000) return `$${(number / 1_000).toFixed(0)}Mil`;
+  return `$ ${number.toLocaleString("es-VE", { minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
 };
 
 export function useHomeScreen() {
@@ -22,6 +22,7 @@ export function useHomeScreen() {
     getPedidos()
       .then((data) => {
         setPedidos(data || []);
+        
         setChartText("Pedidos del mes actual");
       })
       .catch((err) => {
@@ -41,7 +42,7 @@ export function useHomeScreen() {
     const grouped: Record<string, number> = pedidos.reduce(
       (acc, pedido) => {
         const date = pedido.fec_emis?.split("T")[0];
-        const tot = Number(pedido.tot_neto) || 0;
+        const tot =Number(pedido.tot_neto || 0);
         if (date) acc[date] = (acc[date] || 0) + tot;
         return acc;
       },
@@ -53,16 +54,17 @@ export function useHomeScreen() {
         x,
         y: y || 0,
         label: formatAbbreviated(y || 0),
-        dayLabel: new Date(x).getDate().toString(),
+        dayLabel: x.split("-")[2],
       }))
       .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
+
   }, [pedidos]);
+
 
   // Labels and values for the chart
   const labels = totalsByDate.map((t) => t.dayLabel);
   const values = totalsByDate.map((t) => t.y);
   const dotLabels = totalsByDate.map((t) => t.label);
-
   // Totals
   const totalPedidos = pedidos.length;
   const totalNeto = pedidos.reduce(

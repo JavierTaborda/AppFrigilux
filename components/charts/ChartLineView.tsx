@@ -1,4 +1,3 @@
-
 import { appColors } from "@/utils/colors";
 import { Dimensions, ScrollView, Text, View } from "react-native";
 import { LineChart } from "react-native-chart-kit";
@@ -47,8 +46,8 @@ export const ChartLineView = ({
       isDark ? appColors.dark.foreground : appColors.foreground || "#000",
     barPercentage: 1,
     propsForDots: {
-      r: "5",
-      strokeWidth: "4",
+      r: "4.5",
+      strokeWidth: "3",
     },
   };
 
@@ -76,7 +75,7 @@ export const ChartLineView = ({
       >
         <LineChart
           data={data}
-          width={Math.max(labels.length * 25, screenWidth)}
+          width={Math.max(labels.length * 45, screenWidth)}
           height={250}
           verticalLabelRotation={0}
           withInnerLines={false}
@@ -85,16 +84,20 @@ export const ChartLineView = ({
           formatYLabel={(y) => y}
           renderDotContent={({ x, y, index }) => {
             if (x == null || y == null || !dotLabels[index]) return null;
+
+            const isEven = index % 2 === 0;
+            const offsetY = isEven ? -20 : 0; // up  par, down impar
+
             return (
               <Text
                 key={`dot-${index}`}
                 style={{
                   position: "absolute",
-                  top: y - 20,
+                  top: y + offsetY,
                   left: x - 15,
                   zIndex: 10,
                 }}
-                className="text-xs font-bold text-secondary dark:text-dark-secondary"
+                className="text-xs font-semibold text-foreground dark:text-dark-foreground"
               >
                 {dotLabels[index]}
               </Text>

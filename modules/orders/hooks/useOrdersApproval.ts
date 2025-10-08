@@ -1,6 +1,7 @@
 import { emojis } from "@/utils/emojis";
+import { useRefreshControl } from "@/utils/userRefreshControl";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Platform, ToastAndroid } from "react-native";
 import {
   changeRevisado,
@@ -19,13 +20,23 @@ export function useOrderApproval(searchText: string) {
   const [ordersAproval, setOrdersAproval] = useState<OrderApproval[]>([]);
   const [orders, setOrders] = useState<OrderApproval[]>([]); // uso local con JSON
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  //const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // control de cooldown
-  const [canRefresh, setCanRefresh] = useState(true);
-  const [cooldown, setCooldown] = useState(0);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // // control de cooldown
+  const {
+    refreshing,
+    canRefresh,
+    cooldown,
+    wrapRefresh,
+    cleanup,
+  } = useRefreshControl(15);
+
+  useEffect(() => cleanup, []);//destroy second plane of the cooldown
+
+  // const [canRefresh, setCanRefresh] = useState(true);
+  // const [cooldown, setCooldown] = useState(0);
+  // const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // filtros
 
@@ -39,7 +50,7 @@ export function useOrderApproval(searchText: string) {
   const [mountRangeActive, setMountRangeActive] = useState(false);
 
 
-  const { filters, loadFilters, sellers, zones, statusList,procesadoslist, setFilters, } = useOrderFilters();
+  const { filters, loadFilters, sellers, zones, statusList, procesadoslist, setFilters, } = useOrderFilters();
 
   const modalsData = useOrderModals();
 
@@ -47,25 +58,25 @@ export function useOrderApproval(searchText: string) {
   /* -------------------------------------------------------------------------- */
   /*                               UTILS - HELPERS                              */
   /* -------------------------------------------------------------------------- */
-  function startCooldown(seconds: number) {
-    setCooldown(seconds);
+  // function startCooldown(seconds: number) {
+  //   setCooldown(seconds);
 
-    function tick() {
-      setCooldown((prev) => {
-        if (prev <= 1) {
-          if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-            timeoutRef.current = null;
-          }
-          return 0;
-        }
-        timeoutRef.current = setTimeout(tick, 1000);
-        return prev - 1;
-      });
-    }
+  //   function tick() {
+  //     setCooldown((prev) => {
+  //       if (prev <= 1) {
+  //         if (timeoutRef.current) {
+  //           clearTimeout(timeoutRef.current);
+  //           timeoutRef.current = null;
+  //         }
+  //         return 0;
+  //       }
+  //       timeoutRef.current = setTimeout(tick, 1000);
+  //       return prev - 1;
+  //     });
+  //   }
 
-    timeoutRef.current = setTimeout(tick, 1000);
-  }
+  //   timeoutRef.current = setTimeout(tick, 1000);
+  // }
 
   /* -------------------------------------------------------------------------- */
   /*                            DATA FETCHING FUNCTIONS                         */
@@ -90,7 +101,7 @@ export function useOrderApproval(searchText: string) {
   const getOrders = useCallback(() => {
     setLoading(true);
     setError(null);
-    
+
 
     getPedidosFiltrados(filters)
       .then((data) => {
@@ -106,22 +117,17 @@ export function useOrderApproval(searchText: string) {
   /* -------------------------------------------------------------------------- */
   /*                               USER INTERACTION                             */
   /* -------------------------------------------------------------------------- */
+
+
   const handleRefresh = useCallback(() => {
-    if (!canRefresh) return;
 
-    setError(null);
-    setRefreshing(true);
-    setCanRefresh(false);
-    startCooldown(30);
+    wrapRefresh(() =>
+      getOrdersToApproval()
+        .then((data) => setOrdersAproval(data)),
+      () => setError("Ocurrió un error al cargar los datos...")
 
-    getOrdersToApproval()
-      .then((data) => setOrdersAproval(data))
-      .catch(() => setError("Ocurrió un error al cargar los datos..."))
-      .finally(() => {
-        setRefreshing(false);
-        timeoutRef.current = setTimeout(() => setCanRefresh(true), 30000);
-      });
-  }, [canRefresh]);
+    );
+  }, [wrapRefresh]);
 
   const handleChangeRevisado = async (fact_num: number, newStatus: string) => {
     try {
@@ -160,14 +166,14 @@ export function useOrderApproval(searchText: string) {
   /* -------------------------------------------------------------------------- */
   /*                                 USE EFFECTS                                */
   /* -------------------------------------------------------------------------- */
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     if (timeoutRef.current) {
+  //       clearTimeout(timeoutRef.current);
+  //       timeoutRef.current = null;
+  //     }
+  //   };
+  // }, []);
 
   useFocusEffect(
     useCallback(() => {

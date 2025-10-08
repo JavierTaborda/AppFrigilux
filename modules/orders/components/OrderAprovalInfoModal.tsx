@@ -13,7 +13,7 @@ type Props = {
 
 export default function OrderModal({ visible, onClose, order }: Props) {
   if (!order) return null;
-  console.log(order.anulada);
+  
   const isAnulada = order.anulada === true;
   const isRevisado = order.revisado === "1";
   const isAuth = order.aux02 === "Si";

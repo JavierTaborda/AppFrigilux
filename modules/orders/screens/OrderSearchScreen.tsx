@@ -95,7 +95,7 @@ export default function OrderSearchScreen() {
           keyExtractor={(item, index) => `${item.fact_num}-${index}`}
           refreshing={refreshing}
           canRefresh={canRefresh}
-          handleRefresh={handleRefresh}
+          handleRefresh={()=>handleRefresh(filters)}
           cooldown={cooldown}
           showtitle={true}
           title={`${totalOrders} pedidos`}
@@ -138,7 +138,7 @@ export default function OrderSearchScreen() {
             zones,
             sellers,
             statusList,
-            procesadoslist
+            procesadoslist,
           }}
           onApply={handleApplyFilters}
           hasPermission={hasPermission}

@@ -1,9 +1,11 @@
+import { useRefreshControl } from "@/utils/userRefreshControl";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     getPedidosFiltrados
 } from "../services/OrderService";
 import { OrderApproval } from "../types/OrderApproval";
+import { OrderFilters } from "../types/OrderFilters";
 import { useOrderFilters } from "./useOrderFilters";
 import { useOrderModals } from "./useOrderModals";
 
@@ -14,41 +16,25 @@ export function useOrderSearch(searchText: string) {
 
     const [orders, setOrders] = useState<OrderApproval[]>([]);
     const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // control de cooldown
-    const [canRefresh, setCanRefresh] = useState(true);
-    const [cooldown, setCooldown] = useState(0);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // filtros
     const { filters, loadFilters, sellers, zones, statusList, procesadoslist, setFilters } =
         useOrderFilters();
+
+    const {
+        refreshing,
+        canRefresh,
+        cooldown,
+        wrapRefresh,
+        cleanup,
+    } = useRefreshControl(10);
+
+    useEffect(() => cleanup, []);//destroy second plane of the cooldown
     const modalsData = useOrderModals();
 
-    /* -------------------------------------------------------------------------- */
-    /*                               UTILS - HELPERS                              */
-    /* -------------------------------------------------------------------------- */
-    function startCooldown(seconds: number) {
-        setCooldown(seconds);
-
-        function tick() {
-            setCooldown((prev) => {
-                if (prev <= 1) {
-                    if (timeoutRef.current) {
-                        clearTimeout(timeoutRef.current);
-                        timeoutRef.current = null;
-                    }
-                    return 0;
-                }
-                timeoutRef.current = setTimeout(tick, 1000);
-                return prev - 1;
-            });
-        }
-
-        timeoutRef.current = setTimeout(tick, 1000);
-    }
+   
 
     /* -------------------------------------------------------------------------- */
     /*                            DATA FETCHING FUNCTIONS                         */
@@ -57,7 +43,6 @@ export function useOrderSearch(searchText: string) {
     const fetchOrders = useCallback(() => {
         setLoading(true);
         setError(null);
-
         getPedidosFiltrados(filters)
             .then((data) => {
                 setOrders(data);
@@ -75,36 +60,19 @@ export function useOrderSearch(searchText: string) {
     /*                               USER INTERACTION                             */
     /* -------------------------------------------------------------------------- */
 
-    //TODO: refact thiis handle for use global
- const handleRefresh = useCallback(() => {
-    if (!canRefresh) return;
-
-    setError(null);
-    setRefreshing(true);
-    setCanRefresh(false);
-    startCooldown(30);
 
 
-     getPedidosFiltrados(filters)
-      .then((data) => setOrders(data))
-      .catch(() => setError("Ocurrió un error al cargar los datos..."))
-      .finally(() => {
-        setRefreshing(false);
-        timeoutRef.current = setTimeout(() => setCanRefresh(true), 30000);
-      });
-  }, [canRefresh]);
+    const handleRefresh = useCallback((filtersrefresh: OrderFilters) => {
+        wrapRefresh(
+            () => getPedidosFiltrados(filtersrefresh).then((data) => setOrders(data)),
+            () => setError("Ocurrió un error al cargar los datos...")
+        );
+    }, [wrapRefresh]);
 
     /* -------------------------------------------------------------------------- */
     /*                                 USE EFFECTS                                */
     /* -------------------------------------------------------------------------- */
-    useEffect(() => {
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-                timeoutRef.current = null;
-            }
-        };
-    }, []);
+
 
     useFocusEffect(
         useCallback(() => {
@@ -116,6 +84,7 @@ export function useOrderSearch(searchText: string) {
     /*                                   MEMOS                                    */
     /* -------------------------------------------------------------------------- */
     const filteredOrders = useMemo(() => {
+
         if (!searchText || searchText.length < 4) return orders;
 
         return orders.filter((order) => {
@@ -129,6 +98,7 @@ export function useOrderSearch(searchText: string) {
                 numero.includes(searchText.toLowerCase())
             );
         });
+        
     }, [orders, searchText]);
 
     const { totalOrders, totalUSD } = useMemo(() => {
