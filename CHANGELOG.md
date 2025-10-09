@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.3]
 
+### Added
+
+-ui component `CustomImage`
+
 ### Chaged
 
 - UI and styles in TitleText from CustomFlatList
@@ -19,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The app crashes when the `pedido.co_art` is null, a validation check has been implemented.
 - Added validation for discount for product list in Orders Module `hasDiscount = discount !== "0" && discount.length > 0`
+- Expanding the second item and image in ProductList causes the first item to render incompletely. Only one item was configured for expansion.
 
 ## [0.0.2](https://github.com/JavierTaborda/AppFrigilux/releases/tag/v0.0.2) - 2025-10-08
 

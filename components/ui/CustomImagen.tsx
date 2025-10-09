@@ -9,7 +9,7 @@ const CustomImage = ({ img }:Props) => {
   const [loadingImage, setLoadingImage] = useState(true);
 
   return (
-    <View className="w-full h-full relative">
+    <View className="w-full h-full">
       {imageExists ? (
         <>
           {loadingImage && (

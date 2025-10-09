@@ -4,7 +4,7 @@ import ProductItem from "./ProductsItem";
 
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { Ionicons } from "@expo/vector-icons";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { OrderApprovalProduct } from "../../types/OrderApproval";
 
@@ -23,7 +23,7 @@ export default function ProductListModal({
   products,
   loading,
   error,
-  total
+  total,
 }: Props) {
   useEffect(() => {
     if (error) {
@@ -37,12 +37,22 @@ export default function ProductListModal({
 
   const totalFactura = total?.toFixed(2);
   const facturaNumero = products[0]?.fact_num ?? "N/A";
-const renderProductItem = useCallback(
-  ({ item, index }: { item: OrderApprovalProduct; index: number }) => (
-    <ProductItem item={item} index={index} currency={currencyDollar} />
-  ),
-  [currencyDollar]
-);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  const renderProductItem = useCallback(
+    ({ item, index }: { item: OrderApprovalProduct; index: number }) => (
+      <ProductItem
+        item={item}
+        index={index}
+        currency={currencyDollar}
+        isExpanded={expandedIndex === index}
+        onToggleExpand={() =>
+          setExpandedIndex(expandedIndex === index ? null : index)
+        }
+      />
+    ),
+    [currencyDollar, expandedIndex]
+  );
 
   return (
     <BottomModal visible={visible} onClose={onClose} heightPercentage={0.85}>
@@ -84,7 +94,7 @@ const renderProductItem = useCallback(
               data={products}
               keyExtractor={(item) => item.reng_num.toString()}
               renderItem={renderProductItem}
-              contentContainerStyle={{ paddingBottom: 100 }}
+              contentContainerStyle={{ paddingBottom: 200 }}
               showsVerticalScrollIndicator={false}
               initialNumToRender={10}
               maxToRenderPerBatch={10}
