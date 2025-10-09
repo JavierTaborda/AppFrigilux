@@ -1,8 +1,15 @@
+import CustomImage from "@/components/ui/CustomImagen";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { useRef, useState } from "react";
-import { Image, Modal, Pressable, Text, TouchableOpacity } from "react-native";
+import {
+  Modal,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 import Animated, {
   BounceIn,
   BounceOut,
@@ -129,11 +136,11 @@ export default function ProductCard({
   const cardStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-const handleLongPress = () => {
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); 
-  scale.value = withTiming(1.05, { duration: 150 }); 
-  setShowMenu(true);
-};
+  const handleLongPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    scale.value = withTiming(1.05, { duration: 150 });
+    setShowMenu(true);
+  };
 
   const handleCloseMenu = () => {
     scale.value = withTiming(1, { duration: 150 }); // vuelve a su tamaño
@@ -146,11 +153,10 @@ const handleLongPress = () => {
         onPress={() => alert("Hola")}
         onLongPress={handleLongPress}
       >
-        <Image
-          source={{ uri: image }}
-          className="h-32 w-full rounded-md mb-1"
-          resizeMode="cover"
-        />
+
+        <View className="h-32 w-full rounded-md mb-1">
+          <CustomImage img={image} content="cover"/>
+        </View>
         <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground  ">
           {code}
         </Text>
@@ -164,12 +170,10 @@ const handleLongPress = () => {
         <Text className="text-base font-bold text-foreground dark:text-dark-foreground ">
           {totalVenezuela(price)} {currencyDollar}
         </Text>
-
         {/* Stock  */}
         <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1 ">
           Disponibles: {available ?? "—"}
         </Text>
-
         {/* buttions */}
         {quantity > 0 ? (
           <Animated.View
@@ -243,11 +247,14 @@ const handleLongPress = () => {
             style={cardStyle}
             className="w-64 p-4 bg-white dark:bg-dark-componentbg rounded-2xl"
           >
-            <Image
+            {/* <Image
               source={{ uri: image }}
               className="h-40 w-full rounded-lg mb-3"
               resizeMode="cover"
-            />
+            /> */}
+            <View className="h-40 w-full rounded-lg mb-3">
+              <CustomImage img={image} />
+            </View>
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-2">
               {title}
             </Text>

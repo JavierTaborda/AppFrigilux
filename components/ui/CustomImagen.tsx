@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useState } from "react";
 import { View } from "react-native";
-type Props = { img:string};
+type Props = { img:string, content?: "cover" | "contain" | "fill" | "none" | "scale-down";};
 
-const CustomImage = ({ img }:Props) => {
+const CustomImage = ({ img, content='contain'}:Props) => {
   const [imageExists, setImageExists] = useState(true);
   const [loadingImage, setLoadingImage] = useState(true);
 
@@ -17,7 +17,7 @@ const CustomImage = ({ img }:Props) => {
           )}
           <Image
             source={{ uri: img }}
-            contentFit="contain"
+            contentFit={content}
             transition={100}
             cachePolicy="memory-disk"
             style={{ width: "100%", height: "100%" }}
