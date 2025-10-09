@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from "react-native";
 
 type ModuleButtonProps = {
-  icon: string;
+  icon?: string;
   label: string;
   onPress?: () => void;
   bgColor?: string;
@@ -27,7 +27,7 @@ export const ModuleButton = ({
       disabled={isComingSoon}
       className={`flex-1 h-full rounded-xl items-center justify-center ${bgColor} shadow-sm`}
     >
-      <Text className="text-white text-3xl mb-1 shadow-sm">{icon}</Text>
+       {icon && <Text className="text-white text-3xl mb-1 shadow-sm">{icon}</Text>}
       <Text className="text-white text-lg font-bold text-center">{label}</Text>
     </Pressable>
   </View>

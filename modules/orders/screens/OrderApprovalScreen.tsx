@@ -133,8 +133,8 @@ export default function OrderApprovalScreen() {
           cooldown={cooldown}
           onHeaderVisibleChange={setHeaderVisible} // Only if use extrafilter={true} on ScreenSearchLayout
           showtitle={true}
-          title={`${totalOrders} pedidos`}
-          subtitle={`con total ${totalVenezuela(totalUSD)}$`}
+          title={`${totalOrders} ${totalOrders > 1 ?  'pedidos': 'pedido'}`}
+          subtitle={`Total ${totalVenezuela(totalUSD)}$`}
           ListEmptyComponent={
             <View className="p-10 items-center">
               <Text className="text-foreground dark:text-dark-foreground">

@@ -1,16 +1,12 @@
 import { Text, View } from "react-native";
 
-interface ScreenHeaderProps {
+interface TitleTextProps {
   title?: string;
   subtitle?: string;
   rightComponent?: React.ReactNode;
 }
 
-export default function ScreenHeader({
-  title,
-  subtitle,
-  rightComponent,
-}: ScreenHeaderProps) {
+export default function TitleText({ title, subtitle, rightComponent }: TitleTextProps) {
   return (
     <View className="px-4 w-full justify-between items-center">
       <View className="flex-row gap-1 items-center">
@@ -20,7 +16,7 @@ export default function ScreenHeader({
           </Text>
         )}
         {subtitle && (
-          <Text className="text-foreground dark:text-dark-foreground font-medium text-md">
+          <Text className="text-foreground dark:text-dark-foreground font-semibold text-md">
             {subtitle}
           </Text>
         )}

@@ -12,8 +12,8 @@ type Props = { item: OrderApprovalProduct; index: number; currency: string };
 export default React.memo(
   function ProductListItem({ item, index, currency }: Props) {
     const discount = item.porc_desc?.trim();
-    const img = `${imageURL}${item.co_art.trim()}.jpg`;
-
+    const img = `${imageURL}${item.co_art?.trim()}.jpg`;
+    const hasDiscount = discount !== "0" && discount.length > 0 ;
     const [imageExists, setImageExists] = useState(true);
     const [loadingImage, setLoadingImage] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -26,12 +26,10 @@ export default React.memo(
     return (
       <View className="bg-white dark:bg-dark-componentbg rounded-2xl mb-2 shadow-sm shadow-black/10">
         <Pressable
-         
           accessibilityLabel={`Producto ${item.art_des?.trim() ?? "Sin descripción"}`}
           onLongPress={toggleExpand}
         >
           <Animated.View
-            
             className={`${isExpanded ? "p-3" : "p-3 flex-row items-center gap-4"}`}
           >
             {/* Imagen */}
@@ -49,7 +47,6 @@ export default React.memo(
                     <View className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
                   )}
                   <Image
-                 
                     source={{ uri: img }}
                     contentFit="contain"
                     transition={100}
@@ -85,10 +82,10 @@ export default React.memo(
                 <Text className="text-sm text-gray-600 dark:text-gray-400">
                   Precio
                 </Text>
-                {discount !== "0" ? (
+                {hasDiscount ? (
                   <>
                     <Text className="text-xs font-normal line-through text-gray-600 dark:text-gray-500">
-                      {totalVenezuela(item.prec_vta2)} {currency}
+                      {totalVenezuela(item?.prec_vta2)} {currency}
                     </Text>
                     <View className="bg-red-500/10 dark:bg-red-900 px-1 rounded-full border border-red-500">
                       <Text className="text-xs font-bold text-red-500 dark:text-red-400">
@@ -96,25 +93,26 @@ export default React.memo(
                       </Text>
                     </View>
                     <Text className="text-sm font-semibold text-green-600 dark:text-green-400">
-                      {totalVenezuela(item.prec_vta_desc)} {currency}
+                      {totalVenezuela(item?.prec_vta_desc)} {currency}
                     </Text>
                   </>
                 ) : (
-                  <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    {totalVenezuela(item.prec_vta2)} {currency}
+                  <Text className="text-sm font-semibold text-green-600 dark:text-green-400">
+                    {totalVenezuela(item?.prec_vta2)} {currency}
                   </Text>
                 )}
               </View>
               <View className="flex-row items-center justify-between">
                 <Text className="text-sm text-gray-600 dark:text-gray-400">
-                  Cantidad <Text className="font-medium">{item.total_art}</Text>
+                  Cantidad{" "}
+                  <Text className="font-medium">{item?.total_art}</Text>
                 </Text>
                 <View className="flex-row gap-x-1 justify-end items-end">
                   <Text className=" text-sm  text-gray-600 dark:text-gray-400">
                     Total
                   </Text>
                   <Text className="text-md font-bold text-primary dark:text-dark-primary">
-                    {totalVenezuela(item.reng_neto)} {currency}
+                    {totalVenezuela(item?.reng_neto)} {currency}
                   </Text>
                 </View>
               </View>
