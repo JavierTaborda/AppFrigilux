@@ -1,8 +1,7 @@
+import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
 import { totalVenezuela } from "@/utils/moneyFormat";
-import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { Image } from "expo-image";
 import React, { useCallback, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { LinearTransition } from "react-native-reanimated";
@@ -11,11 +10,13 @@ type Props = { item: OrderApprovalProduct; index: number; currency: string };
 
 export default React.memo(
   function ProductListItem({ item, index, currency }: Props) {
+
+    
     const discount = item.porc_desc?.trim();
     const img = `${imageURL}${item.co_art?.trim()}.jpg`;
-    const hasDiscount = discount !== "0" && discount.length > 0 ;
-    const [imageExists, setImageExists] = useState(true);
-    const [loadingImage, setLoadingImage] = useState(true);
+    const hasDiscount = discount !== "0" && discount?.length > 0 ;
+    //const [imageExists, setImageExists] = useState(true);
+    //const [loadingImage, setLoadingImage] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleExpand = useCallback(() => {
@@ -41,7 +42,7 @@ export default React.memo(
                   : "w-24 h-24 rounded-xl"
               } bg-bgimages justify-center items-center overflow-hidden`}
             >
-              {imageExists ? (
+              {/* {imageExists ? (
                 <>
                   {loadingImage && (
                     <View className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
@@ -61,7 +62,8 @@ export default React.memo(
                 </>
               ) : (
                 <Ionicons name="image-outline" size={32} color="#999" />
-              )}
+              )} */}
+              <CustomImage img={img}/>
             </Animated.View>
 
             {/* info */}
