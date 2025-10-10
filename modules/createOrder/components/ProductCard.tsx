@@ -153,9 +153,9 @@ export default function ProductCard({
         onPress={() => alert("Hola")}
         onLongPress={handleLongPress}
       >
-
-        <View className="h-32 w-full rounded-md mb-1">
-          <CustomImage img={image} content="cover"/>
+        <View
+          className="h-32 flex-1 rounded-xl  overflow-hidden pb-1">
+          <CustomImage img={image} content="cover" />
         </View>
         <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground  ">
           {code}

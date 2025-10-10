@@ -1,4 +1,5 @@
 import { authenticateWithBiometrics } from "@/utils/biometricAuth";
+import { getBiometricEnabled } from "@/utils/biometricFlag";
 import { getSessionStatus } from "@/utils/sessionStatus";
 import { Platform } from "react-native";
 import { create } from "zustand";
@@ -18,9 +19,10 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
   initializeApp: async () => {
     try {
 
-     
+
       await useAuthStore.getState().initializeAuth();
       const { session, manualLogin, signOutSoft, setManualLogin } = useAuthStore.getState();
+      const enabledBiometric = await getBiometricEnabled();
 
       // Si no hay sesión activa, salimos rápido
       if (!session) {
@@ -30,8 +32,9 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
       }
 
       // Solo intentamos biometría si hay sesión y login no manual
-      if (session && !manualLogin && Platform.OS !='web') {
+      if (session && !manualLogin && enabledBiometric && Platform.OS != 'web') {
         const loginStatus = await getSessionStatus();
+
 
         if (loginStatus === "active") {
           let biometricSuccess = false;
@@ -55,8 +58,12 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
           set({ hasAuthenticated: true });
         }
       }
-      else if ( session && !manualLogin && Platform.OS==='web')
-      {
+      else if (session && !manualLogin && !enabledBiometric) {
+        set({ showSplash: false });
+        await signOutSoft();
+        return;
+      }
+      else if (session && !manualLogin && Platform.OS === 'web') {
         set({ hasAuthenticated: true });
       }
 

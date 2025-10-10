@@ -25,30 +25,38 @@ export default function BiometricToggle() {
         fetchBiometric();
     }, []);
 
+const didMount = useRef(false);
 
-    useEffect(() => {
-        const syncBiometricFlag = async () => {
-            setIsSaving(true);
-            await setBiometricEnabled(authBiometric);
-            setIsSaving(false);
-        };
+useEffect(() => {
+  if (!didMount.current) {
+    didMount.current = true;
+    return; 
+  }
 
-        syncBiometricFlag();
+  const syncBiometricFlag = async () => {
+    setIsSaving(true);
+    const current = await getBiometricEnabled();
+    if (current !== authBiometric) {
+      await setBiometricEnabled(authBiometric);
+    }
+    setIsSaving(false);
+  };
 
-        Animated.sequence([
-            Animated.timing(pulseAnim, {
-                toValue: 0.98,
-                duration: 150,
-                useNativeDriver: true,
-            }),
-            Animated.spring(pulseAnim, {
-                toValue: 1,
-                friction: 4,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, [authBiometric]);
+  syncBiometricFlag();
 
+  Animated.sequence([
+    Animated.timing(pulseAnim, {
+      toValue: 0.98,
+      duration: 150,
+      useNativeDriver: true,
+    }),
+    Animated.spring(pulseAnim, {
+      toValue: 1,
+      friction: 4,
+      useNativeDriver: true,
+    }),
+  ]).start();
+}, [authBiometric]);
     return (
         <Animated.View
             style={[{ transform: [{ scale: pulseAnim }] }]}

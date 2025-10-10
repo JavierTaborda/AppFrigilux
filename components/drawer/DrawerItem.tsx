@@ -34,7 +34,7 @@ export function DrawerItem({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className={`flex-row items-center py-2 px-3 rounded-2xl ${bgClass}`}
+      className={`flex-row items-center py-3 px-3 rounded-2xl ${bgClass}`}
     >
       {icon && (
         <Ionicons name={icon} size={24} color={isDark ? "white" : "black"} />

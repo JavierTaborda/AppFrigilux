@@ -25,7 +25,7 @@ export default React.memo(function ProductListItem({
 }: Props) {
   const discount = item.porc_desc?.trim();
   const img = `${imageURL}${item.co_art?.trim()}.jpg`;
-  const hasDiscount = discount !== "0" && discount?.length > 0;
+  const hasDiscount = discount !== "0" && discount?.trim().length > 0;
 
   const handleLongPress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

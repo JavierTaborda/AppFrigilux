@@ -1,12 +1,11 @@
 import { useAuthStore } from "@/stores/useAuthStore";
-import { emojis } from "@/utils/emojis";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { useSegments } from "expo-router";
 import { Image, Text, View } from "react-native";
 import { DrawerItem } from "./DrawerItem";
 
 export default function CustomDrawerContent(props: any) {
-  const { session, role } = useAuthStore();
+  const { session, role, name } = useAuthStore();
   const segments = useSegments();
   const currentPath = "/" + segments.join("/");
 
@@ -23,6 +22,9 @@ export default function CustomDrawerContent(props: any) {
         </View>
 
         <Text className="text-base font-bold text-foreground dark:text-dark-foreground mt-1">
+          {name}
+        </Text>
+        <Text className="text-base font-light text-foreground dark:text-dark-foreground mt-1">
           {session?.user.email}
         </Text>
         {/* <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground">
@@ -43,7 +45,7 @@ export default function CustomDrawerContent(props: any) {
         /> */}
 
         <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground mt-1 mb-1">
-          Pedidos
+          plataforma SGE - Pedidos
         </Text>
         {/* <DrawerItem
           icon="bag-check"
@@ -53,7 +55,7 @@ export default function CustomDrawerContent(props: any) {
         /> */}
         <DrawerItem
           //emoji={emojis.package}
-          emoji={emojis.approved}
+          //emoji={emojis.approved}
           // icon="bag-check"
           label="Aprobación Pedidos"
           href="/(main)/(tabs)/(orders)/orderApproval"
@@ -61,14 +63,14 @@ export default function CustomDrawerContent(props: any) {
         />
         <DrawerItem
           //emoji={emojis.list}
-          emoji={emojis.approved}
+          //emoji={emojis.approved}
           // icon="bag-check"
           label="Consultar Pedidos"
           href="/(main)/(tabs)/(orders)/orderSearch"
           currentPath={currentPath}
         />
 
-        {role === "1" && (
+        {/* {role === "1" && (
           <DrawerItem
            // emoji={emojis.bags}
             emoji={emojis.approved}
@@ -76,7 +78,7 @@ export default function CustomDrawerContent(props: any) {
             href="/(main)/(tabs)/(createOrder)/create-order"
             currentPath={currentPath}
           />
-        )}
+        )} */}
       </View>
     </DrawerContentScrollView>
   );

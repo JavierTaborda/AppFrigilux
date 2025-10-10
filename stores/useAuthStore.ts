@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { getUserRoleJWT } from "@/services/AuthService";
+import { getName, getUserRoleJWT } from "@/services/AuthService";
 import {
   getBiometricEnabled,
   setBiometricEnabled,
@@ -15,11 +15,13 @@ interface AuthStore {
   loading: boolean; // Auth loading status
   manualLogin: boolean; // Flag to track manual login (for biometric logic)
   role: string | null; // User role
+  name: string | null; // User name
   token: string | null; // User token for supabase
 
   setSession: (session: Session | null) => void; // Set user session
   setRole: (role: string | null) => void; // Set user role
-  setToken: (role: string | null) => void; // Set user token
+  setName: (name: string | null) => void; // Set user name
+  setToken: (token: string | null) => void; // Set user token
   setManualLogin: (value: boolean) => void; // Set manualLogin flag
 
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>; // Sign in with email/password
@@ -46,10 +48,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   loading: true,
   manualLogin: false,
   role: null,
+  name: null,
   token: null,
 
   setSession: (session) => set({ session }),
   setRole: (role) => set({ role }),
+  setName: (name) => set({ name }),
   setToken: (token) => set({ token }),
   setManualLogin: (value) => set({ manualLogin: value }),
 
@@ -62,6 +66,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       });
       if (data.session) {
         const role = await getUserRoleJWT(data.session?.access_token);
+        const name = await getName(data.session?.access_token);
         //const role = await getUserRole(data.session.user.id);
 
         await setSessionStatus("active");
@@ -70,6 +75,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           session: data.session,
           manualLogin: true,
           role: role,
+          name: name,
           token: data.session?.access_token,
         });
       }
@@ -109,6 +115,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       if (data?.session?.access_token && data?.session?.refresh_token) {
         const role = await getUserRoleJWT(data.session?.access_token);
+        const name = await getName(data.session?.access_token);
         //const role = await getUserRole(data.session.user.id);
 
         await setSessionStatus("active");
@@ -117,6 +124,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           session: data.session,
           manualLogin: true,
           role: role,
+          name: name,
           token: data.session?.access_token,
         });
       }
@@ -145,10 +153,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const { data, error } = await supabase.auth.getSession();
       if (data?.session) {
          const role = await getUserRoleJWT(data.session?.access_token);
+        const name = await getName(data.session?.access_token);
         //const role = await getUserRole(data.session.user.id);
         set({
           session: data.session,
           role: role,
+          name: name,
           token: data.session?.access_token,
           loading: false,
           manualLogin: true,
@@ -209,12 +219,14 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         set({ session: null });
       } else {
         const role = await getUserRoleJWT(data.session?.access_token);
+        const name = await getName(data.session?.access_token);
         //console.log(role)
         //const role = await getUserRole(data.session.user.id);
 
         set({
           session: data.session,
           role: role,
+          name: name,
           token: data.session?.access_token,
         });   
        //console.log(data.session.access_token)

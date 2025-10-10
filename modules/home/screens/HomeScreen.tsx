@@ -2,7 +2,6 @@ import { ChartLineView } from "@/components/charts/ChartLineView";
 import ErrorView from "@/components/ui/ErrorView";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { emojis } from "@/utils/emojis";
 import { totalVenezuela } from "@/utils/moneyFormat";
 import { router } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
@@ -12,7 +11,7 @@ import { ModuleButton } from "../components/ModuleButton";
 import { useHomeScreen } from "../hooks/useHomeScreen";
 
 export default function HomeScreen() {
-  const { session } = useAuthStore();
+  const { session,name } = useAuthStore();
   const { isDark } = useThemeStore();
   const {
     loading,
@@ -43,35 +42,44 @@ export default function HomeScreen() {
     >
       <View>
         {/* Welcome */}
-        <View className="flex-row items-center mt-2 mb-2">
-          <Text className="text-black dark:text-white text-xl font-semibold">
+        <View className="flex-1 items-start mt-2 mb-2">
+          {/* <Text className="text-black dark:text-white text-xl font-semibold">
             {emojis.user} Bienvenido
+          </Text> */}
+          <Text className="text-foreground dark:text-dark-foreground  text-xl font-bold">
+            Bienvenido 
           </Text>
-          <Text className="text-xl text-black dark:text-white font-light">
+          <Text className="text-lg text-foreground dark:text-dark-foreground  font-semibold">
+            {name}
+          </Text>
+          {/* <Text className="text-lg text-foreground dark:text-dark-foreground  font-semibold">
             {" "}
             {session?.user.email}
-          </Text>
+          </Text> */}
         </View>
 
         {/* Cards */}
-        <View className="flex-row flex-wrap justify-between gap-4 mb-4">
+        <View className="flex-row flex-wrap justify-between gap-4 mb-4 pt-1">
           <InfoCard
-            icon={emojis.package}
+            //icon={emojis.package}
             title="Total Pedidos"
             value={totalPedidos}
-            bgColor="bg-primary dark:bg-dark-primary"
+            //bgColor="bg-primary dark:bg-dark-primary"
           />
           <InfoCard
-            icon={emojis.money}
+            //icon={emojis.money}
             title="Total Neto"
-            value={totalVenezuela(totalNeto)}
-            bgColor="bg-secondary dark:bg-dark-secondary"
+            value={`${totalVenezuela(totalNeto)} $`}
+            //bgColor="bg-secondary dark:bg-dark-secondary"
           />
         </View>
 
         {/* Charts */}
-        <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold mb-2 mt-2">
+        {/* <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold mb-2 mt-2">
           {emojis.chartUp} {chartText}
+        </Text> */}
+        <Text className="text-xl text-foreground dark:text-dark-foreground font-bold mb-2 mt-2">
+          {chartText}
         </Text>
         <ChartLineView
           labels={labels}
@@ -81,10 +89,11 @@ export default function HomeScreen() {
         />
 
         {/* Modules */}
-        <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold pt-2 mb-2 mt-2">
+        {/* <Text className="text-xl text-foreground dark:text-dark-foreground font-semibold pt-2 mb-2 mt-2">
           {emojis.search} Módulos principales
-        </Text>
-        <View className="flex-row flex-wrap justify-between">
+        </Text> */}
+
+        <View className="flex-row flex-wrap justify-between pt-4">
           <View className="w-[49%] mb-4">
             <ModuleButton
               //icon={emojis.approved}

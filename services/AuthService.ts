@@ -33,4 +33,10 @@ export async function getVenCode(token: string): Promise<string> {
 
   return code;
 }
+export async function getName(token: string): Promise<string> {
+  const decoded = jwtDecode<CustomJwtPayload>(token);
+  const code = String(decoded["name-user"]);
+
+  return code;
+}
  

@@ -23,7 +23,22 @@ export function useHomeScreen() {
       .then((data) => {
         setPedidos(data || []);
         
-        setChartText("Pedidos del mes actual");
+        if (data && data.length > 0) {
+          const firstDate = data[0].fec_emis?.split("T")[0]; 
+          if (firstDate) {
+            const [year, month] = firstDate.split("-");
+            const meses = [
+              "", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+              "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+            ];
+            const mesNombre = meses[parseInt(month, 10)];
+            setChartText(`Pedidos ${mesNombre} ${year}`);
+          } else {
+            setChartText("Pedidos");
+          }
+        } else {
+          setChartText("Pedidos");
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -48,6 +63,9 @@ export function useHomeScreen() {
       },
       {} as Record<string, number>
     );
+    // const dateText = pedidos.
+    // console.log(dateText)
+    // setChartText(`${chartText}`)
 
     return Object.entries(grouped)
       .map(([x, y]) => ({

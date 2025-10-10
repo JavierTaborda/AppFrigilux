@@ -30,7 +30,7 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPerm
       [
         { text: `${emojis.rejected }Cancelar`, style: 'cancel' },
         {
-          text: `${emojis.approved} Confirmar`,
+          text: `${emojis.approved} Confirmar`, style:'default',
           onPress: async () => {
             setIsLoadingStatus(true);
             try {
