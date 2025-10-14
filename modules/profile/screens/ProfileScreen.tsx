@@ -1,10 +1,8 @@
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { getBiometricEnabled } from "@/utils/biometricFlag";
-import { appColors } from "@/utils/colors";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import BiometricToggle from "../components/BiometricView";
 
 export default function ProfileScreen() {
@@ -62,7 +60,7 @@ export default function ProfileScreen() {
         <BiometricToggle />
         <ThemeToggle />
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           className="flex-row items-center bg-error/10 p-3 rounded-lg border border-error/20 "
           onPress={() => handleSignOut()}
           activeOpacity={0.7}
@@ -70,7 +68,7 @@ export default function ProfileScreen() {
         >
           <MaterialIcons name="logout" size={20} color={appColors.error} />
           <Text className="text-error font-medium ml-2">Salir</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </ScrollView>
   );
