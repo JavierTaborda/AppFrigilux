@@ -1,22 +1,25 @@
-import { useThemeStore } from '@/stores/useThemeStore';
-import { appColors } from '@/utils/colors';
-import { Ionicons } from '@expo/vector-icons';
-import type { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
-import { DrawerToggleButton } from '@react-navigation/drawer';
-import { Tabs } from 'expo-router';
-import { Pressable, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemeStore } from "@/stores/useThemeStore";
+import { appColors } from "@/utils/colors";
+import { Ionicons } from "@expo/vector-icons";
+import type { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
+import { DrawerToggleButton } from "@react-navigation/drawer";
+import { Tabs } from "expo-router";
+import { Pressable, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-function getTabIcon(routeName: string, focused: boolean): keyof typeof Ionicons.glyphMap {
+function getTabIcon(
+  routeName: string,
+  focused: boolean
+): keyof typeof Ionicons.glyphMap {
   switch (routeName) {
-    case '(home)/index':
-      return focused ? 'home' : 'home-outline';
-    case '(profile)/index':
-      return focused ? 'person' : 'person-outline';
-    case '(settings)/index':
-      return focused ? 'settings-sharp' : 'settings-outline';
+    case "(home)/index":
+      return focused ? "home" : "home-outline";
+    case "(profile)/index":
+      return focused ? "person" : "person-outline";
+    case "(logout)/index":
+      return focused ? "exit" : "exit-outline";
     default:
-      return 'ellipse';
+      return "ellipse";
   }
 }
 
@@ -136,7 +139,10 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="(home)/index" options={{ title: "Inicio" }} />
       <Tabs.Screen name="(profile)/index" options={{ title: "Perfil" }} />
-      <Tabs.Screen name="(settings)/index" options={{ title: "Ajustes" }} />
+      <Tabs.Screen
+        name="(logout)/index"
+        options={{ title: "Salir", headerShown: false }}
+      />
 
       {/*  not shown in tab bar */}
       <Tabs.Screen
@@ -177,6 +183,14 @@ export default function TabLayout() {
           href: null,
           headerShown: true,
           title: "Crear Pedido",
+        }}
+      />
+      <Tabs.Screen
+        name="(goals)/goalsResumen"
+        options={{
+          href: null,
+          headerShown: true,
+          title: "Resumen Metas Ventas",
         }}
       />
     </Tabs>

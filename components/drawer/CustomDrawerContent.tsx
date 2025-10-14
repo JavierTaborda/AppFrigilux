@@ -69,6 +69,14 @@ export default function CustomDrawerContent(props: any) {
           href="/(main)/(tabs)/(orders)/orderSearch"
           currentPath={currentPath}
         />
+        <DrawerItem
+          //emoji={emojis.list}
+          //emoji={emojis.approved}
+          // icon="bag-check"
+          label="Resumen Metas Ventas"
+          href="/(main)/(tabs)/(goals)/goalsResumen"
+          currentPath={currentPath}
+        />
 
         {/* {role === "1" && (
           <DrawerItem
