@@ -27,8 +27,7 @@ export default function LogoutScreen() {
   useFocusEffect(
     useCallback(() => {
       Alert.alert(
-        "¿Cerrar sesión?",
-        "¿Estás seguro de que deseas salir?",
+        "¿Está seguro de que desea cerrar sesión?","",
         [
           {
             text: "Cancelar",
@@ -36,9 +35,9 @@ export default function LogoutScreen() {
             onPress: () => router.push("/(main)/(tabs)/(home)"),
           },
           {
-            text: "Sí, salir",
+            text: "Aceptar",
             onPress: () => handleSignOut(),
-            style: "destructive",
+            style:'default',
           },
         ],
         { cancelable: false }

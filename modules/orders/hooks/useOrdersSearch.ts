@@ -125,11 +125,12 @@ export function useOrderSearch(searchText: string) {
         totalOrders,
         totalUSD,
         loading,
-        refreshing,
+ 
         error,
 
         // refresh
-        handleRefresh,
+        handleRefresh,     
+          refreshing,
         canRefresh,
         cooldown,
         fetchOrders,

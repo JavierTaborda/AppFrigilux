@@ -1,156 +1,140 @@
+import ProgressBar from "@/components/charts/ProgressBar";
 import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
 import CustomFlatList from "@/components/ui/CustomFlatList";
-import CustomImage from "@/components/ui/CustomImagen";
 import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { appColors } from "@/utils/colors";
-import { imageURL } from "@/utils/imageURL";
+import { useThemeStore } from "@/stores/useThemeStore";
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import * as Progress from "react-native-progress";
+import { useMemo, useState } from "react";
+import { ScrollView, Text, View } from "react-native";
+import GoalItemCard from "../components/GoalItemCard";
 import { useGoalsResumen } from "../hooks/useGoalsResumen";
 import { Goals } from "../types/Goals";
 
 export default function OrderSearchScreen() {
   const { role } = useAuthStore();
-  const [searchText, setSearchText] = useState("");
-  const [filterVisible, setFilterVisible] = useState(false);
+  const { isDark } = useThemeStore();
 
-  const hasPermission = role === "1" || role === "2";
+  const [searchText, setSearchText] = useState("");
 
   const {
+    goals,
     loadGoals,
     loading,
     error,
-    goals,
     totalAsignada,
-    totalDisponible,
     totalUtilizado,
-    totalPorcent,
+    totalDisponible,
+    totalPercent,
+    totalArticles,
+    handleRefresh,
+    refreshing,
+    canRefresh,
+    cooldown,
   } = useGoalsResumen(searchText);
 
-  useEffect(() => {
-    loadGoals();
-  }, [loadGoals]);
+  const showPercent = (totalPercent * 100).toFixed(0);
+  const hasPermission = role === "1" || role === "2";
 
-  const renderOrderItem = ({ item }: { item: Goals }) => {
-    const img = `${imageURL}${item.codart?.trim()}.jpg`;
-    return (
-      <View className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <View className="w-16 h-16 mb-2 rounded-2xl bg-bgimages justify-center items-center overflow-hidden">
-          <CustomImage img={img} />
-        </View>
-        <Text className="text-foreground dark:text-dark-foreground">
-          {item.codart ?? JSON.stringify(item)}
-        </Text>
-        <Text className="text-foreground dark:text-dark-foreground">
-          {item.artdes ?? JSON.stringify(item)}
-        </Text>
-        <Text className="text-foreground dark:text-dark-foreground">
-         Disponibles {(Number(item.asignado-item.utilizado)) ?? JSON.stringify(item)}
-        </Text>
-      </View>
-    );
-  };
+  const resumenData = useMemo(
+    () => [
+      {
+        icon: "flag-outline",
+        label: "Asignado",
+        value: totalAsignada,
+      },
+      {
+        icon: "ribbon-outline",
+        label: "Usado",
+        value: totalUtilizado,
+      },
+      {
+        icon: "alert-circle-outline",
+        label: "Disponible",
+        value: totalDisponible,
+      },
+    ],
+    [totalAsignada, totalUtilizado, totalDisponible]
+  );
 
-  if (loading) return <Loader />;
+  const renderItem = ({ item }: { item: Goals }) => (
+    <GoalItemCard item={item} />
+  );
 
-  if (error) {
-    return <ErrorView error={error} getData={loadGoals} />;
-  }
+ 
+  if (error) return <ErrorView error={error} getData={loadGoals} />;
 
   return (
-    <>
-      <ScreenSearchLayout
-        searchText={searchText}
-        setSearchText={setSearchText}
-        placeholder="Cliente o número de pedido..."
-        onFilterPress={() => setFilterVisible(true)}
-        //filterCount={activeFiltersCount}
-        extrafilter={false}
-        headerVisible={false}
-      >
-        <View className=" bg-componentbg dark:bg-dark-componentbg rounded-xl mx-4 py-4 px-2 shadow-md">
-          <View className="flex-row justify-between items-center p-2 gap-2">
-            <View className="items-center p-2 bg-primary rounded-xl  min-w-32">
-              <View className="flex-row items-center gap-2">
-                <Ionicons name="flag-outline" size={12} color="white" />
-                <Text className="text-md font-normal text-white">
-                  Asignadas
-                </Text>
-              </View>
-              <Text className="text-3xl font-bold p-1 text-white">
-                {totalAsignada}
-              </Text>
-            </View>
-            <View className="items-center p-2 bg-primary rounded-xl  min-w-32">
-              <View className="flex-row items-center justify-around gap-2">
-                <Ionicons name="ribbon-outline" size={12} color="white" />
-                <Text className="text-md font-normal text-white"> Usados</Text>
-              </View>
-              <Text className="text-3xl font-bold p-1 text-white">
-                {totalUtilizado}
-              </Text>
-            </View>
+    <ScreenSearchLayout
+      searchText={searchText}
+      setSearchText={setSearchText}
+      placeholder="Buscar meta por artículo..."
+      onFilterPress={() => {}}
+      extrafilter={false}
+      headerVisible={false}
+    >
+      {!loading ? (
+        <>
+          <View className="mx-4 py-1">
+            <ScrollView
+              className="py-1 pb-4"
+              horizontal
+              contentContainerClassName="flex-row justify-between items-stretch gap-2 px-1 min-w-full"
+              showsHorizontalScrollIndicator={false}
+            >
+              {resumenData.map((item, index) => (
+                <View
+                  key={index}
+                  className="items-center p-3 bg-componentbg dark:bg-dark-componentbg shadow-sm shadow-black/10 rounded-xl min-w-32"
+                >
+                  <View className="flex-row items-center gap-1 mb-1">
+                    <Ionicons
+                      name={item.icon as any}
+                      size={14}
+                      color={isDark ? "white" : "black"}
+                    />
+                    <Text className="text-sm text-foreground dark:text-dark-foreground">
+                      {item.label}
+                    </Text>
+                  </View>
+                  <Text className="text-3xl font-bold text-primary dark:text-dark-primary">
+                    {item.value}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
 
-            <View className="items-center p-2 bg-primary rounded-xl  min-w-32">
-              <View className="flex-row items-center gap-2">
-                <Ionicons name="alert-circle-outline" size={12} color="white" />
-                <Text className="text-md font-normal text-white">
-                  Disponibles
-                </Text>
-              </View>
-              <Text className="text-3xl font-bold p-1 text-white">
-                {totalDisponible}
+            <View className="mt-2 px-2">
+              <ProgressBar progress={totalPercent} />
+              <Text className="text-sm font-semibold text-center text-primary dark:text-dark-primary mt-1">
+                {showPercent}%
               </Text>
             </View>
           </View>
 
-          <Progress.Bar
-            progress={totalPorcent}
-            width={null}
-            animated={true}
-            color={appColors.primary.DEFAULT}
-            borderRadius={8}
-            height={8}
-            style={{ marginTop: 10 }}
+          <CustomFlatList
+            data={goals}
+            refreshing={refreshing}
+            canRefresh={canRefresh}
+            cooldown={cooldown}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => `${item.codart}-${index}`}
+            handleRefresh={handleRefresh}
+            showtitle
+            title={`${totalArticles} artículos`}
+            ListEmptyComponent={
+              <View className="p-10 items-center">
+                <Text className="text-foreground dark:text-dark-foreground">
+                  No se encontraron metas...
+                </Text>
+              </View>
+            }
           />
-          <View className="flex-row items-center justify-center">
-            <Text className="text-foreground dark:text-dark-foreground text-sm font-light">
-              {(totalPorcent * 100).toFixed(0)}%
-            </Text>
-          </View>
-        </View>
-        <CustomFlatList
-          data={goals}
-          renderItem={renderOrderItem}
-          keyExtractor={(item, index) => `${item.codart}-${index}`}
-          refreshing={false}
-          canRefresh={false}
-          handleRefresh={loadGoals}
-          //cooldown={cooldown}
-          showtitle={true}
-          //   title={`${totalOrders} ${totalOrders > 1 ?  'pedidos': 'pedido'}`}
-          //   subtitle={`Total ${totalVenezuela(totalUSD)}$`}
-          ListEmptyComponent={
-            <View className="p-10 items-center">
-              <Text className="text-foreground dark:text-dark-foreground">
-                No se encontraron metas...
-              </Text>
-            </View>
-          }
-        />
-      </ScreenSearchLayout>
-
-      {/* {modalInfoVisible && (
-        <OrderApprovalInfoModal
-          visible={modalInfoVisible}
-          onClose={() => setModalInfoVisible(false)}
-          order={selectedOrder || undefined}
-        />
-      )} */}
-    </>
+        </>
+      ) : (
+        <Loader />
+      )}
+    </ScreenSearchLayout>
   );
 }

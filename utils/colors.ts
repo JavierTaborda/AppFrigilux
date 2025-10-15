@@ -32,7 +32,7 @@ export const appColors = {
 
   dark: {
     primary: {
-      DEFAULT: "rgb(20, 92, 48)",
+      DEFAULT: "rgb(24,168,105)",
       light: "rgb(76, 207, 120)",
       pale: "rgb(135, 255, 135)",
     },
@@ -45,7 +45,7 @@ export const appColors = {
       light: "rgb(253, 230, 138)",
     },
     tertiary: {
-      DEFAULT: "rgb(96, 165, 250)",
+      DEFAULT: "rgb(10, 190, 255)",
       light: "rgb(191, 219, 254)",
     },
     success: "rgb(74, 222, 128)",
