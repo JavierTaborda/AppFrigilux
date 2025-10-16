@@ -1,6 +1,7 @@
 import ProgressBar from "@/components/charts/ProgressBar";
 import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
+import { memo, useMemo } from "react";
 import { Text, View } from "react-native";
 import { Goals } from "../types/Goals";
 
@@ -8,14 +9,47 @@ type Props = {
   item: Goals;
 };
 
-export default function GoalItemCard({ item }: Props) {
+function GoalItemCard({ item }: Props) {
   const img = `${imageURL}${item.codart?.trim()}.jpg`;
-  const disponibles = item.asignado - item.utilizado;
-  const disText = disponibles > 1 ? "Disponibles" : "Disponible";
-  const usadosText = item.utilizado > 1 ? "usados" : "usado";
-  const asignadosText = item.asignado > 1 ? "asignados" : "asignado";
-  const progress = item.asignado > 0 ? item.utilizado / item.asignado : 0;
-  const perc = (progress * 100).toFixed(0);
+
+  const {
+    disponibles,
+    disText,
+    usadosText,
+    asignadosText,
+    progress,
+    perc,
+    statusColor,
+    statusLabel,
+  } = useMemo(() => {
+    const disponibles = item.asignado - item.utilizado;
+    const disText = disponibles > 1 ? "Disponibles" : "Disponible";
+    const usadosText = item.utilizado > 1 ? "usados" : "usado";
+    const asignadosText = item.asignado > 1 ? "asignados" : "asignado";
+    const progress = item.asignado > 0 ? item.utilizado / item.asignado : 0;
+    const perc = (progress * 100).toFixed(0);
+
+    const statusColor =
+      disponibles < 0 || disponibles === item.asignado
+        ? "bg-red-500 dark:bg-dark-red-500"
+        : disponibles === 0
+          ? "bg-primary dark:bg-dark-primary"
+          : "bg-tertiary dark:bg-dark-tertiary";
+
+    const statusLabel =
+      disponibles === 0 ? "Completa" : `${disponibles} ${disText}`;
+
+    return {
+      disponibles,
+      disText,
+      usadosText,
+      asignadosText,
+      progress,
+      perc,
+      statusColor,
+      statusLabel,
+    };
+  }, [item]);
 
   return (
     <View className="mt-3 p-3 bg-white dark:bg-dark-componentbg rounded-2xl shadow-md shadow-black/10">
@@ -34,9 +68,11 @@ export default function GoalItemCard({ item }: Props) {
         </View>
 
         <View className="ml-3">
-          <View className="flex-row items-center bg-tertiary dark:bg-dark-tertiary px-3 py-1.5 rounded-xl">
+          <View
+            className={`flex-row items-center px-3 py-1.5 rounded-xl ${statusColor}`}
+          >
             <Text className="text-white text-sm font-semibold">
-              {disponibles} {disText}
+              {statusLabel}
             </Text>
           </View>
         </View>
@@ -44,7 +80,13 @@ export default function GoalItemCard({ item }: Props) {
 
       <View>
         <View className="flex-row justify-between">
-          <Text className="text-sm text-gray-600 dark:text-gray-300">
+          <Text
+            className={`text-sm ${
+              item.utilizado < 1
+                ? "text-red-500 dark:text-dark-red-500 font-semibold"
+                : "text-gray-600 dark:text-gray-300"
+            }`}
+          >
             {item.utilizado} {usadosText}
           </Text>
           <Text className="text-sm text-gray-600 dark:text-gray-300">
@@ -55,7 +97,13 @@ export default function GoalItemCard({ item }: Props) {
         <ProgressBar progress={progress} />
 
         <View className="flex-row justify-center items-center">
-          <Text className="text-sm font-medium text-primary dark:text-dark-primary">
+          <Text
+            className={`text-sm font-medium ${
+              item.utilizado < 1
+                ? "text-red-500 dark:text-dark-red-500"
+                : "text-primary dark:text-dark-primary"
+            }`}
+          >
             {perc}%
           </Text>
         </View>
@@ -63,3 +111,6 @@ export default function GoalItemCard({ item }: Props) {
     </View>
   );
 }
+
+export default memo(GoalItemCard);
+// Memo to avoid re-renders if props not change

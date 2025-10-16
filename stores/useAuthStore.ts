@@ -229,7 +229,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           name: name,
           token: data.session?.access_token,
         });   
-       //console.log(data.session.access_token)
+       console.log(data.session.access_token)
       }
     } catch (err) {
       set({ session: null });
