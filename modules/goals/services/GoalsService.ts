@@ -6,7 +6,7 @@ export const getGoals = async  (cod_ven?:string[]): Promise<Goals[]> => {
     const params: any = {};
 
     if (cod_ven && cod_ven.length > 0) {
-      params.cod_ven = cod_ven; 
+      params.cod_ven = cod_ven.join(',');
     }
 
     const response = await api.get("goals",{params});
