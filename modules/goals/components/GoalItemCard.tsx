@@ -52,7 +52,7 @@ function GoalItemCard({ item }: Props) {
   }, [item]);
 
   return (
-    <View className="mt-3 p-3 bg-white dark:bg-dark-componentbg rounded-2xl shadow-md shadow-black/10">
+    <View className="mb-3 p-3 bg-white dark:bg-dark-componentbg rounded-2xl shadow-md shadow-black/10">
       <View className="flex-row items-center mb-2">
         <View className="w-20 h-20 rounded-xl bg-bgimages dark:bg-gray-800 justify-center items-center overflow-hidden mr-4 shadow-sm">
           <CustomImage img={img} />
@@ -62,9 +62,14 @@ function GoalItemCard({ item }: Props) {
           <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
             {item.codart || "N/A"}
           </Text>
-          <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
+          <Text className="text-sm font-normal text-foreground dark:text-dark-foreground">
             {item.artdes || "Sin descripción"}
           </Text>
+          {item.vendes && (
+            <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
+              {item.vendes}
+            </Text>
+          )}
         </View>
 
         <View className="ml-3">

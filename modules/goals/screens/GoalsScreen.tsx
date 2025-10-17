@@ -14,7 +14,7 @@ import GoalsFilterModal from "../components/GoalsFilterModal";
 import { useGoalsResumen } from "../hooks/useGoalsResumen";
 import { Goals } from "../types/Goals";
 
-export default function OrderSearchScreen() {
+export default function GoalsScreen() {
   const { role } = useAuthStore();
   const { isDark } = useThemeStore();
 
@@ -34,19 +34,26 @@ export default function OrderSearchScreen() {
     refreshing,
     canRefresh,
     cooldown,
+    totalFilters,
     // filters
+    loadingSellers,
     notUsed,
     setNotUsed,
     sortByUsed,
     setSortByUsed,
     sortByAssigned,
     setSortByAssigned,
+    sellers,
+    selectedSellers,
+    setSelectedSellers,
   } = useGoalsResumen(searchText);
 
   const showPercent = (totalPercent * 100).toFixed(0);
   const hasPermission = role === "1" || role === "2";
   const [headerVisible, setHeaderVisible] = useState(true);
-    const [filterVisible, setFilterVisible] = useState(false);
+  const [filterVisible, setFilterVisible] = useState(false);
+
+
 
   const resumenData = useMemo(
     () => [
@@ -84,6 +91,8 @@ export default function OrderSearchScreen() {
         onFilterPress={() => setFilterVisible(true)}
         extrafilter={true}
         headerVisible={headerVisible}
+        showfilterButton={hasPermission}
+        filterCount={totalFilters}
         extraFiltersComponent={
           <FastFilters
             notUsed={notUsed}
@@ -97,9 +106,9 @@ export default function OrderSearchScreen() {
       >
         {!loading ? (
           <>
-            <View className="mx-4 py-0">
+            <View className="mx-4 pb-0.5">
               <ScrollView
-                className="py-1 pb-2"
+                className="py-0.5 pb-2"
                 horizontal
                 contentContainerClassName="flex-row justify-between items-stretch gap-2 px-1 min-w-full"
                 showsHorizontalScrollIndicator={false}
@@ -163,8 +172,14 @@ export default function OrderSearchScreen() {
         <GoalsFilterModal
           visible={filterVisible}
           onClose={() => setFilterVisible(false)}
-          onApply={loadGoals}
+          onApply={(selected) => {
+            setSelectedSellers(selected);
+            setFilterVisible(false);
+          }}
           hasPermission={hasPermission}
+          sellers={sellers}
+          selectedSellers={selectedSellers}
+          loading={loadingSellers}
         />
       )}
     </>

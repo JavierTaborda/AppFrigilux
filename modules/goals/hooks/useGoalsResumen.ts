@@ -1,103 +1,141 @@
 import { useRefreshControl } from "@/utils/userRefreshControl";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getGoals } from "../services/GoalsService";
+import { getGoals, getSellersGoals } from "../services/GoalsService";
 import { Goals } from "../types/Goals";
+import { Seller } from "../types/Seller";
+
+
 
 export function useGoalsResumen(searchText: string) {
   const [goals, setGoals] = useState<Goals[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [allGoals, setAllGoals] = useState<Goals[]>([]);
+  const [sellers, setSellers] = useState<Seller[]>([]);
 
-  //filters states
+  // Filters
   const [notUsed, setNotUsed] = useState<boolean>(false);
   const [sortByUsed, setSortByUsed] = useState<boolean>(false);
   const [sortByAssigned, setSortByAssigned] = useState<boolean>(false);
 
-  const { refreshing, canRefresh, cooldown, wrapRefresh, cleanup } =
-    useRefreshControl(10);
+  // Sellers selection
+  const [selectedSellers, setSelectedSellers] = useState<string[]>([]);
+  const [loadingSellers, setLoadingSellers] = useState(false);
 
-  const loadGoals = useCallback(async () => {
+  const { refreshing, canRefresh, cooldown, wrapRefresh, cleanup } = useRefreshControl(10);
+
+  /** Load goals */
+  const loadGoals = useCallback(async (sellers?: string[]) => {
+
     setLoading(true);
     setError(null);
 
     try {
-      const result = await getGoals();
+      const result = await getGoals(sellers);
       const filteredGoals = result.filter((goal) => goal.artdes !== "");
 
       setAllGoals(filteredGoals);
     } catch (err) {
-      console.error("Error cargando metas:", err);
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
   }, []);
 
-  //refresh data logic
-  useEffect(() => cleanup, []); //destroy second plane of the cooldown
+  /** Load sellers */
+  const loadSellers = useCallback(async () => {
+
+    setLoadingSellers(true);
+    try {
+      const result = await getSellersGoals();
+      setSellers(result.map((s) => ({ co_ven: s.co_ven, des_ven: s.des_ven.trim() })));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingSellers(false);
+    }
+  }, []);
+
+  /** Refresh data */
+  useEffect(() => cleanup, []);
   const handleRefresh = useCallback(() => {
     wrapRefresh(
       () => loadGoals(),
-      () => setError("Ocurrió un error al cargar los datos...")
-    );
+      () => setError("Ocurrió un error al cargar los datos..."));
   }, [wrapRefresh]);
 
-  // InitialLoad
+  /** Initial load */
   useEffect(() => {
     loadGoals();
-  }, [loadGoals]);
+    loadSellers();
+  }, [loadGoals, loadSellers]);
 
+  /** Apply filters */
   useEffect(() => {
-    if (searchText.length === 0) {
-      setGoals(allGoals);
-    } else if (searchText.length >= 3) {
+    let filteredgoals: Goals[] = [...allGoals];
+
+    // Search filter
+    if (searchText.length >= 3) {
       const lower = searchText.toLowerCase();
-      const filtered = allGoals.filter(
+      filteredgoals = filteredgoals.filter(
         (goal) =>
           goal.artdes?.toLowerCase().includes(lower) ||
           goal.codart?.toLowerCase().includes(lower)
       );
-      setGoals(filtered);
     }
-  }, [searchText, allGoals]);
 
-  // memo
+    // Not used filter
+    if (notUsed) {
+      filteredgoals = filteredgoals.filter((g) => g.utilizado < 0);
+    }
+
+    // Sorting
+    if (sortByUsed) {
+      filteredgoals.sort((a, b) => b.utilizado - a.utilizado);
+    }
+    if (sortByAssigned) {
+      filteredgoals.sort((a, b) => b.asignado - a.asignado);
+    }
+
+    setGoals(filteredgoals);
+
+  }, [allGoals, searchText, notUsed, sortByUsed, sortByAssigned]);
+
+  useEffect(() => {
+
+    loadGoals(selectedSellers)
+  }, [selectedSellers])
+
+  /** Summary */
   const resumen = useMemo(() => {
-    const totalAsignada =
-      goals.reduce((sum, g) => sum + (g.asignado || 0), 0) || 0;
-    const totalUtilizado =
-      goals.reduce((sum, g) => sum + (g.utilizado || 0), 0) || 0;
+    const totalAsignada = goals.reduce((sum, g) => sum + (g.asignado || 0), 0);
+    const totalUtilizado = goals.reduce((sum, g) => sum + (g.utilizado || 0), 0);
     const totalDisponible = totalAsignada - totalUtilizado;
     const totalPercent = totalAsignada > 0 ? totalUtilizado / totalAsignada : 0;
     const totalArticles = goals.length;
-
-    return {
-      totalAsignada,
-      totalUtilizado,
-      totalDisponible,
-      totalPercent,
-      totalArticles,
-    };
+    const totalFilters = selectedSellers.length > 0 ? 1 : 0;
+    return { totalAsignada, totalUtilizado, totalDisponible, totalPercent, totalArticles, totalFilters };
   }, [goals]);
 
   return {
-    goals,
     loadGoals,
+    goals,
+    sellers,
+    selectedSellers,
+    setSelectedSellers,
     loading,
+    loadingSellers,
     error,
     ...resumen,
-    // refresh
-    handleRefresh,
-    refreshing,
-    canRefresh,
-    cooldown,
-    // filters
     notUsed,
     setNotUsed,
     sortByUsed,
     setSortByUsed,
     sortByAssigned,
     setSortByAssigned,
+    handleRefresh,
+    refreshing,
+    canRefresh,
+    cooldown,
   };
 }

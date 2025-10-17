@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Chaged
 
--stting screen and tab, for logout tab
+- Setting screen and tab, for logout tab
+- Add property `showfilterButton` to ScreenSearchLayout to hide filter button if dont need it.
 
 ### Fixed
 

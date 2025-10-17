@@ -64,7 +64,7 @@ export default function FastFilters({
   );
 
   return (
-    <View className="flex-row gap-1">
+    <View className="flex-row gap-1.5">
       {renderButton('Por revisar', showStatus, showStatus ? 'eye' : 'eye-off', () => setShowStatus(!showStatus))}
       {renderButton('Fecha', sortDate, sortDate ? 'arrow-down' : 'arrow-up', () => setSortDate(!sortDate))}
       {renderButton('Monto', sortMount, sortMount ? 'arrow-down' : 'arrow-up', () => setSortMount(!sortMount))}

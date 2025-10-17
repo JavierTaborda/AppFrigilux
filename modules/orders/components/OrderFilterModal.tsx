@@ -168,6 +168,7 @@ export default function OrderFilterModal({
           <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
             Procesado
           </Text>
+          {/* TODO: make a component*/}
           <View className="flex-row flex-wrap gap-2 mb-3">
             {dataFilters.procesadoslist.map((opt) => (
               <TouchableOpacity

@@ -7,6 +7,5 @@ export type Goals = {
     utilizado: number;
     codart: string;
     artdes: string;
-    codcat: string;
-    catdes: string;
+    vendes:string;
 }

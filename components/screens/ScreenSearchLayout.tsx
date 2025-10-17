@@ -20,8 +20,25 @@ type ScreenSearchLayoutProps = {
   children: React.ReactNode;
   extrafilter?: boolean;
   extraFiltersComponent?: React.ReactNode;
+  showfilterButton?:boolean;
   headerVisible?: boolean;
 };
+/**
+ * Layout component for screens that include a search bar and filter options.
+ * Includes animated visibility for an optional extra filter section.
+ *
+ * @param {string} searchText - Current text in the search input field.
+ * @param {(text: string) => void} setSearchText - Function to update the search text state.
+ * @param {string} [placeholder] - Placeholder text shown in the search bar when empty.
+ * @param {() => void} onFilterPress - Function triggered when the filter button is pressed.
+ * @param {number} [filterCount] - Number of active filters, displayed as a badge on the filter button.
+ * @param {React.ReactNode} children - Main content of the screen, rendered below the search and filter section.
+ * @param {boolean} [extrafilter] - If true, displays an additional horizontal scrollable filter row.
+ * @param {React.ReactNode} [extraFiltersComponent] - Custom component rendered alongside the filter button in the extra filter row.
+ * @param {boolean} [showfilterButton] - If true, shows the filter button inside the extra filter row. Defaults to true.
+ * @param {boolean} [headerVisible] - Controls the visibility of the animated extra filter section. Defaults to true.
+ */
+
 
 export default function ScreenSearchLayout({
   searchText,
@@ -33,6 +50,7 @@ export default function ScreenSearchLayout({
   extraFiltersComponent,
   filterCount,
   headerVisible = true,
+  showfilterButton=true,
 }: ScreenSearchLayoutProps) {
 
   const animatedValue = useSharedValue(headerVisible ? 1 : 0);
@@ -56,7 +74,7 @@ export default function ScreenSearchLayout({
 
   return (
     <View className="flex-1 pt-0.5 bg-primary dark:bg-dark-primary ">
-      {/* <TitleText title={title} subtitle={subtitle} /> */}
+     
 
       <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl pt-3 ">
         {/* Search & Filter row */}
@@ -82,15 +100,16 @@ export default function ScreenSearchLayout({
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerClassName="gap-1"
+                contentContainerClassName="gap-1.5"
               >
-                <View className="justify-center items-start">
+                
+                {showfilterButton && (<View className="justify-center items-start">
                   <FilterButton
                     onPress={onFilterPress}
                     filterCount={filterCount}
                     title={extrafilter}
                   />
-                </View>
+                </View>)}
                 <View>{extraFiltersComponent}</View>
               </ScrollView>
             </View>
