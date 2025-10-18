@@ -86,7 +86,7 @@ export function useGoalsResumen(searchText: string) {
 
     // Not used filter
     if (notUsed) {
-      filteredgoals = filteredgoals.filter((g) => g.utilizado < 0);
+      filteredgoals = filteredgoals.filter((g) => g.utilizado < 1);
     }
 
     // Sorting

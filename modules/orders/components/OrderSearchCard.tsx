@@ -1,10 +1,21 @@
-import { formatDatedd_dot_MMM_yyyy } from '@/utils/datesFormat';
-import { currencyDollar, totalVenezuela } from '@/utils/moneyFormat';
-import { Ionicons } from '@expo/vector-icons';
-import React, { useMemo } from 'react';
-import { Pressable, Text, TouchableOpacity, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeOut } from 'react-native-reanimated';
-import { OrderApproval } from '../types/OrderApproval';
+import { appColors } from "@/utils/colors";
+import { formatDatedd_dot_MMM_yyyy } from "@/utils/datesFormat";
+import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import React, { useMemo, useState } from "react";
+import { Platform, Pressable, Switch, Text, TouchableOpacity, View } from "react-native";
+
+import { useThemeStore } from "@/stores/useThemeStore";
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { OrderApproval } from "../types/OrderApproval";
 
 interface Props {
   item: OrderApproval;
@@ -27,15 +38,28 @@ function OrderSearchCard({ item, onPress, detailModal, hasPermission }: Props) {
   const handlePressDetailsModal = () => {
     detailModal?.();
   };
+  const [isFacturable, setIsFacturable] = useState(false);
+  const {isDark} = useThemeStore();
+  const progress = useSharedValue(isFacturable ? 1 : 0);
 
+  const handleToggle = () => {
+    const newValue = !isFacturable;
+    setIsFacturable(newValue);
+    progress.value = withTiming(newValue ? 1 : 0, { duration: 150 });
+    // Aquí puedes llamar un callback, ejemplo:
+    // onFacturableChange?.(item.id, newValue);
+  };
+  const knobStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: withTiming(progress.value * 22) }],
+  }));
   return (
     <Animated.View
       entering={FadeInDown.duration(300).damping(200).springify()}
       exiting={FadeOut.duration(100)}
       className={`rounded-xl py-2 px-3 mb-2 border shadow-sm shadow-black/10 ${
         isAnulada
-          ? 'bg-red-50 dark:bg-dark-error/20 border-red-300 dark:border-red-300'
-          : 'bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700'
+          ? "bg-red-50 dark:bg-dark-error/20 border-red-300 dark:border-red-300"
+          : "bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700"
       }`}
     >
       <Pressable className="flex-row gap-2" style={{ minHeight: 110 }}>
@@ -49,7 +73,10 @@ function OrderSearchCard({ item, onPress, detailModal, hasPermission }: Props) {
           </Animated.View>
         )}
 
-        <Pressable className="flex-1 gap-1 w-4/6" onPress={handlePressInfoModal}>
+        <Pressable
+          className="flex-1 gap-1 w-4/6"
+          onPress={handlePressInfoModal}
+        >
           <View className="flex-row items-center gap-2">
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
               Pedido #{item.fact_num}
@@ -80,8 +107,8 @@ function OrderSearchCard({ item, onPress, detailModal, hasPermission }: Props) {
             <Text
               className={`text-xl font-bold ${
                 isAnulada
-                  ? 'line-through text-error dark:text-dark-error'
-                  : 'text-primary dark:text-dark-primary'
+                  ? "line-through text-error dark:text-dark-error"
+                  : "text-primary dark:text-dark-primary"
               }`}
             >
               {totalVenezuela(item.tot_neto)} {currencyDollar}
@@ -98,7 +125,8 @@ function OrderSearchCard({ item, onPress, detailModal, hasPermission }: Props) {
         </Pressable>
 
         {/* Botón Ver Detalles */}
-        <View className="flex-col justify-center gap-3 w-2/6">
+        <View className="flex-col justify-center gap-1 w-2/6">
+          {/* Botón de detalles */}
           <TouchableOpacity
             onPress={handlePressDetailsModal}
             className="flex-row items-center justify-center px-4 py-2 rounded-full bg-primary dark:bg-dark-primary active:scale-95"
@@ -108,6 +136,51 @@ function OrderSearchCard({ item, onPress, detailModal, hasPermission }: Props) {
               Ver detalles
             </Text>
           </TouchableOpacity>
+
+          {/* Switch */}
+          <View className="items-center justify-center mt-2">
+            <View className="w-[50] items-center justify-center">
+              <Switch
+                style={{
+                  transform: [{ scale: Platform.OS === "ios" ? 1 : 1.1 }],
+                }}
+                value={isFacturable}
+                onValueChange={(val) => {
+                  setIsFacturable(val);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                {...(Platform.OS === "android"
+                  ? {
+                      thumbColor: isFacturable
+                        ? isDark
+                          ? appColors.dark.primary.DEFAULT
+                          : appColors.primary.DEFAULT
+                        : isDark
+                          ? appColors.dark.mutedForeground
+                          : appColors.muted,
+                      trackColor: {
+                        false: isDark
+                          ? appColors.dark.mutedForeground
+                          : appColors.muted,
+                        true: isDark
+                          ? appColors.dark.primary.DEFAULT
+                          : appColors.primary.DEFAULT,
+                      },
+                    }
+                  : {})}
+              />
+            </View>
+
+            <Text
+              className={`text-sm font-semibold mt-0 ${
+                isFacturable
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-gray-400 dark:text-gray-500"
+              }`}
+            >
+              {isFacturable ? "Facturar" : "No facturar"}
+            </Text>
+          </View>
         </View>
       </Pressable>
     </Animated.View>
