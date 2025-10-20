@@ -2,19 +2,20 @@ import { appColors } from "@/utils/colors";
 import { formatDatedd_dot_MMM_yyyy } from "@/utils/datesFormat";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
 import React, { useMemo, useState } from "react";
-import { Platform, Pressable, Switch, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { useThemeStore } from "@/stores/useThemeStore";
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeOut,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
+import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
 import { OrderApproval } from "../types/OrderApproval";
 
 interface Props {
@@ -22,9 +23,16 @@ interface Props {
   onPress?: () => void;
   detailModal?: () => void;
   hasPermission: boolean;
+  markComment: (fact_num: number, newComment: string) => Promise<boolean>;
 }
 
-function OrderSearchCard({ item, onPress, detailModal, hasPermission }: Props) {
+function OrderSearchCard({
+  item,
+  onPress,
+  detailModal,
+  hasPermission,
+  markComment,
+}: Props) {
   const isAnulada = item.anulada === true;
   const formattedDate = useMemo(
     () => formatDatedd_dot_MMM_yyyy(item.fec_emis),
@@ -38,20 +46,39 @@ function OrderSearchCard({ item, onPress, detailModal, hasPermission }: Props) {
   const handlePressDetailsModal = () => {
     detailModal?.();
   };
-  const [isFacturable, setIsFacturable] = useState(false);
-  const {isDark} = useThemeStore();
-  const progress = useSharedValue(isFacturable ? 1 : 0);
+  const [isFacturable, setIsFacturable] = useState(
+    item.comentario.startsWith("**") === true
+  );
+  const [switchLoad, setSwitchLoad] = useState<boolean>(false);
+  const { isDark } = useThemeStore();
 
-  const handleToggle = () => {
-    const newValue = !isFacturable;
-    setIsFacturable(newValue);
-    progress.value = withTiming(newValue ? 1 : 0, { duration: 150 });
-    // Aquí puedes llamar un callback, ejemplo:
-    // onFacturableChange?.(item.id, newValue);
+  const handleswitch = async (value: boolean) => {
+    try {
+      setSwitchLoad(true);
+      let newComment = item.comentario;
+
+      if (value && !item.comentario.startsWith("**")) {
+        newComment = `**${item.comentario}`;
+      } else if (!value && item.comentario.startsWith("**")) {
+        newComment = item.comentario.slice(2);
+      } else if (!value && !item.comentario.startsWith("**")) {
+        alert("Este pedido no está marcado con **");
+        return;
+      }
+
+      const result = await markComment(item.fact_num, newComment);
+
+      if (result) {
+        item.comentario = newComment;
+        setIsFacturable(value);
+      }
+    } catch (error) {
+      console.error("Error al actualizar comentario:", error);
+    } finally {
+      setSwitchLoad(false);
+    }
   };
-  const knobStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: withTiming(progress.value * 22) }],
-  }));
+
   return (
     <Animated.View
       entering={FadeInDown.duration(300).damping(200).springify()}
@@ -125,60 +152,66 @@ function OrderSearchCard({ item, onPress, detailModal, hasPermission }: Props) {
         </Pressable>
 
         {/* Botón Ver Detalles */}
-        <View className="flex-col justify-center gap-1 w-2/6">
+        <View className="flex-col justify-center w-2/6">
           {/* Botón de detalles */}
           <TouchableOpacity
             onPress={handlePressDetailsModal}
             className="flex-row items-center justify-center px-4 py-2 rounded-full bg-primary dark:bg-dark-primary active:scale-95"
             style={{ minWidth: 100 }}
           >
-            <Text className="text-sm font-semibold text-white ml-1">
+            <Text className="text-sm font-semibold text-white">
               Ver detalles
             </Text>
           </TouchableOpacity>
 
           {/* Switch */}
           <View className="items-center justify-center mt-2">
-            <View className="w-[50] items-center justify-center">
-              <Switch
-                style={{
-                  transform: [{ scale: Platform.OS === "ios" ? 1 : 1.1 }],
+            <View className="w-[60] h-[30] items-center justify-center">
+              {switchLoad ? (
+                <ActivityIndicator
+                  size="small"
+                  color={appColors.primary.DEFAULT}
+                />
+              ) : (
+                <Switch
+                  value={isFacturable}  
+                  onValueChange={(val) => {
+                  handleswitch(val);
+                  Platform.OS === "android"
+                    ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+                    : null;
                 }}
-                value={isFacturable}
-                onValueChange={(val) => {
-                  setIsFacturable(val);
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                }}
-                {...(Platform.OS === "android"
-                  ? {
-                      thumbColor: isFacturable
-                        ? isDark
-                          ? appColors.dark.primary.DEFAULT
-                          : appColors.primary.DEFAULT
-                        : isDark
-                          ? appColors.dark.mutedForeground
-                          : appColors.muted,
-                      trackColor: {
-                        false: isDark
-                          ? appColors.dark.mutedForeground
-                          : appColors.muted,
-                        true: isDark
-                          ? appColors.dark.primary.DEFAULT
-                          : appColors.primary.DEFAULT,
-                      },
-                    }
-                  : {})}
-              />
+                  {...(Platform.OS === "android"
+                    ? {
+                        thumbColor: isFacturable
+                          ? isDark
+                            ? appColors.dark.primary.DEFAULT
+                            : appColors.primary.DEFAULT
+                          : isDark
+                            ? appColors.dark.mutedForeground
+                            : appColors.muted,
+                        trackColor: {
+                          false: isDark
+                            ? appColors.dark.mutedForeground
+                            : appColors.muted,
+                          true: isDark
+                            ? appColors.dark.primary.DEFAULT
+                            : appColors.primary.DEFAULT,
+                        },
+                      }
+                    : {})}
+                />
+              )}
             </View>
 
             <Text
-              className={`text-sm font-semibold mt-0 ${
+              className={`text-sm font-normal mt-0 ${
                 isFacturable
                   ? "text-green-600 dark:text-green-400"
                   : "text-gray-400 dark:text-gray-500"
               }`}
             >
-              {isFacturable ? "Facturar" : "No facturar"}
+              {isFacturable ? "Facturar **" : "Marcar **"}
             </Text>
           </View>
         </View>

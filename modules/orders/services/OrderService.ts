@@ -64,6 +64,26 @@ export const changeRevisado = async (fact_num: number, status: string) => {
   }
 };
 
+export const UpdateComment = async (fact_num: number, comment: string) => {
+  try {
+    const response = await api.patch(`/orders/comment/${fact_num}`, {
+      comment,
+    });
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: {
+        message: error.response?.data?.message || 'Error desconocido',
+        statusCode: error.response?.status || 500,
+      },
+    };
+  }
+};
+
 export const getZones = async () => {
 
 

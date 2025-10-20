@@ -32,9 +32,7 @@ export function useGoalsResumen(searchText: string) {
 
     try {
       const result = await getGoals(sellers);
-      const filteredGoals = result.filter((goal) => goal.artdes !== "");
-
-      setAllGoals(filteredGoals);
+      setAllGoals(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -58,9 +56,11 @@ export function useGoalsResumen(searchText: string) {
 
   /** Refresh data */
   useEffect(() => cleanup, []);
+
   const handleRefresh = useCallback(() => {
+
     wrapRefresh(
-      () => loadGoals(),
+      () => loadGoals(selectedSellers && selectedSellers.length > 0 ? selectedSellers : undefined),
       () => setError("Ocurrió un error al cargar los datos..."));
   }, [wrapRefresh]);
 
@@ -72,6 +72,8 @@ export function useGoalsResumen(searchText: string) {
 
   /** Apply filters */
   useEffect(() => {
+    setLoading(true);
+
     let filteredgoals: Goals[] = [...allGoals];
 
     // Search filter
@@ -98,12 +100,13 @@ export function useGoalsResumen(searchText: string) {
     }
 
     setGoals(filteredgoals);
+    setLoading(false)
 
   }, [allGoals, searchText, notUsed, sortByUsed, sortByAssigned]);
 
   useEffect(() => {
 
-    loadGoals(selectedSellers)
+    loadGoals(selectedSellers && selectedSellers.length > 0 ? selectedSellers : undefined)
   }, [selectedSellers])
 
   /** Summary */

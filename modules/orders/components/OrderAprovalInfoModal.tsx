@@ -26,7 +26,7 @@ export default function OrderModal({ visible, onClose, order }: Props) {
 
   return (
     <BottomModal visible={visible} onClose={onClose} heightPercentage={0.85}>
-      {/* Header */}
+
 
       <Text className="text-2xl font-semibold mb-2 text-foreground dark:text-dark-foreground">
         Pedido #{order.fact_num}
@@ -58,7 +58,7 @@ export default function OrderModal({ visible, onClose, order }: Props) {
         <Row label="Dirección Entrega" value={order.dir_ent} multiline />
         <Row label="Zona" value={order.zon_des} />
         <Row label="Vendedor" value={order.ven_des || "-"} />
-        <Row label="Comentario" value={order.comentario || "-"} multiline />
+        <Row label="Comentario" value={order.comentario} multiline />
 
         <Row label="Condición" value={order.cond_des} />
         <Row

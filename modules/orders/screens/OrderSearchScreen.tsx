@@ -49,6 +49,7 @@ export default function OrderSearchScreen() {
 
     error,
     fetchOrders,
+    markComment,
   } = useOrderSearch(searchText);
 
   const handleApplyFilters = (newFilters: OrderFilters) => {
@@ -64,6 +65,7 @@ export default function OrderSearchScreen() {
         onPress={() => handleOpenInfoModal(item)}
         detailModal={() => handleOpenProductsModal(item)}
         hasPermission={hasPermission}
+        markComment={markComment}
       />
     ),
     [

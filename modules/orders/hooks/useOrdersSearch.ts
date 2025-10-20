@@ -2,7 +2,7 @@ import { useRefreshControl } from "@/utils/userRefreshControl";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    getPedidosFiltrados
+    getPedidosFiltrados, UpdateComment
 } from "../services/OrderService";
 import { OrderApproval } from "../types/OrderApproval";
 import { OrderFilters } from "../types/OrderFilters";
@@ -69,6 +69,27 @@ export function useOrderSearch(searchText: string) {
         );
     }, [wrapRefresh]);
 
+    const markComment = async (fact_num: number, newComment: string) => {
+        try {
+            const result = await UpdateComment(fact_num, newComment);
+
+            if (!result.success) {
+                if (result.error?.statusCode === 403) {
+                    alert('No tienes permisos para ejecutar esta funcionalidad');
+                } else {
+                    alert(`Error: ${result.error?.message || 'Error desconocido'}`);
+                }
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error al actualizar el comentario:', error);
+            alert('Ocurrió un error inesperado');
+            return false;
+        }
+    };
+
     /* -------------------------------------------------------------------------- */
     /*                                 USE EFFECTS                                */
     /* -------------------------------------------------------------------------- */
@@ -127,6 +148,7 @@ export function useOrderSearch(searchText: string) {
         loading,
  
         error,
+        markComment,
 
         // refresh
         handleRefresh,     
