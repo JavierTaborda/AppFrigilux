@@ -2,7 +2,8 @@
   "expo": {
     "name": "Frigilux App",
     "slug": "frigiluxapp",
-    "version": "0.0.3",
+    "version": "1.0.0",
+    "owner": "cyberluxexpo",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "appexamplefrigilux",

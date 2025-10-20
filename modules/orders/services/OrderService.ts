@@ -64,10 +64,11 @@ export const changeRevisado = async (fact_num: number, status: string) => {
   }
 };
 
-export const UpdateComment = async (fact_num: number, comment: string) => {
+export const UpdateComment = async (fact_num: number, newcomment: string) => {
   try {
+    
     const response = await api.patch(`/orders/comment/${fact_num}`, {
-      comment,
+      newcomment,
     });
     return {
       success: true,
