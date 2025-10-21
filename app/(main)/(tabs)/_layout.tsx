@@ -193,6 +193,14 @@ export default function TabLayout() {
           title: "Resumen Metas Ventas",
         }}
       />
+      <Tabs.Screen
+        name="(returnReport)/index"
+        options={{
+          href: null,
+          headerShown: true,
+          title: "Reportar Devolución"
+        }}
+      />
     </Tabs>
   );
 }

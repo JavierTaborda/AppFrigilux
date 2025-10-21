@@ -203,7 +203,14 @@ function OrderSearchCard({
                             : appColors.tertiary.DEFAULT,
                         },
                       }
-                    : {})}
+                    : {
+                            
+                        trackColor: {
+                          true: isDark
+                            ? appColors.dark.tertiary.DEFAULT
+                            : appColors.tertiary.DEFAULT,
+                        },
+                      })}
                 />
               )}
             </View>

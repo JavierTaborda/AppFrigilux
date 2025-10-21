@@ -10,7 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Goals Module
+- Design for Returns Report Module
 - Switch to add `**` to the comment of an order.
+- install `expo-image-picker`
+- install `base64-arraybuffer`
+- intall `expo-camera`
+- Global Component `BarcodeScanner` to scan qr, barcoders...
 
 ### Chaged
 

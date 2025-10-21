@@ -56,4 +56,5 @@ export const emojis = {
   clock: "🕒",
   location: "🗺️",
   tools: "🛠️",
+  camera: "📷",
 };
