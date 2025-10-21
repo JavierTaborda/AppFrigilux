@@ -114,6 +114,15 @@ export default function HomeScreen() {
               bgColor="bg-secondary dark:bg-dark-secondary"
             />
           </View>
+          <View className="w-[49%] mb-4">
+            <ModuleButton
+              //icon={emojis.list}
+              //icon={emojis.approved}
+              label="Resumen Metas de Ventas"
+              onPress={() => router.push("/(main)/(tabs)/(goals)/goalsResumen")}
+              bgColor="bg-tertiary dark:bg-dark-tertiary"
+            />
+          </View>
           {/* <View className="w-[49%] mb-4">
             <ModuleButton
               //icon={emojis.bags}

@@ -170,23 +170,27 @@ function OrderSearchCard({
               {switchLoad ? (
                 <ActivityIndicator
                   size="small"
-                  color={appColors.primary.DEFAULT}
+                  color={
+                    isDark
+                      ? appColors.dark.tertiary.DEFAULT
+                      : appColors.tertiary.DEFAULT
+                  }
                 />
               ) : (
                 <Switch
-                  value={isFacturable}  
+                  value={isFacturable}
                   onValueChange={(val) => {
-                  handleswitch(val);
-                  Platform.OS === "android"
-                    ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
-                    : null;
-                }}
+                    handleswitch(val);
+                    Platform.OS === "android"
+                      ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+                      : null;
+                  }}
                   {...(Platform.OS === "android"
                     ? {
                         thumbColor: isFacturable
                           ? isDark
-                            ? appColors.dark.primary.DEFAULT
-                            : appColors.primary.DEFAULT
+                            ? appColors.dark.tertiary.DEFAULT
+                            : appColors.tertiary.DEFAULT
                           : isDark
                             ? appColors.dark.mutedForeground
                             : appColors.muted,
@@ -195,8 +199,8 @@ function OrderSearchCard({
                             ? appColors.dark.mutedForeground
                             : appColors.muted,
                           true: isDark
-                            ? appColors.dark.primary.DEFAULT
-                            : appColors.primary.DEFAULT,
+                            ? appColors.dark.tertiary.DEFAULT
+                            : appColors.tertiary.DEFAULT,
                         },
                       }
                     : {})}
@@ -205,13 +209,13 @@ function OrderSearchCard({
             </View>
 
             <Text
-              className={`text-sm font-normal mt-0 ${
+              className={`text-sm mt-0 ${
                 isFacturable
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-gray-400 dark:text-gray-500"
+                  ? "font-semibold text-tertiary dark:text-dark-tertiary"
+                  : "font-normal text-gray-400   dark:text-gray-500"
               }`}
             >
-              {isFacturable ? "Facturar **" : "Marcar **"}
+              {isFacturable ? "Facturar" : "Facturar"}
             </Text>
           </View>
         </View>
