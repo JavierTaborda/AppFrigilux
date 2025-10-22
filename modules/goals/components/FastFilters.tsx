@@ -66,7 +66,7 @@ export default function FastFilters({
       {renderButton(
         "No usados",
         notUsed,
-        notUsed ? "close-circle" : "checkmark-circle",
+        notUsed ? 'eye' : 'eye-off',
         () => setNotUsed(!notUsed)
       )}
       {renderButton(

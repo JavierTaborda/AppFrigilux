@@ -1,5 +1,6 @@
 import api from "@/lib/axios";
 import { Goals } from "../types/Goals";
+import { Seller } from "../types/Seller";
 
 export const getGoals = async  (cod_ven?:string[]): Promise<Goals[]> => {
   try {
@@ -18,7 +19,7 @@ export const getGoals = async  (cod_ven?:string[]): Promise<Goals[]> => {
   }
 };
 
-export const getSellersGoals = async (): Promise<{co_ven: string; des_ven: string }[] > => {
+export const getSellersGoals = async (): Promise<Seller[] > => {
   try {
     const response = await api.get("goals/sellers");
     return response.data;

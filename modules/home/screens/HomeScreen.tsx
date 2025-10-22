@@ -120,7 +120,7 @@ export default function HomeScreen() {
               //icon={emojis.approved}
               label="Resumen Metas de Ventas"
               onPress={() => router.push("/(main)/(tabs)/(goals)/goalsResumen")}
-              bgColor="bg-tertiary dark:bg-dark-tertiary"
+              bgColor="bg-green-500 dark:bg-gree-200"
             />
           </View>
           {/* <View className="w-[49%] mb-4">

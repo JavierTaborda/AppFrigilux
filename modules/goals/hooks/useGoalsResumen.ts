@@ -1,4 +1,5 @@
 import { useRefreshControl } from "@/utils/userRefreshControl";
+import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getGoals, getSellersGoals } from "../services/GoalsService";
 import { Goals } from "../types/Goals";
@@ -24,6 +25,9 @@ export function useGoalsResumen(searchText: string) {
 
   const { refreshing, canRefresh, cooldown, wrapRefresh, cleanup } = useRefreshControl(10);
 
+  const [initialized, setInitialized] = useState(false);
+
+
   /** Load goals */
   const loadGoals = useCallback(async (sellers?: string[]) => {
 
@@ -32,6 +36,7 @@ export function useGoalsResumen(searchText: string) {
 
     try {
       const result = await getGoals(sellers);
+
       setAllGoals(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -46,7 +51,7 @@ export function useGoalsResumen(searchText: string) {
     setLoadingSellers(true);
     try {
       const result = await getSellersGoals();
-      setSellers(result.map((s) => ({ co_ven: s.co_ven, des_ven: s.des_ven.trim() })));
+      setSellers(result.map((s) => ({ codven: s.codven, vendes: s.vendes.trim() })));
     } catch (err) {
       console.error(err);
     } finally {
@@ -65,10 +70,38 @@ export function useGoalsResumen(searchText: string) {
   }, [wrapRefresh]);
 
   /** Initial load */
+  // useEffect(() => {
+  //   loadGoals();
+  //   loadSellers();
+  // }, [loadGoals, loadSellers]);
+
+  // useEffect(() => {
+
+  //   loadGoals(selectedSellers && selectedSellers.length > 0 ? selectedSellers : undefined)
+  // }, [selectedSellers])
+
+
+  useFocusEffect(
+    useCallback(() => {
+     
+      loadSellers();
+      loadGoals(selectedSellers.length > 0 ? selectedSellers : undefined);
+      setError(null);
+      setInitialized(true);
+
+
+      return () => {
+        cleanup();
+      };
+    }, [selectedSellers])
+  );
+
+
   useEffect(() => {
-    loadGoals();
-    loadSellers();
-  }, [loadGoals, loadSellers]);
+    if (!initialized) return;
+    loadGoals(selectedSellers.length > 0 ? selectedSellers : undefined);
+  }, [selectedSellers]);
+
 
   /** Apply filters */
   useEffect(() => {
@@ -103,11 +136,6 @@ export function useGoalsResumen(searchText: string) {
     setLoading(false)
 
   }, [allGoals, searchText, notUsed, sortByUsed, sortByAssigned]);
-
-  useEffect(() => {
-
-    loadGoals(selectedSellers && selectedSellers.length > 0 ? selectedSellers : undefined)
-  }, [selectedSellers])
 
   /** Summary */
   const resumen = useMemo(() => {

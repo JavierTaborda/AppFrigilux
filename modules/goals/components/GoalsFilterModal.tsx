@@ -2,11 +2,9 @@ import FilterModal from "@/components/ui/FilterModal";
 import { appColors } from "@/utils/colors";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { Seller } from "../types/Seller";
 
-interface Seller {
-  co_ven: string;
-  des_ven: string;
-}
+
 
 interface GoalsFilterModalProps {
   visible: boolean;
@@ -77,25 +75,26 @@ export default function GoalsFilterModal({
             <Text className="pb-2 text-md font-semibold text-foreground dark:text-dark-foreground">
               Seleccione uno o más vendedores
             </Text>
-            <View className="border rounded-lg border-muted overflow-hidden">
+   
+            <View className="flex-row flex-wrap gap-2 mb-3">
               {sellers.map((seller) => (
                 <TouchableOpacity
-                  key={seller.co_ven}
-                  onPress={() => handleSelect(seller.co_ven)}
-                  className={`px-4 py-3 border-b border-muted ${
-                    internalSelected.includes(seller.co_ven)
-                      ? "bg-primary dark:bg-dark-primary"
-                      : "bg-background dark:bg-dark-background"
+                  key={seller.codven}
+                  onPress={() => handleSelect(seller.codven)}
+                  className={`px-4 py-2 rounded-full border ${
+                    internalSelected.includes(seller.codven)
+                      ? "bg-primary border-primary"
+                      : "bg-transparent border-muted"
                   }`}
                 >
                   <Text
-                    className={`text-base ${
-                      internalSelected.includes(seller.co_ven)
+                    className={`text-sm ${
+                      internalSelected.includes(seller.codven)
                         ? "text-white"
                         : "text-foreground dark:text-dark-foreground"
                     }`}
                   >
-                    {seller.des_ven}
+                    {seller.vendes}
                   </Text>
                 </TouchableOpacity>
               ))}
