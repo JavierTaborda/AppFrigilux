@@ -77,7 +77,7 @@ export default function GoalsScreen() {
   );
 
   const renderItem = ({ item }: { item: Goals }) => (
-    <GoalItemCard item={item} />
+    <GoalItemCard item={item} hasPermission={hasPermission} />
   );
 
   if (error) return <ErrorView error={error} getData={loadGoals} />;

@@ -7,9 +7,10 @@ import { Goals } from "../types/Goals";
 
 type Props = {
   item: Goals;
+  hasPermission?:boolean;
 };
 
-function GoalItemCard({ item }: Props) {
+function GoalItemCard({ item, hasPermission }: Props) {
   const img = `${imageURL}${item.codart?.trim()}.jpg`;
 
   const {
@@ -65,11 +66,12 @@ function GoalItemCard({ item }: Props) {
           <Text className="text-sm font-normal text-foreground dark:text-dark-foreground">
             {item.artdes || "Sin descripción"}
           </Text>
-          {item.vendes && (
-            <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
-              {item.vendes}
-            </Text>
-          )}
+          {item.vendes &&
+            hasPermission && (
+              <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
+                {item.vendes}
+              </Text>
+            )}
         </View>
 
         <View className="ml-3">
