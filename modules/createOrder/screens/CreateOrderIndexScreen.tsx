@@ -19,7 +19,7 @@ import useCreateOrder from "../hooks/useCreateOrder";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 export default function CreateOrderScreen() {
-  const { loading, error, products, handleRefresh, refreshing, canRefresh } =
+  const { loading, error,productItems, products, handleRefresh, refreshing, canRefresh } =
     useCreateOrder();
 
   const [searchText, setSearchText] = useState("");
@@ -78,18 +78,18 @@ export default function CreateOrderScreen() {
       extrafilter={true}
     >
       <CustomFlatList
-        data={products}
+        data={productItems}
         renderItem={({ item }) => (
           <ProductCard
-            code={item.code}
-            title={item.title}
+            codart={item.codart}
+            artdes={item.artdes}
             price={item.price}
-            image={item.image}
+            //image={item.image}
             available={item.available}
-            almacen={item.almacen}
+            almacen={""}
           />
         )}
-        keyExtractor={(item, index) => `${item.code}-${index}`}
+        keyExtractor={(item, index) => `${item.codart}-${index}`}
         refreshing={refreshing}
         canRefresh={canRefresh}
         handleRefresh={handleRefresh}
@@ -108,8 +108,7 @@ export default function CreateOrderScreen() {
             paddingHorizontal: 20,
             width: "100%",
             flexDirection: "row",
-            gap:12
-
+            gap: 12,
           },
           animatedStyle,
         ]}

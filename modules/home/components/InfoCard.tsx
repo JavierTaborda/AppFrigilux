@@ -18,6 +18,7 @@ export const InfoCard = ({ icon, title, value, bgColor }: InfoCardProps) => (
       {icon && (
         <Text className="text-white text-2xl mr-1 shadow-sm">{icon}</Text>
       )}
+      
       <Text
         className={`${!bgColor ? 'text-foreground dark:text-dark-foreground ':'text-primary dark:text-dark-secondary '} text-lg font-bold flex-1`}
         numberOfLines={1}

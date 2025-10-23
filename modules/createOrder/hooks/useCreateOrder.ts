@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
+import { getItemsByGoals } from "../services/CreateOrderService";
 import { order } from "../types/order";
+import { OrderItem } from "../types/orderItem";
 
 const useCreateOrder = () => {
   const [loading, setLoading] = useState(false);
@@ -7,6 +10,7 @@ const useCreateOrder = () => {
   const [error, setError] = useState<string | null>(null);
   const [neworder, setOrders] = useState<order[]>([]);
   const [canRefresh, setCanRefresh] = useState(true);
+  const [productItems, setProductsItems] = useState<OrderItem[]>([]);
 
   const products = [
     {
@@ -39,7 +43,7 @@ const useCreateOrder = () => {
       title: "Horno P/Emp. Mixto Mod.",
       price: 388.79,
       image: "https://frigilux.com/wp-content/uploads/2025/08/01-HEFR-4IX.jpg",
-      available:9,
+      available: 9,
       almacen: "Almacen 0001",
     },
     {
@@ -62,6 +66,23 @@ const useCreateOrder = () => {
     },
   ];
 
+  const loadItems = async () => {
+    setLoading(true);
+    try {
+      const result = await getItemsByGoals();
+      setProductsItems(result);
+    } catch (error) {
+      return { error };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadItems(); 
+    }, [])
+  );
   const createOrder = async () => {
     setLoading(true);
     try {
@@ -102,6 +123,7 @@ const useCreateOrder = () => {
     products,
     refreshing,
     neworder,
+    productItems,
   };
 };
 

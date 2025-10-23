@@ -6,9 +6,9 @@ import { OrderItem } from "../types/orderItem";
 type CreateOrderState = {
   items: OrderItem[];
   addItem: (product: OrderItem, qty?: number) => void;
-  increase: (code:string, by?: number)=> void;
-  decrease: (code:string, by?: number)=> void;
-  removeItem: (code: string) => void;
+  increase: (codart:string, by?: number)=> void;
+  decrease: (codart:string, by?: number)=> void;
+  removeItem: (codart: string) => void;
   clearOrder: () => void;
   getSubtotal: ()=> number;
   getItemsCount: ()=> number;
@@ -19,11 +19,11 @@ const useCreateOrderStore = create<CreateOrderState>()(
     (set, get) => ({
       items: [],
       addItem: (product, qty=1) => {
-        const exists = get().items.find((i) => i.code === product.code);
+        const exists = get().items.find((i) => i.codart === product.codart);
         if (exists) {
           set({
             items: get().items.map((i) =>
-              i.code === product.code
+              i.codart === product.codart
                 ? {
                     ...i,
                     quantity: Math.min(
@@ -44,10 +44,10 @@ const useCreateOrderStore = create<CreateOrderState>()(
         }
       },
       
-      increase: (code, by = 1) => {
+      increase: (codart, by = 1) => {
         set({
           items: get().items.map((i) =>
-            i.code === code
+            i.codart === codart
               ? {
                   ...i,
                   quantity: Math.min(
@@ -60,19 +60,19 @@ const useCreateOrderStore = create<CreateOrderState>()(
         });
       },
 
-      decrease: (code, by = 1) =>
+      decrease: (codart, by = 1) =>
         set({
           items: get()
             .items.map((i) =>
-              i.code === code
+              i.codart === codart
                 ? { ...i, quantity: Math.max(0, i.quantity - by) }
                 : i
             )
             .filter((i) => i.quantity > 0),
         }),
 
-      removeItem: (code) => {
-        set({ items: get().items.filter((i) => i.code !== code) });
+      removeItem: (codart) => {
+        set({ items: get().items.filter((i) => i.codart !== codart) });
       },
 
       clearOrder: () => {

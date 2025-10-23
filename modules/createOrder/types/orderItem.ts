@@ -1,8 +1,11 @@
 export type OrderItem = {
-  code: string;
-  title: string;
+  codart: string;
+  artdes: string;
   price: number;
-  image: string;
-  available?: number;
+  codven?: string; 
+  asignado?: number;
+  utilizado?: number; 
+  available?: number; //asignado - utilizado
   quantity: number;
-};
+  img?:string
+}

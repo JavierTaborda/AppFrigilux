@@ -86,15 +86,15 @@ export default function CustomDrawerContent(props: any) {
           currentPath={currentPath}
         /> */}
 
-        {/* {role === "1" && (
+        {role === "1" && (
           <DrawerItem
            // emoji={emojis.bags}
-            emoji={emojis.approved}
+            //emoji={emojis.approved}
             label="Crear Pedido"
             href="/(main)/(tabs)/(createOrder)/create-order"
             currentPath={currentPath}
           />
-        )} */}
+        )}
       </View>
     </DrawerContentScrollView>
   );

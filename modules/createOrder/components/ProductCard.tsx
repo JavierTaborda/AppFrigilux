@@ -1,4 +1,5 @@
 import CustomImage from "@/components/ui/CustomImagen";
+import { imageURL } from "@/utils/imageURL";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
@@ -20,23 +21,16 @@ import Animated, {
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 type ProductCardProps = {
-  code: string;
-  title: string;
+  codart: string;
+  artdes: string;
   price: number;
-  image: string;
   available?: number;
-  almacen: string;
+  almacen?: string;
 };
 
-export default function ProductCard({
-  code,
-  title,
-  price,
-  image,
-  available,
-}: ProductCardProps) {
+export default function ProductCard({ codart, artdes, price, available }: ProductCardProps) {
   const cartItem = useCreateOrderStore((s) =>
-    s.items.find((i) => i.code === code)
+    s.items.find((i) => i.codart === codart)
   );
   const addItem = useCreateOrderStore((s) => s.addItem);
   const increase = useCreateOrderStore((s) => s.increase);
@@ -44,6 +38,7 @@ export default function ProductCard({
   const removeItem = useCreateOrderStore((s) => s.removeItem);
   const [showMenu, setShowMenu] = useState(false);
 
+  const img = `${imageURL}${codart?.trim()}.jpg`;
   const quantity = cartItem?.quantity ?? 0;
 
   // animations
@@ -72,7 +67,7 @@ export default function ProductCard({
       pressedLong.current = false;
       return;
     }
-    increase(code);
+    increase(codart);
     Haptics.selectionAsync();
     btnScale.value = withTiming(
       0.9,
@@ -91,7 +86,7 @@ export default function ProductCard({
       pressedLong.current = false;
       return; // Evita que se dispare después del long press
     }
-    decrease(code);
+    decrease(codart);
     Haptics.selectionAsync();
     btnScale.value = withTiming(
       0.9,
@@ -106,7 +101,7 @@ export default function ProductCard({
       return;
     }
 
-    addItem({ code, title, price, image, available, quantity: 1 });
+    addItem({ codart, artdes, price, img, available, quantity: 1 });
     Haptics.selectionAsync();
     addScale.value = withTiming(
       1.1,
@@ -116,13 +111,13 @@ export default function ProductCard({
   };
   const handleRemove = () => {
     pressedLong.current = true;
-    removeItem(code);
+    removeItem(codart);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
   };
   const handleMaxIncrease = () => {
     pressedLong.current = true;
     if (available && available > quantity) {
-      increase(code, available - quantity);
+      increase(codart, available - quantity);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       qtyScale.value = withTiming(
         1.1,
@@ -153,19 +148,18 @@ export default function ProductCard({
         onPress={() => alert("Hola")}
         onLongPress={handleLongPress}
       >
-        <View
-          className="h-32 flex-1 rounded-xl  overflow-hidden pb-1">
-          <CustomImage img={image} content="cover" />
+        <View className="h-32 flex-1 rounded-xl  overflow-hidden pb-1">
+          <CustomImage img={img} content="cover" />
         </View>
         <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground  ">
-          {code}
+          {codart}
         </Text>
         <Text
           className="text-sm font-normal text-foreground dark:text-dark-foreground  w-full leading-snug break-words min-h-10"
           numberOfLines={2}
           ellipsizeMode="tail"
         >
-          {title}
+          {artdes}
         </Text>
         <Text className="text-base font-bold text-foreground dark:text-dark-foreground ">
           {totalVenezuela(price)} {currencyDollar}
@@ -253,10 +247,10 @@ export default function ProductCard({
               resizeMode="cover"
             /> */}
             <View className="h-40 w-full rounded-lg mb-3">
-              <CustomImage img={image} />
+              <CustomImage img={img} />
             </View>
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-2">
-              {title}
+              {artdes}
             </Text>
             <Text className="text-base font-semibold text-foreground dark:text-dark-foreground mb-4">
               {totalVenezuela(price)} {currencyDollar}
@@ -277,7 +271,7 @@ export default function ProductCard({
 
             <TouchableOpacity
               onPress={() => {
-                removeItem(code);
+                removeItem(codart);
                 handleCloseMenu();
               }}
               className="py-2"
