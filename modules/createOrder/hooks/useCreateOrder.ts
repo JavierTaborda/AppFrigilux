@@ -1,17 +1,20 @@
 import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getItemsByGoals } from "../services/CreateOrderService";
 import { order } from "../types/order";
 import { OrderItem } from "../types/orderItem";
 
-const useCreateOrder = () => {
+const useCreateOrder = (searchText: string) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [neworder, setOrders] = useState<order[]>([]);
   const [canRefresh, setCanRefresh] = useState(true);
   const [productItems, setProductsItems] = useState<OrderItem[]>([]);
-
+  const [allproductItems, setAllProductsItems] = useState<OrderItem[]>([]);
+  const [notUsed, setNotUsed] = useState<boolean>(false);
+  const [sortByAvailable, setSortByAvailable] = useState<boolean>(false);
+  const [sortByAssigned, setSortByAssigned] = useState<boolean>(false);
   const products = [
     {
       code: "COFS-4I",
@@ -70,7 +73,7 @@ const useCreateOrder = () => {
     setLoading(true);
     try {
       const result = await getItemsByGoals();
-      setProductsItems(result);
+      setAllProductsItems(result);
     } catch (error) {
       return { error };
     } finally {
@@ -80,7 +83,7 @@ const useCreateOrder = () => {
 
   useFocusEffect(
     useCallback(() => {
-      loadItems(); 
+      loadItems();
     }, [])
   );
   const createOrder = async () => {
@@ -114,6 +117,28 @@ const useCreateOrder = () => {
     }
   };
 
+  useEffect(() => {
+
+    setLoading(true);
+
+    let filtered: OrderItem[] = [...allproductItems];
+
+    // Search filter
+    if (searchText.length >= 3) {
+      const lower = searchText.toLowerCase();
+      filtered = filtered.filter(
+        (order) =>
+          order.artdes?.toLowerCase().includes(lower) ||
+          order.codart?.toLowerCase().includes(lower)
+      );
+    }
+
+    setProductsItems(filtered);
+    setLoading(false)
+
+  }
+    , [allproductItems, searchText])
+
   return {
     loading,
     error,
@@ -124,6 +149,9 @@ const useCreateOrder = () => {
     refreshing,
     neworder,
     productItems,
+    notUsed, setNotUsed,
+    sortByAvailable, setSortByAvailable,
+    sortByAssigned, setSortByAssigned
   };
 };
 

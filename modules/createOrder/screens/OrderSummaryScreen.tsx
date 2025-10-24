@@ -1,15 +1,15 @@
-
 import CustomTouchableOpacity from "@/components/ui/CustomTouchableOpacity";
 import { useRouter } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
+import OrderSummaryList from "../components/OrderSummaryList";
 import useCreateOrder from "../hooks/useCreateOrder";
+import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 export default function OrderSummaryScreen() {
   const router = useRouter();
-  const{ neworder,
-     createOrder,
-  } = useCreateOrder();
-
+  const { neworder, createOrder } = useCreateOrder("");
+  const { items } = useCreateOrderStore();
+const isEmpty =items.length === 0;
   return (
     <ScrollView className="flex-1 bg-background dark:bg-dark-background px-6 pt-10">
 
@@ -21,79 +21,89 @@ export default function OrderSummaryScreen() {
           Revisa los detalles antes de confirmar
         </Text>
       </View>
-      <View className="mb-3 flex-row justify-start items-center gap-2">
-        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
-          Condicion del pago
+
+   
+      <View className="mb-4 p-4 bg-componentbg dark:bg-dark-componentbg rounded-xl shadow-sm">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-2">
+          Condición del pago
         </Text>
-        <Text className="text-base text-white bg-primary rounded-full p-2">
+        <Text className="text-base text-white bg-primary rounded-full px-3 py-1 self-start">
           Contado
         </Text>
       </View>
-      <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
-          Dirección de entrega{" "}
+
+
+      <View className="mb-4 p-4 bg-componentbg dark:bg-dark-componentbg rounded-xl shadow-sm">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-2">
+          Dirección de entrega
+        </Text>
+        <Text className="text-base text-gray-600 dark:text-gray-400">
+          Calle Principal #123, Guacara
         </Text>
       </View>
-      <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+
+  
+      <View className="mb-4 p-4 bg-componentbg dark:bg-dark-componentbg rounded-xl shadow-sm">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-2">
           Comentario
         </Text>
+        <Text className="text-base text-gray-600 dark:text-gray-400">
+          Entregar antes de las 5 PM
+        </Text>
       </View>
-      <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+
+  
+      <View className="mb-4 bg-componentbg dark:bg-dark-componentbg px-4 py-2 rounded-xl">
+        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-2">
           Artículos
         </Text>
+        <OrderSummaryList />
       </View>
 
-      <View className="bg-componentbg dark:bg-gray-800 rounded-xl p-4 mb-6">
-        <View className="flex-row justify-between mb-2">
-          <Text className="text-gray-700 dark:text-gray-300">Producto:</Text>
-          <Text className="font-semibold text-gray-900 dark:text-white">
-            Zapatos deportivos
-          </Text>
-        </View>
-        <View className="flex-row justify-between mb-2">
-          <Text className="text-gray-700 dark:text-gray-300">Cantidad:</Text>
-          <Text className="font-semibold text-gray-900 dark:text-white">2</Text>
-        </View>
-        <View className="flex-row justify-between">
-          <Text className="text-gray-700 dark:text-gray-300">Total:</Text>
-          <Text className="font-bold text-lg text-primary dark:text-dark-primary">
-            $120.00
-          </Text>
-        </View>
-      </View>
-
-      <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+      <View className="mb-2 p-4 bg-primary/10 dark:bg-dark-primary/20 rounded-xl">
+        <Text className="text-lg font-bold text-primary dark:text-dark-primary mb-1">
           Descuento
         </Text>
-      </View>
+        <Text className="text-base text-foreground dark:text-dark-foreground mb-2">
+          10%
+        </Text>
 
-      <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+        <Text className="text-lg font-bold text-primary dark:text-dark-primary mb-1">
           Subtotal
         </Text>
-      </View>
-      <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+        <Text className="text-base text-foreground dark:text-dark-foreground mb-2">
+          $100.00
+        </Text>
+
+        <Text className="text-lg font-bold text-primary dark:text-dark-primary mb-1">
           IVA
         </Text>
-      </View>
-      <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+        <Text className="text-base text-foreground dark:text-dark-foreground mb-2">
+          $16.00
+        </Text>
+
+        <Text className="text-lg font-bold text-primary dark:text-dark-primary mb-1">
           Total
         </Text>
-      </View>
-      <View className="mb-3 flex-1 justify-start items-start gap-2">
-        <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
-          Precio final
+        <Text className="text-base text-foreground dark:text-dark-foreground mb-2">
+          $116.00
+        </Text>
+
+        <Text className="text-xl font-bold text-foreground dark:text-dark-foreground mt-2">
+          Precio final: $104.40
         </Text>
       </View>
 
-      <View className="mt-4">
+   
+      <View className="mt-3 ">
         <CustomTouchableOpacity
-          onPress={() =>  router.push("/(main)/(tabs)/(createOrder)/create-order")}
+          onPress={createOrder}
+          label="✅ Confirmar Pedido"
+        />
+        <CustomTouchableOpacity
+          onPress={() =>
+            router.push("/(main)/(tabs)/(createOrder)/create-order")
+          }
           label="↩️ Volver"
         />
       </View>

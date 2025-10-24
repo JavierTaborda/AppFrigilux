@@ -13,16 +13,31 @@ import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import FastFilters from "../components/FastFilters";
 import OrderModal from "../components/OrderModal";
 import ProductCard from "../components/ProductCard";
 import useCreateOrder from "../hooks/useCreateOrder";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 export default function CreateOrderScreen() {
-  const { loading, error,productItems, products, handleRefresh, refreshing, canRefresh } =
-    useCreateOrder();
+   const [searchText, setSearchText] = useState("");
+    const {
+      loading,
+      error,
+      productItems,
+      products,
+      handleRefresh,
+      refreshing,
+      canRefresh,
+      notUsed,
+      setNotUsed,
+      sortByAvailable,
+      setSortByAvailable,
+      sortByAssigned,
+      setSortByAssigned,
+    } = useCreateOrder(searchText);
 
-  const [searchText, setSearchText] = useState("");
+
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -76,6 +91,16 @@ export default function CreateOrderScreen() {
       onFilterPress={() => setFilterModalVisible(true)}
       headerVisible={headerVisible}
       extrafilter={true}
+      extraFiltersComponent={
+        <FastFilters
+          notUsed={notUsed}
+          setNotUsed={setNotUsed}
+          sortByAvailable={sortByAvailable}
+          setSortByAvailable={setSortByAvailable}
+          sortByAssigned={sortByAssigned}
+          setSortByAssigned={setSortByAssigned}
+        />
+      }
     >
       <CustomFlatList
         data={productItems}

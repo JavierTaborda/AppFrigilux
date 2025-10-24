@@ -3,8 +3,10 @@ import { OrderItem } from "../types/orderItem";
 
 export const getItemsByGoals = async  (): Promise<OrderItem[]> => {
   try {
-
-    const response = await api.get("create-orders");
+    const params: any = {};
+    params.codven ="00002";
+   
+    const response = await api.get("create-orders", { params });
     return response.data;
 
   } catch (error) {

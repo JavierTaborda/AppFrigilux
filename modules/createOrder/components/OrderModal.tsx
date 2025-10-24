@@ -1,25 +1,24 @@
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
+import * as Haptics from "expo-haptics";
 import React, { useEffect } from "react";
 import {
   Dimensions,
-  FlatList,
-  Image,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
-  withTiming
+  withTiming,
 } from "react-native-reanimated";
 
 import { emojis } from "@/utils/emojis";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
-import { OrderItem } from "../types/orderItem";
+import OrderSummaryList from "./OrderSummaryList";
 
 const { height, width } = Dimensions.get("window");
 
@@ -34,12 +33,14 @@ const OrderModal: React.FC<OrderModalProps> = ({
   onClose,
   onConfirm,
 }) => {
-  const { items } = useCreateOrderStore();
+  const { items, clearOrder } = useCreateOrderStore();
 
   const total = items.reduce(
     (acc, item) => acc + item.price * (item.quantity ?? 1),
     0
   );
+
+  const isEmpty = items.length === 0;
 
   // Reanimated setup
   const translateY = useSharedValue(height);
@@ -54,8 +55,11 @@ const OrderModal: React.FC<OrderModalProps> = ({
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
-
-  
+    const handleRemove = () => {
+     
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      clearOrder()
+    };
 
   if (!visible) return null;
 
@@ -105,37 +109,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
               </Text>
             </View>
           ) : (
-            <FlatList
-              data={items}
-              keyExtractor={(item: OrderItem, index) => `${item.code}-${index}`}
-              renderItem={({ item }) => (
-                <View className="flex-row items-center my-1 py-2 rounded-xl">
-                  <Image
-                    source={{ uri: item.image }}
-                    className="w-14 h-14 rounded-xl bg-gray-200"
-                  />
-                  <View className="flex-1 ml-2">
-                    <Text
-                      className="text-md font-semibold text-gray-900 dark:text-gray-100"
-                      numberOfLines={2}
-                    >
-                      {item.code} - {item.title}
-                    </Text>
-                    <Text className="text-sm text-gray-500">
-                      Almacen 0001 - {item.price} {currencyDollar}
-                    </Text>
-                  </View>
-                  <View className="items-end">
-                    <Text className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                      x{item.quantity}
-                    </Text>
-                    <Text className="text-md text-gray-600 dark:text-gray-300">
-                      {totalVenezuela(item.price * (item.quantity ?? 1))}
-                    </Text>
-                  </View>
-                </View>
-              )}
-            />
+           <OrderSummaryList />
           )}
 
           {/* Footer */}
@@ -153,19 +127,30 @@ const OrderModal: React.FC<OrderModalProps> = ({
               Total {totalVenezuela(total)} {currencyDollar}
             </Text>
 
-            <TouchableOpacity
-              className={`rounded-full py-4 items-center ${
-                items.length === 0
-                  ? "bg-gray-400"
-                  : "bg-primary dark:bg-dark-primary"
-              }`}
-              disabled={items.length === 0}
-              onPress={onConfirm}
-            >
-              <Text className="text-white text-base font-semibold">
-                Confirmar Pedido
-              </Text>
-            </TouchableOpacity>
+            <View className="flex-row w-full space-x-2">
+              <TouchableOpacity
+                className={`flex-1 rounded-full py-4 items-center ${
+                  isEmpty ? "bg-gray-400" : "bg-primary dark:bg-dark-primary"
+                }`}
+                disabled={isEmpty}
+                onPress={onConfirm}
+              >
+                <Text className="text-white text-base font-semibold">
+                  Confirmar Pedido
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleRemove}
+                className={`ml-1 p-4 rounded-full shadow-lg items-center justify-center ${
+                  isEmpty ? "bg-gray-400" : "bg-primary dark:bg-dark-primary"
+                }`}
+                accessibilityHint="Eliminar Pedido"
+                accessibilityLabel="Eliminar Pedido"
+                accessibilityRole="button"
+              >
+                <Ionicons name="trash" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Animated.View>

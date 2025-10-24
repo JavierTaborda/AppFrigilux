@@ -4,13 +4,7 @@ import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { useRef, useState } from "react";
-import {
-  Modal,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   BounceIn,
   BounceOut,
@@ -28,7 +22,12 @@ type ProductCardProps = {
   almacen?: string;
 };
 
-export default function ProductCard({ codart, artdes, price, available }: ProductCardProps) {
+export default function ProductCard({
+  codart,
+  artdes,
+  price,
+  available,
+}: ProductCardProps) {
   const cartItem = useCreateOrderStore((s) =>
     s.items.find((i) => i.codart === codart)
   );
@@ -144,18 +143,20 @@ export default function ProductCard({ codart, artdes, price, available }: Produc
   return (
     <>
       <Pressable
-        className="bg-white dark:bg-dark-componentbg rounded-xl p-2 mb-4 w-[48%] shadow shadow-gray-200 dark:shadow-black/20"
+        className="bg-white dark:bg-dark-componentbg rounded-xl p-3 mb-4 w-[48%] shadow shadow-gray-200 dark:shadow-black/20"
         onPress={() => alert("Hola")}
         onLongPress={handleLongPress}
       >
-        <View className="h-32 flex-1 rounded-xl  overflow-hidden pb-1">
-          <CustomImage img={img} content="cover" />
+        <View className="flex-1 items-center justify-center pb-1">
+          <View className="h-28 w-2/3 rounded-xl overflow-hidden pb-1 bg-bgimages">
+            <CustomImage img={img} />
+          </View>
         </View>
-        <Text className="text-xs font-semibold text-foreground dark:text-dark-foreground  ">
+        <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground  ">
           {codart}
         </Text>
         <Text
-          className="text-sm font-normal text-foreground dark:text-dark-foreground  w-full leading-snug break-words min-h-10"
+          className="text-xs font-normal text-foreground dark:text-dark-foreground  w-full leading-snug break-words min-h-10"
           numberOfLines={2}
           ellipsizeMode="tail"
         >
@@ -172,7 +173,7 @@ export default function ProductCard({ codart, artdes, price, available }: Produc
         {quantity > 0 ? (
           <Animated.View
             style={btnStyle}
-            className="flex-row items-center justify-center gap-4"
+            className="flex-row items-center justify-center gap-4 h-[30]"
           >
             <TouchableOpacity
               onPress={handleDecrease}
@@ -205,7 +206,7 @@ export default function ProductCard({ codart, artdes, price, available }: Produc
             </TouchableOpacity>
           </Animated.View>
         ) : (
-          <Animated.View style={addStyle}>
+          <Animated.View style={addStyle} className="h-[30]">
             <TouchableOpacity
               onPress={() => {
                 if (pressedLong.current) return;
@@ -216,7 +217,7 @@ export default function ProductCard({ codart, artdes, price, available }: Produc
                   pressedLong.current = false;
                 }, 100);
               }}
-              className="flex-1 rounded-2xl py-2 items-center justify-center bg-primary dark:bg-dark-primary"
+              className="flex-1 rounded-2xl items-center justify-center bg-primary dark:bg-dark-primary"
             >
               <Text className="text-white font-bold">Agregar</Text>
             </TouchableOpacity>
@@ -233,7 +234,7 @@ export default function ProductCard({ codart, artdes, price, available }: Produc
         {/* Fondo con blur */}
         <BlurView
           intensity={95}
-          tint="default"
+          tint="dark"
           className="flex-1 justify-center items-center"
         >
           {/* Card ampliada en el centro */}
@@ -241,12 +242,7 @@ export default function ProductCard({ codart, artdes, price, available }: Produc
             style={cardStyle}
             className="w-64 p-4 bg-white dark:bg-dark-componentbg rounded-2xl"
           >
-            {/* <Image
-              source={{ uri: image }}
-              className="h-40 w-full rounded-lg mb-3"
-              resizeMode="cover"
-            /> */}
-            <View className="h-40 w-full rounded-lg mb-3">
+            <View className="h-40 w-full rounded-lg mb-3 bg-bgimages">
               <CustomImage img={img} />
             </View>
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-2">

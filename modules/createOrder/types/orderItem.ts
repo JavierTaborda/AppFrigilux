@@ -8,4 +8,6 @@ export type OrderItem = {
   available?: number; //asignado - utilizado
   quantity: number;
   img?:string
+  discount?: string;
+  
 }
