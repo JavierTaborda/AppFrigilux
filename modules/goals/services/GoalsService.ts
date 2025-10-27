@@ -29,3 +29,14 @@ export const getSellersGoals = async (): Promise<Seller[] > => {
     throw error;
   }
 };
+export const getCategorys = async (): Promise<any [] > => {
+  try {
+    const response = await api.get("products/categorys");
+
+    return response.data.data;
+
+  } catch (error) {
+    console.error("Error obteniendo los datos", error);
+    throw error;
+  }
+};

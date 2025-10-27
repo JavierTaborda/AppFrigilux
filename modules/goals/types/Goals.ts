@@ -8,4 +8,5 @@ export type Goals = {
     codart: string;
     artdes: string;
     vendes:string;
+    catdes:string;
 }

@@ -6,14 +6,14 @@ import Loader from "@/components/ui/Loader";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import FastFilters from "../components/FastFilters";
 import GoalItemCard from "../components/GoalItemCard";
 import GoalsFilterModal from "../components/GoalsFilterModal";
 import { useGoalsResumen } from "../hooks/useGoalsResumen";
 import { Goals } from "../types/Goals";
-
 export default function GoalsScreen() {
   const { role } = useAuthStore();
   const { isDark } = useThemeStore();
@@ -36,7 +36,7 @@ export default function GoalsScreen() {
     cooldown,
     totalFilters,
     // filters
-    loadingSellers,
+    loadingFilters,
     notUsed,
     setNotUsed,
     sortByUsed,
@@ -46,6 +46,12 @@ export default function GoalsScreen() {
     sellers,
     selectedSellers,
     setSelectedSellers,
+    category,
+    selectedCategory,
+    setSelectedCategory,
+    setSelectedUsedValue,
+    selectedUsedValue,
+    usedValues,
   } = useGoalsResumen(searchText);
 
   const showPercent = (totalPercent * 100).toFixed(0);
@@ -53,7 +59,11 @@ export default function GoalsScreen() {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [filterVisible, setFilterVisible] = useState(false);
 
-
+  useFocusEffect(
+    useCallback(() => {
+      setSearchText("");
+    }, [])
+  );
 
   const resumenData = useMemo(
     () => [
@@ -91,7 +101,6 @@ export default function GoalsScreen() {
         onFilterPress={() => setFilterVisible(true)}
         extrafilter={true}
         headerVisible={headerVisible}
-        showfilterButton={hasPermission}
         filterCount={totalFilters}
         extraFiltersComponent={
           <FastFilters
@@ -172,14 +181,20 @@ export default function GoalsScreen() {
         <GoalsFilterModal
           visible={filterVisible}
           onClose={() => setFilterVisible(false)}
-          onApply={(selected) => {
+          onApply={(selected, seletedCategery, selectedUsed) => {
             setSelectedSellers(selected);
+            setSelectedCategory(seletedCategery);
+            setSelectedUsedValue(selectedUsed);
             setFilterVisible(false);
           }}
           hasPermission={hasPermission}
           sellers={sellers}
           selectedSellers={selectedSellers}
-          loading={loadingSellers}
+          category={category}
+          selectedCategory={selectedCategory}
+          usedValues={usedValues}
+          seletedUsedValue={selectedUsedValue}
+          loading={loadingFilters}
         />
       )}
     </>

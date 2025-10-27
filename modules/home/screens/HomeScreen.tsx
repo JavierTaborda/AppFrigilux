@@ -47,7 +47,7 @@ export default function HomeScreen() {
             {emojis.user} Bienvenido
           </Text> */}
           <Text className="text-foreground dark:text-dark-foreground  text-xl font-bold">
-            Bienvenido 
+            Bienvenido
           </Text>
           <Text className="text-lg text-foreground dark:text-dark-foreground  font-semibold">
             {name}
@@ -86,6 +86,7 @@ export default function HomeScreen() {
           values={values}
           dotLabels={dotLabels}
           isDark={isDark}
+          
         />
 
         {/* Modules */}

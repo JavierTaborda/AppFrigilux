@@ -1,13 +1,14 @@
 import ProgressBar from "@/components/charts/ProgressBar";
 import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
+import { Ionicons } from "@expo/vector-icons";
 import { memo, useMemo } from "react";
 import { Text, View } from "react-native";
 import { Goals } from "../types/Goals";
 
 type Props = {
   item: Goals;
-  hasPermission?:boolean;
+  hasPermission?: boolean;
 };
 
 function GoalItemCard({ item, hasPermission }: Props) {
@@ -22,9 +23,10 @@ function GoalItemCard({ item, hasPermission }: Props) {
     perc,
     statusColor,
     statusLabel,
+    showBadge,
   } = useMemo(() => {
     const disponibles = item.asignado - item.utilizado;
-    const disText = disponibles > 1 ? "Disponibles" : "Disponible";
+    const disText = disponibles > 1 ? "disponibles" : "disponible";
     const usadosText = item.utilizado > 1 ? "usados" : "usado";
     const asignadosText = item.asignado > 1 ? "asignados" : "asignado";
     const progress = item.asignado > 0 ? item.utilizado / item.asignado : 0;
@@ -38,7 +40,9 @@ function GoalItemCard({ item, hasPermission }: Props) {
           : "bg-tertiary dark:bg-dark-tertiary";
 
     const statusLabel =
-      disponibles === 0 ? "Completa" : `${disponibles} ${disText}`;
+      disponibles === 0 ? " cumplida" : `${disponibles} ${disText}`;
+
+    const showBadge = statusLabel === " cumplida";
 
     return {
       disponibles,
@@ -49,6 +53,7 @@ function GoalItemCard({ item, hasPermission }: Props) {
       perc,
       statusColor,
       statusLabel,
+      showBadge,
     };
   }, [item]);
 
@@ -66,18 +71,21 @@ function GoalItemCard({ item, hasPermission }: Props) {
           <Text className="text-sm font-normal text-foreground dark:text-dark-foreground">
             {item.artdes || "Sin descripción"}
           </Text>
-          {item.vendes &&
-            hasPermission && (
-              <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
-                {item.vendes}
-              </Text>
-            )}
+          {item.vendes && hasPermission && (
+            <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
+              {item.vendes}
+            </Text>
+          )}
         </View>
 
         <View className="ml-3">
           <View
             className={`flex-row items-center px-3 py-1.5 rounded-xl ${statusColor}`}
           >
+            {showBadge && (
+              <Ionicons name="ribbon-outline" size={14} color={"white"} />
+            )}
+
             <Text className="text-white text-sm font-semibold">
               {statusLabel}
             </Text>

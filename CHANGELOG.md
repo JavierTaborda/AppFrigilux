@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
--N/A
+-Endpoint for Goals Module in GoalsService to get Categorys of products.
 
 ### Changed
 
-- N/A
+- Component `ChartLineView` scroll to the end to show last day.
+- Add filter option in GoalsFilter, by Used and cod of Category, only in memory not in backend
 
 ### Fixed
 
