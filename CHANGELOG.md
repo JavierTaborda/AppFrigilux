@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.1] - 2025-MM-DD UNRELEASED
+## [1.0.1] - 2025-10-DD UNRELEASED
 
 ### Added
 
@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Component `ChartLineView` scroll to the end to show last day.
 - Add filter option in GoalsFilter, by Used and cod of Category, only in memory not in backend
+- Add code of category in Goals type.
+- Add Catgory type in Goal Module
 
 ### Fixed
 
