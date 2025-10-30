@@ -17,6 +17,7 @@ interface AuthStore {
   role: string | null; // User role
   name: string | null; // User name
   token: string | null; // User token for supabase
+  userId: string | undefined; //used id
 
   setSession: (session: Session | null) => void; // Set user session
   setRole: (role: string | null) => void; // Set user role
@@ -41,6 +42,7 @@ interface AuthStore {
   signOutSoft: () => Promise<void>; // Soft sign out (used when biometrics fail)
 
   initializeAuth: () => Promise<void>; // Initialize session from storage
+  getUserId: () => Promise<string| undefined>; // 
 }
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
@@ -50,6 +52,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   role: null,
   name: null,
   token: null,
+  userId: undefined,
 
   setSession: (session) => set({ session }),
   setRole: (role) => set({ role }),
@@ -68,7 +71,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         const role = await getUserRoleJWT(data.session?.access_token);
         const name = await getName(data.session?.access_token);
         //const role = await getUserRole(data.session.user.id);
-
+       
         await setSessionStatus("active");
         await setBiometricEnabled(true);
         set({
@@ -77,7 +80,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           role: role,
           name: name,
           token: data.session?.access_token,
+          userId: data.user.id
         });
+        
       }
       return { error };
     } catch (err) {
@@ -92,9 +97,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const response =
         method === "email"
           ? await supabase.auth.signInWithOtp({
-              email: value,
-              options: { emailRedirectTo: redirectUri },
-            })
+            email: value,
+            options: { emailRedirectTo: redirectUri },
+          })
           : await supabase.auth.signInWithOtp({ phone: value });
 
       return { error: response.error };
@@ -126,6 +131,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           role: role,
           name: name,
           token: data.session?.access_token,
+          userId: data.user?.id
         });
       }
 
@@ -152,7 +158,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       const { data, error } = await supabase.auth.getSession();
       if (data?.session) {
-         const role = await getUserRoleJWT(data.session?.access_token);
+        const role = await getUserRoleJWT(data.session?.access_token);
         const name = await getName(data.session?.access_token);
         //const role = await getUserRole(data.session.user.id);
         set({
@@ -162,6 +168,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           token: data.session?.access_token,
           loading: false,
           manualLogin: true,
+          userId: data.session.user.id
         });
         await setSessionStatus("active");
         await setBiometricEnabled(true);
@@ -204,6 +211,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     router.replace("/(auth)/sign-in");
   },
 
+
   initializeAuth: async () => {
     set({ loading: true });
 
@@ -211,7 +219,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (status !== "active") {
       set({ session: null });
       return set({ loading: false });
-    } 
+    }
 
     try {
       const { data, error } = await supabase.auth.getSession();
@@ -228,13 +236,19 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           role: role,
           name: name,
           token: data.session?.access_token,
-        });   
-       //console.log(data.session.access_token)
+          userId: data.session.user.id
+        });
+        //console.log(data.session.access_token)
       }
     } catch (err) {
       set({ session: null });
     } finally {
       set({ loading: false });
     }
+  },
+  getUserId: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    set({ userId: user?.id });
+    return user?.id;
   },
 }));

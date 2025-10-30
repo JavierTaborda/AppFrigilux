@@ -1,127 +1,244 @@
 import BarcodeScanner from "@/components/camera/BarcodeScanner";
+import CustomTextInput from "@/components/inputs/CustomTextInput";
 import BottomModal from "@/components/ui/BottomModal";
 import CustomImage from "@/components/ui/CustomImagen";
-import { appColors } from "@/utils/colors";
 import { emojis } from "@/utils/emojis";
-import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
 import {
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { useReturnReport } from "../hooks/useReturnReport";
 
 export default function ProductDefectScreen() {
-  const [barcode, setBarcode] = useState("");
-  const [reason, setReason] = useState("");
-  const [showScanner, setShowScanner] = useState(false);
-  const [image, setImage] = useState<string | null>(null);
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.1,
-    });
+  const {
+    registerDefect,
+    loading,
+    pickImage,
+    handlePickFromCamera,
+    barcode,
+    setBarcode,
+    serial,
+    setSerial,
+    codeArt,
+    artDes,
+    reason,
+    setReason,
+    comment,
+    setComment,
+    image,
+    showScanner,
+    setShowScanner,
+    clients,
+    selectedClient,
+    setSelectedClient,
+    showClientModal,
+    setShowClientModal,
+    codeVen,
+    venDes,
+    setCodeArt,
+    setArtDes,
+    setCodeVen,
+    setVenDes,
+    factNumber,
+    setFactNumber,
+  } = useReturnReport();
 
-    //console.log(result);
+  const isData = selectedClient != null;
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-    }
+  const handleSearchFactNum = () => {
+    
   };
+
+  const isFormValid = barcode && reason && comment && image && selectedClient;
+
   return (
-    <ScrollView className="flex-1 bg-background pb-16">
-      <View className="p-4 gap-4">
-        <Text className="text-2xl font-semibold mb-4">Registrar Defecto</Text>
-        <View className="flex-row items-center gap-2">
-          <View
-            className={`flex-1 border rounded-xl px-4 dark:text-white bg-transparent dark:bg-dark-componentbg border-gray-300 dark:border-gray-600`}
-          >
-            <TextInput
-              className="flex-1 p-4 text-black dark:text-white"
-              placeholder="Código"
-              value={barcode}
-              placeholderTextColor={appColors.placeholdercolor}
-              autoCapitalize="none"
-              keyboardType="default"
-              onChangeText={setBarcode}
-            />
-          </View>
+    <ScrollView contentContainerClassName="p-5 pb-36 bg-background dark:bg-dark-background gap-3">
+      <Text className="text-2xl font-bold mb-3 text-foreground dark:text-dark-foreground">
+        Registrar Devolución
+      </Text>
+
+      <Text className="text-xl font-semibold text-foreground dark:text-dark-foreground">
+        Información del artículo
+      </Text>
+      <View className="flex-row gap-2 items-center">
+        <View className="flex-1">
+          <CustomTextInput
+            placeholder="Serial"
+            value={serial}
+            onChangeText={setSerial}
+          />
+        </View>
+
+        <TouchableOpacity
+          onPress={() => setShowScanner(true)}
+          className="bg-primary dark:bg-dark-primary py-3 px-3 rounded-xl active:scale-95"
+        >
+          <Text className="text-center text-lg text-white font-semibold">
+            {emojis.camera} Escanear
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View className="flex-row gap-2 items-center">
+        <View className="flex-1">
+          <CustomTextInput
+            placeholder="Número de factura"
+            keyboardType="numeric"
+            value={factNumber}
+            onChangeText={setFactNumber}
+          />
+        </View>
+
+        <TouchableOpacity
+          onPress={() => handleSearchFactNum()}
+          className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl active:scale-95"
+        >
+          <Text className="text-center text-lg text-white font-semibold">
+            {emojis.search} Buscar
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {isData && (
+        <>
+          <CustomTextInput
+            placeholder="Código de barras"
+            value={barcode}
+            onChangeText={setBarcode}
+          />
+
+          <CustomTextInput
+            placeholder="Código del artículo"
+            value={codeArt}
+            onChangeText={setCodeArt}
+          />
+          <CustomTextInput
+            placeholder="Descripción del artículo"
+            value={artDes}
+            onChangeText={setArtDes}
+          />
+
+          <Text className="text-xl font-semibold mt-6  text-foreground dark:text-dark-foreground">
+            Cliente
+          </Text>
 
           <TouchableOpacity
-            onPress={() => setShowScanner(true)}
-            className="bg-primary dark:bg-dark-primary p-3 rounded-lg"
+            onPress={() => setShowClientModal(true)}
+            className="p-4 border border-muted rounded-xl"
           >
-            <Text className="text-white">{emojis.camera}</Text>
+            <Text className="text-foreground dark:text-dark-foreground">
+              {selectedClient ? selectedClient.name : "Seleccionar cliente..."}
+            </Text>
           </TouchableOpacity>
-        </View>
-        <View>
-          <View
-            className={`flex-row items-center border rounded-xl px-4 dark:text-white bg-transparent dark:bg-dark-componentbg border-gray-300 dark:border-gray-600`}
-          >
-            <TextInput
-              className="flex-1 p-4 text-black dark:text-white"
-              placeholder="Motivo..."
-              value={reason}
-              placeholderTextColor={appColors.placeholdercolor}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onChangeText={setReason}
-            />
-          </View>
-        </View>
-        <View>
-          <View
-            className={`flex-row items-center border rounded-xl px-4 dark:text-white bg-transparent dark:bg-dark-componentbg border-gray-300 dark:border-gray-600`}
-          >
-            <TextInput
-              className="flex-1 p-4 text-black dark:text-white"
-              placeholder="Comentario..."
-              value={reason}
-              placeholderTextColor={appColors.placeholdercolor}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onChangeText={setReason}
-            />
-          </View>
-        </View>
-        <View className="rounded-3xl">
-        
-          <Text
-            className="p-2 bg-primary dark:bg-dark-primary font-medium text-white text-center rounded-xl"
-            onPress={pickImage}
-          >
-            Seleccionar una imagen
-          </Text>
-          {image && (
-            <View className="pt-2 w-40 h-40 rounded-xl bg-bgimages dark:bg-gray-800 justify-center items-center overflow-hidden mr-4 shadow-sm">
-              <CustomImage img={image} />
-            </View>
-          )}
-        </View>
-        <View className="pt-3">
-            <Text
-            className="px-2 py-4 bg-primary dark:bg-dark-primary font-medium text-xl text-white text-center rounded-xl"
-         
-          > Guardar</Text>
-        </View>
 
-      </View>
-      <BottomModal
-        visible={showScanner}
-        onClose={() => setShowScanner(false)}
-        heightPercentage={0.85}
+          <Text className="text-xl font-semibold mt-6  text-foreground dark:text-dark-foreground">
+            Vendedor
+          </Text>
+          <CustomTextInput
+            placeholder="Código vendedor"
+            value={codeVen}
+            onChangeText={setCodeVen}
+          />
+          <CustomTextInput
+            placeholder="Nombre vendedor"
+            value={venDes}
+            onChangeText={setVenDes}
+          />
+
+          <Text className="text-xl font-semibold mt-6  text-foreground dark:text-dark-foreground">
+            Detalles de la devolución
+          </Text>
+
+          <CustomTextInput
+            placeholder="Motivo"
+            value={reason}
+            onChangeText={setReason}
+          />
+          <CustomTextInput
+            placeholder="Comentario"
+            value={comment}
+            onChangeText={setComment}
+            multiline
+            numberOfLines={4}
+          />
+
+          <Text className="text-xl font-semibold mt-6 text-foreground dark:text-dark-foreground">
+            Imagen del defecto
+          </Text>
+          <View className="flex-row gap-3 mb-3">
+            <TouchableOpacity
+              onPress={pickImage}
+              className="flex-1 bg-primary py-3 rounded-xl active:opacity-80"
+            >
+              <Text className="text-center text-white font-medium">
+                Galería
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handlePickFromCamera}
+              className="flex-1 bg-secondary py-3 rounded-xl active:opacity-80"
+            >
+              <Text className="text-center text-white font-medium">Cámara</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
+
+      {image && (
+        <View className="h-48 rounded-xl overflow-hidden mb-5">
+          <CustomImage img={image} />
+        </View>
+      )}
+
+      {/* GUARDAR */}
+      <TouchableOpacity
+        onPress={registerDefect}
+        disabled={!isFormValid || loading}
+        className={`py-4 rounded-xl ${
+          isFormValid ? "bg-primary active:scale-95" : "bg-gray-400"
+        }`}
       >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text className="text-center text-white font-semibold text-lg">
+            Guardar devolución
+          </Text>
+        )}
+      </TouchableOpacity>
+
+      {/* MODAL DE ESCANEO */}
+      <BottomModal visible={showScanner} onClose={() => setShowScanner(false)}>
         <BarcodeScanner
           onScanned={(code) => {
             setBarcode(code);
             setShowScanner(false);
           }}
         />
+      </BottomModal>
+
+      {/* MODAL DE CLIENTES */}
+      <BottomModal
+        visible={showClientModal}
+        onClose={() => setShowClientModal(false)}
+      >
+        <Text className="text-lg font-semibold mb-3 text-center">
+          Seleccionar cliente
+        </Text>
+        {clients.map((cli) => (
+          <TouchableOpacity
+            key={cli.code}
+            onPress={() => {
+              setSelectedClient(cli);
+              setShowClientModal(false);
+            }}
+            className="py-3 border-b border-muted"
+          >
+            <Text className="text-center">{cli.name}</Text>
+          </TouchableOpacity>
+        ))}
       </BottomModal>
     </ScrollView>
   );

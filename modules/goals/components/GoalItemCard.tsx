@@ -36,13 +36,13 @@ function GoalItemCard({ item, hasPermission }: Props) {
       disponibles < 0 || disponibles === item.asignado
         ? "bg-red-500 dark:bg-dark-red-500"
         : disponibles === 0
-          ? "bg-primary dark:bg-dark-primary"
+          ? "bg-amber-400 dark:bg-yellow-400"
           : "bg-tertiary dark:bg-dark-tertiary";
 
     const statusLabel =
-      disponibles === 0 ? " cumplida" : `${disponibles} ${disText}`;
+      disponibles === 0 ? " meta cumplida" : `${disponibles} ${disText}`;
 
-    const showBadge = statusLabel === " cumplida";
+    const showBadge = statusLabel === " meta cumplida";
 
     return {
       disponibles,
@@ -58,7 +58,7 @@ function GoalItemCard({ item, hasPermission }: Props) {
   }, [item]);
 
   return (
-    <View className="mb-3 p-3 bg-white dark:bg-dark-componentbg rounded-2xl shadow-md shadow-black/10">
+    <View className="mb-3 p-3 bg-componentbg dark:bg-dark-componentbg rounded-2xl shadow-md shadow-black/10">
       <View className="flex-row items-center mb-2">
         <View className="w-20 h-20 rounded-xl bg-bgimages dark:bg-gray-800 justify-center items-center overflow-hidden mr-4 shadow-sm">
           <CustomImage img={img} />

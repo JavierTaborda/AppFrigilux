@@ -47,12 +47,7 @@ export default function CustomDrawerContent(props: any) {
         <Text className="text-sm font-semibold  justify-center text-center text-foreground dark:text-dark-foreground mt-1 mb-1">
           plataforma SGE
         </Text>
-        {/* <DrawerItem
-          icon="bag-check"
-          label="Aprobación Pedidos"
-          href="/(main)/(tabs)/(orders)/orderApproval"
-          currentPath={currentPath}
-        /> */}
+   
         <DrawerItem
           //emoji={emojis.package}
           //emoji={emojis.approved}
@@ -77,16 +72,16 @@ export default function CustomDrawerContent(props: any) {
           href="/(main)/(tabs)/(goals)/goalsResumen"
           currentPath={currentPath}
         />
-        {/* <DrawerItem
+        <DrawerItem
           //emoji={emojis.list}
           //emoji={emojis.approved}
           // icon="bag-check"
           label="Reportar Devolución"
           href="/(main)/(tabs)/(returnReport)"
           currentPath={currentPath}
-        /> */}
+        />
 
-        {/* {role === "1" && (
+        {role === "1" && (
           <DrawerItem
            // emoji={emojis.bags}
             //emoji={emojis.approved}
@@ -94,7 +89,7 @@ export default function CustomDrawerContent(props: any) {
             href="/(main)/(tabs)/(createOrder)/create-order"
             currentPath={currentPath}
           />
-        )} */}
+        )}
       </View>
     </DrawerContentScrollView>
   );
