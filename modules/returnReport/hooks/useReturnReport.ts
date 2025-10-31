@@ -2,11 +2,13 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
 import { useState } from "react";
 import { Alert } from "react-native";
+import { getBySerial } from "../services/ReturnReportService";
 import { pickAndUploadImage } from "../utils/uploadImage";
 
 export function useReturnReport() {
     const { userId, name } = useAuthStore();
     const [loading, setLoading] = useState(false);
+    const [loadingData, setLoadingData] = useState(false);
 
     // Product data
     const [factNumber, setFactNumber] = useState("");
@@ -111,7 +113,7 @@ export function useReturnReport() {
 
             //if (error) throw error;
 
-            Alert.alert("Éxito ✅", "La devolución se registró correctamente.");
+            Alert.alert("Éxito", "La devolución se registró correctamente.");
             clearForm();
             return true;
         } catch (err: any) {
@@ -121,6 +123,44 @@ export function useReturnReport() {
             setLoading(false);
         }
     };
+
+    const handleSearchFactNum = () => {
+        setSelectedClient({ code: '00001', name: 'Prueba' })
+    };
+    const handleSearchSerial = async () => {
+        if (serial.length <= 3) {
+            Alert.alert("Error", "Debes ingresar un número de serie válido.");
+            return;
+        }
+
+        try {
+            setLoadingData(true);
+
+            const data = await getBySerial(serial); 
+
+            if (!data) {
+                Alert.alert("Sin resultados", "No se encontró el producto con ese serial.");
+                return;
+            }
+
+            // setBarcode(data.barcode || "");
+            // setCodeArt(data.codeArt || "");
+            // setArtDes(data.artDes || "");
+
+            // if (data.client) {
+            //     setSelectedClient({
+            //         code: data.client.code,
+            //         name: data.client.name,
+            //     });
+            // }
+
+        } catch (error) {
+            Alert.alert("Error", "Ocurrió un error al obtener los datos.");
+        } finally {
+            setLoadingData(false); 
+        }
+    };
+
 
     const clearForm = () => {
         setBarcode("");
@@ -138,6 +178,8 @@ export function useReturnReport() {
         registerDefect,
         pickImage,
         handlePickFromCamera,
+        handleSearchFactNum,
+        handleSearchSerial,
 
         // states
         loading,
@@ -150,9 +192,10 @@ export function useReturnReport() {
         image, setImage,
         showScanner, setShowScanner,
         factNumber, setFactNumber,
+        loadingData,
 
         // customers
-    
+
         setClients,
         clients,
         selectedClient,

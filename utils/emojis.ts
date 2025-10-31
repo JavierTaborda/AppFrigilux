@@ -57,4 +57,6 @@ export const emojis = {
   location: "🗺️",
   tools: "🛠️",
   camera: "📷",
+  camera2: "📸",
+  roll:"🎞️"
 };

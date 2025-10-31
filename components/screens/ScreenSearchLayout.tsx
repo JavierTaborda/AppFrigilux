@@ -73,7 +73,7 @@ export default function ScreenSearchLayout({
   }));
 
   return (
-    <View className="flex-1 pt-0.5 bg-primary dark:bg-dark-primary ">
+    <View className="flex-1  bg-primary dark:bg-dark-primary ">
      
 
       <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl pt-3 ">
