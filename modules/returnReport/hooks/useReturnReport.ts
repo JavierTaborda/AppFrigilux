@@ -143,9 +143,13 @@ export function useReturnReport() {
                 return;
             }
 
-            // setBarcode(data.barcode || "");
-            // setCodeArt(data.codeArt || "");
-            // setArtDes(data.artDes || "");
+            setBarcode(data.codbarra || "");
+            setCodeArt(data.codart || "");
+            setCodeVen(data.codven || "");
+            setArtDes(data.artdes || "");
+            setSerial(data.serial || "");
+            setSelectedClient({ code: data.codcli, name: data.clides })
+            
 
             // if (data.client) {
             //     setSelectedClient({
@@ -180,6 +184,7 @@ export function useReturnReport() {
         handlePickFromCamera,
         handleSearchFactNum,
         handleSearchSerial,
+        clearForm,
 
         // states
         loading,

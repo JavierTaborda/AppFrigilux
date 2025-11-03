@@ -2,6 +2,7 @@ import BarcodeScanner from "@/components/camera/BarcodeScanner";
 import CustomTextInput from "@/components/inputs/CustomTextInput";
 import BottomModal from "@/components/ui/BottomModal";
 import CustomImage from "@/components/ui/CustomImagen";
+import FilterModal from "@/components/ui/FilterModal";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
 import { emojis } from "@/utils/emojis";
@@ -60,12 +61,13 @@ export default function ProductDefectScreen() {
     setFactNumber,
     handleSearchFactNum,
     handleSearchSerial,
+    clearForm,
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
   const [scanCode, setScanCode] = useState<string>();
 
-  const isData = selectedClient != null;
+  const isData = codeArt != "" && serial != "";
   const isFormValid = barcode && reason && comment && image && selectedClient;
 
   const toggleX = useSharedValue(startMethod === "serial" ? 0 : 1);
@@ -86,7 +88,7 @@ export default function ProductDefectScreen() {
     <View className="flex-1 bg-primary dark:bg-dark-primary">
       <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl">
         <ScrollView
-          contentContainerClassName="p-5 pb-36 gap-3 "
+          contentContainerClassName="p-5 pb-44 gap-4"
           keyboardShouldPersistTaps="handled"
         >
           <View className="mb-1">
@@ -224,20 +226,32 @@ export default function ProductDefectScreen() {
                     Información del artículo
                   </Text>
                   <View className="gap-2">
+                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                      Código de barra
+                    </Text>
                     <CustomTextInput
                       placeholder="Código de barras"
                       value={barcode}
                       onChangeText={setBarcode}
                     />
+                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                      Código del artículo
+                    </Text>
+
                     <CustomTextInput
                       placeholder="Código del artículo"
                       value={codeArt}
                       onChangeText={setCodeArt}
                     />
+                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                      Descripción del artículo
+                    </Text>
                     <CustomTextInput
                       placeholder="Descripción del artículo"
                       value={artDes}
                       onChangeText={setArtDes}
+                      multiline
+                      numberOfLines={2}
                     />
                   </View>
                 </View>
@@ -255,7 +269,6 @@ export default function ProductDefectScreen() {
                         ? selectedClient.name
                         : "Seleccionar cliente..."}
                     </Text>
-                    <Text className="text-muted-foreground">▼</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -282,11 +295,17 @@ export default function ProductDefectScreen() {
                     Detalles de la devolución
                   </Text>
                   <View className="gap-2">
+                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                      Motivo
+                    </Text>
                     <CustomTextInput
                       placeholder="Motivo"
                       value={reason}
                       onChangeText={setReason}
                     />
+                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                      Comentario
+                    </Text>
                     <CustomTextInput
                       placeholder="Comentario"
                       value={comment}
@@ -370,9 +389,11 @@ export default function ProductDefectScreen() {
             />
           </BottomModal>
 
-          <BottomModal
+          <FilterModal
             visible={showClientModal}
             onClose={() => setShowClientModal(false)}
+            onApply={()=>(setSelectedClient)}
+            onClean={()=> setSelectedClient}
           >
             <Text className="text-lg font-semibold mb-3 text-center">
               Seleccionar cliente
@@ -391,26 +412,22 @@ export default function ProductDefectScreen() {
                     {cli.name}
                   </Text>
                 </TouchableOpacity>
+                
               ))}
             </ScrollView>
-          </BottomModal>
+          </FilterModal>
         </ScrollView>
       </View>
-      <TouchableOpacity
-        onPress={() => alert("Cancelar")}
-        // style={{
-        //   position: "absolute",
-        //   bottom: 100,
-        //   right: 20,
-        //   zIndex: 1000,
-        //   elevation: 10,
-        // }}
-        className="bg-error dark:bg-dark-error p-4 rounded-full shadow-lg absolute bottom-28 left-4 z-50 elevation-xl"
-        accessibilityLabel="Cancelar"
-        accessibilityRole="button"
-      >
-        <Ionicons name="eye-off" size={24} color="white" />
-      </TouchableOpacity>
+      {isData && (
+        <TouchableOpacity
+          onPress={() => clearForm()}
+          className="bg-error dark:bg-dark-error p-4 rounded-full shadow-lg absolute bottom-28 left-4 z-50 elevation-xl"
+          accessibilityLabel="Cancelar"
+          accessibilityRole="button"
+        >
+          <Ionicons name="close" size={24} color="white" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

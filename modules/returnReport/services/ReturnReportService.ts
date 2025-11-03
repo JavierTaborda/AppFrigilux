@@ -17,7 +17,6 @@ export const getBySerial = async (serial:string) => {
   try{
     const response = await api.get(`returns/byserial/${serial}`);
 
-  console.log( response.data);
   return response.data;
   }
   catch (error) {
