@@ -2,14 +2,21 @@ import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import React, { useState } from "react";
-import { Modal, Platform, Pressable, Text, View } from "react-native";
+import { useState } from "react";
+import {
+  Modal,
+  Platform,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type CustomPickerProps = {
   selectedValue: string;
   onValueChange: (value: string) => void;
-  items: { label: string; value: string }[];
+  items: { value: string; label: string }[];
   icon?: keyof typeof FontAwesome.glyphMap;
   placeholder?: string;
   error?: string;
@@ -33,22 +40,20 @@ export default function CustomPicker({
     items.find((i) => i.value === selectedValue)?.label || placeholder;
 
   const handleValueChange = (value: string) => {
-    try {
-      onValueChange(value);
-      setTouched(true);
-    } catch (err) {
-      console.error("Error al cambiar el valor del Picker:", err);
-    }
+    onValueChange(value);
+    setTouched(true);
   };
 
   return (
-    <View>
-      {/* Contenedor principal */}
+    <View className="w-full">
+      {/* Input container */}
       <View
-        className={`flex-row items-center rounded-xl px-4 border ${touched && !isValid
-            ? "border-red-500 dark:border-red-300"
-            : "border-gray-300 dark:border-gray-600"
-          } bg-transparent dark:bg-dark-componentbg`}
+        className={`flex-row items-center rounded-xl px-4 border bg-transparent dark:bg-dark-componentbg
+        ${
+          touched && !isValid
+            ? "border-red-500 dark:border-red-400"
+            : "border-gray-300 dark:border-gray-700"
+        }`}
       >
         <FontAwesome
           name={icon}
@@ -56,11 +61,13 @@ export default function CustomPicker({
           color={
             touched && !isValid
               ? appColors.error
-              : appColors.placeholdercolor
+              : theme === "dark"
+                ? appColors.dark.secondary.DEFAULT
+                : appColors.secondary.DEFAULT
           }
         />
 
-        {/* Android: Picker inline */}
+        {/* Android Picker */}
         {Platform.OS === "android" && (
           <View className="flex-1">
             <Picker
@@ -71,23 +78,11 @@ export default function CustomPicker({
                   ? theme === "dark"
                     ? appColors.dark.foreground
                     : appColors.foreground
-                  : theme === "dark"
-                    ? appColors.dark.foreground
-                    : appColors.placeholdercolor,
-
-
+                  : appColors.placeholdercolor,
                 backgroundColor: "transparent",
               }}
             >
-              <Picker.Item
-                label={placeholder}
-                value=""
-                color={
-                  theme === "dark"
-                    ? appColors.dark.primary.DEFAULT
-                    : appColors.primary.DEFAULT
-                }
-              />
+              <Picker.Item label={placeholder} value="" />
               {items.map((item) => (
                 <Picker.Item
                   key={item.value}
@@ -99,27 +94,33 @@ export default function CustomPicker({
           </View>
         )}
 
-        {/* iOS: open modal */}
+        {/* iOS - Modal Trigger */}
         {Platform.OS === "ios" && (
           <Pressable
             className="flex-1 py-3"
             onPress={() => setIosModalVisible(true)}
           >
-            <Text className="text-lg text-foreground dark:text-dark-foreground">
+            <Text
+              className={`text-base ${
+                isValid
+                  ? "text-foreground dark:text-dark-foreground"
+                  : "text-gray-400 dark:text-gray-500"
+              }`}
+            >
               {selectedLabel}
             </Text>
           </Pressable>
         )}
       </View>
 
-      {/* Mensaje de error */}
+      {/* Error message */}
       {touched && !isValid && (
         <Text className="text-red-500 text-xs mt-1">
           {error || "Seleccione una opción"}
         </Text>
       )}
 
-      {/* iOS: Modal tipo bottom sheet */}
+      {/* iOS Bottom Modal */}
       {Platform.OS === "ios" && (
         <Modal
           transparent
@@ -127,49 +128,54 @@ export default function CustomPicker({
           animationType="slide"
           onRequestClose={() => setIosModalVisible(false)}
         >
-          <Pressable
-            className="flex-1 justify-end"
-            onPress={() => setIosModalVisible(false)}
-          >
+          <View className="flex-1 justify-end bg-black/40">
             <Pressable
+              className="flex-1"
+              onPress={() => setIosModalVisible(false)}
+            />
+            <View
               style={{ paddingBottom: insets.bottom }}
-              className="bg-white dark:bg-dark-componentbg rounded-t-2xl overflow-hidden"
-              onPress={() => { }}
+              className="bg-white dark:bg-dark-componentbg rounded-t-3xl overflow-hidden"
             >
-              {/* Botón cerrar */}
-              <Pressable
-                className="absolute top-2 right-3 z-10 p-2"
-                onPress={() => setIosModalVisible(false)}
-              >
-                <Text className="text-primary dark:text-dark-primary font-semibold text-base">
-                  Cerrar
+              {/* Header */}
+              <View className="flex-row justify-between items-center px-5 py-4 border-b border-gray-200 dark:border-gray-700">
+                <Text className="text-lg font-semibold text-foreground dark:text-dark-foreground">
+                  Selecciona una opción
                 </Text>
-              </Pressable>
+                <TouchableOpacity
+                  onPress={() => setIosModalVisible(false)}
+                  className="px-3 py-1"
+                >
+                  <Text className="text-primary dark:text-dark-primary font-semibold">
+                    Hecho
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-              {/* Picker inside modal */}
-              <Picker
-                selectedValue={selectedValue}
-                onValueChange={handleValueChange}
-              >
-                <Picker.Item
-                  label={placeholder}
-                  value=""
-                  color={
-                    theme === "dark"
-                      ? appColors.dark.secondary.DEFAULT
-                      : appColors.secondary.DEFAULT
-                  }
-                />
-                {items.map((item) => (
-                  <Picker.Item
-                    key={item.value}
-                    label={item.label}
-                    value={item.value}
-                  />
-                ))}
-              </Picker>
-            </Pressable>
-          </Pressable>
+              {/* Picker */}
+              <View className="h-[300px] justify-center">
+                <Picker
+                  selectedValue={selectedValue}
+                  onValueChange={handleValueChange}
+                  style={{
+                    color:
+                      theme === "dark"
+                        ? appColors.dark.foreground
+                        : appColors.foreground,
+                  }}
+                >
+                  <Picker.Item label={placeholder} value="" />
+                  {items.map((item) => (
+                    <Picker.Item
+                      key={item.value}
+                      label={item.label}
+                      value={item.value}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+          </View>
         </Modal>
       )}
     </View>

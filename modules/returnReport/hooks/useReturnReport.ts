@@ -1,11 +1,18 @@
 import { useAuthStore } from "@/stores/useAuthStore";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import { getBySerial } from "../services/ReturnReportService";
+import { getBySerial, getOrderByFactNumber } from "../services/ReturnReportService";
 import { pickAndUploadImage } from "../utils/uploadImage";
 
+// interface to map art
+interface Articulo {
+    co_art: string;
+    art_des: string;
+}
 export function useReturnReport() {
+
+
     const { userId, name } = useAuthStore();
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(false);
@@ -16,6 +23,9 @@ export function useReturnReport() {
     const [serial, setSerial] = useState("");
     const [codeArt, setCodeArt] = useState("");
     const [artDes, setArtDes] = useState("");
+    const [artList, setArtList] = useState<{ value: string; label: string }[]>([]);
+
+
 
     // Customer Data
     const [clients, setClients] = useState<{ code: string; name: string }[]>([]);
@@ -33,46 +43,10 @@ export function useReturnReport() {
     // UI
     const [showScanner, setShowScanner] = useState(false);
     const [showClientModal, setShowClientModal] = useState(false);
+    const [isData, setIsData]=useState(false)
 
 
-    // useEffect(() => {
-    //     const fetchClients = async () => {
-    //         const { data, error } = await supabase.from("clients").select("code, name");
-    //         if (error) {
-    //             console.log("Error obteniendo clientes:", error.message);
-    //             return;
-    //         }
-    //         setClients(data ?? []);
-    //     };
-    //     fetchClients();
-    // }, []);
 
-
-    // useEffect(() => {
-    //     const fetchProduct = async () => {
-    //         if (!barcode.trim()) return;
-    //         setLoading(true);
-
-    //         const { data, error } = await supabase
-    //             .from("products")
-    //             .select("code, description")
-    //             .eq("barcode", barcode)
-    //             .single();
-
-    //         if (error) {
-    //             Alert.alert("No encontrado", "No se encontró ningún artículo con ese código.");
-    //             setCodeArt("");
-    //             setArtDes("");
-    //         } else if (data) {
-    //             setCodeArt(data.code);
-    //             setArtDes(data.description);
-    //         }
-
-    //         setLoading(false);
-    //     };
-
-    //     fetchProduct();
-    // }, [barcode]);
 
 
     const pickImage = async () => {
@@ -124,9 +98,45 @@ export function useReturnReport() {
         }
     };
 
-    const handleSearchFactNum = () => {
-        setSelectedClient({ code: '00001', name: 'Prueba' })
+    const handleSearchFactNum = async () => {
+      
+        try {
+            setLoadingData(true);
+
+            const data = await getOrderByFactNumber(Number(factNumber));
+            console.log(data);
+            if (!data) {
+                Alert.alert("Sin resultados", "No se encontró el producto con ese serial.");
+                setIsData(false);
+                return;
+            }
+
+            setBarcode(data.codbarra || "");
+            setCodeVen(data.codven || "");
+            setVenDes(data.vendes || "");
+            setSerial(data.serial || "");
+            setSelectedClient({ code: data.codcli, name: data.clides })
+
+            const formattedArtList = (data.art as Articulo[]).map((item: Articulo) => ({
+                value: item.co_art,
+                label: `${item.co_art.trim()} ${item.art_des.trim()}`
+            }));
+            
+            setArtList(formattedArtList);
+            setIsData(true)
+
+
+        } catch (error) {
+            Alert.alert("Error", "Ocurrió un error al obtener los datos.");
+        } finally {
+            setLoadingData(false);
+        }
     };
+    useEffect(() => {
+        if (artList.length<1) return
+        setArtDes(artList.find(c=>c.value===codeArt)?.label ?? '');
+    }, [codeArt]);
+
     const handleSearchSerial = async () => {
         if (serial.length <= 3) {
             Alert.alert("Error", "Debes ingresar un número de serie válido.");
@@ -146,17 +156,11 @@ export function useReturnReport() {
             setBarcode(data.codbarra || "");
             setCodeArt(data.codart || "");
             setCodeVen(data.codven || "");
+            setVenDes(data.vendes || "");
             setArtDes(data.artdes || "");
             setSerial(data.serial || "");
             setSelectedClient({ code: data.codcli, name: data.clides })
-            
-
-            // if (data.client) {
-            //     setSelectedClient({
-            //         code: data.client.code,
-            //         name: data.client.name,
-            //     });
-            // }
+            setIsData(true)
 
         } catch (error) {
             Alert.alert("Error", "Ocurrió un error al obtener los datos.");
@@ -175,6 +179,8 @@ export function useReturnReport() {
         setComment("");
         setImage(null);
         setSelectedClient(null);
+        setFactNumber("");
+        setIsData(false)
     };
 
     return {
@@ -198,6 +204,8 @@ export function useReturnReport() {
         showScanner, setShowScanner,
         factNumber, setFactNumber,
         loadingData,
+        isData,
+        artList,
 
         // customers
 

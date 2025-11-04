@@ -1,8 +1,8 @@
 import BarcodeScanner from "@/components/camera/BarcodeScanner";
+import CustomPicker from "@/components/inputs/CustomPicker";
 import CustomTextInput from "@/components/inputs/CustomTextInput";
 import BottomModal from "@/components/ui/BottomModal";
 import CustomImage from "@/components/ui/CustomImagen";
-import FilterModal from "@/components/ui/FilterModal";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
 import { emojis } from "@/utils/emojis";
@@ -62,12 +62,13 @@ export default function ProductDefectScreen() {
     handleSearchFactNum,
     handleSearchSerial,
     clearForm,
+    isData,
+    artList,
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
   const [scanCode, setScanCode] = useState<string>();
 
-  const isData = codeArt != "" && serial != "";
   const isFormValid = barcode && reason && comment && image && selectedClient;
 
   const toggleX = useSharedValue(startMethod === "serial" ? 0 : 1);
@@ -88,7 +89,7 @@ export default function ProductDefectScreen() {
     <View className="flex-1 bg-primary dark:bg-dark-primary">
       <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl">
         <ScrollView
-          contentContainerClassName="p-5 pb-44 gap-4"
+          contentContainerClassName="p-5 pb-44 gap-2"
           keyboardShouldPersistTaps="handled"
         >
           <View className="mb-1">
@@ -111,40 +112,41 @@ export default function ProductDefectScreen() {
               />
             </View> */}
           </View>
+          {!isData && (
+            <View className="relative flex-row bg-muted dark:bg-dark-muted rounded-2xl p-1 mb-1 overflow-hidden">
+              <Animated.View
+                style={[animatedStyle]}
+                className="absolute left-1 top-1 w-1/2 h-full bg-primary dark:bg-dark-primary rounded-xl"
+              />
 
-          <View className="relative flex-row bg-muted dark:bg-dark-muted rounded-2xl p-1 mb-1 overflow-hidden">
-            <Animated.View
-              style={[animatedStyle]}
-              className="absolute left-1 top-1 w-1/2 h-full bg-primary dark:bg-dark-primary rounded-xl"
-            />
-
-            {[
-              { key: "serial", label: `${emojis.package} Serial` },
-              { key: "fact", label: `${emojis.search} Factura` },
-            ].map(({ key, label }) => {
-              const active = startMethod === key;
-              return (
-                <TouchableOpacity
-                  key={key}
-                  onPress={() => {
-                    Haptics.selectionAsync();
-                    setStartMethod(key as "serial" | "fact");
-                  }}
-                  className="flex-1 py-3 rounded-xl items-center z-10"
-                >
-                  <Text
-                    className={`font-semibold text-base ${
-                      active
-                        ? "text-white"
-                        : "text-foreground dark:text-dark-foreground"
-                    }`}
+              {[
+                { key: "serial", label: `${emojis.package} Serial` },
+                { key: "fact", label: `${emojis.search} Factura` },
+              ].map(({ key, label }) => {
+                const active = startMethod === key;
+                return (
+                  <TouchableOpacity
+                    key={key}
+                    onPress={() => {
+                      Haptics.selectionAsync();
+                      setStartMethod(key as "serial" | "fact");
+                    }}
+                    className="flex-1 py-3 rounded-xl items-center z-10"
                   >
-                    {label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+                    <Text
+                      className={`font-semibold text-base ${
+                        active
+                          ? "text-white"
+                          : "text-foreground dark:text-dark-foreground"
+                      }`}
+                    >
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )}
 
           {startMethod === "serial" && (
             <>
@@ -220,11 +222,35 @@ export default function ProductDefectScreen() {
 
           {isData && (
             <>
-              <View className="mt-4 gap-y-4">
+              <View className=" gap-y-4">
                 <View className="gap-y-2">
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Información del artículo
                   </Text>
+                  {startMethod === "fact" && (
+                    <View className="gap-2">
+                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                        Artículo
+                      </Text>
+                      <CustomPicker
+                        selectedValue={codeArt}
+                        onValueChange={setCodeArt}
+                        items={artList}
+                        placeholder="Seleccione un artículo"
+                        error={
+                          !codeArt ? "Este campo es obligatorio" : undefined
+                        }
+                      />
+                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                        Serial
+                      </Text>
+                      <CustomTextInput
+                        placeholder="Serial"
+                        value={serial}
+                        onChangeText={setSerial}
+                      />
+                    </View>
+                  )}
                   <View className="gap-2">
                     <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                       Código de barra
@@ -260,36 +286,14 @@ export default function ProductDefectScreen() {
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Cliente
                   </Text>
-                  <TouchableOpacity
-                    onPress={() => setShowClientModal(true)}
-                    className="flex-row items-center justify-between p-4 border border-muted rounded-xl active:opacity-80"
-                  >
+                  <View className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl ">
                     <Text className="text-foreground dark:text-dark-foreground">
                       {selectedClient
                         ? selectedClient.name
                         : "Seleccionar cliente..."}
                     </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* <View className="gap-y-2">
-                  <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-                    Vendedor
-                  </Text>
-                  <View className="gap-2">
-                    <CustomTextInput
-                      placeholder="Código vendedor"
-                      value={codeVen}
-                      onChangeText={setCodeVen}
-                    />
-                    <CustomTextInput
-                      placeholder="Nombre vendedor"
-                      value={venDes}
-                      onChangeText={setVenDes}
-                    />
                   </View>
-                </View> */}
-
+                </View>
                 <View className="gap-y-2">
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Detalles de la devolución
@@ -388,34 +392,6 @@ export default function ProductDefectScreen() {
               }}
             />
           </BottomModal>
-
-          <FilterModal
-            visible={showClientModal}
-            onClose={() => setShowClientModal(false)}
-            onApply={()=>(setSelectedClient)}
-            onClean={()=> setSelectedClient}
-          >
-            <Text className="text-lg font-semibold mb-3 text-center">
-              Seleccionar cliente
-            </Text>
-            <ScrollView className="max-h-96">
-              {clients.map((cli) => (
-                <TouchableOpacity
-                  key={cli.code}
-                  onPress={() => {
-                    setSelectedClient(cli);
-                    setShowClientModal(false);
-                  }}
-                  className="py-3 border-b border-muted active:bg-muted"
-                >
-                  <Text className="text-center text-foreground">
-                    {cli.name}
-                  </Text>
-                </TouchableOpacity>
-                
-              ))}
-            </ScrollView>
-          </FilterModal>
         </ScrollView>
       </View>
       {isData && (
