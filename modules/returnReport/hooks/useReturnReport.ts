@@ -2,14 +2,13 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import { getBySerial, getOrderByFactNumber } from "../services/ReturnReportService";
+import { createDevolucion, getBySerial, getOrderByFactNumber } from "../services/ReturnReportService";
+import { Articulo } from "../types/Articulo";
+import { CreateDevolucion } from "../types/createDevolucion";
 import { pickAndUploadImage } from "../utils/uploadImage";
 
-// interface to map art
-interface Articulo {
-    co_art: string;
-    art_des: string;
-}
+
+
 export function useReturnReport() {
 
 
@@ -17,9 +16,14 @@ export function useReturnReport() {
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(false);
 
+
     // Product data
     const [factNumber, setFactNumber] = useState("");
     const [barcode, setBarcode] = useState("");
+    const [barcodeList, setBarcodeList] = useState<{
+        co_art: string;
+        codbarra: string;
+    }[]>([]);
     const [serial, setSerial] = useState("");
     const [codeArt, setCodeArt] = useState("");
     const [artDes, setArtDes] = useState("");
@@ -43,9 +47,7 @@ export function useReturnReport() {
     // UI
     const [showScanner, setShowScanner] = useState(false);
     const [showClientModal, setShowClientModal] = useState(false);
-    const [isData, setIsData]=useState(false)
-
-
+    const [isData, setIsData] = useState(false)
 
 
 
@@ -60,53 +62,20 @@ export function useReturnReport() {
     };
 
 
-    const registerDefect = async () => {
-        if (!barcode || !reason || !comment || !image || !selectedClient) {
-            Alert.alert("Formulario incompleto", "Por favor completa todos los campos.");
-            return false;
-        }
-
-        try {
-            setLoading(true);
-            const imageUrl = await pickAndUploadImage(image, userId);
-
-            // // Supabase
-            // const { error } = await supabase.from("returns").insert({
-            //     barcode,
-            //     serial,
-            //     code_art: codeArt,
-            //     art_des: artDes,
-            //     reason,
-            //     comment,
-            //     image_url: imageUrl,
-            //     code_cli: selectedClient.code,
-            //     cli_des: selectedClient.name,
-            //     code_ven: codeVen,
-            //     ven_des: venDes,
-            // });
-
-            //if (error) throw error;
-
-            Alert.alert("Éxito", "La devolución se registró correctamente.");
-            clearForm();
-            return true;
-        } catch (err: any) {
-            Alert.alert("Error", `No se pudo registrar la devolución: ${err.message}`);
-            return false;
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleSearchFactNum = async () => {
-      
+        if (factNumber.length < 1) {
+            Alert.alert("Error", "Ingrese un número de factura válido.");
+            return;
+        }
+
         try {
             setLoadingData(true);
 
             const data = await getOrderByFactNumber(Number(factNumber));
-            console.log(data);
+
             if (!data) {
-                Alert.alert("Sin resultados", "No se encontró el producto con ese serial.");
+                Alert.alert("Sin resultados", "No se encontró datos  con el número de factura.");
                 setIsData(false);
                 return;
             }
@@ -117,11 +86,17 @@ export function useReturnReport() {
             setSerial(data.serial || "");
             setSelectedClient({ code: data.codcli, name: data.clides })
 
+            setBarcodeList( data.art.map((item: Articulo) => ({
+                co_art: item.co_art,
+                codbarra: item.codbarra
+            })));
+           
+
             const formattedArtList = (data.art as Articulo[]).map((item: Articulo) => ({
                 value: item.co_art,
                 label: `${item.co_art.trim()} ${item.art_des.trim()}`
             }));
-            
+
             setArtList(formattedArtList);
             setIsData(true)
 
@@ -132,21 +107,24 @@ export function useReturnReport() {
             setLoadingData(false);
         }
     };
-    useEffect(() => {
-        if (artList.length<1) return
-        setArtDes(artList.find(c=>c.value===codeArt)?.label ?? '');
-    }, [codeArt]);
 
+    useEffect(() => {
+        if (!codeArt) return;
+        if (artList.length < 1) return
+        setArtDes(artList.find(c => c.value === codeArt)?.label ?? '');
+        setBarcode(barcodeList.find(b => b.co_art === codeArt)?.codbarra ?? '');
+    }, [codeArt]);
+    
     const handleSearchSerial = async () => {
         if (serial.length <= 3) {
-            Alert.alert("Error", "Debes ingresar un número de serie válido.");
+            Alert.alert("Error", "Debe ingresar un serial válido.");
             return;
         }
 
         try {
             setLoadingData(true);
 
-            const data = await getBySerial(serial); 
+            const data = await getBySerial(serial);
 
             if (!data) {
                 Alert.alert("Sin resultados", "No se encontró el producto con ese serial.");
@@ -165,7 +143,7 @@ export function useReturnReport() {
         } catch (error) {
             Alert.alert("Error", "Ocurrió un error al obtener los datos.");
         } finally {
-            setLoadingData(false); 
+            setLoadingData(false);
         }
     };
 
@@ -181,6 +159,50 @@ export function useReturnReport() {
         setSelectedClient(null);
         setFactNumber("");
         setIsData(false)
+    };
+    const registerDefect = async () => {
+        if (!barcode || !reason || !comment || !image || !selectedClient || !codeArt || !artDes) {
+            Alert.alert("Incomplete form", "Please fill in all required fields.");
+            return false;
+        }
+
+        try {
+            setLoading(true);
+            const imageUrl = await pickAndUploadImage(image, userId);
+
+
+            const devolucion: CreateDevolucion = {
+                fecemis: new Date().toISOString(),
+                estatus: "1",
+                anulada: "0",
+                cerrada: "0",
+                codcli: selectedClient.code,
+                clides: selectedClient.name,
+                codven: codeVen,
+                vendes: venDes,
+                codart: codeArt,
+                codbarra: barcode,
+                artdes: artDes,
+                serial1: serial,
+                motivo: reason,
+                obsvendedor: comment,
+                registradopor: name || "Unknown",
+                fecharegistro: new Date().toISOString(),
+                imgart: imageUrl ?? undefined,
+            };
+
+ 
+            await createDevolucion(devolucion);
+
+            Alert.alert("Success", "The return was successfully registered.");
+            clearForm();
+            return true;
+        } catch (err: any) {
+            Alert.alert("Error", `Could not register the return: ${err.message}`);
+            return false;
+        } finally {
+            setLoading(false);
+        }
     };
 
     return {

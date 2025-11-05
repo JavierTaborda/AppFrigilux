@@ -1,4 +1,5 @@
 import api from "@/lib/axios";
+import { CreateDevolucion } from "../types/createDevolucion";
 
 export const getOrderByFactNumber = async (factNumber: number) => {
 
@@ -22,5 +23,15 @@ export const getBySerial = async (serial: string) => {
   catch (error) {
     console.error("Error obteniendo pedidos", error);
     throw error;
+  }
+};
+export const createDevolucion = async (dev: CreateDevolucion): Promise<boolean> => {
+  try {
+  
+    const response = await api.post("/returns", dev);
+    return response.status >= 200 && response.status < 300;
+  } catch (error) {
+    console.error("Error creating return:", error);
+    return false; 
   }
 };
