@@ -31,6 +31,8 @@ export function useReturnReport() {
 
 
     // Product data
+    const [devolucion ,setDevolucion] = useState< CreateDevolucion>({} as CreateDevolucion);
+
     const [factNumber, setFactNumber] = useState("");
     const [barcode, setBarcode] = useState("");
     const [barcodeList, setBarcodeList] = useState<BarcodeItem[]>([]);
@@ -64,7 +66,6 @@ export function useReturnReport() {
     );
 
 
-
     const pickImage = async () => {
         const result = await pickFromGallery();
         if (result) setImage(result);
@@ -74,7 +75,6 @@ export function useReturnReport() {
         const result = await pickFromCamera();
         if (result) setImage(result);
     };
-
 
 
     const handleSearchFactNum = async () => {
@@ -95,6 +95,7 @@ export function useReturnReport() {
             }
 
             setBarcode(data.codbarra || "");
+            
             setCodeVen(data.codven || "");
             setVenDes(data.vendes || "");
             setSerial(data.serial || "");
@@ -184,15 +185,19 @@ export function useReturnReport() {
             setLoading(true);
             const imageUrl = await pickAndUploadImage(image, userId);
 
+            if (!imageUrl) {
+                Alert.alert("Error", "Ocurrió un error al subir la imagen. Por favor, inténtelo de nuevo.");
+                return false;
+            }
 
             const devolucion: CreateDevolucion = {
                 fecemis: new Date().toISOString(),
                 estatus: "1",
                 anulada: "0",
                 cerrada: "0",
-                codcli: selectedClient?.code || "",
+                codcli: selectedClient?.code.trim() || "",
                 clides: selectedClient?.name || "",
-                codven: codeVen,
+                codven: codeVen.trim() || "",
                 vendes: venDes,
                 codart: codeArt,
                 codbarra: barcode,
@@ -205,13 +210,18 @@ export function useReturnReport() {
                 imgart: imageUrl ?? undefined,
             };
 
-           await createDevolucion(devolucion);
+           const success = await createDevolucion(devolucion);
 
-            Alert.alert("Success", "The return was successfully registered.");
-            clearForm();
-            return true;
+            if (success) {
+                Alert.alert("Success", "La devolución fue registrada exitosamente.");
+                clearForm();
+                return true;
+            } else {
+                Alert.alert("Error", "No se pudo registrar la devolución, por favor inténtelo de nuevo.");
+                return false;
+            }   
         } catch (err: any) {
-            Alert.alert("Error", `Could not register the return: ${err.message}`);
+            Alert.alert("Error", `No se pudo registrar la devolución: ${err.message}`);
             return false;
         } finally {
             setLoading(false);

@@ -29,7 +29,7 @@ export const createDevolucion = async (dev: CreateDevolucion): Promise<boolean> 
   try {
   
     const response = await api.post("/returns", dev);
-    console.log("Create return response:", response);
+    console.log(response.status);
     return response.status >= 200 && response.status < 300;
   } catch (error) {
     console.error("Error creating return:", error);
