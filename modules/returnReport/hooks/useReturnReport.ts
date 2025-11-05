@@ -7,7 +7,20 @@ import { Articulo } from "../types/Articulo";
 import { CreateDevolucion } from "../types/createDevolucion";
 import { pickAndUploadImage } from "../utils/uploadImage";
 
+export interface Client {
+    code: string;
+    name: string;
+}
 
+export interface ArtItem {
+    value: string;
+    label: string;
+}
+
+export interface BarcodeItem {
+    co_art: string;
+    codbarra: string;
+}
 
 export function useReturnReport() {
 
@@ -20,20 +33,18 @@ export function useReturnReport() {
     // Product data
     const [factNumber, setFactNumber] = useState("");
     const [barcode, setBarcode] = useState("");
-    const [barcodeList, setBarcodeList] = useState<{
-        co_art: string;
-        codbarra: string;
-    }[]>([]);
+    const [barcodeList, setBarcodeList] = useState<BarcodeItem[]>([]);
     const [serial, setSerial] = useState("");
     const [codeArt, setCodeArt] = useState("");
     const [artDes, setArtDes] = useState("");
-    const [artList, setArtList] = useState<{ value: string; label: string }[]>([]);
-
+    const [artList, setArtList] = useState<ArtItem[]>([]);
 
 
     // Customer Data
-    const [clients, setClients] = useState<{ code: string; name: string }[]>([]);
-    const [selectedClient, setSelectedClient] = useState<{ code: string; name: string } | null>(null);
+    const [clients, setClients] = useState<Client[]>([]);
+    const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+
+
 
     // DSeller data
     const [codeVen, setCodeVen] = useState(name ?? "");
@@ -42,12 +53,15 @@ export function useReturnReport() {
     // Form Data
     const [reason, setReason] = useState("");
     const [comment, setComment] = useState("");
-    const [image, setImage] = useState<string | null>(null);
+    const [image, setImage] = useState<string>("");
 
     // UI
     const [showScanner, setShowScanner] = useState(false);
     const [showClientModal, setShowClientModal] = useState(false);
     const [isData, setIsData] = useState(false)
+    const isFormComplete = () => (
+        barcode && reason && comment && image && selectedClient && codeArt && artDes
+    );
 
 
 
@@ -86,11 +100,11 @@ export function useReturnReport() {
             setSerial(data.serial || "");
             setSelectedClient({ code: data.codcli, name: data.clides })
 
-            setBarcodeList( data.art.map((item: Articulo) => ({
+            setBarcodeList(data.art.map((item: Articulo) => ({
                 co_art: item.co_art,
                 codbarra: item.codbarra
             })));
-           
+
 
             const formattedArtList = (data.art as Articulo[]).map((item: Articulo) => ({
                 value: item.co_art,
@@ -114,7 +128,7 @@ export function useReturnReport() {
         setArtDes(artList.find(c => c.value === codeArt)?.label ?? '');
         setBarcode(barcodeList.find(b => b.co_art === codeArt)?.codbarra ?? '');
     }, [codeArt]);
-    
+
     const handleSearchSerial = async () => {
         if (serial.length <= 3) {
             Alert.alert("Error", "Debe ingresar un serial válido.");
@@ -155,13 +169,13 @@ export function useReturnReport() {
         setArtDes("");
         setReason("");
         setComment("");
-        setImage(null);
+        setImage("");
         setSelectedClient(null);
         setFactNumber("");
         setIsData(false)
     };
     const registerDefect = async () => {
-        if (!barcode || !reason || !comment || !image || !selectedClient || !codeArt || !artDes) {
+        if (!isFormComplete()) {
             Alert.alert("Incomplete form", "Please fill in all required fields.");
             return false;
         }
@@ -176,8 +190,8 @@ export function useReturnReport() {
                 estatus: "1",
                 anulada: "0",
                 cerrada: "0",
-                codcli: selectedClient.code,
-                clides: selectedClient.name,
+                codcli: selectedClient?.code || "",
+                clides: selectedClient?.name || "",
                 codven: codeVen,
                 vendes: venDes,
                 codart: codeArt,
@@ -191,8 +205,7 @@ export function useReturnReport() {
                 imgart: imageUrl ?? undefined,
             };
 
- 
-            await createDevolucion(devolucion);
+           await createDevolucion(devolucion);
 
             Alert.alert("Success", "The return was successfully registered.");
             clearForm();
