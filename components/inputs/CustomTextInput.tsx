@@ -9,6 +9,7 @@ type Props = {
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   multiline?: boolean;
   numberOfLines?: number;
+  editable?: boolean;
 };
 
 export default function CustomTextInput({
@@ -18,7 +19,8 @@ export default function CustomTextInput({
   keyboardType = "default",
   autoCapitalize = "none",
   multiline = false,
-  numberOfLines=1
+  numberOfLines = 1,
+  editable = true,
 }: Props) {
   return (
     <View>
@@ -34,6 +36,7 @@ export default function CustomTextInput({
           multiline={multiline}
           numberOfLines={numberOfLines}
           textAlignVertical="top"
+          editable={editable}
         />
       </View>
     </View>

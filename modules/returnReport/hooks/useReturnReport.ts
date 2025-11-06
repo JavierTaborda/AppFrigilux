@@ -31,7 +31,6 @@ export function useReturnReport() {
 
 
     // Product data
-    const [devolucion ,setDevolucion] = useState< CreateDevolucion>({} as CreateDevolucion);
 
     const [factNumber, setFactNumber] = useState("");
     const [barcode, setBarcode] = useState("");
@@ -60,10 +59,12 @@ export function useReturnReport() {
     // UI
     const [showScanner, setShowScanner] = useState(false);
     const [showClientModal, setShowClientModal] = useState(false);
-    const [isData, setIsData] = useState(false)
+    const [isData, setIsData] = useState(false);
+    const [isManual, setIsManual] = useState(false);
     const isFormComplete = () => (
         barcode && reason && comment && image && selectedClient && codeArt && artDes
     );
+    
 
 
     const pickImage = async () => {
@@ -91,6 +92,7 @@ export function useReturnReport() {
             if (!data) {
                 Alert.alert("Sin resultados", "No se encontró datos  con el número de factura.");
                 setIsData(false);
+                setIsManual(true);
                 return;
             }
 
@@ -143,6 +145,8 @@ export function useReturnReport() {
 
             if (!data) {
                 Alert.alert("Sin resultados", "No se encontró el producto con ese serial.");
+                setIsData(false);
+                setIsManual(true);
                 return;
             }
 
@@ -174,6 +178,7 @@ export function useReturnReport() {
         setSelectedClient(null);
         setFactNumber("");
         setIsData(false)
+        setIsManual(false);
     };
     const registerDefect = async () => {
         if (!isFormComplete()) {
@@ -251,6 +256,7 @@ export function useReturnReport() {
         loadingData,
         isData,
         artList,
+        isManual,
 
         // customers
 

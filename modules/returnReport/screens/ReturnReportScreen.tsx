@@ -18,6 +18,7 @@ import {
   View,
 } from "react-native";
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -64,6 +65,7 @@ export default function ProductDefectScreen() {
     clearForm,
     isData,
     artList,
+    isManual,
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
@@ -82,17 +84,49 @@ export default function ProductDefectScreen() {
   const { width } = useWindowDimensions();
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: toggleX.value * ((width - 40) / 2) }],
+    transform: [{ translateX: toggleX.value * ((width - 42) / 2) }],
   }));
+
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(20);
+
+  useEffect(() => {
+    if (!isData) {
+      opacity.value = withTiming(1, { duration: 300 });
+      translateY.value = withTiming(0, { duration: 300 });
+    } else {
+      opacity.value = withTiming(0, { duration: 200 });
+      translateY.value = withTiming(20, { duration: 300 });
+    }
+  }, [isData]);
+
+  const animatedStyleToggle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+  }));
+  const scale = useSharedValue(2); 
+
+  useEffect(() => {
+    scale.value = withTiming(1, {
+      duration: 600,
+      easing: Easing.out(Easing.exp),
+    });
+  }, [isManual]);
+
+  const animatedStyleAddManual = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
 
   return (
     <View className="flex-1 bg-primary dark:bg-dark-primary">
       <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl">
         <ScrollView
-          contentContainerClassName="p-5 pb-44 gap-2"
+          contentContainerClassName="py-4 px-5 pb-44 gap-2"
           keyboardShouldPersistTaps="handled"
         >
-          <View className="mb-1">
+          <View>
             <View className="flex-row items-center gap-2">
               <Text className="text-2xl font-extrabold text-foreground dark:text-dark-foreground">
                 Registrar devolución
@@ -101,22 +135,15 @@ export default function ProductDefectScreen() {
             <Text className="text-sm text-mutedForeground dark:text-dark-mutedForeground mt-1">
               Completa los pasos para enviar el reporte
             </Text>
-
-            {/* <View className="h-2 mt-3 bg-muted dark:bg-dark-muted rounded-full overflow-hidden">
-              <View
-                className={`h-2 rounded-full ${
-                  isData
-                    ? "w-4/5 bg-primary dark:bg-dark-primary"
-                    : "w-1/3 bg-primary/50 dark:bg-dark-primary/50"
-                }`}
-              />
-            </View> */}
           </View>
           {!isData && (
-            <View className="relative flex-row bg-muted dark:bg-dark-muted rounded-2xl p-1 mb-1 overflow-hidden">
+            <Animated.View
+              style={animatedStyleToggle}
+              className="relative flex-row bg-muted dark:bg-dark-muted rounded-full p-1 mb-1 overflow-hidden"
+            >
               <Animated.View
                 style={[animatedStyle]}
-                className="absolute left-1 top-1 w-1/2 h-full bg-primary dark:bg-dark-primary rounded-xl"
+                className="absolute left-1 top-1 w-1/2 h-full bg-primary dark:bg-dark-primary rounded-full"
               />
 
               {[
@@ -131,7 +158,7 @@ export default function ProductDefectScreen() {
                       Haptics.selectionAsync();
                       setStartMethod(key as "serial" | "fact");
                     }}
-                    className="flex-1 py-3 rounded-xl items-center z-10"
+                    className="flex-1 py-1 rounded-xl items-center z-10"
                   >
                     <Text
                       className={`font-semibold text-base ${
@@ -145,65 +172,67 @@ export default function ProductDefectScreen() {
                   </TouchableOpacity>
                 );
               })}
-            </View>
+            </Animated.View>
           )}
 
-          {startMethod === "serial" && (
-            <>
-              <View className="flex-row gap-2 items-center">
-                <View className="flex-1">
-                  <CustomTextInput
-                    placeholder="Serial"
-                    value={serial}
-                    onChangeText={setSerial}
-                  />
-                </View>
-                <TouchableOpacity
-                  onPress={() => setShowScanner(true)}
-                  className="bg-primary dark:bg-dark-primary py-3.5 px-4 rounded-xl active:scale-95"
-                >
-                  <Text className="text-white text-base font-semibold">
-                    {emojis.camera2}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              {!isData && (
-                <View className="mt-1">
+          <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs mb-2 ">
+            {startMethod === "serial" && (
+              <>
+                <View className="flex-row gap-2 items-center">
+                  <View className="flex-1">
+                    <CustomTextInput
+                      placeholder="Serial"
+                      value={serial}
+                      onChangeText={setSerial}
+                    />
+                  </View>
                   <TouchableOpacity
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                      handleSearchSerial();
-                    }}
-                    activeOpacity={0.8}
-                    className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent active:scale-95"
+                    onPress={() => setShowScanner(true)}
+                    className="bg-primary dark:bg-dark-primary py-3.5 px-4 rounded-xl active:scale-95"
                   >
-                    <Text className="text-primary dark:text-dark-primary font-semibold text-base">
-                      Buscar producto
+                    <Text className="text-white text-base font-semibold">
+                      {emojis.camera2}
                     </Text>
                   </TouchableOpacity>
                 </View>
-              )}
-            </>
-          )}
+                {!isData && (
+                  <View className="mt-1">
+                    <TouchableOpacity
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        handleSearchSerial();
+                      }}
+                      activeOpacity={0.8}
+                      className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent active:scale-95"
+                    >
+                      <Text className="text-primary dark:text-dark-primary font-semibold text-base">
+                        Buscar producto
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </>
+            )}
 
-          {startMethod === "fact" && (
-            <View className="flex-row gap-2 items-center mb-3">
-              <View className="flex-1">
-                <CustomTextInput
-                  placeholder="Número de factura"
-                  keyboardType="numeric"
-                  value={factNumber}
-                  onChangeText={setFactNumber}
-                />
+            {startMethod === "fact" && (
+              <View className="flex-row gap-2 items-center ">
+                <View className="flex-1">
+                  <CustomTextInput
+                    placeholder="Número de factura"
+                    keyboardType="numeric"
+                    value={factNumber}
+                    onChangeText={setFactNumber}
+                  />
+                </View>
+                <TouchableOpacity
+                  onPress={handleSearchFactNum}
+                  className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl active:scale-95"
+                >
+                  <Text className="text-white font-semibold">Buscar</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={handleSearchFactNum}
-                className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl active:scale-95"
-              >
-                <Text className="text-white font-semibold">Buscar</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+            )}
+          </View>
 
           {loadingData && (
             <View className="flex-row items-center justify-center gap-2 mt-10 w-full">
@@ -222,9 +251,9 @@ export default function ProductDefectScreen() {
 
           {isData && (
             <>
-              <View className=" gap-y-4">
-                <View className="gap-y-2">
-                  <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
+              <View className="mt-1 gap-y-5">
+                <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+                  <Text className="text-lg font-semibold mb-1 text-foreground dark:text-dark-foreground">
                     Información del artículo
                   </Text>
                   {startMethod === "fact" && (
@@ -259,6 +288,7 @@ export default function ProductDefectScreen() {
                       placeholder="Código de barras"
                       value={barcode}
                       onChangeText={setBarcode}
+                      editable={isManual}
                     />
                     <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                       Código del artículo
@@ -268,6 +298,7 @@ export default function ProductDefectScreen() {
                       placeholder="Código del artículo"
                       value={codeArt}
                       onChangeText={setCodeArt}
+                      editable={isManual}
                     />
                     <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                       Descripción del artículo
@@ -278,11 +309,12 @@ export default function ProductDefectScreen() {
                       onChangeText={setArtDes}
                       multiline
                       numberOfLines={2}
+                      editable={isManual}
                     />
                   </View>
                 </View>
 
-                <View>
+                <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Cliente
                   </Text>
@@ -294,7 +326,7 @@ export default function ProductDefectScreen() {
                     </Text>
                   </View>
                 </View>
-                <View className="gap-y-2">
+                <View className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Detalles de la devolución
                   </Text>
@@ -320,7 +352,7 @@ export default function ProductDefectScreen() {
                   </View>
                 </View>
 
-                <View>
+                <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Imagen del defecto
                   </Text>
@@ -344,7 +376,7 @@ export default function ProductDefectScreen() {
                   </View>
 
                   {image && (
-                    <View className="h-48 rounded-2xl overflow-hidden shadow-sm">
+                    <View className="h-48 rounded-2xl overflow-hidden border border-dotted border-gray-300 dark:border-gray-600">
                       <CustomImage img={image} />
                     </View>
                   )}
@@ -403,6 +435,21 @@ export default function ProductDefectScreen() {
         >
           <Ionicons name="close" size={24} color="white" />
         </TouchableOpacity>
+      )}
+      {!isData && isManual && (
+        <Animated.View
+          style={[animatedStyleAddManual]}
+          className="absolute bottom-28 right-4 z-99"
+        >
+          <TouchableOpacity
+            onPress={() => clearForm()}
+            className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg elevation-xl"
+            accessibilityLabel="Cancelar"
+            accessibilityRole="button"
+          >
+            <Ionicons name="add-circle-outline" size={24} color="white" />
+          </TouchableOpacity>
+        </Animated.View>
       )}
     </View>
   );
