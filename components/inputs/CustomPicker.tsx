@@ -25,7 +25,7 @@ type CustomPickerProps = {
 export default function CustomPicker({
   selectedValue,
   onValueChange,
-  items,
+  items = [],
   icon = "list",
   placeholder = "Seleccione una opción",
   error,
@@ -40,45 +40,45 @@ export default function CustomPicker({
     items.find((i) => i.value === selectedValue)?.label || placeholder;
 
   const handleValueChange = (value: string) => {
-    onValueChange(value);
     setTouched(true);
+    onValueChange(value);
+    if (Platform.OS === "ios") setIosModalVisible(false);
   };
+
+  const iconName = FontAwesome.glyphMap[icon] ? icon : "list";
 
   return (
     <View className="w-full">
-      {/* Input container */}
       <View
-        className={`flex-row items-center rounded-xl px-4 border bg-transparent dark:bg-dark-componentbg
-        ${
+        className={`flex-row items-center rounded-xl px-4 border bg-transparent dark:bg-dark-componentbg ${
           touched && !isValid
             ? "border-red-500 dark:border-red-400"
             : "border-gray-300 dark:border-gray-700"
         }`}
       >
         <FontAwesome
-          name={icon}
+          name={iconName}
           size={20}
           color={
             touched && !isValid
               ? appColors.error
               : theme === "dark"
-                ? appColors.dark.secondary.DEFAULT
-                : appColors.secondary.DEFAULT
+                ? (appColors.dark.secondary?.DEFAULT ?? "#ccc")
+                : (appColors.secondary?.DEFAULT ?? "#333")
           }
         />
 
-        {/* Android Picker */}
-        {Platform.OS === "android" && (
-          <View className="flex-1">
+        {Platform.OS === "android" ? (
+          <View className="flex-1 ">
             <Picker
               selectedValue={selectedValue}
               onValueChange={handleValueChange}
               style={{
                 color: isValid
                   ? theme === "dark"
-                    ? appColors.dark.foreground
-                    : appColors.foreground
-                  : appColors.placeholdercolor,
+                    ? (appColors.dark.foreground ?? "#fff")
+                    : (appColors.foreground ?? "#000")
+                  : (appColors.placeholdercolor ?? "#999"),
                 backgroundColor: "transparent",
               }}
             >
@@ -92,10 +92,7 @@ export default function CustomPicker({
               ))}
             </Picker>
           </View>
-        )}
-
-        {/* iOS - Modal Trigger */}
-        {Platform.OS === "ios" && (
+        ) : (
           <Pressable
             className="flex-1 py-3"
             onPress={() => setIosModalVisible(true)}
@@ -113,14 +110,12 @@ export default function CustomPicker({
         )}
       </View>
 
-      {/* Error message */}
       {touched && !isValid && (
         <Text className="text-red-500 text-xs mt-1">
           {error || "Seleccione una opción"}
         </Text>
       )}
 
-      {/* iOS Bottom Modal */}
       {Platform.OS === "ios" && (
         <Modal
           transparent
@@ -137,7 +132,6 @@ export default function CustomPicker({
               style={{ paddingBottom: insets.bottom }}
               className="bg-white dark:bg-dark-componentbg rounded-t-3xl overflow-hidden"
             >
-              {/* Header */}
               <View className="flex-row justify-between items-center px-5 py-4 border-b border-gray-200 dark:border-gray-700">
                 <Text className="text-lg font-semibold text-foreground dark:text-dark-foreground">
                   Selecciona una opción
@@ -152,7 +146,6 @@ export default function CustomPicker({
                 </TouchableOpacity>
               </View>
 
-              {/* Picker */}
               <View className="h-[300px] justify-center">
                 <Picker
                   selectedValue={selectedValue}
@@ -160,8 +153,8 @@ export default function CustomPicker({
                   style={{
                     color:
                       theme === "dark"
-                        ? appColors.dark.foreground
-                        : appColors.foreground,
+                        ? (appColors.dark.foreground ?? "#fff")
+                        : (appColors.foreground ?? "#000"),
                   }}
                 >
                   <Picker.Item label={placeholder} value="" />

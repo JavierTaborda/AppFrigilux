@@ -62,7 +62,7 @@ export function useReturnReport() {
     const [isData, setIsData] = useState(false);
     const [isManual, setIsManual] = useState(false);
     const isFormComplete = () => (
-        barcode && reason && comment && image && selectedClient && codeArt && artDes
+        barcode && reason && comment && image && selectedClient && codeArt && artDes && serial
     );
     
 
@@ -128,6 +128,7 @@ export function useReturnReport() {
     useEffect(() => {
         if (!codeArt) return;
         if (artList.length < 1) return
+        alert("artList");
         setArtDes(artList.find(c => c.value === codeArt)?.label ?? '');
         setBarcode(barcodeList.find(b => b.co_art === codeArt)?.codbarra ?? '');
     }, [codeArt]);
@@ -157,6 +158,7 @@ export function useReturnReport() {
             setArtDes(data.artdes || "");
             setSerial(data.serial || "");
             setSelectedClient({ code: data.codcli, name: data.clides })
+        
             setIsData(true)
 
         } catch (error) {
@@ -257,6 +259,7 @@ export function useReturnReport() {
         isData,
         artList,
         isManual,
+        isFormComplete,
 
         // customers
 

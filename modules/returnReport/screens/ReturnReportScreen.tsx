@@ -11,6 +11,8 @@ import * as Haptics from "expo-haptics";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  FlatList,
+  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -19,10 +21,13 @@ import {
 } from "react-native";
 import Animated, {
   Easing,
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withTiming,
 } from "react-native-reanimated";
+import SerialInput from "../components/SerialInput";
 import { useReturnReport } from "../hooks/useReturnReport";
 
 export default function ProductDefectScreen() {
@@ -66,18 +71,17 @@ export default function ProductDefectScreen() {
     isData,
     artList,
     isManual,
+    isFormComplete,
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
-  const [scanCode, setScanCode] = useState<string>();
-
-  const isFormValid = barcode && reason && comment && image && selectedClient;
+  const isFormValid = isFormComplete();
 
   const toggleX = useSharedValue(startMethod === "serial" ? 0 : 1);
-
   useEffect(() => {
     toggleX.value = withTiming(startMethod === "serial" ? 0 : 1, {
       duration: 250,
+      easing: Easing.out(Easing.exp),
     });
   }, [startMethod]);
 
@@ -87,25 +91,84 @@ export default function ProductDefectScreen() {
     transform: [{ translateX: toggleX.value * ((width - 42) / 2) }],
   }));
 
-  const opacity = useSharedValue(0);
-  const translateY = useSharedValue(20);
+  // ---------- FORM SECTION ANIMATION ----------
+  const sectionProgress = useSharedValue(isData ? 1 : 0);
+  const sectionProgressSearch = useSharedValue(isData ? 0 : 1);
+
+  useEffect(() => {
+    if (isData) {
+      // in
+      sectionProgress.value = withTiming(1, {
+        duration: 450,
+        easing: Easing.out(Easing.exp),
+      });
+    } else {
+    
+      sectionProgress.value = withDelay(
+        150,
+        withTiming(0, {
+          duration: 300,
+          easing: Easing.in(Easing.cubic),
+        })
+      );
+    }
+  }, [isData]);
+
+  const sectionAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: sectionProgress.value,
+    transform: [
+      {
+        translateY: interpolate(sectionProgress.value, [0, 1], [20, 0]),
+      },
+    ],
+  }));
+  const sectionAnimatedStyleSearch = useAnimatedStyle(() => ({
+    opacity: sectionProgressSearch.value,
+    transform: [
+      {
+        translateY: interpolate(sectionProgress.value, [0, 1], [5, 0]),
+      },
+    ],
+  }));
+
+  // ---------- TOGGLE SECTION ANIMATION ----------
+  const toggleOpacity = useSharedValue(!isData ? 1 : 0);
+  const toggleTranslateY = useSharedValue(!isData ? 0 : 20);
 
   useEffect(() => {
     if (!isData) {
-      opacity.value = withTiming(1, { duration: 300 });
-      translateY.value = withTiming(0, { duration: 300 });
+  
+      toggleOpacity.value = withTiming(1, {
+        duration: 400,
+        easing: Easing.out(Easing.exp),
+      });
+      toggleTranslateY.value = withTiming(0, {
+        duration: 400,
+        easing: Easing.out(Easing.exp),
+      });
     } else {
-      opacity.value = withTiming(0, { duration: 200 });
-      translateY.value = withTiming(20, { duration: 300 });
+      
+      toggleOpacity.value = withDelay(
+        200,
+        withTiming(0, {
+          duration: 250,
+          easing: Easing.in(Easing.cubic),
+        })
+      );
+      toggleTranslateY.value = withTiming(20, {
+        duration: 250,
+        easing: Easing.in(Easing.cubic),
+      });
     }
   }, [isData]);
 
   const animatedStyleToggle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
+    opacity: toggleOpacity.value,
+    transform: [{ translateY: toggleTranslateY.value }],
   }));
-  const scale = useSharedValue(2); 
 
+  // ---------- ADD MANUAL BUTTON ANIMATION ----------
+  const scale = useSharedValue(2);
   useEffect(() => {
     scale.value = withTiming(1, {
       duration: 600,
@@ -113,11 +176,43 @@ export default function ProductDefectScreen() {
     });
   }, [isManual]);
 
-  const animatedStyleAddManual = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
+  const animatedStyleAddManual = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  // ---------- IMAGE ANIMATION ----------
+  const imageOpacity = useSharedValue(0);
+  const imageScale = useSharedValue(0.9);
+  useEffect(() => {
+    if (image) {
+      imageOpacity.value = withTiming(1, { duration: 350 });
+      imageScale.value = withTiming(1, {
+        duration: 350,
+        easing: Easing.out(Easing.exp),
+      });
+    } else {
+      imageOpacity.value = withTiming(0, { duration: 200 });
+      imageScale.value = withTiming(0.9, { duration: 200 });
+    }
+  }, [image]);
+
+  const imageAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: imageOpacity.value,
+    transform: [{ scale: imageScale.value }],
+  }));
+
+  // ---------- SAVE BUTTON ANIMATION ----------
+  const saveScale = useSharedValue(1);
+  const saveAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: saveScale.value }],
+  }));
+
+  // ---------- ACTION BUTTON SCALE ----------
+  const btnScale = useSharedValue(1);
+  const btnAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: btnScale.value }],
+  }));
+
 
   return (
     <View className="flex-1 bg-primary dark:bg-dark-primary">
@@ -136,6 +231,7 @@ export default function ProductDefectScreen() {
               Completa los pasos para enviar el reporte
             </Text>
           </View>
+
           {!isData && (
             <Animated.View
               style={animatedStyleToggle}
@@ -175,40 +271,32 @@ export default function ProductDefectScreen() {
             </Animated.View>
           )}
 
-          <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs mb-2 ">
+          <Animated.View style={sectionAnimatedStyleSearch} className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs mb-2 ">
             {startMethod === "serial" && (
               <>
-                <View className="flex-row gap-2 items-center">
-                  <View className="flex-1">
-                    <CustomTextInput
-                      placeholder="Serial"
-                      value={serial}
-                      onChangeText={setSerial}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => setShowScanner(true)}
-                    className="bg-primary dark:bg-dark-primary py-3.5 px-4 rounded-xl active:scale-95"
-                  >
-                    <Text className="text-white text-base font-semibold">
-                      {emojis.camera2}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                <SerialInput
+                  serial={serial}
+                  setSerial={setSerial}
+                  setShowScanner={setShowScanner}
+                  editable={!isData}
+                />
                 {!isData && (
                   <View className="mt-1">
-                    <TouchableOpacity
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                        handleSearchSerial();
-                      }}
-                      activeOpacity={0.8}
-                      className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent active:scale-95"
-                    >
-                      <Text className="text-primary dark:text-dark-primary font-semibold text-base">
-                        Buscar producto
-                      </Text>
-                    </TouchableOpacity>
+                    <Animated.View style={btnAnimatedStyle}>
+                      <Pressable
+                       
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                          handleSearchSerial();
+                        }}
+                        android_ripple={{ color: "rgba(0,0,0,0.05)" }}
+                        className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent active:scale-95"
+                      >
+                        <Text className="text-primary dark:text-dark-primary font-semibold text-base">
+                          Buscar producto
+                        </Text>
+                      </Pressable>
+                    </Animated.View>
                   </View>
                 )}
               </>
@@ -224,15 +312,23 @@ export default function ProductDefectScreen() {
                     onChangeText={setFactNumber}
                   />
                 </View>
-                <TouchableOpacity
-                  onPress={handleSearchFactNum}
-                  className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl active:scale-95"
-                >
-                  <Text className="text-white font-semibold">Buscar</Text>
-                </TouchableOpacity>
+                <Animated.View style={btnAnimatedStyle}>
+                  <Pressable
+                    onPressIn={() => {
+                      btnScale.value = withTiming(0.97, { duration: 80 });
+                    }}
+                    onPressOut={() => {
+                      btnScale.value = withTiming(1, { duration: 120 });
+                    }}
+                    onPress={handleSearchFactNum}
+                    className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl active:scale-95"
+                  >
+                    <Text className="text-white font-semibold">Buscar</Text>
+                  </Pressable>
+                </Animated.View>
               </View>
             )}
-          </View>
+          </Animated.View>
 
           {loadingData && (
             <View className="flex-row items-center justify-center gap-2 mt-10 w-full">
@@ -251,8 +347,8 @@ export default function ProductDefectScreen() {
 
           {isData && (
             <>
-              <View className="mt-1 gap-y-5">
-                <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+              <Animated.View className="mt-1 gap-y-5">
+                <Animated.View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
                   <Text className="text-lg font-semibold mb-1 text-foreground dark:text-dark-foreground">
                     Información del artículo
                   </Text>
@@ -273,10 +369,10 @@ export default function ProductDefectScreen() {
                       <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                         Serial
                       </Text>
-                      <CustomTextInput
-                        placeholder="Serial"
-                        value={serial}
-                        onChangeText={setSerial}
+                      <SerialInput
+                        serial={serial}
+                        setSerial={setSerial}
+                        setShowScanner={setShowScanner}
                       />
                     </View>
                   )}
@@ -312,21 +408,36 @@ export default function ProductDefectScreen() {
                       editable={isManual}
                     />
                   </View>
-                </View>
-
-                <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+                </Animated.View>
+                <Animated.View style={sectionAnimatedStyle} className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Cliente
                   </Text>
-                  <View className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl ">
-                    <Text className="text-foreground dark:text-dark-foreground">
-                      {selectedClient
-                        ? selectedClient.name
-                        : "Seleccionar cliente..."}
+                  {isManual ? (
+                    <Pressable
+                      onPress={() => {
+                        Haptics.selectionAsync();
+                        setShowClientModal(true);
+                      }}
+                      className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl "
+                    >
+                      <Text className="text-foreground dark:text-dark-foreground">
+                        {selectedClient ? selectedClient.name : "Seleccionar cliente..."}
+                      </Text>
+                      <Ionicons
+                        name="chevron-forward"
+                        size={20}
+                        color={isDark ? "#fff" : "#333"}
+                      />
+                    </Pressable>
+                  ) : (
+                    <Text className="text-foreground dark:text-dark-foreground flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl ">
+                      {selectedClient ? selectedClient.name : ""}
                     </Text>
-                  </View>
-                </View>
-                <View className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+                  )}
+                </Animated.View>
+
+                <Animated.View style={sectionAnimatedStyle} className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Detalles de la devolución
                   </Text>
@@ -350,7 +461,7 @@ export default function ProductDefectScreen() {
                       numberOfLines={4}
                     />
                   </View>
-                </View>
+                </Animated.View>
 
                 <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
@@ -381,34 +492,42 @@ export default function ProductDefectScreen() {
                     </View>
                   )}
                 </View>
-              </View>
+              </Animated.View>
 
               <View className="mt-6">
-                <TouchableOpacity
-                  onPress={async () => {
-                    Haptics.notificationAsync(
-                      Haptics.NotificationFeedbackType.Success
-                    );
-                    await registerDefect();
-                  }}
-                  disabled={!isFormValid || loading}
-                  style={{
-                    backgroundColor: isFormValid
-                      ? !isDark
-                        ? appColors.primary.DEFAULT
-                        : appColors.dark.primary.DEFAULT
-                      : "#ccc",
-                  }}
-                  className={`py-4 rounded-xl items-center justify-center `}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text className="text-white font-semibold text-lg">
-                      Guardar devolución
-                    </Text>
-                  )}
-                </TouchableOpacity>
+                <Animated.View style={saveAnimatedStyle}>
+                  <Pressable
+                    onPressIn={() => {
+                      saveScale.value = withTiming(0.98, { duration: 80 });
+                    }}
+                    onPressOut={() => {
+                      saveScale.value = withTiming(1, { duration: 120 });
+                    }}
+                    onPress={async () => {
+                      Haptics.notificationAsync(
+                        Haptics.NotificationFeedbackType.Success
+                      );
+                      await registerDefect();
+                    }}
+                    disabled={!isFormValid || loading}
+                    style={{
+                      backgroundColor: isFormValid
+                        ? !isDark
+                          ? appColors.primary.DEFAULT
+                          : appColors.dark.primary.DEFAULT
+                        : "#ccc",
+                    }}
+                    className={`py-4 rounded-xl items-center justify-center `}
+                  >
+                    {loading ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text className="text-white font-semibold text-lg">
+                        Guardar devolución
+                      </Text>
+                    )}
+                  </Pressable>
+                </Animated.View>
               </View>
             </>
           )}
@@ -423,6 +542,34 @@ export default function ProductDefectScreen() {
                 setShowScanner(false);
               }}
             />
+          </BottomModal>
+
+          <BottomModal
+            visible={showClientModal}
+            onClose={() => setShowClientModal(false)}
+          >
+            <View className="p-4">
+              <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">Seleccionar cliente</Text>
+              <FlatList
+                data={clients || []}
+                keyExtractor={(item: any) => (item.id ?? item.code ?? item.name) + ""}
+                renderItem={({ item }: any) => (
+                  <Pressable
+                    onPress={() => {
+                      setSelectedClient(item);
+                      setShowClientModal(false);
+                    }}
+                    className="py-3 px-4 rounded-xl border-b border-gray-200 dark:border-gray-700"
+                  >
+                    <Text className="text-foreground dark:text-dark-foreground">{item.name}</Text>
+                    {item?.identification && (
+                      <Text className="text-sm text-mutedForeground dark:text-dark-mutedForeground mt-1">{item.identification}</Text>
+                    )}
+                  </Pressable>
+                )}
+                ItemSeparatorComponent={() => <View className="h-2" />}
+              />
+            </View>
           </BottomModal>
         </ScrollView>
       </View>
