@@ -1,4 +1,5 @@
 import api from "@/lib/axios";
+import { Client } from "../types/clients";
 import { CreateDevolucion } from "../types/createDevolucion";
 
 export const getOrderByFactNumber = async (factNumber: number) => {
@@ -28,11 +29,26 @@ export const getBySerial = async (serial: string) => {
 export const createDevolucion = async (dev: CreateDevolucion): Promise<boolean> => {
   try {
   
-    const response = await api.post("/returns", dev);
+    const response = await api.post("returns", dev);
     console.log(response.status);
     return response.status >= 200 && response.status < 300;
   } catch (error) {
     console.error("Error creating return:", error);
     return false; 
+  }
+};
+export const getClients = async (): Promise<Client[]> => {
+  try {
+    const response = await api.get("customers");
+
+    const clients: Client[] = response.data.map((c: any) => ({
+      code: c.co_cli?.trim(), 
+      name: c.cli_des?.split("\r\n")[0]?.trim(),
+    }));
+
+    return clients;
+  } catch (error) {
+    console.error("Error fetching clients:", error);
+    return [];
   }
 };

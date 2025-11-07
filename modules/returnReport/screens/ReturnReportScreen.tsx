@@ -72,6 +72,7 @@ export default function ProductDefectScreen() {
     artList,
     isManual,
     isFormComplete,
+    handleManual,
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
@@ -103,7 +104,6 @@ export default function ProductDefectScreen() {
         easing: Easing.out(Easing.exp),
       });
     } else {
-    
       sectionProgress.value = withDelay(
         150,
         withTiming(0, {
@@ -137,7 +137,6 @@ export default function ProductDefectScreen() {
 
   useEffect(() => {
     if (!isData) {
-  
       toggleOpacity.value = withTiming(1, {
         duration: 400,
         easing: Easing.out(Easing.exp),
@@ -147,7 +146,6 @@ export default function ProductDefectScreen() {
         easing: Easing.out(Easing.exp),
       });
     } else {
-      
       toggleOpacity.value = withDelay(
         200,
         withTiming(0, {
@@ -213,7 +211,6 @@ export default function ProductDefectScreen() {
     transform: [{ scale: btnScale.value }],
   }));
 
-
   return (
     <View className="flex-1 bg-primary dark:bg-dark-primary">
       <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl">
@@ -232,7 +229,7 @@ export default function ProductDefectScreen() {
             </Text>
           </View>
 
-          {!isData && (
+          {!isData && !isManual && (
             <Animated.View
               style={animatedStyleToggle}
               className="relative flex-row bg-muted dark:bg-dark-muted rounded-full p-1 mb-1 overflow-hidden"
@@ -271,64 +268,70 @@ export default function ProductDefectScreen() {
             </Animated.View>
           )}
 
-          <Animated.View style={sectionAnimatedStyleSearch} className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs mb-2 ">
-            {startMethod === "serial" && (
-              <>
-                <SerialInput
-                  serial={serial}
-                  setSerial={setSerial}
-                  setShowScanner={setShowScanner}
-                  editable={!isData}
-                />
-                {!isData && (
-                  <View className="mt-1">
-                    <Animated.View style={btnAnimatedStyle}>
-                      <Pressable
-                       
-                        onPress={() => {
-                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                          handleSearchSerial();
-                        }}
-                        android_ripple={{ color: "rgba(0,0,0,0.05)" }}
-                        className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent active:scale-95"
-                      >
-                        <Text className="text-primary dark:text-dark-primary font-semibold text-base">
-                          Buscar producto
-                        </Text>
-                      </Pressable>
-                    </Animated.View>
-                  </View>
-                )}
-              </>
-            )}
-
-            {startMethod === "fact" && (
-              <View className="flex-row gap-2 items-center ">
-                <View className="flex-1">
-                  <CustomTextInput
-                    placeholder="Número de factura"
-                    keyboardType="numeric"
-                    value={factNumber}
-                    onChangeText={setFactNumber}
+          {!isManual && (
+            <Animated.View
+              style={sectionAnimatedStyleSearch}
+              className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs mb-2 "
+            >
+              {startMethod === "serial" && (
+                <>
+                  <SerialInput
+                    serial={serial}
+                    setSerial={setSerial}
+                    setShowScanner={setShowScanner}
+                    editable={isManual || !isData}
                   />
+                  {!isData && (
+                    <View className="mt-1">
+                      <Animated.View style={btnAnimatedStyle}>
+                        <Pressable
+                          onPress={() => {
+                            Haptics.impactAsync(
+                              Haptics.ImpactFeedbackStyle.Medium
+                            );
+                            handleSearchSerial();
+                          }}
+                          android_ripple={{ color: "rgba(0,0,0,0.05)" }}
+                          className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent active:scale-95"
+                        >
+                          <Text className="text-primary dark:text-dark-primary font-semibold text-base">
+                            Buscar producto
+                          </Text>
+                        </Pressable>
+                      </Animated.View>
+                    </View>
+                  )}
+                </>
+              )}
+
+              {startMethod === "fact" && (
+                <View className="flex-row gap-2 items-center ">
+                  <View className="flex-1">
+                    <CustomTextInput
+                      placeholder="Número de factura"
+                      keyboardType="numeric"
+                      value={factNumber}
+                      onChangeText={setFactNumber}
+                    />
+                  </View>
+                  <Animated.View style={btnAnimatedStyle}>
+                    <Pressable
+                      onPressIn={() => {
+                        btnScale.value = withTiming(0.97, { duration: 80 });
+                      }}
+                      onPressOut={() => {
+                        btnScale.value = withTiming(1, { duration: 120 });
+                      }}
+                      onPress={handleSearchFactNum}
+                      className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl active:scale-95"
+                    >
+                      <Text className="text-white font-semibold">Buscar</Text>
+                    </Pressable>
+                  </Animated.View>
                 </View>
-                <Animated.View style={btnAnimatedStyle}>
-                  <Pressable
-                    onPressIn={() => {
-                      btnScale.value = withTiming(0.97, { duration: 80 });
-                    }}
-                    onPressOut={() => {
-                      btnScale.value = withTiming(1, { duration: 120 });
-                    }}
-                    onPress={handleSearchFactNum}
-                    className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl active:scale-95"
-                  >
-                    <Text className="text-white font-semibold">Buscar</Text>
-                  </Pressable>
-                </Animated.View>
-              </View>
-            )}
-          </Animated.View>
+              )}
+            </Animated.View>
+          )}
 
           {loadingData && (
             <View className="flex-row items-center justify-center gap-2 mt-10 w-full">
@@ -350,9 +353,9 @@ export default function ProductDefectScreen() {
               <Animated.View className="mt-1 gap-y-5">
                 <Animated.View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
                   <Text className="text-lg font-semibold mb-1 text-foreground dark:text-dark-foreground">
-                    Información del artículo
+                    Información del artículo {isManual ? "(Manual)" : ""}
                   </Text>
-                  {startMethod === "fact" && (
+                  {startMethod === "fact" && !isManual && (
                     <View className="gap-2">
                       <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                         Artículo
@@ -369,6 +372,7 @@ export default function ProductDefectScreen() {
                       <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                         Serial
                       </Text>
+
                       <SerialInput
                         serial={serial}
                         setSerial={setSerial}
@@ -376,7 +380,22 @@ export default function ProductDefectScreen() {
                       />
                     </View>
                   )}
+
                   <View className="gap-2">
+                    {isManual && (
+                      <>
+                        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                          Serial
+                        </Text>
+
+                        <SerialInput
+                          serial={serial}
+                          setSerial={setSerial}
+                          setShowScanner={setShowScanner}
+                        />
+                      </>
+                    )}
+
                     <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                       Código de barra
                     </Text>
@@ -405,11 +424,14 @@ export default function ProductDefectScreen() {
                       onChangeText={setArtDes}
                       multiline
                       numberOfLines={2}
-                      editable={isManual}
+                      editable={false}
                     />
                   </View>
                 </Animated.View>
-                <Animated.View style={sectionAnimatedStyle} className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+                <Animated.View
+                  style={sectionAnimatedStyle}
+                  className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
+                >
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Cliente
                   </Text>
@@ -422,7 +444,9 @@ export default function ProductDefectScreen() {
                       className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl "
                     >
                       <Text className="text-foreground dark:text-dark-foreground">
-                        {selectedClient ? selectedClient.name : "Seleccionar cliente..."}
+                        {selectedClient
+                          ? selectedClient.name
+                          : "Seleccionar cliente..."}
                       </Text>
                       <Ionicons
                         name="chevron-forward"
@@ -437,7 +461,10 @@ export default function ProductDefectScreen() {
                   )}
                 </Animated.View>
 
-                <Animated.View style={sectionAnimatedStyle} className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+                <Animated.View
+                  style={sectionAnimatedStyle}
+                  className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
+                >
                   <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
                     Detalles de la devolución
                   </Text>
@@ -549,10 +576,14 @@ export default function ProductDefectScreen() {
             onClose={() => setShowClientModal(false)}
           >
             <View className="p-4">
-              <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">Seleccionar cliente</Text>
+              <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
+                Seleccionar cliente
+              </Text>
               <FlatList
                 data={clients || []}
-                keyExtractor={(item: any) => (item.id ?? item.code ?? item.name) + ""}
+                keyExtractor={(item: any) =>
+                  (item.id ?? item.code ?? item.name) + ""
+                }
                 renderItem={({ item }: any) => (
                   <Pressable
                     onPress={() => {
@@ -561,9 +592,13 @@ export default function ProductDefectScreen() {
                     }}
                     className="py-3 px-4 rounded-xl border-b border-gray-200 dark:border-gray-700"
                   >
-                    <Text className="text-foreground dark:text-dark-foreground">{item.name}</Text>
+                    <Text className="text-foreground dark:text-dark-foreground">
+                      {item.code} - {item.name}
+                    </Text>
                     {item?.identification && (
-                      <Text className="text-sm text-mutedForeground dark:text-dark-mutedForeground mt-1">{item.identification}</Text>
+                      <Text className="text-sm text-mutedForeground dark:text-dark-mutedForeground mt-1">
+                        {item.identification}
+                      </Text>
                     )}
                   </Pressable>
                 )}
@@ -589,7 +624,7 @@ export default function ProductDefectScreen() {
           className="absolute bottom-28 right-4 z-99"
         >
           <TouchableOpacity
-            onPress={() => clearForm()}
+            onPress={() => handleManual()}
             className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg elevation-xl"
             accessibilityLabel="Cancelar"
             accessibilityRole="button"

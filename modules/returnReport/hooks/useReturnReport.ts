@@ -2,15 +2,13 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import { createDevolucion, getBySerial, getOrderByFactNumber } from "../services/ReturnReportService";
+import { createDevolucion, getBySerial, getClients, getOrderByFactNumber } from "../services/ReturnReportService";
 import { Articulo } from "../types/Articulo";
+import { Client } from "../types/clients";
 import { CreateDevolucion } from "../types/createDevolucion";
 import { pickAndUploadImage } from "../utils/uploadImage";
 
-export interface Client {
-    code: string;
-    name: string;
-}
+
 
 export interface ArtItem {
     value: string;
@@ -64,7 +62,7 @@ export function useReturnReport() {
     const isFormComplete = () => (
         barcode && reason && comment && image && selectedClient && codeArt && artDes && serial
     );
-    
+
 
 
     const pickImage = async () => {
@@ -97,7 +95,7 @@ export function useReturnReport() {
             }
 
             setBarcode(data.codbarra || "");
-            
+
             setCodeVen(data.codven || "");
             setVenDes(data.vendes || "");
             setSerial(data.serial || "");
@@ -128,7 +126,7 @@ export function useReturnReport() {
     useEffect(() => {
         if (!codeArt) return;
         if (artList.length < 1) return
-        alert("artList");
+
         setArtDes(artList.find(c => c.value === codeArt)?.label ?? '');
         setBarcode(barcodeList.find(b => b.co_art === codeArt)?.codbarra ?? '');
     }, [codeArt]);
@@ -146,8 +144,9 @@ export function useReturnReport() {
 
             if (!data) {
                 Alert.alert("Sin resultados", "No se encontró el producto con ese serial.");
-                setIsData(false);
+                clearForm();
                 setIsManual(true);
+
                 return;
             }
 
@@ -158,7 +157,7 @@ export function useReturnReport() {
             setArtDes(data.artdes || "");
             setSerial(data.serial || "");
             setSelectedClient({ code: data.codcli, name: data.clides })
-        
+
             setIsData(true)
 
         } catch (error) {
@@ -177,11 +176,21 @@ export function useReturnReport() {
         setReason("");
         setComment("");
         setImage("");
+        setArtList([]);
+        setBarcodeList([]);
         setSelectedClient(null);
         setFactNumber("");
         setIsData(false)
         setIsManual(false);
     };
+    const handleManual = async () => {
+        clearForm();
+        const clients = await getClients();
+        setIsData(true);
+        setIsManual(true);
+        setClients(clients);
+
+    }
     const registerDefect = async () => {
         if (!isFormComplete()) {
             Alert.alert("Incomplete form", "Please fill in all required fields.");
@@ -217,7 +226,7 @@ export function useReturnReport() {
                 imgart: imageUrl ?? undefined,
             };
 
-           const success = await createDevolucion(devolucion);
+            const success = await createDevolucion(devolucion);
 
             if (success) {
                 Alert.alert("Success", "La devolución fue registrada exitosamente.");
@@ -226,7 +235,7 @@ export function useReturnReport() {
             } else {
                 Alert.alert("Error", "No se pudo registrar la devolución, por favor inténtelo de nuevo.");
                 return false;
-            }   
+            }
         } catch (err: any) {
             Alert.alert("Error", `No se pudo registrar la devolución: ${err.message}`);
             return false;
@@ -243,6 +252,7 @@ export function useReturnReport() {
         handleSearchFactNum,
         handleSearchSerial,
         clearForm,
+        handleManual,
 
         // states
         loading,

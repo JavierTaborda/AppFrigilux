@@ -42,7 +42,7 @@ export default function CustomPicker({
   const handleValueChange = (value: string) => {
     setTouched(true);
     onValueChange(value);
-    if (Platform.OS === "ios") setIosModalVisible(false);
+   // if (Platform.OS === "ios") setIosModalVisible(false);
   };
 
   const iconName = FontAwesome.glyphMap[icon] ? icon : "list";
@@ -124,10 +124,10 @@ export default function CustomPicker({
           onRequestClose={() => setIosModalVisible(false)}
         >
           <View className="flex-1 justify-end bg-black/40">
-            <Pressable
+            {/* <Pressable
               className="flex-1"
               onPress={() => setIosModalVisible(false)}
-            />
+            /> */}
             <View
               style={{ paddingBottom: insets.bottom }}
               className="bg-white dark:bg-dark-componentbg rounded-t-3xl overflow-hidden"
