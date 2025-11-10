@@ -11,13 +11,12 @@ import * as Haptics from "expo-haptics";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
   Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
   useWindowDimensions,
-  View,
+  View
 } from "react-native";
 import Animated, {
   Easing,
@@ -27,6 +26,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from "react-native-reanimated";
+import ClientModal from "../components/ClientModal";
 import SerialInput from "../components/SerialInput";
 import { useReturnReport } from "../hooks/useReturnReport";
 
@@ -384,6 +384,10 @@ export default function ProductDefectScreen() {
                   <View className="gap-2">
                     {isManual && (
                       <>
+
+                        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                          Artículo
+                        </Text>
                         <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                           Serial
                         </Text>
@@ -575,36 +579,8 @@ export default function ProductDefectScreen() {
             visible={showClientModal}
             onClose={() => setShowClientModal(false)}
           >
-            <View className="p-4">
-              <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-                Seleccionar cliente
-              </Text>
-              <FlatList
-                data={clients || []}
-                keyExtractor={(item: any) =>
-                  (item.id ?? item.code ?? item.name) + ""
-                }
-                renderItem={({ item }: any) => (
-                  <Pressable
-                    onPress={() => {
-                      setSelectedClient(item);
-                      setShowClientModal(false);
-                    }}
-                    className="py-3 px-4 rounded-xl border-b border-gray-200 dark:border-gray-700"
-                  >
-                    <Text className="text-foreground dark:text-dark-foreground">
-                      {item.code} - {item.name}
-                    </Text>
-                    {item?.identification && (
-                      <Text className="text-sm text-mutedForeground dark:text-dark-mutedForeground mt-1">
-                        {item.identification}
-                      </Text>
-                    )}
-                  </Pressable>
-                )}
-                ItemSeparatorComponent={() => <View className="h-2" />}
-              />
-            </View>
+            <ClientModal onClose={setShowClientModal} setSelectedClient={setSelectedClient}  clients={clients}/>
+
           </BottomModal>
         </ScrollView>
       </View>
@@ -618,7 +594,7 @@ export default function ProductDefectScreen() {
           <Ionicons name="close" size={24} color="white" />
         </TouchableOpacity>
       )}
-      {!isData && isManual && (
+      {!isData && (
         <Animated.View
           style={[animatedStyleAddManual]}
           className="absolute bottom-28 right-4 z-99"

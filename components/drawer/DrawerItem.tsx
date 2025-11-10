@@ -34,7 +34,7 @@ export function DrawerItem({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className={`flex-row items-center py-3 px-3 rounded-2xl ${bgClass}`}
+      className={`flex-row items-center py-4 px-3 rounded-2xl ${bgClass}`}
     >
       {icon && (
         <Ionicons name={icon} size={24} color={isDark ? "white" : "black"} />
@@ -44,7 +44,7 @@ export function DrawerItem({
           <Text className="text-xl"> {emoji}</Text>
         </>
       )}
-      <Text className="ms-2 font-medium text-sm text-foreground dark:text-dark-foreground">
+      <Text className="ms-2 font-normal text-md text-foreground dark:text-dark-foreground">
         {label}
       </Text>
     </TouchableOpacity>
