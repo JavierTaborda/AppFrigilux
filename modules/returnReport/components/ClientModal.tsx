@@ -1,4 +1,5 @@
-import React from "react";
+import SearchBar from "@/components/ui/SearchBar";
+import React, { useMemo, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { Client } from "../types/clients";
 
@@ -15,6 +16,24 @@ const ClientModal: React.FC<ClientModalProps> = ({
   setSelectedClient,
   onClose,
 }) => {
+  const [searchText, setSearchText] =useState("")
+      const filterClient = useMemo(() => {
+  
+          if (!searchText || searchText.length < 4) return clients;
+  
+          return clients.filter((c) => {
+              const client = c.code.toLowerCase() || "";
+              const name = c.name?.toLowerCase() || "";
+           
+  
+              return (
+                  client.includes(searchText.toLowerCase()) ||
+                  name.includes(searchText.toLowerCase())
+              );
+          });
+          
+      }, [ searchText]);
+
   if (!visible) return null;
 
   return (
@@ -22,25 +41,29 @@ const ClientModal: React.FC<ClientModalProps> = ({
       <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
         Seleccionar cliente
       </Text>
+      <View className="py-1 mb-2">
+        <SearchBar
+          searchText={searchText}
+          setSearchText={setSearchText}
+          placeHolderText="Buscar cliente..."
+          isFull
+        />
+      </View>
       <FlatList
-        data={clients || []}
-        keyExtractor={(item: any) => (item.id ?? item.code ?? item.name) + ""}
-        renderItem={({ item }: any) => (
+        data={filterClient || []}
+        keyExtractor={(item: Client) => (item.code ?? item.name) + ""}
+        renderItem={({ item }: { item: Client }) => (
           <Pressable
             onPress={() => {
               setSelectedClient(item);
               onClose(false);
             }}
-            className="py-3 px-4 rounded-xl bg-componentbg dark:bg-dark-componentbg"
+            className="h-16 py-3 px-4 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
           >
             <Text className="text-foreground dark:text-dark-foreground">
               {item.code} - {item.name}
             </Text>
-            {item?.identification && (
-              <Text className="text-sm text-mutedForeground dark:text-dark-mutedForeground mt-1">
-                {item.identification}
-              </Text>
-            )}
+            
           </Pressable>
         )}
         ItemSeparatorComponent={() => <View className="h-2" />}

@@ -2,23 +2,13 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import { createDevolucion, getBySerial, getClients, getOrderByFactNumber } from "../services/ReturnReportService";
+import { createDevolucion, getArts, getBySerial, getClients, getOrderByFactNumber } from "../services/ReturnReportService";
 import { Articulo } from "../types/Articulo";
 import { Client } from "../types/clients";
 import { CreateDevolucion } from "../types/createDevolucion";
+import { BarcodeItem } from "../types/Items";
 import { pickAndUploadImage } from "../utils/uploadImage";
 
-
-
-export interface ArtItem {
-    value: string;
-    label: string;
-}
-
-export interface BarcodeItem {
-    co_art: string;
-    codbarra: string;
-}
 
 export function useReturnReport() {
 
@@ -36,7 +26,7 @@ export function useReturnReport() {
     const [serial, setSerial] = useState("");
     const [codeArt, setCodeArt] = useState("");
     const [artDes, setArtDes] = useState("");
-    const [artList, setArtList] = useState<ArtItem[]>([]);
+    const [artList, setArtList] = useState<Articulo[]>([]);
 
 
     // Customer Data
@@ -57,6 +47,7 @@ export function useReturnReport() {
     // UI
     const [showScanner, setShowScanner] = useState(false);
     const [showClientModal, setShowClientModal] = useState(false);
+    const [showArtModal, setShowArtModal] = useState(false);
     const [isData, setIsData] = useState(false);
     const [isManual, setIsManual] = useState(false);
     const isFormComplete = () => (
@@ -106,12 +97,7 @@ export function useReturnReport() {
                 codbarra: item.codbarra
             })));
 
-
-            const formattedArtList = (data.art as Articulo[]).map((item: Articulo) => ({
-                value: item.co_art,
-                label: `${item.co_art.trim()} ${item.art_des.trim()}`
-            }));
-
+            const formattedArtList = (data.art as Articulo[]);
             setArtList(formattedArtList);
             setIsData(true)
 
@@ -127,7 +113,7 @@ export function useReturnReport() {
         if (!codeArt) return;
         if (artList.length < 1) return
 
-        setArtDes(artList.find(c => c.value === codeArt)?.label ?? '');
+        setArtDes(artList.find(c => c.co_art === codeArt)?.art_des ?? '');
         setBarcode(barcodeList.find(b => b.co_art === codeArt)?.codbarra ?? '');
     }, [codeArt]);
 
@@ -184,13 +170,29 @@ export function useReturnReport() {
         setIsManual(false);
     };
     const handleManual = async () => {
-        clearForm();
-        const clients = await getClients();
-        setIsData(true);
-        setIsManual(true);
-        setClients(clients);
+        try {
+            setLoading(true);
+            clearForm();
 
-    }
+            const [clients, arts] = await Promise.all([getClients(), getArts()]);
+
+            setClients(clients);
+            setArtList(arts)
+
+            setBarcodeList(arts.map((item: Articulo) => ({
+                co_art: item.co_art,
+                codbarra: item.codbarra
+            })));
+            
+            setIsManual(true);
+            setIsData(true);
+        } catch (error) {
+            console.error("Error al cargar datos manuales:", error);
+            // Aquí podrías mostrar una alerta o mensaje al usuario
+        } finally {
+            setLoading(false);
+        }
+    };
     const registerDefect = async () => {
         if (!isFormComplete()) {
             Alert.alert("Incomplete form", "Please fill in all required fields.");
@@ -270,6 +272,7 @@ export function useReturnReport() {
         artList,
         isManual,
         isFormComplete,
+        showArtModal, setShowArtModal,
 
         // customers
 

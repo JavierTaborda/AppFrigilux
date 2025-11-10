@@ -1,5 +1,4 @@
 import BarcodeScanner from "@/components/camera/BarcodeScanner";
-import CustomPicker from "@/components/inputs/CustomPicker";
 import CustomTextInput from "@/components/inputs/CustomTextInput";
 import BottomModal from "@/components/ui/BottomModal";
 import CustomImage from "@/components/ui/CustomImagen";
@@ -16,7 +15,7 @@ import {
   Text,
   TouchableOpacity,
   useWindowDimensions,
-  View
+  View,
 } from "react-native";
 import Animated, {
   Easing,
@@ -26,6 +25,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from "react-native-reanimated";
+import ArtsModal from "../components/ArtsModal";
 import ClientModal from "../components/ClientModal";
 import SerialInput from "../components/SerialInput";
 import { useReturnReport } from "../hooks/useReturnReport";
@@ -73,6 +73,8 @@ export default function ProductDefectScreen() {
     isManual,
     isFormComplete,
     handleManual,
+    showArtModal,
+    setShowArtModal,
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
@@ -194,10 +196,6 @@ export default function ProductDefectScreen() {
     }
   }, [image]);
 
-  const imageAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: imageOpacity.value,
-    transform: [{ scale: imageScale.value }],
-  }));
 
   // ---------- SAVE BUTTON ANIMATION ----------
   const saveScale = useSharedValue(1);
@@ -355,24 +353,31 @@ export default function ProductDefectScreen() {
                   <Text className="text-lg font-semibold mb-1 text-foreground dark:text-dark-foreground">
                     Información del artículo {isManual ? "(Manual)" : ""}
                   </Text>
-                  {startMethod === "fact" && !isManual && (
+                  {(startMethod === "fact" || isManual) && (
                     <View className="gap-2">
                       <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                         Artículo
                       </Text>
-                      <CustomPicker
-                        selectedValue={codeArt}
-                        onValueChange={setCodeArt}
-                        items={artList}
-                        placeholder="Seleccione un artículo"
-                        error={
-                          !codeArt ? "Este campo es obligatorio" : undefined
-                        }
-                      />
+
+                      <Pressable
+                        onPress={() => {
+                          Haptics.selectionAsync();
+                          setShowArtModal(true);
+                        }}
+                        className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl "
+                      >
+                        <Text className="text-foreground dark:text-dark-foreground">
+                          {codeArt ? codeArt : "Seleccionar artículo..."}
+                        </Text>
+                        <Ionicons
+                          name="chevron-forward"
+                          size={20}
+                          color={isDark ? "#fff" : "#333"}
+                        />
+                      </Pressable>
                       <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                         Serial
                       </Text>
-
                       <SerialInput
                         serial={serial}
                         setSerial={setSerial}
@@ -380,26 +385,7 @@ export default function ProductDefectScreen() {
                       />
                     </View>
                   )}
-
                   <View className="gap-2">
-                    {isManual && (
-                      <>
-
-                        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                          Artículo
-                        </Text>
-                        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                          Serial
-                        </Text>
-
-                        <SerialInput
-                          serial={serial}
-                          setSerial={setSerial}
-                          setShowScanner={setShowScanner}
-                        />
-                      </>
-                    )}
-
                     <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                       Código de barra
                     </Text>
@@ -407,7 +393,7 @@ export default function ProductDefectScreen() {
                       placeholder="Código de barras"
                       value={barcode}
                       onChangeText={setBarcode}
-                      editable={isManual}
+                      editable={false}
                     />
                     <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                       Código del artículo
@@ -417,7 +403,7 @@ export default function ProductDefectScreen() {
                       placeholder="Código del artículo"
                       value={codeArt}
                       onChangeText={setCodeArt}
-                      editable={isManual}
+                      editable={false}
                     />
                     <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                       Descripción del artículo
@@ -576,11 +562,24 @@ export default function ProductDefectScreen() {
           </BottomModal>
 
           <BottomModal
+            visible={showArtModal}
+            onClose={() => setShowArtModal(false)}
+          >
+            <ArtsModal
+              onClose={setShowArtModal}
+              setCodeArt={setCodeArt}
+              arts={artList}
+            />
+          </BottomModal>
+          <BottomModal
             visible={showClientModal}
             onClose={() => setShowClientModal(false)}
           >
-            <ClientModal onClose={setShowClientModal} setSelectedClient={setSelectedClient}  clients={clients}/>
-
+            <ClientModal
+              onClose={setShowClientModal}
+              setSelectedClient={setSelectedClient}
+              clients={clients}
+            />
           </BottomModal>
         </ScrollView>
       </View>
