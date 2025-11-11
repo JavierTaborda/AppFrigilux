@@ -7,7 +7,7 @@ import { appColors } from "@/utils/colors";
 import { emojis } from "@/utils/emojis";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -28,6 +28,7 @@ import Animated, {
 import ArtsModal from "../components/ArtsModal";
 import ClientModal from "../components/ClientModal";
 import SerialInput from "../components/SerialInput";
+import ToggleSelector from "../components/ToggleSelector";
 import { useReturnReport } from "../hooks/useReturnReport";
 
 export default function ProductDefectScreen() {
@@ -78,15 +79,16 @@ export default function ProductDefectScreen() {
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
-  const isFormValid = isFormComplete();
+  const isFormValid = useMemo(() => isFormComplete(), [isFormComplete]);
 
+  // Toggle slider
   const toggleX = useSharedValue(startMethod === "serial" ? 0 : 1);
   useEffect(() => {
     toggleX.value = withTiming(startMethod === "serial" ? 0 : 1, {
       duration: 250,
       easing: Easing.out(Easing.exp),
     });
-  }, [startMethod]);
+  }, [startMethod, toggleX]);
 
   const { width } = useWindowDimensions();
 
@@ -133,7 +135,7 @@ export default function ProductDefectScreen() {
     ],
   }));
 
-  // ---------- TOGGLE SECTION ANIMATION ----------
+  // small toggle fade
   const toggleOpacity = useSharedValue(!isData ? 1 : 0);
   const toggleTranslateY = useSharedValue(!isData ? 0 : 20);
 
@@ -150,17 +152,14 @@ export default function ProductDefectScreen() {
     } else {
       toggleOpacity.value = withDelay(
         200,
-        withTiming(0, {
-          duration: 250,
-          easing: Easing.in(Easing.cubic),
-        })
+        withTiming(0, { duration: 250, easing: Easing.in(Easing.cubic) })
       );
       toggleTranslateY.value = withTiming(20, {
         duration: 250,
         easing: Easing.in(Easing.cubic),
       });
     }
-  }, [isData]);
+  }, [isData, toggleOpacity, toggleTranslateY]);
 
   const animatedStyleToggle = useAnimatedStyle(() => ({
     opacity: toggleOpacity.value,
@@ -196,7 +195,6 @@ export default function ProductDefectScreen() {
     }
   }, [image]);
 
-
   // ---------- SAVE BUTTON ANIMATION ----------
   const saveScale = useSharedValue(1);
   const saveAnimatedStyle = useAnimatedStyle(() => ({
@@ -208,6 +206,16 @@ export default function ProductDefectScreen() {
   const btnAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: btnScale.value }],
   }));
+
+  const handleSearchPress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    handleSearchSerial();
+  }, [handleSearchSerial]);
+
+  const isDarkPrimary = useMemo(
+    () => (isDark ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT),
+    [isDark]
+  );
 
   return (
     <View className="flex-1 bg-primary dark:bg-dark-primary">
@@ -228,42 +236,13 @@ export default function ProductDefectScreen() {
           </View>
 
           {!isData && !isManual && (
-            <Animated.View
-              style={animatedStyleToggle}
-              className="relative flex-row bg-muted dark:bg-dark-muted rounded-full p-1 mb-1 overflow-hidden"
-            >
-              <Animated.View
-                style={[animatedStyle]}
-                className="absolute left-1 top-1 w-1/2 h-full bg-primary dark:bg-dark-primary rounded-full"
-              />
-
-              {[
-                { key: "serial", label: `${emojis.package} Serial` },
-                { key: "fact", label: `${emojis.search} Factura` },
-              ].map(({ key, label }) => {
-                const active = startMethod === key;
-                return (
-                  <TouchableOpacity
-                    key={key}
-                    onPress={() => {
-                      Haptics.selectionAsync();
-                      setStartMethod(key as "serial" | "fact");
-                    }}
-                    className="flex-1 py-1 rounded-xl items-center z-10"
-                  >
-                    <Text
-                      className={`font-semibold text-base ${
-                        active
-                          ? "text-white"
-                          : "text-foreground dark:text-dark-foreground"
-                      }`}
-                    >
-                      {label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </Animated.View>
+            <ToggleSelector
+              startMethod={startMethod}
+              setStartMethod={setStartMethod}
+              animatedStyle={animatedStyle}
+              animatedStyleToggle={animatedStyleToggle}
+              emojis={emojis}
+            />
           )}
 
           {!isManual && (
@@ -284,10 +263,7 @@ export default function ProductDefectScreen() {
                       <Animated.View style={btnAnimatedStyle}>
                         <Pressable
                           onPress={() => {
-                            Haptics.impactAsync(
-                              Haptics.ImpactFeedbackStyle.Medium
-                            );
-                            handleSearchSerial();
+                            handleSearchPress();
                           }}
                           android_ripple={{ color: "rgba(0,0,0,0.05)" }}
                           className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent active:scale-95"
@@ -333,13 +309,8 @@ export default function ProductDefectScreen() {
 
           {loadingData && (
             <View className="flex-row items-center justify-center gap-2 mt-10 w-full">
-              <ActivityIndicator
-                color={
-                  isDark
-                    ? appColors.dark.primary.DEFAULT
-                    : appColors.primary.DEFAULT
-                }
-              />
+              <ActivityIndicator color={isDarkPrimary} />
+
               <Text className="text-mutedForeground dark:text-dark-mutedForeground text-center">
                 Buscando datos...
               </Text>

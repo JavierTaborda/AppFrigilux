@@ -1,5 +1,5 @@
 import SearchBar from "@/components/ui/SearchBar";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { Client } from "../types/clients";
 
@@ -10,66 +10,79 @@ type ClientModalProps = {
   onClose: (close: boolean) => void;
 };
 
-const ClientModal: React.FC<ClientModalProps> = ({
-  clients = [],
-  visible = true,
-  setSelectedClient,
-  onClose,
-}) => {
-  const [searchText, setSearchText] =useState("")
-      const filterClient = useMemo(() => {
-  
-          if (!searchText || searchText.length < 4) return clients;
-  
-          return clients.filter((c) => {
-              const client = c.code.toLowerCase() || "";
-              const name = c.name?.toLowerCase() || "";
-           
-  
-              return (
-                  client.includes(searchText.toLowerCase()) ||
-                  name.includes(searchText.toLowerCase())
-              );
-          });
-          
-      }, [ searchText]);
+const ClientModal: React.FC<ClientModalProps> = React.memo(
+  ({ clients = [], visible = true, setSelectedClient, onClose }) => {
+    const [searchText, setSearchText] = useState("");
 
-  if (!visible) return null;
+    const filteredClients = useMemo(() => {
+      const query = searchText.trim().toLowerCase();
+      if (!query || query.length < 3) return clients;
+      return clients.filter((c) => {
+        const code = c.code?.toLowerCase() || "";
+        const name = c.name?.toLowerCase() || "";
+        return code.includes(query) || name.includes(query);
+      });
+    }, [searchText, clients]);
 
-  return (
-    <View className="p-4">
-      <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-        Seleccionar cliente
-      </Text>
-      <View className="py-1 mb-2">
-        <SearchBar
-          searchText={searchText}
-          setSearchText={setSearchText}
-          placeHolderText="Buscar cliente..."
-          isFull
-        />
-      </View>
-      <FlatList
-        data={filterClient || []}
-        keyExtractor={(item: Client) => (item.code ?? item.name) + ""}
-        renderItem={({ item }: { item: Client }) => (
-          <Pressable
-            onPress={() => {
-              setSelectedClient(item);
-              onClose(false);
-            }}
-            className="h-16 py-3 px-4 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
-          >
-            <Text className="text-foreground dark:text-dark-foreground">
-              {item.code} - {item.name}
-            </Text>
-            
-          </Pressable>
+    const handleSelectClient = useCallback(
+      (item: Client) => {
+        setSelectedClient(item);
+        onClose(false);
+      },
+      [setSelectedClient, onClose]
+    );
+
+    if (!visible) return null;
+
+    return (
+      <View className="p-4">
+        <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
+          Seleccionar cliente
+        </Text>
+        <View className="py-1 mb-2">
+          <SearchBar
+            searchText={searchText}
+            setSearchText={setSearchText}
+            placeHolderText="Buscar cliente..."
+            isFull
+          />
+        </View>
+
+        {filteredClients.length === 0 ? (
+          <Text className="text-center text-mutedForeground dark:text-dark-mutedForeground mt-4">
+            No se encontraron clientes.
+          </Text>
+        ) : (
+          <FlatList
+            data={filteredClients}
+            keyExtractor={(item) => item.code.toString()}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => handleSelectClient(item)}
+                className="h-14 py-2 px-4 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
+              >
+                <Text className="text-md text-foreground dark:text-dark-foreground">
+                  {item.code} - {item.name}
+                </Text>
+              </Pressable>
+            )}
+            ItemSeparatorComponent={() => <View className="h-2" />}
+            initialNumToRender={15}
+            windowSize={5}
+            removeClippedSubviews
+            getItemLayout={(_, index) => ({
+              length: 70,
+              offset: 70 * index,
+              index,
+            })}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          />
         )}
-        ItemSeparatorComponent={() => <View className="h-2" />}
-      />
-    </View>
-  );
-};
+      </View>
+    );
+  }
+);
 
+ClientModal.displayName = "ClientModal";
 export default ClientModal;

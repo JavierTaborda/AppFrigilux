@@ -1,6 +1,6 @@
 import { useAuthStore } from "@/stores/useAuthStore";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { createDevolucion, getArts, getBySerial, getClients, getOrderByFactNumber } from "../services/ReturnReportService";
 import { Articulo } from "../types/Articulo";
@@ -67,7 +67,7 @@ export function useReturnReport() {
     };
 
 
-    const handleSearchFactNum = async () => {
+    const handleSearchFactNum = useCallback(async () => {
         if (factNumber.length < 1) {
             Alert.alert("Error", "Ingrese un número de factura válido.");
             return;
@@ -107,7 +107,7 @@ export function useReturnReport() {
         } finally {
             setLoadingData(false);
         }
-    };
+    }, [factNumber]);
 
     useEffect(() => {
         if (!codeArt) return;
@@ -117,7 +117,7 @@ export function useReturnReport() {
         setBarcode(barcodeList.find(b => b.co_art === codeArt)?.codbarra ?? '');
     }, [codeArt]);
 
-    const handleSearchSerial = async () => {
+    const handleSearchSerial = useCallback(async () => {
         if (serial.length <= 3) {
             Alert.alert("Error", "Debe ingresar un serial válido.");
             return;
@@ -151,7 +151,7 @@ export function useReturnReport() {
         } finally {
             setLoadingData(false);
         }
-    };
+    }, [serial]);
 
 
     const clearForm = () => {
@@ -171,7 +171,8 @@ export function useReturnReport() {
     };
     const handleManual = async () => {
         try {
-            setLoading(true);
+            setLoadingData(true);
+
             clearForm();
 
             const [clients, arts] = await Promise.all([getClients(), getArts()]);
@@ -183,17 +184,17 @@ export function useReturnReport() {
                 co_art: item.co_art,
                 codbarra: item.codbarra
             })));
-            
+
             setIsManual(true);
             setIsData(true);
         } catch (error) {
             console.error("Error al cargar datos manuales:", error);
             // Aquí podrías mostrar una alerta o mensaje al usuario
         } finally {
-            setLoading(false);
+            setLoadingData(false);
         }
     };
-    const registerDefect = async () => {
+    const registerDefect = useCallback(async () => {
         if (!isFormComplete()) {
             Alert.alert("Incomplete form", "Please fill in all required fields.");
             return false;
@@ -244,7 +245,7 @@ export function useReturnReport() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     return {
         // functions
@@ -287,5 +288,6 @@ export function useReturnReport() {
         setVenDes,
         codeVen,
         venDes,
-    };
+
+    }
 }

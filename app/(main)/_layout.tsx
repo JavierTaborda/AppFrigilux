@@ -14,6 +14,7 @@ export default function DrawerLayout() {
         screenOptions={{
           drawerType: "front",
            swipeEnabled: false,
+          
 
           drawerStyle:  {
             backgroundColor: theme === "dark"

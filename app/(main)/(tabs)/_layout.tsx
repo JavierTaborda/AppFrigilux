@@ -24,7 +24,7 @@ function getTabIcon(
 }
 
 export default function TabLayout() {
-  const { theme } = useThemeStore();
+  const { isDark } = useThemeStore();
   const insets = useSafeAreaInsets();
 
   return (
@@ -55,7 +55,7 @@ export default function TabLayout() {
           //Color  ripple
           const rippleColor = focused
             ? appColors.primary.DEFAULT
-            : theme === "dark"
+            : isDark
               ? "rgba(255,255,255,0.15)"
               : "rgba(0,0,0,0.08)";
           return (
@@ -91,11 +91,13 @@ export default function TabLayout() {
           bottom: 0,
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom,
-          backgroundColor:
-            theme === "dark" ? appColors.dark.background : appColors.background,
+          backgroundColor: isDark
+            ? appColors.dark.background
+            : appColors.background,
           borderTopWidth: 1,
-          borderTopColor:
-            theme === "dark" ? appColors.dark.separator : appColors.separator,
+          borderTopColor: isDark
+            ? appColors.dark.separator
+            : appColors.separator,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.05,
@@ -103,7 +105,7 @@ export default function TabLayout() {
           elevation: 10,
         },
 
-        tabBarActiveTintColor: appColors.primary.DEFAULT,
+        tabBarActiveTintColor: isDark ? appColors.dark.primary.DEFAULT: appColors.primary.DEFAULT,
         tabBarInactiveTintColor: appColors.mutedForeground,
         //  Tab item style
         tabBarLabelStyle: {
@@ -115,17 +117,14 @@ export default function TabLayout() {
         headerLeft: () => (
           <DrawerToggleButton
             tintColor={
-              theme === "dark"
-                ? appColors.dark.foreground
-                : appColors.background
+              isDark ? appColors.dark.foreground : appColors.background
             }
           />
         ),
         headerStyle: {
-          backgroundColor:
-            theme === "dark"
-              ? appColors.dark.primary.DEFAULT
-              : appColors.primary.DEFAULT,
+          backgroundColor: isDark
+            ? appColors.dark.primary.DEFAULT
+            : appColors.primary.DEFAULT,
           borderBottomWidth: 0,
           elevation: 4,
           shadowColor: "#000",
@@ -133,8 +132,9 @@ export default function TabLayout() {
           shadowOpacity: 0.08,
           shadowRadius: 2,
         },
-        headerTintColor:
-          theme === "dark" ? appColors.dark.foreground : appColors.background,
+        headerTintColor: isDark
+          ? appColors.dark.foreground
+          : appColors.background,
       })}
     >
       <Tabs.Screen name="(home)/index" options={{ title: "Inicio" }} />
@@ -198,7 +198,7 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: true,
-          title: "Reportar Devolución"
+          title: "Reportar Devolución",
         }}
       />
     </Tabs>

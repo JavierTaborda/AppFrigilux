@@ -1,3 +1,4 @@
+
 import { useThemeStore } from "@/stores/useThemeStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Href, useRouter } from "expo-router";
@@ -24,8 +25,11 @@ export function DrawerItem({
   const isActive = currentPath === href;
 
   const bgClass = isActive
-    ? "bg-primary-light dark:bg-dark-primary"
+    ? "bg-primary dark:bg-dark-primary"
     : "bg-componentbg dark:bg-dark-componentbg";
+  const textClass = isActive
+    ? "text-white dark:text-dark-foreground font-extrabold"
+    : "text-foreground dark:text-dark-foreground font-bold";
 
   const handlePress = () => {
     router.push(href);
@@ -44,9 +48,7 @@ export function DrawerItem({
           <Text className="text-xl"> {emoji}</Text>
         </>
       )}
-      <Text className="ms-2 font-normal text-md text-foreground dark:text-dark-foreground">
-        {label}
-      </Text>
+      <Text className={`ms-2  text-md ${textClass}`}>{label}</Text>
     </TouchableOpacity>
   );
 }

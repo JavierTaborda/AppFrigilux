@@ -21,7 +21,7 @@ export default function CustomDrawerContent(props: any) {
           />
         </View>
 
-        <Text className="text-base font-bold text-foreground dark:text-dark-foreground mt-1">
+        <Text className="text-base font-extrabold text-foreground dark:text-dark-foreground mt-1">
           {name}
         </Text>
         <Text className="text-base font-light text-foreground dark:text-dark-foreground mt-1">
