@@ -556,7 +556,7 @@ export default function ProductDefectScreen() {
       </View>
       {isData && (
         <TouchableOpacity
-          onPress={() => clearForm()}
+          onPress={() => {  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);clearForm()}}
           className="bg-error dark:bg-dark-error p-4 rounded-full shadow-lg absolute bottom-28 left-4 z-50 elevation-xl"
           accessibilityLabel="Cancelar"
           accessibilityRole="button"
@@ -570,7 +570,10 @@ export default function ProductDefectScreen() {
           className="absolute bottom-28 right-4 z-99"
         >
           <TouchableOpacity
-            onPress={() => handleManual()}
+            onPress={() => {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              handleManual();
+            }}
             className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg elevation-xl"
             accessibilityLabel="Cancelar"
             accessibilityRole="button"

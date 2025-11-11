@@ -98,11 +98,10 @@ export default function TabLayout() {
           borderTopColor: isDark
             ? appColors.dark.separator
             : appColors.separator,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 4,
-          elevation: 10,
+
+          shadowOpacity: 0,
+          shadowRadius: 0,
+          elevation: 0,
         },
 
         tabBarActiveTintColor: isDark ? appColors.dark.primary.DEFAULT: appColors.primary.DEFAULT,

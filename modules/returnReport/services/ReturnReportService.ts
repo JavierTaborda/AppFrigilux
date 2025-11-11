@@ -7,7 +7,7 @@ export const getOrderByFactNumber = async (factNumber: number) => {
 
   try {
     const response = await api.get(`returns/byfactnumber/${factNumber}`);
-    //console.log(response.data)
+  
     return response.data;
   }
   catch (error) {
@@ -16,7 +16,7 @@ export const getOrderByFactNumber = async (factNumber: number) => {
   }
 };
 export const getBySerial = async (serial: string) => {
-  //340C742480113222600054
+
   try {
     const response = await api.get(`returns/byserial/${serial}`);
 
@@ -31,7 +31,7 @@ export const createDevolucion = async (dev: CreateDevolucion): Promise<boolean> 
   try {
 
     const response = await api.post("returns", dev);
-    console.log(response.status);
+
     return response.status >= 200 && response.status < 300;
   } catch (error) {
     console.error("Error creating return:", error);

@@ -36,8 +36,8 @@ export function useReturnReport() {
 
 
     // DSeller data
-    const [codeVen, setCodeVen] = useState(name ?? "");
-    const [venDes, setVenDes] = useState(name ?? "");
+    const [codeVen, setCodeVen] = useState("");
+    const [venDes, setVenDes] = useState("");
 
     // Form Data
     const [reason, setReason] = useState("");
@@ -67,7 +67,7 @@ export function useReturnReport() {
     };
 
 
-    const handleSearchFactNum = useCallback(async () => {
+    const handleSearchFactNum = async () => {
         if (factNumber.length < 1) {
             Alert.alert("Error", "Ingrese un número de factura válido.");
             return;
@@ -107,7 +107,7 @@ export function useReturnReport() {
         } finally {
             setLoadingData(false);
         }
-    }, [factNumber]);
+    };
 
     useEffect(() => {
         if (!codeArt) return;
@@ -117,7 +117,7 @@ export function useReturnReport() {
         setBarcode(barcodeList.find(b => b.co_art === codeArt)?.codbarra ?? '');
     }, [codeArt]);
 
-    const handleSearchSerial = useCallback(async () => {
+    const handleSearchSerial = async () => {
         if (serial.length <= 3) {
             Alert.alert("Error", "Debe ingresar un serial válido.");
             return;
@@ -151,7 +151,7 @@ export function useReturnReport() {
         } finally {
             setLoadingData(false);
         }
-    }, [serial]);
+    }
 
 
     const clearForm = () => {
@@ -195,8 +195,9 @@ export function useReturnReport() {
         }
     };
     const registerDefect = useCallback(async () => {
-        if (!isFormComplete()) {
-            Alert.alert("Incomplete form", "Please fill in all required fields.");
+        if (!isFormComplete) {
+
+            Alert.alert("Datos sin llenar", "Por favor, verifique los campos.");
             return false;
         }
 
