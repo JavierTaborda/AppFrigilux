@@ -23,7 +23,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
-  withTiming,
+  withTiming
 } from "react-native-reanimated";
 import ArtsModal from "../components/ArtsModal";
 import ClientModal from "../components/ClientModal";
@@ -31,9 +31,23 @@ import SerialInput from "../components/SerialInput";
 import ToggleSelector from "../components/ToggleSelector";
 import { useReturnReport } from "../hooks/useReturnReport";
 
+// Constants for better maintainability
+const ANIMATION_CONFIG = {
+  duration: 350,
+  easing: Easing.out(Easing.exp),
+} as const;
+
+const Haptic_FEEDBACK = {
+  impact: Haptics.ImpactFeedbackStyle.Medium,
+  success: Haptics.NotificationFeedbackType.Success,
+  warning: Haptics.NotificationFeedbackType.Warning,
+} as const;
+
 export default function ProductDefectScreen() {
   const { isDark } = useThemeStore();
+  const { width } = useWindowDimensions();
 
+  // Custom hook state
   const {
     registerDefect,
     loading,
@@ -81,93 +95,55 @@ export default function ProductDefectScreen() {
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
   const isFormValid = useMemo(() => isFormComplete(), [isFormComplete]);
 
-  // Toggle slider
+  // Memoized values
+  const isDarkPrimary = useMemo(
+    () => (isDark ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT),
+    [isDark]
+  );
+
+  // Animation values
   const toggleX = useSharedValue(startMethod === "serial" ? 0 : 1);
-  useEffect(() => {
-    toggleX.value = withTiming(startMethod === "serial" ? 0 : 1, {
-      duration: 250,
-      easing: Easing.out(Easing.exp),
-    });
-  }, [startMethod, toggleX]);
-
-  const { width } = useWindowDimensions();
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: toggleX.value * ((width - 42) / 2) }],
-  }));
-
-  // ---------- FORM SECTION ANIMATION ----------
   const sectionProgress = useSharedValue(isData ? 1 : 0);
   const sectionProgressSearch = useSharedValue(isData ? 0 : 1);
+  const toggleOpacity = useSharedValue(!isData ? 1 : 0);
+  const toggleTranslateY = useSharedValue(!isData ? 0 : 20);
+  const scale = useSharedValue(2);
+  const imageOpacity = useSharedValue(0);
+  const imageScale = useSharedValue(0.9);
+  const saveScale = useSharedValue(1);
+  const btnScale = useSharedValue(1);
 
+  // Toggle animation
+  useEffect(() => {
+    toggleX.value = withTiming(
+      startMethod === "serial" ? 0 : 1,
+      ANIMATION_CONFIG
+    );
+  }, [startMethod, toggleX]);
+
+  // Section animations
   useEffect(() => {
     if (isData) {
-      // in
-      sectionProgress.value = withTiming(1, {
-        duration: 450,
-        easing: Easing.out(Easing.exp),
-      });
+      sectionProgress.value = withTiming(1, ANIMATION_CONFIG);
+      sectionProgressSearch.value = withTiming(1, ANIMATION_CONFIG);
     } else {
-      sectionProgress.value = withDelay(
-        150,
-        withTiming(0, {
-          duration: 300,
-          easing: Easing.in(Easing.cubic),
-        })
-      );
+      sectionProgress.value = withDelay(150, withTiming(0, { duration: 300 }));
+      sectionProgressSearch.value = withTiming(1, ANIMATION_CONFIG);
     }
   }, [isData]);
 
-  const sectionAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: sectionProgress.value,
-    transform: [
-      {
-        translateY: interpolate(sectionProgress.value, [0, 1], [20, 0]),
-      },
-    ],
-  }));
-  const sectionAnimatedStyleSearch = useAnimatedStyle(() => ({
-    opacity: sectionProgressSearch.value,
-    transform: [
-      {
-        translateY: interpolate(sectionProgress.value, [0, 1], [5, 0]),
-      },
-    ],
-  }));
-
-  // small toggle fade
-  const toggleOpacity = useSharedValue(!isData ? 1 : 0);
-  const toggleTranslateY = useSharedValue(!isData ? 0 : 20);
-
+  // Toggle fade animation
   useEffect(() => {
     if (!isData) {
-      toggleOpacity.value = withTiming(1, {
-        duration: 400,
-        easing: Easing.out(Easing.exp),
-      });
-      toggleTranslateY.value = withTiming(0, {
-        duration: 400,
-        easing: Easing.out(Easing.exp),
-      });
+      toggleOpacity.value = withTiming(1, ANIMATION_CONFIG);
+      toggleTranslateY.value = withTiming(0, ANIMATION_CONFIG);
     } else {
-      toggleOpacity.value = withDelay(
-        200,
-        withTiming(0, { duration: 250, easing: Easing.in(Easing.cubic) })
-      );
-      toggleTranslateY.value = withTiming(20, {
-        duration: 250,
-        easing: Easing.in(Easing.cubic),
-      });
+      toggleOpacity.value = withDelay(200, withTiming(0, { duration: 250 }));
+      toggleTranslateY.value = withTiming(20, { duration: 250 });
     }
   }, [isData, toggleOpacity, toggleTranslateY]);
 
-  const animatedStyleToggle = useAnimatedStyle(() => ({
-    opacity: toggleOpacity.value,
-    transform: [{ translateY: toggleTranslateY.value }],
-  }));
-
-  // ---------- ADD MANUAL BUTTON ANIMATION ----------
-  const scale = useSharedValue(2);
+  // Manual button animation
   useEffect(() => {
     scale.value = withTiming(1, {
       duration: 600,
@@ -175,13 +151,7 @@ export default function ProductDefectScreen() {
     });
   }, [isManual]);
 
-  const animatedStyleAddManual = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  // ---------- IMAGE ANIMATION ----------
-  const imageOpacity = useSharedValue(0);
-  const imageScale = useSharedValue(0.9);
+  // Image animation
   useEffect(() => {
     if (image) {
       imageOpacity.value = withTiming(1, { duration: 350 });
@@ -195,26 +165,438 @@ export default function ProductDefectScreen() {
     }
   }, [image]);
 
-  // ---------- SAVE BUTTON ANIMATION ----------
-  const saveScale = useSharedValue(1);
+  // Animated styles
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: toggleX.value * ((width - 42) / 2) }],
+  }));
+
+  const sectionAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: sectionProgress.value,
+    transform: [
+      { translateY: interpolate(sectionProgress.value, [0, 1], [20, 0]) },
+    ],
+  }));
+
+  const sectionAnimatedStyleSearch = useAnimatedStyle(() => ({
+    opacity: sectionProgressSearch.value,
+    transform: [
+      {
+        translateY: interpolate(sectionProgress.value, [0, 1], [5, 0]),
+      },
+    ],
+  }));
+
+  const animatedStyleToggle = useAnimatedStyle(() => ({
+    opacity: toggleOpacity.value,
+    transform: [{ translateY: toggleTranslateY.value }],
+  }));
+
+  const animatedStyleAddManual = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const imageAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: imageOpacity.value,
+    transform: [{ scale: imageScale.value }],
+  }));
+
   const saveAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: saveScale.value }],
   }));
 
-  // ---------- ACTION BUTTON SCALE ----------
-  const btnScale = useSharedValue(1);
   const btnAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: btnScale.value }],
   }));
 
+  // Handlers
   const handleSearchPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptic_FEEDBACK.impact);
     handleSearchSerial();
   }, [handleSearchSerial]);
 
-  const isDarkPrimary = useMemo(
-    () => (isDark ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT),
-    [isDark]
+  const handleSavePress = useCallback(async () => {
+    Haptics.notificationAsync(Haptic_FEEDBACK.success);
+    await registerDefect();
+  }, [registerDefect]);
+
+  const handleManualPress = useCallback(() => {
+    Haptics.notificationAsync(Haptic_FEEDBACK.success);
+    handleManual();
+  }, [handleManual]);
+
+  const handleClearPress = useCallback(() => {
+    Haptics.notificationAsync(Haptic_FEEDBACK.warning);
+    clearForm();
+  }, [clearForm]);
+
+  const handleArtSelectPress = useCallback(() => {
+    Haptics.selectionAsync();
+    setShowArtModal(true);
+  }, []);
+
+  const handleClientSelectPress = useCallback(() => {
+    Haptics.selectionAsync();
+    setShowClientModal(true);
+  }, []);
+
+  // Render helpers
+  const renderHeader = () => (
+    <View>
+      <View className="flex-row items-center gap-2">
+        <Text className="text-2xl font-extrabold text-foreground dark:text-dark-foreground">
+          Registrar devolución
+        </Text>
+      </View>
+      <Text className="text-sm text-mutedForeground dark:text-dark-mutedForeground mt-1">
+        Completa los pasos para enviar el reporte
+      </Text>
+    </View>
+  );
+
+  const renderToggleSelector = () =>
+    !isData &&
+    !isManual && (
+      <ToggleSelector
+        startMethod={startMethod}
+        setStartMethod={setStartMethod}
+        animatedStyle={animatedStyle}
+        animatedStyleToggle={animatedStyleToggle}
+        emojis={emojis}
+      />
+    );
+
+  const renderSearchSection = () =>
+    !isManual && (
+      <Animated.View
+        style={sectionAnimatedStyleSearch}
+        className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs mb-2"
+      >
+        {startMethod === "serial" ? (
+          <>
+            <SerialInput
+              serial={serial}
+              setSerial={setSerial}
+              setShowScanner={setShowScanner}
+              editable={!isData}
+            />
+            {!isData && (
+              <View className="mt-1">
+                <Animated.View style={btnAnimatedStyle}>
+                  <Pressable
+                    onPress={handleSearchPress}
+                    android_ripple={{ color: "rgba(0,0,0,0.05)" }}
+                    className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent"
+                  >
+                    <Text className="text-primary dark:text-dark-primary font-semibold text-base">
+                      Buscar producto
+                    </Text>
+                  </Pressable>
+                </Animated.View>
+              </View>
+            )}
+          </>
+        ) : (
+          <View className="flex-row gap-2 items-center">
+            <View className="flex-1">
+              <CustomTextInput
+                placeholder="Número de factura"
+                keyboardType="numeric"
+                value={factNumber}
+                onChangeText={setFactNumber}
+              />
+            </View>
+            <Animated.View style={btnAnimatedStyle}>
+              <Pressable
+                onPress={handleSearchFactNum}
+                className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl"
+              >
+                <Text className="text-white font-semibold">Buscar</Text>
+              </Pressable>
+            </Animated.View>
+          </View>
+        )}
+      </Animated.View>
+    );
+
+  const renderLoading = () =>
+    loadingData && (
+      <View className="flex-row items-center justify-center gap-2 mt-10 w-full">
+        <ActivityIndicator color={isDarkPrimary} />
+        <Text className="text-mutedForeground dark:text-dark-mutedForeground text-center">
+          Buscando datos...
+        </Text>
+      </View>
+    );
+
+  const renderProductInfo = () => (
+    <Animated.View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+      <Text className="text-lg font-semibold mb-1 text-foreground dark:text-dark-foreground">
+        Información del artículo {isManual ? "(Manual)" : ""}
+      </Text>
+
+      {startMethod === "fact" || isManual ? (
+        <View className="gap-2">
+          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+            Artículo
+          </Text>
+          <Pressable
+            onPress={handleArtSelectPress}
+            className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl"
+          >
+            <Text className="text-foreground dark:text-dark-foreground">
+              {codeArt || "Seleccionar artículo..."}
+            </Text>
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color={isDark ? "#fff" : "#333"}
+            />
+          </Pressable>
+          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+            Descripción del artículo
+          </Text>
+          <CustomTextInput
+            placeholder="Descripción del artículo"
+            value={artDes}
+            onChangeText={setArtDes}
+            multiline
+            numberOfLines={2}
+            editable={false}
+          />
+          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+            Serial
+          </Text>
+          <SerialInput
+            serial={serial}
+            setSerial={setSerial}
+            setShowScanner={setShowScanner}
+          />
+        </View>
+      ) : (
+        <>
+          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+            Código del artículo
+          </Text>
+          <CustomTextInput
+            placeholder="Código del artículo"
+            value={codeArt}
+            onChangeText={setCodeArt}
+            editable={false}
+          />
+          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+            Descripción del artículo
+          </Text>
+          <CustomTextInput
+            placeholder="Descripción del artículo"
+            value={artDes}
+            onChangeText={setArtDes}
+            multiline
+            numberOfLines={2}
+            editable={false}
+          />
+        </>
+      )}
+      <View className="gap-2">
+        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+          Código de barra
+        </Text>
+        <CustomTextInput
+          placeholder="Código de barras"
+          value={barcode}
+          onChangeText={setBarcode}
+          editable={false}
+        />
+      </View>
+    </Animated.View>
+  );
+
+  const renderClientInfo = () => (
+    <Animated.View
+      style={sectionAnimatedStyle}
+      className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
+    >
+      <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
+        Cliente
+      </Text>
+      {isManual ? (
+        <Pressable
+          onPress={handleClientSelectPress}
+          className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl"
+        >
+          <Text className="text-foreground dark:text-dark-foreground">
+            {selectedClient
+              ? `${selectedClient.code.trim()} - ${selectedClient.name}`
+              : "Seleccionar cliente..."}
+          </Text>
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={isDark ? "#fff" : "#333"}
+          />
+        </Pressable>
+      ) : (
+        <Text className="text-foreground dark:text-dark-foreground flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl">
+          {selectedClient
+            ? `${selectedClient.code.trim()} - ${selectedClient.name}`
+            : ""}
+        </Text>
+      )}
+    </Animated.View>
+  );
+
+  const renderReturnDetails = () => (
+    <Animated.View
+      style={sectionAnimatedStyle}
+      className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
+    >
+      <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
+        Detalles de la devolución
+      </Text>
+      <View className="gap-2">
+        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+          Motivo
+        </Text>
+        <CustomTextInput
+          placeholder="Motivo"
+          value={reason}
+          onChangeText={setReason}
+        />
+        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+          Comentario
+        </Text>
+        <CustomTextInput
+          placeholder="Comentario"
+          value={comment}
+          onChangeText={setComment}
+          multiline
+          numberOfLines={4}
+        />
+      </View>
+    </Animated.View>
+  );
+
+  const renderImageSection = () => (
+    <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+      <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
+        Imagen del defecto
+      </Text>
+      <View className="flex-row gap-3 mb-3">
+        <TouchableOpacity
+          onPress={pickImage}
+          className="flex-1 border border-primary dark:border-dark-primary py-3 rounded-xl"
+        >
+          <Text className="text-center text-primary dark:text-dark-primary font-bold">
+            {emojis.roll} Galería
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handlePickFromCamera}
+          className="flex-1 border border-secondary dark:border-dark-secondary py-3 rounded-xl"
+        >
+          <Text className="text-center text-secondary dark:text-dark-secondary font-bold">
+            {emojis.camera} Cámara
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {image && (
+        <Animated.View
+          style={imageAnimatedStyle}
+          className="h-48 rounded-2xl overflow-hidden border border-dotted border-gray-300 dark:border-gray-600"
+        >
+          <CustomImage img={image} />
+        </Animated.View>
+      )}
+    </View>
+  );
+
+  const renderSaveButton = () => (
+    <View className="mt-6">
+      <Animated.View style={saveAnimatedStyle}>
+        <Pressable
+          onPress={handleSavePress}
+          disabled={!isFormValid || loading}
+          style={{
+            backgroundColor: isFormValid ? isDarkPrimary : "#ccc",
+          }}
+          className="py-4 rounded-xl items-center justify-center"
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text className="text-white font-semibold text-lg">
+              Guardar devolución
+            </Text>
+          )}
+        </Pressable>
+      </Animated.View>
+    </View>
+  );
+
+  const renderModals = () => (
+    <>
+      <BottomModal visible={showScanner} onClose={() => setShowScanner(false)}>
+        <BarcodeScanner
+          onScanned={(code) => {
+            setSerial(code);
+            setShowScanner(false);
+          }}
+        />
+      </BottomModal>
+
+      <BottomModal
+        visible={showArtModal}
+        onClose={() => setShowArtModal(false)}
+      >
+        <ArtsModal
+          onClose={setShowArtModal}
+          setCodeArt={setCodeArt}
+          arts={artList}
+        />
+      </BottomModal>
+
+      <BottomModal
+        visible={showClientModal}
+        onClose={() => setShowClientModal(false)}
+      >
+        <ClientModal
+          onClose={setShowClientModal}
+          setSelectedClient={setSelectedClient}
+          clients={clients}
+        />
+      </BottomModal>
+    </>
+  );
+
+  const renderFloatingButtons = () => (
+    <>
+      {isData && (
+        <TouchableOpacity
+          onPress={handleClearPress}
+          className="bg-error dark:bg-dark-error p-4 rounded-full shadow-lg absolute bottom-28 left-4 z-50 elevation-xl"
+          accessibilityLabel="Cancelar"
+          accessibilityRole="button"
+        >
+          <Ionicons name="close" size={24} color="white" />
+        </TouchableOpacity>
+      )}
+
+      {!isData && (
+        <Animated.View
+          style={animatedStyleAddManual}
+          className="absolute bottom-28 right-4 z-99"
+        >
+          <TouchableOpacity
+            onPress={handleManualPress}
+            className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg elevation-xl"
+            accessibilityLabel="Agregar manualmente"
+            accessibilityRole="button"
+          >
+            <Ionicons name="add-circle-outline" size={24} color="white" />
+          </TouchableOpacity>
+        </Animated.View>
+      )}
+    </>
   );
 
   return (
@@ -224,386 +606,25 @@ export default function ProductDefectScreen() {
           contentContainerClassName="py-4 px-5 pb-44 gap-2"
           keyboardShouldPersistTaps="handled"
         >
-          <View>
-            <View className="flex-row items-center gap-2">
-              <Text className="text-2xl font-extrabold text-foreground dark:text-dark-foreground">
-                Registrar devolución
-              </Text>
-            </View>
-            <Text className="text-sm text-mutedForeground dark:text-dark-mutedForeground mt-1">
-              Completa los pasos para enviar el reporte
-            </Text>
-          </View>
-
-          {!isData && !isManual && (
-            <ToggleSelector
-              startMethod={startMethod}
-              setStartMethod={setStartMethod}
-              animatedStyle={animatedStyle}
-              animatedStyleToggle={animatedStyleToggle}
-              emojis={emojis}
-            />
-          )}
-
-          {!isManual && (
-            <Animated.View
-              style={sectionAnimatedStyleSearch}
-              className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs mb-2 "
-            >
-              {startMethod === "serial" && (
-                <>
-                  <SerialInput
-                    serial={serial}
-                    setSerial={setSerial}
-                    setShowScanner={setShowScanner}
-                    editable={isManual || !isData}
-                  />
-                  {!isData && (
-                    <View className="mt-1">
-                      <Animated.View style={btnAnimatedStyle}>
-                        <Pressable
-                          onPress={() => {
-                            handleSearchPress();
-                          }}
-                          android_ripple={{ color: "rgba(0,0,0,0.05)" }}
-                          className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent active:scale-95"
-                        >
-                          <Text className="text-primary dark:text-dark-primary font-semibold text-base">
-                            Buscar producto
-                          </Text>
-                        </Pressable>
-                      </Animated.View>
-                    </View>
-                  )}
-                </>
-              )}
-
-              {startMethod === "fact" && (
-                <View className="flex-row gap-2 items-center ">
-                  <View className="flex-1">
-                    <CustomTextInput
-                      placeholder="Número de factura"
-                      keyboardType="numeric"
-                      value={factNumber}
-                      onChangeText={setFactNumber}
-                    />
-                  </View>
-                  <Animated.View style={btnAnimatedStyle}>
-                    <Pressable
-                      onPressIn={() => {
-                        btnScale.value = withTiming(0.97, { duration: 80 });
-                      }}
-                      onPressOut={() => {
-                        btnScale.value = withTiming(1, { duration: 120 });
-                      }}
-                      onPress={handleSearchFactNum}
-                      className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl active:scale-95"
-                    >
-                      <Text className="text-white font-semibold">Buscar</Text>
-                    </Pressable>
-                  </Animated.View>
-                </View>
-              )}
-            </Animated.View>
-          )}
-
-          {loadingData && (
-            <View className="flex-row items-center justify-center gap-2 mt-10 w-full">
-              <ActivityIndicator color={isDarkPrimary} />
-
-              <Text className="text-mutedForeground dark:text-dark-mutedForeground text-center">
-                Buscando datos...
-              </Text>
-            </View>
-          )}
+          {renderHeader()}
+          {renderToggleSelector()}
+          {renderSearchSection()}
+          {renderLoading()}
 
           {isData && (
-            <>
-              <Animated.View className="mt-1 gap-y-5">
-                <Animated.View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
-                  <Text className="text-lg font-semibold mb-1 text-foreground dark:text-dark-foreground">
-                    Información del artículo {isManual ? "(Manual)" : ""}
-                  </Text>
-                  {startMethod === "fact" || isManual ? (
-                    <View className="gap-2">
-                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                        Artículo
-                      </Text>
-
-                      <Pressable
-                        onPress={() => {
-                          Haptics.selectionAsync();
-                          setShowArtModal(true);
-                        }}
-                        className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl "
-                      >
-                        <Text className="text-foreground dark:text-dark-foreground">
-                          {codeArt ? codeArt : "Seleccionar artículo..."}
-                        </Text>
-                        <Ionicons
-                          name="chevron-forward"
-                          size={20}
-                          color={isDark ? "#fff" : "#333"}
-                        />
-                      </Pressable>
-                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                        Descripción del artículo
-                      </Text>
-                      <CustomTextInput
-                        placeholder="Descripción del artículo"
-                        value={artDes}
-                        onChangeText={setArtDes}
-                        multiline
-                        numberOfLines={2}
-                        editable={false}
-                      />
-
-                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                        Serial
-                      </Text>
-                      <SerialInput
-                        serial={serial}
-                        setSerial={setSerial}
-                        setShowScanner={setShowScanner}
-                      />
-                    </View>
-                  ) : (
-                    <>
-                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                        Código del artículo
-                      </Text>
-
-                      <CustomTextInput
-                        placeholder="Código del artículo"
-                        value={codeArt}
-                        onChangeText={setCodeArt}
-                        editable={false}
-                      />
-                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                        Descripción del artículo
-                      </Text>
-                      <CustomTextInput
-                        placeholder="Descripción del artículo"
-                        value={artDes}
-                        onChangeText={setArtDes}
-                        multiline
-                        numberOfLines={2}
-                        editable={false}
-                      />
-                    </>
-                  )}
-                  <View className="gap-2">
-                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                      Código de barra
-                    </Text>
-                    <CustomTextInput
-                      placeholder="Código de barras"
-                      value={barcode}
-                      onChangeText={setBarcode}
-                      editable={false}
-                    />
-                  </View>
-                </Animated.View>
-                <Animated.View
-                  style={sectionAnimatedStyle}
-                  className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
-                >
-                  <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-                    Cliente
-                  </Text>
-                  {isManual ? (
-                    <Pressable
-                      onPress={() => {
-                        Haptics.selectionAsync();
-                        setShowClientModal(true);
-                      }}
-                      className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl "
-                    >
-                      <Text className="text-foreground dark:text-dark-foreground">
-                        {selectedClient
-                          ? `${selectedClient.code.trim()} - ${selectedClient.name}`
-                          : "Seleccionar cliente..."}
-                      </Text>
-                      <Ionicons
-                        name="chevron-forward"
-                        size={20}
-                        color={isDark ? "#fff" : "#333"}
-                      />
-                    </Pressable>
-                  ) : (
-                    <Text className="text-foreground dark:text-dark-foreground flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl ">
-                      {selectedClient
-                        ? `${selectedClient.code.trim()} - ${selectedClient.name}`
-                        : ""}
-                    </Text>
-                  )}
-                </Animated.View>
-
-                <Animated.View
-                  style={sectionAnimatedStyle}
-                  className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
-                >
-                  <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-                    Detalles de la devolución
-                  </Text>
-                  <View className="gap-2">
-                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                      Motivo
-                    </Text>
-                    <CustomTextInput
-                      placeholder="Motivo"
-                      value={reason}
-                      onChangeText={setReason}
-                    />
-                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                      Comentario
-                    </Text>
-                    <CustomTextInput
-                      placeholder="Comentario"
-                      value={comment}
-                      onChangeText={setComment}
-                      multiline
-                      numberOfLines={4}
-                    />
-                  </View>
-                </Animated.View>
-
-                <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
-                  <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-                    Imagen del defecto
-                  </Text>
-                  <View className="flex-row gap-3 mb-3">
-                    <TouchableOpacity
-                      onPress={pickImage}
-                      className="flex-1 border border-primary dark:border-dark-primary py-3 rounded-xl active:scale-95"
-                    >
-                      <Text className="text-center text-primary dark:text-dark-primary font-bold">
-                        {emojis.roll} Galería
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={handlePickFromCamera}
-                      className="flex-1 border border-secondary dark:border-dark-secondary py-3 rounded-xl active:scale-95"
-                    >
-                      <Text className="text-center text-secondary dark:text-dark-secondary font-bold">
-                        {emojis.camera} Cámara
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {image && (
-                    <View className="h-48 rounded-2xl overflow-hidden border border-dotted border-gray-300 dark:border-gray-600">
-                      <CustomImage img={image} />
-                    </View>
-                  )}
-                </View>
-              </Animated.View>
-
-              <View className="mt-6">
-                <Animated.View style={saveAnimatedStyle}>
-                  <Pressable
-                    onPressIn={() => {
-                      saveScale.value = withTiming(0.98, { duration: 80 });
-                    }}
-                    onPressOut={() => {
-                      saveScale.value = withTiming(1, { duration: 120 });
-                    }}
-                    onPress={async () => {
-                      Haptics.notificationAsync(
-                        Haptics.NotificationFeedbackType.Success
-                      );
-                      await registerDefect();
-                    }}
-                    disabled={!isFormValid || loading}
-                    style={{
-                      backgroundColor: isFormValid
-                        ? !isDark
-                          ? appColors.primary.DEFAULT
-                          : appColors.dark.primary.DEFAULT
-                        : "#ccc",
-                    }}
-                    className={`py-4 rounded-xl items-center justify-center `}
-                  >
-                    {loading ? (
-                      <ActivityIndicator color="#fff" />
-                    ) : (
-                      <Text className="text-white font-semibold text-lg">
-                        Guardar devolución
-                      </Text>
-                    )}
-                  </Pressable>
-                </Animated.View>
-              </View>
-            </>
+            <Animated.View className="mt-1 gap-y-5">
+              {renderProductInfo()}
+              {renderClientInfo()}
+              {renderReturnDetails()}
+              {renderImageSection()}
+              {renderSaveButton()}
+            </Animated.View>
           )}
-
-          <BottomModal
-            visible={showScanner}
-            onClose={() => setShowScanner(false)}
-          >
-            <BarcodeScanner
-              onScanned={(code) => {
-                setSerial(code);
-                setShowScanner(false);
-              }}
-            />
-          </BottomModal>
-
-          <BottomModal
-            visible={showArtModal}
-            onClose={() => setShowArtModal(false)}
-          >
-            <ArtsModal
-              onClose={setShowArtModal}
-              setCodeArt={setCodeArt}
-              arts={artList}
-            />
-          </BottomModal>
-          <BottomModal
-            visible={showClientModal}
-            onClose={() => setShowClientModal(false)}
-          >
-            <ClientModal
-              onClose={setShowClientModal}
-              setSelectedClient={setSelectedClient}
-              clients={clients}
-            />
-          </BottomModal>
         </ScrollView>
       </View>
-      {isData && (
-        <TouchableOpacity
-          onPress={() => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            clearForm();
-          }}
-          className="bg-error dark:bg-dark-error p-4 rounded-full shadow-lg absolute bottom-28 left-4 z-50 elevation-xl"
-          accessibilityLabel="Cancelar"
-          accessibilityRole="button"
-        >
-          <Ionicons name="close" size={24} color="white" />
-        </TouchableOpacity>
-      )}
-      {!isData && (
-        <Animated.View
-          style={[animatedStyleAddManual]}
-          className="absolute bottom-28 right-4 z-99"
-        >
-          <TouchableOpacity
-            onPress={() => {
-              Haptics.notificationAsync(
-                Haptics.NotificationFeedbackType.Success
-              );
-              handleManual();
-            }}
-            className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg elevation-xl"
-            accessibilityLabel="Cancelar"
-            accessibilityRole="button"
-          >
-            <Ionicons name="add-circle-outline" size={24} color="white" />
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+
+      {renderModals()}
+      {renderFloatingButtons()}
     </View>
   );
 }

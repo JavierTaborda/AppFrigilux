@@ -81,7 +81,7 @@ export function useReturnReport() {
             if (!data) {
                 Alert.alert("Sin resultados", "No se encontró datos  con el número de factura.");
                 setIsData(false);
-                setIsManual(true);
+
                 return;
             }
 
@@ -131,7 +131,7 @@ export function useReturnReport() {
             if (!data) {
                 Alert.alert("Sin resultados", "No se encontró el producto con ese serial.");
                 clearForm();
-                setIsManual(true);
+               
 
                 return;
             }
