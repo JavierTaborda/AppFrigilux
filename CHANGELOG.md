@@ -9,15 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- N/A
+- Return Report Module
+- Add `pickImage` to upload images in supabase
 
 ### Changed
 
-- N/A
+- Styles and UI in `CustomDrawerContent` and `DrawerItem`
 
 ### Fixed
 
-- N/A
+- Remove Shadow in tab buttons for android devices
 
 ### Removed
 
