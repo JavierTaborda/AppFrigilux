@@ -324,7 +324,7 @@ export default function ProductDefectScreen() {
                   <Text className="text-lg font-semibold mb-1 text-foreground dark:text-dark-foreground">
                     Información del artículo {isManual ? "(Manual)" : ""}
                   </Text>
-                  {(startMethod === "fact" || isManual) && (
+                  {startMethod === "fact" || isManual ? (
                     <View className="gap-2">
                       <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                         Artículo
@@ -347,6 +347,18 @@ export default function ProductDefectScreen() {
                         />
                       </Pressable>
                       <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                        Descripción del artículo
+                      </Text>
+                      <CustomTextInput
+                        placeholder="Descripción del artículo"
+                        value={artDes}
+                        onChangeText={setArtDes}
+                        multiline
+                        numberOfLines={2}
+                        editable={false}
+                      />
+
+                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                         Serial
                       </Text>
                       <SerialInput
@@ -355,6 +367,30 @@ export default function ProductDefectScreen() {
                         setShowScanner={setShowScanner}
                       />
                     </View>
+                  ) : (
+                    <>
+                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                        Código del artículo
+                      </Text>
+
+                      <CustomTextInput
+                        placeholder="Código del artículo"
+                        value={codeArt}
+                        onChangeText={setCodeArt}
+                        editable={false}
+                      />
+                      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                        Descripción del artículo
+                      </Text>
+                      <CustomTextInput
+                        placeholder="Descripción del artículo"
+                        value={artDes}
+                        onChangeText={setArtDes}
+                        multiline
+                        numberOfLines={2}
+                        editable={false}
+                      />
+                    </>
                   )}
                   <View className="gap-2">
                     <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
@@ -364,27 +400,6 @@ export default function ProductDefectScreen() {
                       placeholder="Código de barras"
                       value={barcode}
                       onChangeText={setBarcode}
-                      editable={false}
-                    />
-                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                      Código del artículo
-                    </Text>
-
-                    <CustomTextInput
-                      placeholder="Código del artículo"
-                      value={codeArt}
-                      onChangeText={setCodeArt}
-                      editable={false}
-                    />
-                    <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                      Descripción del artículo
-                    </Text>
-                    <CustomTextInput
-                      placeholder="Descripción del artículo"
-                      value={artDes}
-                      onChangeText={setArtDes}
-                      multiline
-                      numberOfLines={2}
                       editable={false}
                     />
                   </View>
@@ -406,7 +421,7 @@ export default function ProductDefectScreen() {
                     >
                       <Text className="text-foreground dark:text-dark-foreground">
                         {selectedClient
-                          ? selectedClient.name
+                          ? `${selectedClient.code.trim()} - ${selectedClient.name}`
                           : "Seleccionar cliente..."}
                       </Text>
                       <Ionicons
@@ -417,7 +432,9 @@ export default function ProductDefectScreen() {
                     </Pressable>
                   ) : (
                     <Text className="text-foreground dark:text-dark-foreground flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl ">
-                      {selectedClient ? selectedClient.name : ""}
+                      {selectedClient
+                        ? `${selectedClient.code.trim()} - ${selectedClient.name}`
+                        : ""}
                     </Text>
                   )}
                 </Animated.View>
@@ -556,7 +573,10 @@ export default function ProductDefectScreen() {
       </View>
       {isData && (
         <TouchableOpacity
-          onPress={() => {  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);clearForm()}}
+          onPress={() => {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            clearForm();
+          }}
           className="bg-error dark:bg-dark-error p-4 rounded-full shadow-lg absolute bottom-28 left-4 z-50 elevation-xl"
           accessibilityLabel="Cancelar"
           accessibilityRole="button"
@@ -571,7 +591,9 @@ export default function ProductDefectScreen() {
         >
           <TouchableOpacity
             onPress={() => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success
+              );
               handleManual();
             }}
             className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg elevation-xl"

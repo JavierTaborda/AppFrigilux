@@ -1,6 +1,6 @@
 import { useAuthStore } from "@/stores/useAuthStore";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { createDevolucion, getArts, getBySerial, getClients, getOrderByFactNumber } from "../services/ReturnReportService";
 import { Articulo } from "../types/Articulo";
@@ -151,7 +151,7 @@ export function useReturnReport() {
         } finally {
             setLoadingData(false);
         }
-    }
+    };
 
 
     const clearForm = () => {
@@ -172,7 +172,6 @@ export function useReturnReport() {
     const handleManual = async () => {
         try {
             setLoadingData(true);
-
             clearForm();
 
             const [clients, arts] = await Promise.all([getClients(), getArts()]);
@@ -194,9 +193,8 @@ export function useReturnReport() {
             setLoadingData(false);
         }
     };
-    const registerDefect = useCallback(async () => {
-        if (!isFormComplete) {
-
+    const registerDefect = async () => {
+        if (!isFormComplete()) {
             Alert.alert("Datos sin llenar", "Por favor, verifique los campos.");
             return false;
         }
@@ -246,7 +244,7 @@ export function useReturnReport() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    };
 
     return {
         // functions
@@ -289,6 +287,5 @@ export function useReturnReport() {
         setVenDes,
         codeVen,
         venDes,
-
-    }
+    };
 }
