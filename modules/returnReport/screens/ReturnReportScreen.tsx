@@ -238,6 +238,8 @@ export default function ProductDefectScreen() {
     Haptics.selectionAsync();
     setShowClientModal(true);
   }, []);
+  
+
 
   // Render helpers
   const renderHeader = () => (

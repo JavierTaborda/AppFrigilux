@@ -86,7 +86,6 @@ export default function HomeScreen() {
           values={values}
           dotLabels={dotLabels}
           isDark={isDark}
-          
         />
 
         {/* Modules */}
@@ -121,7 +120,16 @@ export default function HomeScreen() {
               //icon={emojis.approved}
               label="Resumen Metas de Ventas"
               onPress={() => router.push("/(main)/(tabs)/(goals)/goalsResumen")}
-              bgColor="bg-green-500 dark:bg-gree-200"
+              bgColor="bg-green-500 dark:bg-green-400"
+            />
+          </View>
+          <View className="w-[49%] mb-4">
+            <ModuleButton
+              //icon={emojis.list}
+              //icon={emojis.approved}
+              label="Reportar Devolución "
+              onPress={() => router.push("/(main)/(tabs)/(returnReport)")}
+              bgColor="bg-green-600 dark:bg-green-300"
             />
           </View>
           {/* <View className="w-[49%] mb-4">

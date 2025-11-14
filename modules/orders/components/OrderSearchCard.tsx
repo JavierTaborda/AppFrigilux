@@ -34,6 +34,7 @@ function OrderSearchCard({
   markComment,
 }: Props) {
   const isAnulada = item.anulada === true;
+  const isSwitchable = item.estatus !=="2";
   const formattedDate = useMemo(
     () => formatDatedd_dot_MMM_yyyy(item.fec_emis),
     [item.fec_emis]
@@ -160,71 +161,72 @@ function OrderSearchCard({
             style={{ minWidth: 100 }}
           >
             <Text className="text-sm font-semibold text-white">
-              Ver detalles
+              Ver detalles 
             </Text>
           </TouchableOpacity>
-
+   
           {/* Switch */}
-          <View className="items-center justify-center mt-2">
-            <View className="w-[60] h-[30] items-center justify-center">
-              {switchLoad ? (
-                <ActivityIndicator
-                  size="small"
-                  color={
-                    isDark
-                      ? appColors.dark.tertiary.DEFAULT
-                      : appColors.tertiary.DEFAULT
-                  }
-                />
-              ) : (
-                <Switch
-                  value={isFacturable}
-                  onValueChange={(val) => {
-                    handleswitch(val);
-                    Platform.OS === "android"
-                      ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
-                      : null;
-                  }}
-                  {...(Platform.OS === "android"
-                    ? {
-                        thumbColor: isFacturable
-                          ? isDark
-                            ? appColors.dark.tertiary.DEFAULT
-                            : appColors.tertiary.DEFAULT
-                          : isDark
-                            ? appColors.dark.mutedForeground
-                            : appColors.muted,
-                        trackColor: {
-                          false: isDark
-                            ? appColors.dark.mutedForeground
-                            : appColors.muted,
-                          true: isDark
-                            ? appColors.dark.tertiary.DEFAULT
-                            : appColors.tertiary.DEFAULT,
-                        },
-                      }
-                    : {
-                            
-                        trackColor: {
-                          true: isDark
-                            ? appColors.dark.tertiary.DEFAULT
-                            : appColors.tertiary.DEFAULT,
-                        },
-                      })}
-                />
-              )}
-            </View>
+          {isSwitchable && (
+            <View className="items-center justify-center mt-2">
+              <View className="w-[60] h-[30] items-center justify-center">
+                {switchLoad ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={
+                      isDark
+                        ? appColors.dark.tertiary.DEFAULT
+                        : appColors.tertiary.DEFAULT
+                    }
+                  />
+                ) : (
+                  <Switch
+                    value={isFacturable}
+                    onValueChange={(val) => {
+                      handleswitch(val);
+                      Platform.OS === "android"
+                        ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+                        : null;
+                    }}
+                    {...(Platform.OS === "android"
+                      ? {
+                          thumbColor: isFacturable
+                            ? isDark
+                              ? appColors.dark.tertiary.DEFAULT
+                              : appColors.tertiary.DEFAULT
+                            : isDark
+                              ? appColors.dark.mutedForeground
+                              : appColors.muted,
+                          trackColor: {
+                            false: isDark
+                              ? appColors.dark.mutedForeground
+                              : appColors.muted,
+                            true: isDark
+                              ? appColors.dark.tertiary.DEFAULT
+                              : appColors.tertiary.DEFAULT,
+                          },
+                        }
+                      : {
+                          trackColor: {
+                            true: isDark
+                              ? appColors.dark.tertiary.DEFAULT
+                              : appColors.tertiary.DEFAULT,
+                          },
+                        })}
+                  />
+                )}
+              </View>
 
-            <Text
-              className={`text-sm mt-0 ${
-                isFacturable
-                  ? "font-semibold text-tertiary dark:text-dark-tertiary"
-                  : "font-normal text-gray-400   dark:text-gray-500"
-              }`}
-            >
-              {isFacturable ? "Facturar" : "Facturar"}
-            </Text>
-          </View>
+              <Text
+                className={`text-sm mt-0 ${
+                  isFacturable
+                    ? "font-semibold text-tertiary dark:text-dark-tertiary"
+                    : "font-normal text-gray-400   dark:text-gray-500"
+                }`}
+              >
+                {isFacturable ? "Facturar" : "Facturar"}
+              </Text>
+            </View>
+          )}
         </View>
       </Pressable>
     </Animated.View>

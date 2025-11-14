@@ -10,7 +10,8 @@
         "buildType": "apk"
       },
       "ios": {
-        "simulator": true
+        "simulator": false, // true for emulators
+        "buildConfiguration": "Release"
       },
       "environment": "preview"
     },
