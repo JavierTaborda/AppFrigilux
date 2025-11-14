@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Styles and UI in `CustomDrawerContent` and `DrawerItem`
+- OrderSearScreen: Only show Switch if the order satus is diferent from 2
+- `CustomFlatList` with built‑in pagination:
+    -Added automatic pagination: items are loaded in batches (pageSize, default 20).
+    -Implemented incremental loading via onEndReached, reducing initial render workload.
+    -Introduced loading spinner in ListFooterComponent to indicate when more items are being fetched.
+    -Optimized scroll‑to‑top button using scrollToOffset for smoother navigation.
+    -Tuned FlatList props (initialNumToRender, maxToRenderPerBatch, windowSize) for better virtualization.
 
 ### Fixed
 

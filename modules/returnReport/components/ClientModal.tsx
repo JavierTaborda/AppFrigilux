@@ -1,6 +1,7 @@
+import CustomFlatList from "@/components/ui/CustomFlatList";
 import SearchBar from "@/components/ui/SearchBar";
 import React, { useCallback, useMemo, useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { Client } from "../types/clients";
 
 type ClientModalProps = {
@@ -53,30 +54,25 @@ const ClientModal: React.FC<ClientModalProps> = React.memo(
             No se encontraron clientes.
           </Text>
         ) : (
-          <FlatList
+          <CustomFlatList
             data={filteredClients}
             keyExtractor={(item) => item.code.toString()}
             renderItem={({ item }) => (
               <Pressable
                 onPress={() => handleSelectClient(item)}
-                className="h-14 py-2 px-4 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
+                className="h-14 py-2 px-4 mb-3 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
               >
                 <Text className="text-md text-foreground dark:text-dark-foreground">
                   {item.code} - {item.name}
                 </Text>
               </Pressable>
             )}
-            ItemSeparatorComponent={() => <View className="h-2" />}
-            initialNumToRender={15}
-            windowSize={5}
-            removeClippedSubviews
-            getItemLayout={(_, index) => ({
-              length: 70,
-              offset: 70 * index,
-              index,
-            })}
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="on-drag"
+            refreshing={false}
+            canRefresh={false}
+            handleRefresh={() => {}}
+            title={`${filteredClients.length}`}
+            subtitle={`Clientes disponibles`}
+            pageSize={20}
           />
         )}
       </View>

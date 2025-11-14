@@ -5,6 +5,7 @@ import CustomImage from "@/components/ui/CustomImagen";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
 import { emojis } from "@/utils/emojis";
+import { imageURL } from "@/utils/imageURL";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -343,9 +344,14 @@ export default function ProductDefectScreen() {
           </Text>
           <Pressable
             onPress={handleArtSelectPress}
-            className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl"
+            className="flex-row items-center justify-between px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-dark-componentbg "
           >
-            <Text className="text-foreground dark:text-dark-foreground">
+            {codeArt && (
+              <View className="w-12 h-12 rounded-lg bg-bgimages overflow-hidden">
+                <CustomImage img={`${imageURL}${codeArt.trim()}.jpg`} />
+              </View>
+            )}
+            <Text className="text-foreground dark:text-dark-foreground flex-1 ml-3">
               {codeArt || "Seleccionar artículo..."}
             </Text>
             <Ionicons

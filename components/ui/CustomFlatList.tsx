@@ -1,8 +1,15 @@
 import { useScrollHeader } from "@/hooks/useScrollHeader";
 import { appColors } from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
+  ActivityIndicator,
   FlatList,
   FlatListProps,
   Platform,
@@ -11,7 +18,7 @@ import {
   Text,
   ToastAndroid,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import TitleText from "./TitleText";
 
@@ -30,8 +37,8 @@ type Props<T> = {
   subtitle?: string;
   numColumns?: number;
   showScrollTopButton?: boolean;
+  pageSize?: number; // items per batch
 };
-
 
 function CustomFlatList<T>({
   data,
@@ -48,10 +55,18 @@ function CustomFlatList<T>({
   subtitle,
   numColumns = 1,
   showScrollTopButton = true,
+  pageSize = 20,
 }: Props<T>) {
   const flatListRef = useRef<FlatList<T>>(null);
-
   const { handleScroll, showScrollTop, headerVisible } = useScrollHeader();
+
+  const [page, setPage] = useState(1);
+
+  
+  const paginatedData = useMemo(
+    () => data.slice(0, page * pageSize),
+    [data, page, pageSize]
+  );
 
   useEffect(() => {
     if (onHeaderVisibleChange) {
@@ -68,9 +83,15 @@ function CustomFlatList<T>({
     }
   };
 
+  const loadMore = useCallback(() => {
+    if (paginatedData.length < data.length) {
+      setPage((prev) => prev + 1);
+    }
+  }, [paginatedData, data]);
+
   return (
     <>
-      {/* Aviso de cooldown */}
+      
       {!canRefresh && cooldown ? (
         <TouchableOpacity
           onPress={onCooldownPress}
@@ -83,11 +104,11 @@ function CustomFlatList<T>({
         </TouchableOpacity>
       ) : null}
 
-      {/* Botón scroll top */}
+      {/*  scroll top */}
       {showScrollTop && showScrollTopButton && (
         <TouchableOpacity
           onPress={() =>
-            flatListRef.current?.scrollToIndex({ index: 0, animated: true })
+            flatListRef.current?.scrollToOffset({ offset: 0, animated: true })
           }
           style={styles.scrollTopButton}
           className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg"
@@ -98,26 +119,26 @@ function CustomFlatList<T>({
         </TouchableOpacity>
       )}
 
-      {/* Lista */}
+      {/* List */}
       <FlatList
-        ref={flatListRef} //
-        data={data}
+        ref={flatListRef}
+        data={paginatedData}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
-        onScroll={handleScroll} //
+        onScroll={handleScroll}
         scrollEventThrottle={16}
         progressViewOffset={100}
-        key={numColumns} // force  re-render to change numColumns
+        key={numColumns}
         numColumns={numColumns}
         columnWrapperStyle={
           numColumns > 1 ? { justifyContent: "space-between" } : undefined
         }
         refreshControl={
           <RefreshControl
-            refreshing={canRefresh ? refreshing : false} // spinner dont show while cooldown is active
-            onRefresh={canRefresh ? handleRefresh : undefined} // block handdle refresh 
-            enabled={canRefresh} // block refreshing
+            refreshing={canRefresh ? refreshing : false}
+            onRefresh={canRefresh ? handleRefresh : undefined}
+            enabled={canRefresh}
             {...(Platform.OS === "android" && {
               enabled: canRefresh,
               progressViewOffset: 100,
@@ -146,6 +167,18 @@ function CustomFlatList<T>({
             </View>
           )
         }
+        ListFooterComponent={
+          paginatedData.length < data.length ? (
+            <View style={{ paddingVertical: 20 }}>
+              <ActivityIndicator
+                size="small"
+                color={appColors.primary.DEFAULT}
+              />
+            </View>
+          ) : null
+        }
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
         initialNumToRender={10}
         windowSize={5}
         maxToRenderPerBatch={10}
@@ -182,9 +215,6 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 210,
     paddingHorizontal: 16,
-  },
-  headerWrapper: {
-    paddingBottom: 4,
   },
   emptyWrapper: {
     flex: 1,
