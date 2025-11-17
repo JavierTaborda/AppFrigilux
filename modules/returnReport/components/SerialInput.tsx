@@ -1,6 +1,6 @@
 import CustomTextInput from "@/components/inputs/CustomTextInput";
-import { emojis } from "@/utils/emojis";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { TouchableOpacity, View } from "react-native";
 
 type Props = {
   serial: string;
@@ -27,11 +27,10 @@ const SerialInput: React.FC<Props> = ({
       </View>
       <TouchableOpacity
         onPress={() => setShowScanner(true)}
-        className="bg-primary dark:bg-dark-primary py-3.5 px-4 rounded-xl active:scale-95"
+        className="bg-primary dark:bg-dark-primary py-3 px-4 rounded-xl active:scale-95"
       >
-        <Text className="text-white text-base font-semibold">
-          {emojis.camera2}
-        </Text>
+        <Ionicons name="camera" size={22} color="white" />
+
       </TouchableOpacity>
     </View>
   );

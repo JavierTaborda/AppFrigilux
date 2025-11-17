@@ -153,7 +153,7 @@ function OrderSearchCard({
         </Pressable>
 
         {/* Botón Ver Detalles */}
-        <View className="flex-col justify-center w-2/6">
+        <View className="flex-col  justify-center w-2/6">
           {/* Botón de detalles */}
           <TouchableOpacity
             onPress={handlePressDetailsModal}
@@ -167,8 +167,8 @@ function OrderSearchCard({
    
           {/* Switch */}
           {isSwitchable && (
-            <View className="items-center justify-center mt-2">
-              <View className="w-[60] h-[30] items-center justify-center">
+            <View className="items-center  mt-5 gap-0">
+              <View className="w-[50] h-[35]  justify-center">
                 {switchLoad ? (
                   <ActivityIndicator
                     size="small"

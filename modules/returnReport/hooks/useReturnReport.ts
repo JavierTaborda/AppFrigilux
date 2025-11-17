@@ -51,7 +51,7 @@ export function useReturnReport() {
     const [isData, setIsData] = useState(false);
     const [isManual, setIsManual] = useState(false);
     const isFormComplete = () => (
-        barcode && reason && comment && image && selectedClient && codeArt && artDes && serial
+      reason   && selectedClient && codeArt && artDes 
     );
 
 

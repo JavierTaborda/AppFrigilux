@@ -1,11 +1,12 @@
+
 import BarcodeScanner from "@/components/camera/BarcodeScanner";
 import CustomTextInput from "@/components/inputs/CustomTextInput";
 import BottomModal from "@/components/ui/BottomModal";
 import CustomImage from "@/components/ui/CustomImagen";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appColors } from "@/utils/colors";
-import { emojis } from "@/utils/emojis";
 import { imageURL } from "@/utils/imageURL";
+import { safeHaptic } from "@/utils/safeHaptics";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -24,24 +25,17 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
-  withTiming
+  withTiming,
 } from "react-native-reanimated";
 import ArtsModal from "../components/ArtsModal";
 import ClientModal from "../components/ClientModal";
 import SerialInput from "../components/SerialInput";
-import ToggleSelector from "../components/ToggleSelector";
 import { useReturnReport } from "../hooks/useReturnReport";
 
 // Constants for better maintainability
 const ANIMATION_CONFIG = {
   duration: 350,
   easing: Easing.out(Easing.exp),
-} as const;
-
-const Haptic_FEEDBACK = {
-  impact: Haptics.ImpactFeedbackStyle.Medium,
-  success: Haptics.NotificationFeedbackType.Success,
-  warning: Haptics.NotificationFeedbackType.Warning,
 } as const;
 
 export default function ProductDefectScreen() {
@@ -211,22 +205,22 @@ export default function ProductDefectScreen() {
 
   // Handlers
   const handleSearchPress = useCallback(() => {
-    Haptics.impactAsync(Haptic_FEEDBACK.impact);
+    safeHaptic("medium")
     handleSearchSerial();
   }, [handleSearchSerial]);
 
   const handleSavePress = useCallback(async () => {
-    Haptics.notificationAsync(Haptic_FEEDBACK.success);
+  safeHaptic("success");
     await registerDefect();
   }, [registerDefect]);
 
   const handleManualPress = useCallback(() => {
-    Haptics.notificationAsync(Haptic_FEEDBACK.success);
+    safeHaptic("success");
     handleManual();
   }, [handleManual]);
 
   const handleClearPress = useCallback(() => {
-    Haptics.notificationAsync(Haptic_FEEDBACK.warning);
+    safeHaptic("warning");
     clearForm();
   }, [clearForm]);
 
@@ -239,8 +233,6 @@ export default function ProductDefectScreen() {
     Haptics.selectionAsync();
     setShowClientModal(true);
   }, []);
-  
-
 
   // Render helpers
   const renderHeader = () => (
@@ -250,22 +242,20 @@ export default function ProductDefectScreen() {
           Registrar devolución
         </Text>
       </View>
-      <Text className="text-sm text-mutedForeground dark:text-dark-mutedForeground mt-1">
-        Completa los pasos para enviar el reporte
-      </Text>
     </View>
   );
 
   const renderToggleSelector = () =>
     !isData &&
     !isManual && (
-      <ToggleSelector
-        startMethod={startMethod}
-        setStartMethod={setStartMethod}
-        animatedStyle={animatedStyle}
-        animatedStyleToggle={animatedStyleToggle}
-        emojis={emojis}
-      />
+      // <ToggleSelector
+      //   startMethod={startMethod}
+      //   setStartMethod={setStartMethod}
+      //   animatedStyle={animatedStyle}
+      //   animatedStyleToggle={animatedStyleToggle}
+      //   emojis={emojis}
+      // />
+      <View className="" />
     );
 
   const renderSearchSection = () =>
@@ -344,8 +334,9 @@ export default function ProductDefectScreen() {
           </Text>
           <Pressable
             onPress={handleArtSelectPress}
-            className="flex-row items-center justify-between px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-dark-componentbg "
-          >
+            className="flex-row items-center justify-between px-4 py-3.5   border rounded-xl bg-transparent dark:bg-dark-componentbg border-gray-300 dark:border-gray-600">
+
+          
             {codeArt && (
               <View className="w-12 h-12 rounded-lg bg-bgimages overflow-hidden">
                 <CustomImage img={`${imageURL}${codeArt.trim()}.jpg`} />
@@ -486,24 +477,30 @@ export default function ProductDefectScreen() {
   const renderImageSection = () => (
     <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
       <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-        Imagen del defecto
+        Cargar imagen
       </Text>
       <View className="flex-row gap-3 mb-3">
         <TouchableOpacity
           onPress={pickImage}
           className="flex-1 border border-primary dark:border-dark-primary py-3 rounded-xl"
         >
-          <Text className="text-center text-primary dark:text-dark-primary font-bold">
-            {emojis.roll} Galería
-          </Text>
+          <View className="flex-row items-center justify-center">
+            <Ionicons name="images-outline" size={22} color={isDarkPrimary} />
+            <Text className="text-secondary dark:text-dark-secondary font-bold ml-2">
+              Galería
+            </Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handlePickFromCamera}
           className="flex-1 border border-secondary dark:border-dark-secondary py-3 rounded-xl"
         >
-          <Text className="text-center text-secondary dark:text-dark-secondary font-bold">
-            {emojis.camera} Cámara
-          </Text>
+          <View className="flex-row items-center justify-center">
+            <Ionicons name="camera" size={22} color={isDarkPrimary} />
+            <Text className="text-secondary dark:text-dark-secondary font-bold ml-2">
+              Cámara
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -519,7 +516,7 @@ export default function ProductDefectScreen() {
   );
 
   const renderSaveButton = () => (
-    <View className="mt-6">
+    <View className="mt-6 mb-4">
       <Animated.View style={saveAnimatedStyle}>
         <Pressable
           onPress={handleSavePress}
@@ -581,7 +578,7 @@ export default function ProductDefectScreen() {
       {isData && (
         <TouchableOpacity
           onPress={handleClearPress}
-          className="bg-error dark:bg-dark-error p-4 rounded-full shadow-lg absolute bottom-28 left-4 z-50 elevation-xl"
+          className="bg-error dark:bg-dark-error p-4 rounded-full shadow-lg absolute bottom-32 left-4 z-50 elevation-xl"
           accessibilityLabel="Cancelar"
           accessibilityRole="button"
         >
@@ -592,7 +589,7 @@ export default function ProductDefectScreen() {
       {!isData && (
         <Animated.View
           style={animatedStyleAddManual}
-          className="absolute bottom-28 right-4 z-99"
+          className="absolute bottom-32 right-4 z-99"
         >
           <TouchableOpacity
             onPress={handleManualPress}

@@ -23,8 +23,8 @@ const ToggleSelector = memo(
         className="absolute left-1 top-1 w-1/2 h-full bg-primary dark:bg-dark-primary rounded-full"
       />
       {[
-        { key: "serial", label: `${emojis.package} Serial` },
-        { key: "fact", label: `${emojis.search} Factura` },
+        { key: "serial", label: `Serial` },
+        { key: "fact", label: ` Factura` },
       ].map(({ key, label }) => {
         const active = startMethod === key;
         return (

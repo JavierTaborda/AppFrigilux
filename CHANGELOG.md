@@ -9,8 +9,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Return Report Module
-- Add `pickImage` to upload images in supabase
+- Return Report Module — Initial implementation for generating and viewing return reports from orders.
+- `pickImage` helper — Simplified helper to pick and upload images to Supabase Storage (works with Expo Image Picker and handles resizing/formatting before upload).
+- safeHaptic utility
+    A new `safeHaptic` helper to standardize haptic feedback across the app:
+    -Centralized API for triggering haptics from anywhere in the codebase.
+    -Full TypeScript support with a defined set of haptic types for autocomplete and safety.
+    -Graceful fallback when haptics are unavailable (no-op instead of throwing).
+    -Easy to extend: add new types in one place.
+    -Consistent UX across iOS and Android (maps to the best available native haptic).
+
+    Available haptic types:
+    -`success`
+    -`warning`
+    -`error`
+    -`selection`
+    -`light`
+    -`medium`
+    -`heavy`
+    -`rigid`
+    -`soft`
+
+    Usage:
+
+    ```ts
+    import { safeHaptic } from "@/utils/safeHaptics";
+
+    safeHaptic("success");
+    safeHaptic("warning");
+    safeHaptic("selection");
+    safeHaptic("heavy");
+    ```
 
 ### Changed
 
