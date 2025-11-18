@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Return Report Module — Initial implementation for generating and viewing return reports from orders.
 - `pickImage` helper — Simplified helper to pick and upload images to Supabase Storage (works with Expo Image Picker and handles resizing/formatting before upload).
+- deleteImage in `uploadImage` from returnModule.
 - safeHaptic utility
     A new `safeHaptic` helper to standardize haptic feedback across the app:
     -Centralized API for triggering haptics from anywhere in the codebase.
