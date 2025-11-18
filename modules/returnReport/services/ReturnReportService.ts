@@ -34,7 +34,6 @@ export const createDevolucion = async (dev: CreateDevolucion): Promise<boolean> 
 
     return response.status >= 200 && response.status < 300;
   } catch (error) {
-    console.error("Error creating return:", error);
     return false;
   }
 };

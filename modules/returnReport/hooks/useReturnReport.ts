@@ -7,7 +7,7 @@ import { Articulo } from "../types/Articulo";
 import { Client } from "../types/clients";
 import { CreateDevolucion } from "../types/createDevolucion";
 import { BarcodeItem } from "../types/Items";
-import { pickAndUploadImage } from "../utils/uploadImage";
+import { deleteImage, pickAndUploadImage } from "../utils/uploadImage";
 
 
 export function useReturnReport() {
@@ -201,12 +201,14 @@ export function useReturnReport() {
 
         try {
             setLoading(true);
-            const imageUrl = await pickAndUploadImage(image, userId);
+            const uploadResult = await pickAndUploadImage(image, userId);
 
-            if (!imageUrl) {
+            if (!uploadResult) {
                 Alert.alert("Error", "Ocurrió un error al subir la imagen. Por favor, inténtelo de nuevo.");
                 return false;
             }
+
+            const { publicUrl, filePath } = uploadResult;
 
             const devolucion: CreateDevolucion = {
                 fecemis: new Date().toISOString(),
@@ -225,7 +227,7 @@ export function useReturnReport() {
                 obsvendedor: comment,
                 registradopor: name || "Unknown",
                 fecharegistro: new Date().toISOString(),
-                imgart: imageUrl ?? undefined,
+                imgart: publicUrl ?? undefined,
             };
 
             const success = await createDevolucion(devolucion);
@@ -235,10 +237,13 @@ export function useReturnReport() {
                 clearForm();
                 return true;
             } else {
+               
+                await deleteImage(filePath);
                 Alert.alert("Error", "No se pudo registrar la devolución, por favor inténtelo de nuevo.");
                 return false;
             }
         } catch (err: any) {
+     
             Alert.alert("Error", `No se pudo registrar la devolución: ${err.message}`);
             return false;
         } finally {

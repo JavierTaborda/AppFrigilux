@@ -83,7 +83,7 @@ export default function OrderApprovalScreen() {
         changeRevisado={(factNumber, newStatus) =>
           handleChangeRevisado(item.fact_num, newStatus)
         }
-        hasPermission={hasPermission}
+        role={role}
       />
     ),
     [

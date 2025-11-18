@@ -1,14 +1,11 @@
 import { supabase } from "@/lib/supabase";
 import * as ImagePicker from "expo-image-picker";
 
-export async function pickAndUploadImage( fileUri:string, userId?: string,) {
+export async function pickAndUploadImage(fileUri: string, userId?: string) {
     try {
-    
-
-    
-        const response = await fetch(fileUri); // fetch devuelve un Response
-        const arrayBuffer = await response.arrayBuffer(); // convertir a ArrayBuffer
-        const uint8Array = new Uint8Array(arrayBuffer); // convertir a Uint8Array
+        const response = await fetch(fileUri);
+        const arrayBuffer = await response.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
 
         const filePath = `${userId || "anon"}/${Date.now()}.jpg`;
 
@@ -26,7 +23,7 @@ export async function pickAndUploadImage( fileUri:string, userId?: string,) {
             .from("return-reports")
             .getPublicUrl(filePath);
 
-        return data.publicUrl;
+        return { publicUrl: data.publicUrl, filePath };
     } catch (error) {
         console.error("Error subiendo imagen:", error);
         return null;
@@ -52,4 +49,19 @@ export async function pickImage(): Promise<string> {
     }
 
     return 'error';
+}
+export async function deleteImage(filePath: string) {
+    try {
+        const { error } = await supabase.storage
+            .from("return-reports")
+            .remove([filePath]); 
+
+        if (error) throw error;
+
+        console.log("Imagen eliminada correctamente:", filePath);
+        return true;
+    } catch (error) {
+        console.error("Error eliminando imagen:", error);
+        return false;
+    }
 }

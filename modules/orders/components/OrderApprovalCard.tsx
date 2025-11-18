@@ -1,8 +1,8 @@
 import { formatDatedd_dot_MMM_yyyy } from '@/utils/datesFormat';
 import { emojis } from '@/utils/emojis';
 import { currencyDollar, totalVenezuela } from '@/utils/moneyFormat';
+import { safeHaptic } from '@/utils/safeHaptics';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import React, { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut } from 'react-native-reanimated';
@@ -13,31 +13,37 @@ interface Props {
   onPress?: () => void;
   detailModal?: () => void;
   changeRevisado: (factNum: number, newStatus: string) => void;
-  hasPermission:boolean;
+
+  role:string | null;
 }
 
-function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPermission }: Props) {
+function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, role }: Props) {
   const isAnulada = item.anulada === true;
   const isRevisado = item.revisado === '1';
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
-  const formattedDate = useMemo(() => formatDatedd_dot_MMM_yyyy(item.fec_emis), [item.fec_emis]);
-
+  const formattedDate = useMemo(() => formatDatedd_dot_MMM_yyyy(item.fec_emis), [item.fec_emis]); 
+  const hasPermission= role ==="1" || role==="2";
   const handlePressChangeStatus = () => {
     const actionLabel = isRevisado ? 'eliminar la revisión' : 'marcar como revisado';
     Alert.alert(
       `${emojis.warning} Confirmación`,
       `¿Deseas ${actionLabel} el pedido #${item.fact_num}?`,
       [
-        { text: `${emojis.rejected }Cancelar`, style: 'cancel' },
+        { text: `Cancelar`, style: "destructive" }, 
         {
-          text: `${emojis.approved} Confirmar`, style:'default',
+          text: `Confirmar`,
+          style:"default", 
           onPress: async () => {
             setIsLoadingStatus(true);
             try {
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-              await changeRevisado(item.fact_num, isRevisado ? ' ' : '1');
+                 safeHaptic("warning");
+
+              await changeRevisado(item.fact_num, isRevisado ? " " : "1");
             } catch (error) {
-              Alert.alert('Error', 'Ocurrió un error al actualizar el estado. Por favor intente de nuevo.');
+              Alert.alert(
+                "Error",
+                "Ocurrió un error al actualizar el estado. Por favor intente de nuevo."
+              );
             } finally {
               setIsLoadingStatus(false);
             }
@@ -147,7 +153,7 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, hasPerm
 
           {!isAnulada && (
             <TouchableOpacity
-              onPress={hasPermission ? handlePressChangeStatus : undefined}
+              onPress={role==='2' ? handlePressChangeStatus : undefined}
               disabled={isLoadingStatus}
               className={`flex-row items-center justify-center px-4 py-2 rounded-full ${
                 isRevisado
