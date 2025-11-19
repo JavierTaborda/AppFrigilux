@@ -27,9 +27,9 @@ const SerialInput: React.FC<Props> = ({
       </View>
       <TouchableOpacity
         onPress={() => setShowScanner(true)}
-        className="bg-primary dark:bg-dark-primary py-3 px-4 rounded-xl active:scale-95"
+        className="bg-tertiary dark:bg-dark-tertiary py-3 px-4 rounded-xl active:scale-95"
       >
-        <Ionicons name="camera" size={22} color="white" />
+        <Ionicons name="scan" size={22} color="white" />
 
       </TouchableOpacity>
     </View>

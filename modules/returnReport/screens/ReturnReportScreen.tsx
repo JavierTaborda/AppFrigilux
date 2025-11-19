@@ -1,4 +1,3 @@
-
 import BarcodeScanner from "@/components/camera/BarcodeScanner";
 import CustomTextInput from "@/components/inputs/CustomTextInput";
 import BottomModal from "@/components/ui/BottomModal";
@@ -205,12 +204,12 @@ export default function ProductDefectScreen() {
 
   // Handlers
   const handleSearchPress = useCallback(() => {
-    safeHaptic("medium")
+    safeHaptic("medium");
     handleSearchSerial();
   }, [handleSearchSerial]);
 
   const handleSavePress = useCallback(async () => {
-  safeHaptic("success");
+    safeHaptic("success");
     await registerDefect();
   }, [registerDefect]);
 
@@ -281,7 +280,7 @@ export default function ProductDefectScreen() {
                     className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent"
                   >
                     <Text className="text-primary dark:text-dark-primary font-semibold text-base">
-                      Buscar producto
+                      Buscar serial despachado
                     </Text>
                   </Pressable>
                 </Animated.View>
@@ -322,9 +321,9 @@ export default function ProductDefectScreen() {
     );
 
   const renderProductInfo = () => (
-    <Animated.View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+    <Animated.View className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
       <Text className="text-lg font-semibold mb-1 text-foreground dark:text-dark-foreground">
-        Información del artículo {isManual ? "(Manual)" : ""}
+        Información general
       </Text>
 
       {startMethod === "fact" || isManual ? (
@@ -334,16 +333,17 @@ export default function ProductDefectScreen() {
           </Text>
           <Pressable
             onPress={handleArtSelectPress}
-            className="flex-row items-center justify-between px-4 py-3.5   border rounded-xl bg-transparent dark:bg-dark-componentbg border-gray-300 dark:border-gray-600">
-
-          
+            className="flex-row items-center justify-between px-4 py-3.5   border rounded-xl bg-transparent dark:bg-dark-componentbg border-gray-300 dark:border-gray-600"
+          >
             {codeArt && (
               <View className="w-12 h-12 rounded-lg bg-bgimages overflow-hidden">
                 <CustomImage img={`${imageURL}${codeArt.trim()}.jpg`} />
               </View>
             )}
             <Text className="text-foreground dark:text-dark-foreground flex-1 ml-3">
-              {codeArt || "Seleccionar artículo..."}
+              {codeArt && artDes
+                ? `${codeArt.trim()} - ${artDes.trim()} - ${barcode.trim()}`
+                : "Seleccionar artículo..."}
             </Text>
             <Ionicons
               name="chevron-forward"
@@ -351,17 +351,7 @@ export default function ProductDefectScreen() {
               color={isDark ? "#fff" : "#333"}
             />
           </Pressable>
-          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-            Descripción del artículo
-          </Text>
-          <CustomTextInput
-            placeholder="Descripción del artículo"
-            value={artDes}
-            onChangeText={setArtDes}
-            multiline
-            numberOfLines={2}
-            editable={false}
-          />
+
           <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
             Serial
           </Text>
@@ -374,47 +364,35 @@ export default function ProductDefectScreen() {
       ) : (
         <>
           <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-            Código del artículo
+            Artículo
           </Text>
-          <CustomTextInput
-            placeholder="Código del artículo"
-            value={codeArt}
-            onChangeText={setCodeArt}
-            editable={false}
-          />
-          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-            Descripción del artículo
-          </Text>
-          <CustomTextInput
-            placeholder="Descripción del artículo"
-            value={artDes}
-            onChangeText={setArtDes}
-            multiline
-            numberOfLines={2}
-            editable={false}
-          />
+          <View
+            className="flex-row items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 
+                 bg-white dark:bg-dark-componentbg"
+          >
+            {codeArt ? (
+              <View className="w-20 h-20 rounded-lg bg-bgimages overflow-hidden">
+                <CustomImage img={`${imageURL}${codeArt.trim()}.jpg`} />
+              </View>
+            ) : (
+              <View className="w-20 h-20 rounded-lg bg-bgimages items-center justify-center">
+                <Ionicons name="image-outline" size={28} color="#999" />
+              </View>
+            )}
+
+            {/* Texto */}
+            <View className="flex-1 ml-4">
+              <Text className="text-base font-medium text-gray-900 dark:text-gray-100 mt-1">
+                {codeArt && artDes && barcode
+                  ? `${codeArt.trim()} - ${artDes.trim()} - ${barcode.trim()}`
+                  : "Seleccionar artículo..."}
+              </Text>
+            </View>
+          </View>
         </>
       )}
-      <View className="gap-2">
-        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-          Código de barra
-        </Text>
-        <CustomTextInput
-          placeholder="Código de barras"
-          value={barcode}
-          onChangeText={setBarcode}
-          editable={false}
-        />
-      </View>
-    </Animated.View>
-  );
 
-  const renderClientInfo = () => (
-    <Animated.View
-      style={sectionAnimatedStyle}
-      className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
-    >
-      <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
+      <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
         Cliente
       </Text>
       {isManual ? (
@@ -443,14 +421,15 @@ export default function ProductDefectScreen() {
     </Animated.View>
   );
 
+
   const renderReturnDetails = () => (
     <Animated.View
       style={sectionAnimatedStyle}
       className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
     >
-      <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-        Detalles de la devolución
-      </Text>
+      {/* <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
+        Detalle de la devolución
+      </Text> */}
       <View className="gap-2">
         <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
           Motivo
@@ -619,7 +598,6 @@ export default function ProductDefectScreen() {
           {isData && (
             <Animated.View className="mt-1 gap-y-5">
               {renderProductInfo()}
-              {renderClientInfo()}
               {renderReturnDetails()}
               {renderImageSection()}
               {renderSaveButton()}
