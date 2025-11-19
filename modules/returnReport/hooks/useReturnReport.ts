@@ -187,8 +187,7 @@ export function useReturnReport() {
             setIsManual(true);
             setIsData(true);
         } catch (error) {
-            console.error("Error al cargar datos manuales:", error);
-            // Aquí podrías mostrar una alerta o mensaje al usuario
+           
         } finally {
             setLoadingData(false);
         }
@@ -238,7 +237,7 @@ export function useReturnReport() {
                 return true;
             } else {
                
-                await deleteImage(filePath);
+                const returnValue = await deleteImage(filePath);
                 Alert.alert("Error", "No se pudo registrar la devolución, por favor inténtelo de nuevo.");
                 return false;
             }
