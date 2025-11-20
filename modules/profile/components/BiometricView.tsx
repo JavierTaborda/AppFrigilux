@@ -19,6 +19,7 @@ export default function BiometricToggle() {
     useEffect(() => {
         const fetchBiometric = async () => {
             const isEnabled = await getBiometricEnabled();
+            //console.log("Biometric enabled:", isEnabled);
             setAuthBiometric(isEnabled);
         };
 

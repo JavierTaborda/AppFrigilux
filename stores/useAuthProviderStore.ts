@@ -23,7 +23,7 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
       await useAuthStore.getState().initializeAuth();
       const { session, manualLogin, signOutSoft, setManualLogin } = useAuthStore.getState();
       const enabledBiometric = await getBiometricEnabled();
-
+      console.log("Biometric enabled (init app):", enabledBiometric);
       // If there is no active session, exit quickly
       if (!session) {
         set({ showSplash: false });

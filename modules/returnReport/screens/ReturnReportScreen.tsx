@@ -562,6 +562,7 @@ export default function ProductDefectScreen() {
       <BottomModal
         visible={showMotiveModal}
         onClose={() => setShowMotiveModal(false)}
+        heightPercentage={0.55}
       >
         <MotiveModal
           onClose={setShowMotiveModal}

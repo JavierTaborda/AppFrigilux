@@ -73,7 +73,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         //const role = await getUserRole(data.session.user.id);
        
         await setSessionStatus("active");
-        await setBiometricEnabled(true);
+        //await setBiometricEnabled(true);
         set({
           session: data.session,
           manualLogin: true,
@@ -124,7 +124,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         //const role = await getUserRole(data.session.user.id);
 
         await setSessionStatus("active");
-        await setBiometricEnabled(true);
+        //await setBiometricEnabled(true);
         set({
           session: data.session,
           manualLogin: true,

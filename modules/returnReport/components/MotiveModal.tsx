@@ -11,14 +11,20 @@ type MotiveModalProps = {
 };
 
 const MotiveModal: React.FC<MotiveModalProps> = React.memo(
-  ({ motives = [], visible = true, setSelectedMotive, onClose, selectedMotive}) => {
-        const handleMotiveSelectPress = useCallback(
-          (item: Motive) => {
-            setSelectedMotive(item.codmotive);
-            onClose(false);
-          },
-          [setSelectedMotive, onClose]
-        );
+  ({
+    motives = [],
+    visible = true,
+    setSelectedMotive,
+    onClose,
+    selectedMotive,
+  }) => {
+    const handleMotiveSelectPress = useCallback(
+      (item: Motive) => {
+        setSelectedMotive(item.codmotive);
+        onClose(false);
+      },
+      [setSelectedMotive, onClose]
+    );
     if (!visible) return null;
 
     return (
@@ -35,7 +41,7 @@ const MotiveModal: React.FC<MotiveModalProps> = React.memo(
           <FlatList
             data={motives}
             keyExtractor={(item) => item.id.toString()}
-            numColumns={2} 
+            numColumns={2}
             columnWrapperStyle={{
               justifyContent: "space-between",
               marginBottom: 12,
@@ -67,4 +73,3 @@ const MotiveModal: React.FC<MotiveModalProps> = React.memo(
 
 MotiveModal.displayName = "MotiveModal";
 export default MotiveModal;
-  
