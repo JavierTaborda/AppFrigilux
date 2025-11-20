@@ -2,11 +2,12 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import { createDevolucion, getArts, getBySerial, getClients, getOrderByFactNumber } from "../services/ReturnReportService";
+import { createDevolucion, getArts, getBySerial, getClients, getMotives, getOrderByFactNumber } from "../services/ReturnReportService";
 import { Articulo } from "../types/Articulo";
 import { Client } from "../types/clients";
 import { CreateDevolucion } from "../types/createDevolucion";
 import { BarcodeItem } from "../types/Items";
+import { Motive } from "../types/motives";
 import { deleteImage, pickAndUploadImage } from "../utils/uploadImage";
 
 
@@ -27,6 +28,7 @@ export function useReturnReport() {
     const [codeArt, setCodeArt] = useState("");
     const [artDes, setArtDes] = useState("");
     const [artList, setArtList] = useState<Articulo[]>([]);
+    const [motives, setMotives] = useState<Motive[]>([]);
 
 
     // Customer Data
@@ -48,10 +50,11 @@ export function useReturnReport() {
     const [showScanner, setShowScanner] = useState(false);
     const [showClientModal, setShowClientModal] = useState(false);
     const [showArtModal, setShowArtModal] = useState(false);
+    const [showMotiveModal, setShowMotiveModal] = useState(false);
     const [isData, setIsData] = useState(false);
     const [isManual, setIsManual] = useState(false);
     const isFormComplete = () => (
-      reason   && selectedClient && codeArt && artDes 
+        reason && selectedClient && codeArt && artDes
     );
 
 
@@ -76,7 +79,9 @@ export function useReturnReport() {
         try {
             setLoadingData(true);
 
-            const data = await getOrderByFactNumber(Number(factNumber));
+
+            const [data, motives] = await Promise.all([getOrderByFactNumber(Number(factNumber)), getMotives()]);
+            setMotives(motives)
 
             if (!data) {
                 Alert.alert("Sin resultados", "No se encontró datos  con el número de factura.");
@@ -126,12 +131,13 @@ export function useReturnReport() {
         try {
             setLoadingData(true);
 
-            const data = await getBySerial(serial);
+            const [data, motives] = await Promise.all([getBySerial(serial), getMotives()]);
+            setMotives(motives)
 
             if (!data) {
                 Alert.alert("Sin resultados", "No se encontró el producto con ese serial.");
                 clearForm();
-               
+
 
                 return;
             }
@@ -174,10 +180,12 @@ export function useReturnReport() {
             setLoadingData(true);
             clearForm();
 
-            const [clients, arts] = await Promise.all([getClients(), getArts()]);
+            const [clients, arts, motives] = await Promise.all([getClients(), getArts(), getMotives()]);
 
             setClients(clients);
             setArtList(arts)
+            setMotives(motives)
+          
 
             setBarcodeList(arts.map((item: Articulo) => ({
                 co_art: item.co_art,
@@ -187,7 +195,7 @@ export function useReturnReport() {
             setIsManual(true);
             setIsData(true);
         } catch (error) {
-           
+
         } finally {
             setLoadingData(false);
         }
@@ -198,16 +206,24 @@ export function useReturnReport() {
             return false;
         }
 
+        let publicUrl: string | undefined;
+        let filePath: string | undefined;
+
         try {
             setLoading(true);
-            const uploadResult = await pickAndUploadImage(image, userId);
 
-            if (!uploadResult) {
-                Alert.alert("Error", "Ocurrió un error al subir la imagen. Por favor, inténtelo de nuevo.");
-                return false;
+            if (image != null && image !== "") {
+                const uploadResult = await pickAndUploadImage(image, userId, serial);
+
+                if (!uploadResult) {
+                    Alert.alert("Error", "Ocurrió un error al subir la imagen. Por favor, inténtelo de nuevo.");
+                    return false;
+                }
+
+                publicUrl = uploadResult.publicUrl;
+                filePath = uploadResult.filePath; 
+                console.log("Imagen subida en:", filePath);
             }
-
-            const { publicUrl, filePath } = uploadResult;
 
             const devolucion: CreateDevolucion = {
                 fecemis: new Date().toISOString(),
@@ -226,7 +242,7 @@ export function useReturnReport() {
                 obsvendedor: comment,
                 registradopor: name || "Unknown",
                 fecharegistro: new Date().toISOString(),
-                imgart: publicUrl ?? undefined,
+                imgart: publicUrl,
             };
 
             const success = await createDevolucion(devolucion);
@@ -236,20 +252,20 @@ export function useReturnReport() {
                 clearForm();
                 return true;
             } else {
-               
-                const returnValue = await deleteImage(filePath);
+                if (filePath && !filePath.startsWith("http")) {
+                    const result = await deleteImage(filePath);
+                    console.log("Resultado borrado imagen:", result);
+                }
                 Alert.alert("Error", "No se pudo registrar la devolución, por favor inténtelo de nuevo.");
                 return false;
             }
         } catch (err: any) {
-     
             Alert.alert("Error", `No se pudo registrar la devolución: ${err.message}`);
             return false;
         } finally {
             setLoading(false);
         }
     };
-   
 
     return {
         // functions
@@ -278,6 +294,7 @@ export function useReturnReport() {
         isManual,
         isFormComplete,
         showArtModal, setShowArtModal,
+        motives,
 
         // customers
 
@@ -286,6 +303,7 @@ export function useReturnReport() {
         selectedClient,
         setSelectedClient,
         showClientModal, setShowClientModal,
+        showMotiveModal, setShowMotiveModal,
 
         // sell
         setCodeVen,

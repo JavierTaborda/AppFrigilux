@@ -7,7 +7,6 @@ import { appColors } from "@/utils/colors";
 import { imageURL } from "@/utils/imageURL";
 import { safeHaptic } from "@/utils/safeHaptics";
 import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -28,6 +27,7 @@ import Animated, {
 } from "react-native-reanimated";
 import ArtsModal from "../components/ArtsModal";
 import ClientModal from "../components/ClientModal";
+import MotiveModal from "../components/MotiveModal";
 import SerialInput from "../components/SerialInput";
 import { useReturnReport } from "../hooks/useReturnReport";
 
@@ -66,6 +66,7 @@ export default function ProductDefectScreen() {
     setSelectedClient,
     showClientModal,
     setShowClientModal,
+    showMotiveModal, setShowMotiveModal,
     codeVen,
     venDes,
     setCodeArt,
@@ -84,6 +85,7 @@ export default function ProductDefectScreen() {
     handleManual,
     showArtModal,
     setShowArtModal,
+    motives
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
@@ -224,13 +226,14 @@ export default function ProductDefectScreen() {
   }, [clearForm]);
 
   const handleArtSelectPress = useCallback(() => {
-    Haptics.selectionAsync();
     setShowArtModal(true);
   }, []);
 
   const handleClientSelectPress = useCallback(() => {
-    Haptics.selectionAsync();
     setShowClientModal(true);
+  }, []);
+  const handleMotiveSelectPress= useCallback(() => {
+    setShowMotiveModal(true);
   }, []);
 
   // Render helpers
@@ -427,18 +430,25 @@ export default function ProductDefectScreen() {
       style={sectionAnimatedStyle}
       className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
     >
-      {/* <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-        Detalle de la devolución
-      </Text> */}
       <View className="gap-2">
         <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
           Motivo
         </Text>
-        <CustomTextInput
-          placeholder="Motivo"
-          value={reason}
-          onChangeText={setReason}
-        />
+        <Pressable
+          onPress={handleMotiveSelectPress}
+          className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl"
+        >
+          <Text className="text-foreground dark:text-dark-foreground">
+            {reason
+              ? `${reason}`
+              : "Seleccionar motivo..."}
+          </Text>
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={isDark ? "#fff" : "#333"}
+          />
+        </Pressable>
         <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
           Comentario
         </Text>
@@ -547,6 +557,17 @@ export default function ProductDefectScreen() {
           onClose={setShowClientModal}
           setSelectedClient={setSelectedClient}
           clients={clients}
+        />
+      </BottomModal>
+      <BottomModal
+        visible={showMotiveModal}
+        onClose={() => setShowMotiveModal(false)}
+      >
+        <MotiveModal
+          onClose={setShowMotiveModal}
+          setSelectedMotive={setReason}
+          selectedMotive={reason}
+          motives={motives}
         />
       </BottomModal>
     </>
