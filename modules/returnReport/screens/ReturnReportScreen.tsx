@@ -332,6 +332,14 @@ export default function ProductDefectScreen() {
       {startMethod === "fact" || isManual ? (
         <View className="gap-2">
           <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+            Serial
+          </Text>
+          <SerialInput
+            serial={serial}
+            setSerial={setSerial}
+            setShowScanner={setShowScanner}
+          />
+          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
             Artículo
           </Text>
           <Pressable
@@ -354,15 +362,6 @@ export default function ProductDefectScreen() {
               color={isDark ? "#fff" : "#333"}
             />
           </Pressable>
-
-          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-            Serial
-          </Text>
-          <SerialInput
-            serial={serial}
-            setSerial={setSerial}
-            setShowScanner={setShowScanner}
-          />
         </View>
       ) : (
         <>
