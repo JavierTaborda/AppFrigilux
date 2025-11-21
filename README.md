@@ -1,8 +1,9 @@
 # 📱 Frigilux App
 
 <p align="center">
-  <img width="183" height="360" alt="Phone" src="https://github.com/user-attachments/assets/3fd3a740-d493-40b7-98d2-e8b4d934f65f" />
+  <img width="900" height="" alt="Phone" src="https://github.com/user-attachments/assets/18208257-67b2-4d67-8000-68def3920f70" />
 </p>
+
 <p align="center"> <img src="https://frigilux.com/wp-content/uploads/2024/05/FRIGILUX-LOGO-02-1536x287.png" alt="Frigilux Logo" width="300"/> </p> <p align="center"> <b>Aplicación móvil empresarial para la gestión comercial de Frigilux en Venezuela</b><br/> <i>Enterprise mobile app for commercial management of Frigilux in Venezuela</i> </p> <p align="center"> <a href="https://frigilux.com">🌐 Sitio oficial / Official Website</a> 
    
 ## 🌟 Características / Features
