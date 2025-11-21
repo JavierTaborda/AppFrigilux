@@ -13,9 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- N/A
+
 ### Fixed
 
 - Create delete image from supabase when the reurnt failed
+- fix auth with biometric when this is disabled
 
 ### Removed
 
