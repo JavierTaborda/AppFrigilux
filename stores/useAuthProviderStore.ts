@@ -23,15 +23,16 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
       await useAuthStore.getState().initializeAuth();
       const { session, manualLogin, signOutSoft, setManualLogin } = useAuthStore.getState();
       const enabledBiometric = await getBiometricEnabled();
-
-      // Si no hay sesión activa, salimos rápido
+      console.log("Biometric enabled (init app):", enabledBiometric);
+      // If there is no active session, exit quickly
       if (!session) {
         set({ showSplash: false });
         await signOutSoft();
         return;
       }
 
-      // Solo intentamos biometría si hay sesión y login no manual
+      // Only try biometric auth if not manual login
+
       if (session && !manualLogin && enabledBiometric && Platform.OS != 'web') {
         const loginStatus = await getSessionStatus();
 

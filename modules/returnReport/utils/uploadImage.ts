@@ -1,23 +1,24 @@
 import { supabase } from "@/lib/supabase";
 import * as ImagePicker from "expo-image-picker";
 
-export async function pickAndUploadImage(fileUri: string, userId?: string) {
+export async function pickAndUploadImage(fileUri: string, userId?: string, serial?: string) {
     try {
         const response = await fetch(fileUri);
         const arrayBuffer = await response.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
 
-        const filePath = `${userId || "anon"}/${Date.now()}.jpg`;
+        const name = serial ? `${serial}` : `${userId}${Date.now()}`;
+        const filePath = `${userId || "anon"}/${name}.jpg`;
+
+        //const filePath = `${userId || "anon"}/${Date.now()}.jpg`;
 
         const { error } = await supabase.storage
             .from("return-reports")
             .upload(filePath, uint8Array, {
                 cacheControl: "3600",
-                upsert: false,
+                upsert: true,
                 contentType: "image/jpeg",
             });
-
-        if (error) throw error;
 
         const { data } = supabase.storage
             .from("return-reports")
@@ -41,7 +42,7 @@ export async function pickImage(): Promise<string> {
     const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
         allowsEditing: true,
-        quality: 0.8,
+        quality: 0.5,
     });
 
     if (!result.canceled) {
@@ -54,11 +55,9 @@ export async function deleteImage(filePath: string) {
     try {
         const { error } = await supabase.storage
             .from("return-reports")
-            .remove([filePath]); 
+            .remove([filePath]);
 
         if (error) throw error;
-
-        console.log("Imagen eliminada correctamente:", filePath);
         return true;
     } catch (error) {
         console.error("Error eliminando imagen:", error);

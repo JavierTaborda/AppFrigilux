@@ -2,6 +2,7 @@ import api from "@/lib/axios";
 import { Articulo } from "../types/Articulo";
 import { Client } from "../types/clients";
 import { CreateDevolucion } from "../types/createDevolucion";
+import { Motive } from "../types/motives";
 
 export const getOrderByFactNumber = async (factNumber: number) => {
 
@@ -31,7 +32,6 @@ export const createDevolucion = async (dev: CreateDevolucion): Promise<boolean> 
   try {
 
     const response = await api.post("returns", dev);
-
     return response.status >= 200 && response.status < 300;
   } catch (error) {
     return false;
@@ -59,6 +59,16 @@ export const getArts = async (): Promise<Articulo[]> => {
     return arts;
   } catch (error) {
     console.error("Error fetching clients:", error);
+    return [];
+  }
+};
+export const getMotives = async (): Promise<Motive[]> => {
+  try {
+    const response = await api.get("returns/motives");
+    const motives: Motive[] = response.data
+    return motives;
+  } catch (error) {
+    
     return [];
   }
 };
