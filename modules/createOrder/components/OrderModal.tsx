@@ -15,7 +15,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { emojis } from "@/utils/emojis";
+import { useThemeStore } from "@/stores/useThemeStore";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import OrderSummaryList from "./OrderSummaryList";
@@ -34,6 +34,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
   onConfirm,
 }) => {
   const { items, clearOrder } = useCreateOrderStore();
+  const { isDark } = useThemeStore();
 
   const total = items.reduce(
     (acc, item) => acc + item.price * (item.quantity ?? 1),
@@ -90,7 +91,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
           {/* Header */}
           <View className="flex-row justify-between items-center mb-3">
             <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
-              {emojis.bags} Tu Pedido
+              <Ionicons name="bag-handle" size={24} color={isDark ? "#fff" : "#000"} /> Tu Pedido
             </Text>
             <TouchableOpacity
               onPress={onClose}
@@ -109,7 +110,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
               </Text>
             </View>
           ) : (
-           <OrderSummaryList />
+            <OrderSummaryList />
           )}
 
           {/* Footer */}
@@ -142,7 +143,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
               <TouchableOpacity
                 onPress={handleRemove}
                 className={`ml-1 p-4 rounded-full shadow-lg items-center justify-center ${
-                  isEmpty ? "bg-gray-400" : "bg-primary dark:bg-dark-primary"
+                  isEmpty ? "bg-gray-400" : "bg-error dark:bg-dark-error"
                 }`}
                 accessibilityHint="Eliminar Pedido"
                 accessibilityLabel="Eliminar Pedido"

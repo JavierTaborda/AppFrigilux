@@ -15,59 +15,7 @@ const useCreateOrder = (searchText: string) => {
   const [notUsed, setNotUsed] = useState<boolean>(false);
   const [sortByAvailable, setSortByAvailable] = useState<boolean>(false);
   const [sortByAssigned, setSortByAssigned] = useState<boolean>(false);
-  const products = [
-    {
-      code: "COFS-4I",
-      title: "Cocina Frigilux 4 Hornillas a Gas",
-      price: 2300.99,
-      image: "https://frigilux.com/wp-content/uploads/2025/08/01-COFS-4I.jpg",
-      available: 12,
-      almacen: "Almacen 0001",
-    },
-    {
-      code: "HEGFR-2IX",
-      title: "Horno P/Emp. Mixto Mod.",
-      price: 388.79,
-      image: "https://frigilux.com/wp-content/uploads/2025/08/01-HEFR-4IX.jpg",
-      available: 5,
-      almacen: "Almacen 0001",
-    },
-    {
-      code: "CACFRQD-60X",
-      title: "Campana Extractora CACFRQD",
-      price: 388.79,
-      image:
-        "https://frigilux.com/wp-content/uploads/2024/06/01-CACFRQD-60X-1000x1000-1.jpg",
-      available: 10,
-      almacen: "Almacen 0001",
-    },
-    {
-      code: "HEGFR-2IX3",
-      title: "Horno P/Emp. Mixto Mod.",
-      price: 388.79,
-      image: "https://frigilux.com/wp-content/uploads/2025/08/01-HEFR-4IX.jpg",
-      available: 9,
-      almacen: "Almacen 0001",
-    },
-    {
-      code: "TCFR-85STC",
-      title: "COCINA DE TOPE A GAS NEGRO 5 HORNILLAS 75CM VITROCERÁMICA",
-      price: 388.79,
-      image:
-        "https://frigilux.com/wp-content/uploads/2025/08/01-TCFR-85STC.jpg",
-      available: 15,
-      almacen: "Almacen 0001",
-    },
-    {
-      code: "RVFR-392IX",
-      title: "CONGELADOR ",
-      price: 388.79,
-      image:
-        "https://frigilux.com/wp-content/uploads/2025/08/01-RVFR-392IX.jpg",
-      available: 3,
-      almacen: "Almacen 0001",
-    },
-  ];
+
 
   const loadItems = async () => {
     setLoading(true);
@@ -145,7 +93,6 @@ const useCreateOrder = (searchText: string) => {
     canRefresh,
     createOrder,
     handleRefresh,
-    products,
     refreshing,
     neworder,
     productItems,

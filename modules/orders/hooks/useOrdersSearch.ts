@@ -11,7 +11,7 @@ import { useOrderModals } from "./useOrderModals";
 
 export function useOrderSearch(searchText: string) {
     /* -------------------------------------------------------------------------- */
-    /*                                  ESTADOS                                  */
+    /*                                  STATES                                  */
     /* -------------------------------------------------------------------------- */
 
     const [orders, setOrders] = useState<OrderApproval[]>([]);

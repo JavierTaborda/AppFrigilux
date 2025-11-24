@@ -6,13 +6,12 @@ import * as Haptics from "expo-haptics";
 import { useRef, useState } from "react";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
-  BounceIn,
-  BounceOut,
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
+  withTiming
 } from "react-native-reanimated";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
+import QuantitySelector from "./QuantitySelector";
 
 type ProductCardProps = {
   codart: string;
@@ -20,6 +19,7 @@ type ProductCardProps = {
   price: number;
   available?: number;
   almacen?: string;
+  setModalItemVisible: (visible: boolean) => void;
 };
 
 export default function ProductCard({
@@ -27,6 +27,7 @@ export default function ProductCard({
   artdes,
   price,
   available,
+  setModalItemVisible,
 }: ProductCardProps) {
   const cartItem = useCreateOrderStore((s) =>
     s.items.find((i) => i.codart === codart)
@@ -47,17 +48,6 @@ export default function ProductCard({
   const qtyScale = useSharedValue(1);
   const addScale = useSharedValue(1);
 
-  const btnStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: btnScale.value }],
-  }));
-
-  const qtyStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: qtyScale.value }],
-  }));
-
-  const addStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: addScale.value }],
-  }));
 
   const ANIM_DURATION = 100; //   ms
 
@@ -83,7 +73,7 @@ export default function ProductCard({
   const handleDecrease = () => {
     if (pressedLong.current) {
       pressedLong.current = false;
-      return; // Evita que se dispare después del long press
+      return;
     }
     decrease(codart);
     Haptics.selectionAsync();
@@ -137,14 +127,14 @@ export default function ProductCard({
   };
 
   const handleCloseMenu = () => {
-    scale.value = withTiming(1, { duration: 150 }); // vuelve a su tamaño
+    scale.value = withTiming(1, { duration: 150 });
     setShowMenu(false);
   };
   return (
     <>
       <Pressable
         className="bg-white dark:bg-dark-componentbg rounded-xl p-3 mb-4 w-[48%] shadow shadow-gray-200 dark:shadow-black/20"
-        onPress={() => alert("Hola")}
+        onPress={() => setModalItemVisible(true)}
         onLongPress={handleLongPress}
       >
         <View className="flex-1 items-center justify-center pb-1">
@@ -170,59 +160,16 @@ export default function ProductCard({
           Disponibles: {available ?? "—"}
         </Text>
         {/* buttions */}
-        {quantity > 0 ? (
-          <Animated.View
-            style={btnStyle}
-            className="flex-row items-center justify-center gap-4 h-[30]"
-          >
-            <TouchableOpacity
-              onPress={handleDecrease}
-              onLongPress={handleRemove}
-              onPressOut={() => (pressedLong.current = false)}
-              delayLongPress={300}
-              className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 items-center justify-center"
-            >
-              <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
-                -
-              </Text>
-            </TouchableOpacity>
-
-            <Animated.View
-              entering={BounceIn}
-              exiting={BounceOut.duration(150)}
-            >
-              <Text className="mx-2 font-semibold text-lg text-center text-foreground dark:text-dark-foreground">
-                {quantity}
-              </Text>
-            </Animated.View>
-            <TouchableOpacity
-              onPress={handleIncrease}
-              onLongPress={handleMaxIncrease}
-              onPressOut={() => (pressedLong.current = false)}
-              delayLongPress={300}
-              className="w-8 h-8 rounded-full bg-primary items-center justify-center"
-            >
-              <Text className="text-white text-md font-bold">+</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        ) : (
-          <Animated.View style={addStyle} className="h-[30]">
-            <TouchableOpacity
-              onPress={() => {
-                if (pressedLong.current) return;
-                handleAdd();
-              }}
-              onPressOut={() => {
-                setTimeout(() => {
-                  pressedLong.current = false;
-                }, 100);
-              }}
-              className="flex-1 rounded-2xl items-center justify-center bg-primary dark:bg-dark-primary"
-            >
-              <Text className="text-white font-bold">Agregar</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        )}
+        {quantity > 0 || true ? (
+          <QuantitySelector
+            quantity={quantity}
+            onIncrease={handleIncrease}
+            onDecrease={handleDecrease}
+            onRemove={handleRemove}
+            onMaxIncrease={handleMaxIncrease}
+            onAdd={handleAdd}
+          />
+        ) : null}
       </Pressable>
 
       <Modal
