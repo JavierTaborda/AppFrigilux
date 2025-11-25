@@ -2,7 +2,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { getBiometricEnabled } from "@/utils/biometricFlag";
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import BiometricToggle from "../components/BiometricView";
 
 export default function ProfileScreen() {
@@ -22,7 +22,7 @@ export default function ProfileScreen() {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      alert("Error " + errorMessage);
+      Alert.alert("Error " + errorMessage);
     } finally {
       setIsLoading(false);
     }

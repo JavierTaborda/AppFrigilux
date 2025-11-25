@@ -176,24 +176,23 @@ export default function CreateOrderScreen() {
         </TouchableOpacity>
       </Animated.View>
 
-    {/* Modal */}
-    <OrderModal
-      visible={modalVisible}
-      onClose={() => setModalVisible(false)}
-      onConfirm={() => {
-        setModalVisible(false);
-        router.push("/(main)/(tabs)/(createOrder)/order-summary");
-      }}
-    />
+      {/* Modal */}
+      <OrderModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={() => {
+          setModalVisible(false);
+          router.push("/(main)/(tabs)/(createOrder)/order-summary");
+        }}
+      />
 
-    <BottomModal
-      visible={modalItemVisible}
-      onClose={() => setModalItemVisible(false)}
-      heightPercentage={0.85}
-    >
-      <ItemModal onClose={setModalItemVisible} item={item} />
-    </BottomModal>
-
+      <BottomModal
+        visible={modalItemVisible}
+        onClose={() => setModalItemVisible(false)}
+        heightPercentage={0.85}
+      >
+        <ItemModal onClose={setModalItemVisible} item={item} />
+      </BottomModal>
     </ScreenSearchLayout>
   );
 }

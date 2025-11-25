@@ -1,7 +1,7 @@
 import { authenticateWithBiometrics } from "@/utils/biometricAuth";
 import { getBiometricEnabled } from "@/utils/biometricFlag";
 import { getSessionStatus } from "@/utils/sessionStatus";
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import { create } from "zustand";
 import { useAuthStore } from "./useAuthStore";
 
@@ -45,7 +45,7 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
             const result = await authenticateWithBiometrics();
             biometricSuccess = result === true;
           } catch (err) {
-            alert(err)
+            Alert.alert("Error", err instanceof Error ? err.message : String(err));
             //console.log("Biometric authentication failed:", err);
           }
 

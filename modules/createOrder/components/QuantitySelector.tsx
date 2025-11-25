@@ -62,19 +62,19 @@
  *    conflicts with Reanimated's layout animations.
  */
 
-import * as Haptics from "expo-haptics";
-import { useRef } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import Animated, {
   BounceIn,
   BounceOut,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
+  useAnimatedStyle
 } from "react-native-reanimated";
+import { useQuantityHandlers } from "../hooks/useQuantityHandler";
+
+
 
 type QuantitySelectorProps = {
   quantity: number;
+  available?: number;
   onIncrease: () => void;
   onDecrease: () => void;
   onRemove: () => void; // long press decrease
@@ -86,6 +86,7 @@ type QuantitySelectorProps = {
 
 export default function QuantitySelector({
   quantity,
+  available,
   onIncrease,
   onDecrease,
   onRemove,
@@ -94,15 +95,27 @@ export default function QuantitySelector({
   height = 30,
   size = 32,
 }: QuantitySelectorProps) {
-  const pressedLong = useRef(false);
+  const {
+    pressedLong,
+    btnScale,
+    qtyScale,
+    addScale,
+    handleIncrease,
+    handleDecrease,
+    handleAdd,
+    handleRemove,
+    handleMaxIncrease,
+  } = useQuantityHandlers({
+    quantity,
+    available,
+    onIncrease,
+    onDecrease,
+    onRemove,
+    onMaxIncrease,
+    onAdd,
+  });
 
-  // Animations
-  const btnScale = useSharedValue(1);
-  const qtyScale = useSharedValue(1);
-  const addScale = useSharedValue(1);
-
-  const ANIM_DURATION = 100;
-
+  // Animated styles
   const btnStyle = useAnimatedStyle(() => ({
     transform: [{ scale: btnScale.value }],
   }));
@@ -115,42 +128,18 @@ export default function QuantitySelector({
     transform: [{ scale: addScale.value }],
   }));
 
-  const handleIncrease = () => {
-    if (pressedLong.current) return;
-
-    onIncrease();
-    Haptics.selectionAsync();
-
-    btnScale.value = withTiming(0.9, { duration: ANIM_DURATION }, () => {
-      btnScale.value = 1;
-    });
-
-    qtyScale.value = withTiming(1.1, { duration: ANIM_DURATION }, () => {
-      qtyScale.value = 1;
-    });
-  };
-
-  const handleDecrease = () => {
-    if (pressedLong.current) return;
-
-    onDecrease();
-    Haptics.selectionAsync();
-
-    btnScale.value = withTiming(0.9, { duration: ANIM_DURATION }, () => {
-      btnScale.value = 1;
-    });
-  };
 
   return quantity > 0 ? (
-    /* Layout-safe wrapper for counter mode */
+
     <Animated.View className="flex-row items-center justify-center gap-4">
+      {/* INNER wrapper con transform */}
       <Animated.View style={btnStyle} className="flex-row items-center gap-4">
-        {/* BUTTON "-" */}
+        {/* BTN - */}
         <TouchableOpacity
           onPress={handleDecrease}
           onLongPress={() => {
             pressedLong.current = true;
-            onRemove();
+            handleRemove();
           }}
           onPressOut={() => (pressedLong.current = false)}
           delayLongPress={300}
@@ -162,7 +151,7 @@ export default function QuantitySelector({
           </Text>
         </TouchableOpacity>
 
-        {/* QUANTITY VALUE */}
+        {/* CANTIDAD */}
         <Animated.View entering={BounceIn} exiting={BounceOut.duration(150)}>
           <Animated.View style={qtyStyle}>
             <Text className="mx-2 font-semibold text-lg text-center text-foreground dark:text-dark-foreground">
@@ -171,12 +160,12 @@ export default function QuantitySelector({
           </Animated.View>
         </Animated.View>
 
-        {/* BUTTON "+" */}
+        {/* BTN + */}
         <TouchableOpacity
           onPress={handleIncrease}
           onLongPress={() => {
             pressedLong.current = true;
-            onMaxIncrease();
+            handleMaxIncrease();
           }}
           onPressOut={() => (pressedLong.current = false)}
           delayLongPress={300}
@@ -188,18 +177,12 @@ export default function QuantitySelector({
       </Animated.View>
     </Animated.View>
   ) : (
-    /* ADD BUTTON MODE */
-    <Animated.View style={[{ height }, addStyle]} className="w-full">
+
+    <Animated.View style={[{ height }, addStyle]} className="w-full flex-1">
       <TouchableOpacity
-        onPress={() => {
-          if (pressedLong.current) return;
-          onAdd();
-        }}
-        onPressOut={() =>
-          setTimeout(() => {
-            pressedLong.current = false;
-          }, 120)
-        }
+        onPress={handleAdd}
+        onLongPress={() => (pressedLong.current = true)}
+        onPressOut={() => setTimeout(() => (pressedLong.current = false), 120)}
         className="flex-1 rounded-2xl items-center justify-center bg-primary dark:bg-dark-primary"
       >
         <Text className="text-white font-bold">Agregar</Text>

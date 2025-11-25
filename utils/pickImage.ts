@@ -1,10 +1,11 @@
 import * as ImagePicker from "expo-image-picker";
+import { Alert } from "react-native";
 
 export async function pickFromGallery(): Promise<string | null> {
 
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-        alert("Se necesita permiso para acceder a tus fotos.");
+        Alert.alert("Se necesita permiso para acceder a tus fotos.");
         return null;
     }
 
@@ -26,7 +27,7 @@ export async function pickFromCamera(): Promise<string | null> {
 
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-        alert("Se necesita permiso para acceder a tus fotos.");
+        Alert.alert("Se necesita permiso para acceder a tus fotos.");
         return null;
     }
 

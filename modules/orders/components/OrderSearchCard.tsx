@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Platform,
   Pressable,
   Switch,
@@ -63,11 +64,11 @@ function OrderSearchCard({
       } else if (!value && item.comentario.startsWith("**")) {
         newComment = item.comentario.slice(2);
       } else if (!value && !item.comentario.startsWith("**")) {
-        alert("Este pedido no está marcado con **");
+        Alert.alert("Este pedido no está marcado con **");
         return;
       }
 
-      const result = await markComment(item.fact_num, newComment);
+      const result = await markComment(item.fact_num, newComment, item?.ven_des);
 
       if (result) {
         item.comentario = newComment;
