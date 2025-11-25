@@ -3,7 +3,6 @@ import { imageURL } from "@/utils/imageURL";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import React, { useMemo, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { useQuantityHandlers } from "../hooks/useQuantityHandler";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
 import QuantitySelector from "./QuantitySelector";
@@ -24,18 +23,18 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
   const quantity = cartItem?.quantity ?? 0;
   const available = item?.available ?? 0;
 
-  // cálculo de totales
-  const subtotal = useMemo(() => price * quantity, [price, quantity]);
+  const totalGross = useMemo(() => price * quantity, [price, quantity]);
+
+  const discountAmount = useMemo(
+    () => (totalGross * discountPercent) / 100,
+    [totalGross, discountPercent]
+  );
+  const subtotal = useMemo(
+    () => totalGross - discountAmount,
+    [totalGross, discountAmount]
+  );
   const iva = useMemo(() => subtotal * 0.16, [subtotal]);
   const total = useMemo(() => subtotal + iva, [subtotal, iva]);
-  const discountAmount = useMemo(
-    () => (total * discountPercent) / 100,
-    [total, discountPercent]
-  );
-  const finalPrice = useMemo(
-    () => total - discountAmount,
-    [total, discountAmount]
-  );
 
   const addItem = useCreateOrderStore((s) => s.addItem);
   const increase = useCreateOrderStore((s) => s.increase);
@@ -44,38 +43,10 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 
   const img = `${imageURL}${item?.codart?.trim()}.jpg`;
 
-  const {
-    handleIncrease,
-    handleDecrease,
-    handleAdd,
-    handleRemove,
-    handleMaxIncrease,
-  } = useQuantityHandlers({
-    quantity,
-    available,
-    onIncrease: () => increase(item!.codart),
-    onDecrease: () => decrease(item!.codart),
-    onRemove: () => removeItem(item!.codart),
-    onMaxIncrease: () => {
-      if (available && quantity < available)
-        increase(item!.codart, available - quantity);
-    },
-    onAdd: () =>
-      addItem({
-        codart: item!.codart,
-        artdes: item!.artdes,
-        price: item!.price,
-        img: `${imageURL}${item!.codart}.jpg`,
-        available: item!.available,
-        quantity: 1,
-      }),
-  });
-
   return (
-    <View className="gap-3 p-4">
-      {/* Info del producto */}
-      <View className="flex-row bg-componentbg dark:bg-dark-componentbg rounded-2xl p-3">
-        <View className="w-28 h-28 rounded-xl overflow-hidden bg-bgimages mr-3">
+    <View className="gap-3 py-2">
+      <View className="flex-row bg-componentbg dark:bg-dark-componentbg rounded-2xl p-2">
+        <View className="w-32 h-32 rounded-xl overflow-hidden bg-bgimages mr-3">
           <CustomImage img={img} />
         </View>
 
@@ -93,31 +64,30 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
           </Text>
 
           <View className="mt-1 px-2 py-1 rounded-full bg-primary/15 dark:bg-primary/25 self-start">
-            <Text className="text-primary font-semibold text-[10px]">
-              Disponibles: {available}
+            <Text className="text-primary dark:text-dark-primary font-semibold text-sm">
+              {available} disponibles
             </Text>
           </View>
 
-          <Text className="text-lg font-extrabold text-primary mt-2">
+          <Text className="text-lg font-extrabold text-primary dark:text-dark-primary ">
             {totalVenezuela(price)} {currencyDollar}
           </Text>
         </View>
       </View>
 
-      <View className="bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl">
-        <View className="mt-4 p-2 ">
+      <View className="bg-componentbg dark:bg-dark-componentbg p-3 rounded-2xl">
+        <View className=" w-full items-center">
           <QuantitySelector
+            codart={item!.codart}
             quantity={quantity}
-            available={item?.available}
-            onIncrease={handleIncrease}
-            onDecrease={handleDecrease}
-            onRemove={handleRemove}
-            onMaxIncrease={handleMaxIncrease}
-            onAdd={handleAdd}
+            available={item!.available}
+            artdes={item!.artdes}
+            price={item!.price}
+            img={img}
           />
         </View>
 
-        <View className="flex-row justify-between mt-4 mb-4">
+        <View className="flex-row justify-between mt-5 mb-4">
           {[5, 10, 15, 20].map((percent) => {
             const isSelected = discountPercent === percent;
             return (
@@ -125,7 +95,9 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
                 key={percent}
                 onPress={() => setDiscountPercent(percent)}
                 className={`px-5 py-2 rounded-full ${
-                  isSelected ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
+                  isSelected
+                    ? "bg-primary dark:bg-dark-primary"
+                    : "bg-gray-200 dark:bg-gray-700"
                 }`}
               >
                 <Text
@@ -144,17 +116,10 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 
         <View className="flex-row justify-between mb-1">
           <Text className="text-xs text-gray-500 dark:text-gray-400">
-            Subtotal:
+            Total bruto:
           </Text>
-          <Text className="text-xs text-gray-500 dark:text-gray-300">
-            {totalVenezuela(subtotal)} {currencyDollar}
-          </Text>
-        </View>
-
-        <View className="flex-row justify-between mb-1">
-          <Text className="text-xs text-gray-500 dark:text-gray-400">IVA:</Text>
-          <Text className="text-xs text-gray-500 dark:text-gray-300">
-            {totalVenezuela(iva)} {currencyDollar}
+          <Text className="text-xs text-gray-500 dark:text-gray-400">
+            {totalVenezuela(totalGross)} {currencyDollar}
           </Text>
         </View>
 
@@ -167,12 +132,26 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
           </Text>
         </View>
 
-        <View className="flex-row justify-between mt-2">
-          <Text className="text-base font-bold text-primary">
-            Precio Final:
+        <View className="flex-row justify-between mb-1">
+          <Text className="text-xs text-gray-500 dark:text-gray-400">
+            Subtotal:
           </Text>
+          <Text className="text-xs text-gray-500 dark:text-gray-300">
+            {totalVenezuela(subtotal)} {currencyDollar}
+          </Text>
+        </View>
+
+        <View className="flex-row justify-between mb-1">
+          <Text className="text-xs text-gray-500 dark:text-gray-400">IVA</Text>
+          <Text className="text-xs text-gray-500 dark:text-gray-300">
+            {totalVenezuela(iva)} {currencyDollar}
+          </Text>
+        </View>
+
+        <View className="flex-row justify-between mt-2">
+          <Text className="text-base font-bold text-primary">Precio Final</Text>
           <Text className="text-base font-bold text-primary">
-            {totalVenezuela(finalPrice)} {currencyDollar}
+            {totalVenezuela(total)} {currencyDollar}
           </Text>
         </View>
       </View>

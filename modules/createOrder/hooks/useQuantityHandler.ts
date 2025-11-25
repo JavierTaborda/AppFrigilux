@@ -2,28 +2,32 @@
 import { safeHaptic } from "@/utils/safeHaptics";
 import { useRef } from "react";
 import { useSharedValue, withTiming } from "react-native-reanimated";
+import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 type Props = {
+    codart: string;
+    artdes: string;
+    price: number;
+    img?: string;
     quantity: number;
     available?: number;
-    onIncrease: () => void;
-    onDecrease: () => void;
-    onRemove: () => void;
-    onMaxIncrease: () => void;
-    onAdd: () => void;
 };
+
 
 export const useQuantityHandlers = ({
     quantity,
     available,
-    onIncrease,
-    onDecrease,
-    onRemove,
-    onMaxIncrease,
-    onAdd,
+    codart,
+    artdes,
+    price,
+    img,
+    
 }: Props) => {
     const pressedLong = useRef(false);
-
+    const addItem = useCreateOrderStore((s) => s.addItem);
+    const increase = useCreateOrderStore((s) => s.increase);
+    const decrease = useCreateOrderStore((s) => s.decrease);
+    const removeItem = useCreateOrderStore((s) => s.removeItem);
     const btnScale = useSharedValue(1);
     const qtyScale = useSharedValue(1);
     const addScale = useSharedValue(1);
@@ -35,10 +39,19 @@ export const useQuantityHandlers = ({
             pressedLong.current = false;
             return;
         }
-        onIncrease();
+        increase(codart);
+
         safeHaptic("selection");
-        btnScale.value = withTiming(0.9, { duration: ANIM_DURATION }, () => (btnScale.value = 1));
-        qtyScale.value = withTiming(1.1, { duration: ANIM_DURATION }, () => (qtyScale.value = 1));
+        btnScale.value = withTiming(
+            0.9,
+            { duration: ANIM_DURATION },
+            () => (btnScale.value = 1)
+        );
+        qtyScale.value = withTiming(
+            1.1,
+            { duration: ANIM_DURATION },
+            () => (qtyScale.value = 1)
+        );
     };
 
     const handleDecrease = () => {
@@ -46,9 +59,13 @@ export const useQuantityHandlers = ({
             pressedLong.current = false;
             return;
         }
-        onDecrease();
+        decrease(codart);
         safeHaptic("selection");
-        btnScale.value = withTiming(0.9, { duration: ANIM_DURATION }, () => (btnScale.value = 1));
+        btnScale.value = withTiming(
+            0.9,
+            { duration: ANIM_DURATION },
+            () => (btnScale.value = 1)
+        );
     };
 
     const handleAdd = () => {
@@ -56,23 +73,30 @@ export const useQuantityHandlers = ({
             pressedLong.current = false;
             return;
         }
-        onAdd();
-        safeHaptic("selection");
-        addScale.value = withTiming(1.1, { duration: ANIM_DURATION }, () => (addScale.value = 1));
-    };
 
-    const handleRemove = () => {
+        addItem({ codart, artdes, price, img, available, quantity: 1 });
+        safeHaptic("selection");
+        addScale.value = withTiming(
+            1.1,
+            { duration: ANIM_DURATION },
+            () => (addScale.value = 1)
+        );
+    };
+    const handleRemove = (codart: string) => {
         pressedLong.current = true;
-        onRemove();
+        removeItem(codart);
         safeHaptic("warning");
     };
-
-    const handleMaxIncrease = () => {
+    const handleMaxIncrease = (codart: string) => {
         pressedLong.current = true;
         if (available && available > quantity) {
-            onMaxIncrease();
+            increase(codart, available - quantity);
             safeHaptic("success");
-            qtyScale.value = withTiming(1.1, { duration: ANIM_DURATION }, () => (qtyScale.value = 1));
+            qtyScale.value = withTiming(
+                1.1,
+                { duration: ANIM_DURATION },
+                () => (qtyScale.value = 1)
+            );
         }
     };
 

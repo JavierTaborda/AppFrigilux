@@ -4,7 +4,7 @@ import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { BlurView } from "expo-blur";
 
 import { safeHaptic } from "@/utils/safeHaptics";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -33,89 +33,14 @@ export default function ProductCard({
   const cartItem = useCreateOrderStore((s) =>
     s.items.find((i) => i.codart === codart)
   );
-  const addItem = useCreateOrderStore((s) => s.addItem);
-  const increase = useCreateOrderStore((s) => s.increase);
-  const decrease = useCreateOrderStore((s) => s.decrease);
+ 
   const removeItem = useCreateOrderStore((s) => s.removeItem);
   const [showMenu, setShowMenu] = useState(false);
 
   const img = `${imageURL}${codart?.trim()}.jpg`;
   const quantity = cartItem?.quantity ?? 0;
 
-  // animations
-  const pressedLong = useRef(false);
-
-  const btnScale = useSharedValue(1);
-  const qtyScale = useSharedValue(1);
-  const addScale = useSharedValue(1);
-
-  const ANIM_DURATION = 100; //   ms
-
-  const handleIncrease = () => {
-    if (pressedLong.current) {
-      pressedLong.current = false;
-      return;
-    }
-    increase(codart);
-
-    safeHaptic("selection");
-    btnScale.value = withTiming(
-      0.9,
-      { duration: ANIM_DURATION },
-      () => (btnScale.value = 1)
-    );
-    qtyScale.value = withTiming(
-      1.1,
-      { duration: ANIM_DURATION },
-      () => (qtyScale.value = 1)
-    );
-  };
-
-  const handleDecrease = () => {
-    if (pressedLong.current) {
-      pressedLong.current = false;
-      return;
-    }
-    decrease(codart);
-    safeHaptic("selection");
-    btnScale.value = withTiming(
-      0.9,
-      { duration: ANIM_DURATION },
-      () => (btnScale.value = 1)
-    );
-  };
-
-  const handleAdd = () => {
-    if (pressedLong.current) {
-      pressedLong.current = false;
-      return;
-    }
-
-    addItem({ codart, artdes, price, img, available, quantity: 1 });
-    safeHaptic("selection");
-    addScale.value = withTiming(
-      1.1,
-      { duration: ANIM_DURATION },
-      () => (addScale.value = 1)
-    );
-  };
-  const handleRemove = () => {
-    pressedLong.current = true;
-    removeItem(codart);
-    safeHaptic("warning");
-  };
-  const handleMaxIncrease = () => {
-    pressedLong.current = true;
-    if (available && available > quantity) {
-      increase(codart, available - quantity);
-      safeHaptic("success");
-      qtyScale.value = withTiming(
-        1.1,
-        { duration: ANIM_DURATION },
-        () => (qtyScale.value = 1)
-      );
-    }
-  };
+ 
   const scale = useSharedValue(1);
 
   const cardStyle = useAnimatedStyle(() => ({
@@ -160,15 +85,15 @@ export default function ProductCard({
         <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1 ">
           Disponibles: {available ?? "—"}
         </Text>
-        {/* buttions */}
         {quantity > 0 || true ? (
           <QuantitySelector
+            codart={codart}
             quantity={quantity}
-            onIncrease={handleIncrease}
-            onDecrease={handleDecrease}
-            onRemove={handleRemove}
-            onMaxIncrease={handleMaxIncrease}
-            onAdd={handleAdd}
+            available={available}
+            artdes={artdes}
+            price={price}
+            img={img}
+            fullView={false}
           />
         ) : null}
       </Pressable>
