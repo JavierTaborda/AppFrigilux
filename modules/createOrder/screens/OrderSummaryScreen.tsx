@@ -11,7 +11,7 @@ export default function OrderSummaryScreen() {
   const { items } = useCreateOrderStore();
 const isEmpty =items.length === 0;
   return (
-    <ScrollView className="flex-1 bg-background dark:bg-dark-background px-6 pt-10">
+    <ScrollView className="flex-1 bg-background dark:bg-dark-background px-6 pt-28">
 
       <View className="mb-6">
         <Text className="text-2xl font-bold text-foreground dark:text-dark-foreground">
@@ -95,7 +95,7 @@ const isEmpty =items.length === 0;
       </View>
 
    
-      <View className="mt-3 ">
+      <View className="mt-3 mb-44 gap-4">
         <CustomTouchableOpacity
           onPress={createOrder}
           label="✅ Confirmar Pedido"

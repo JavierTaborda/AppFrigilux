@@ -8,39 +8,43 @@ import Animated, {
 } from "react-native-reanimated";
 
 import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
+import BottomModal from "@/components/ui/BottomModal";
 import CustomFlatList from "@/components/ui/CustomFlatList";
 import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import FastFilters from "../components/FastFilters";
+import ItemModal from "../components/ItemModal";
 import OrderModal from "../components/OrderModal";
 import ProductCard from "../components/ProductCard";
 import useCreateOrder from "../hooks/useCreateOrder";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
+import { OrderItem } from "../types/orderItem";
 
 export default function CreateOrderScreen() {
-   const [searchText, setSearchText] = useState("");
-    const {
-      loading,
-      error,
-      productItems,
-      products,
-      handleRefresh,
-      refreshing,
-      canRefresh,
-      notUsed,
-      setNotUsed,
-      sortByAvailable,
-      setSortByAvailable,
-      sortByAssigned,
-      setSortByAssigned,
-    } = useCreateOrder(searchText);
+  const [searchText, setSearchText] = useState("");
+  const {
+    loading,
+    error,
+    productItems,
 
+    handleRefresh,
+    refreshing,
+    canRefresh,
+    notUsed,
+    setNotUsed,
+    sortByAvailable,
+    setSortByAvailable,
+    sortByAssigned,
+    setSortByAssigned,
+  } = useCreateOrder(searchText);
 
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalItemVisible, setModalItemVisible] = useState(false);
+  const [item, setItem] = useState<OrderItem >({} as OrderItem);
   const router = useRouter();
   const { items } = useCreateOrderStore();
   const haveOrder = items?.length > 0;
@@ -112,6 +116,10 @@ export default function CreateOrderScreen() {
             //image={item.image}
             available={item.available}
             almacen={""}
+            setModalItemVisible={() => {
+              setItem(item);
+              setModalItemVisible(true);
+            }}
           />
         )}
         keyExtractor={(item, index) => `${item.codart}-${index}`}
@@ -154,7 +162,6 @@ export default function CreateOrderScreen() {
           </View>
         </TouchableOpacity>
 
-        {/* Ver pedido */}
         <TouchableOpacity
           disabled={!haveOrder}
           onPress={() => setModalVisible(true)}
@@ -178,6 +185,14 @@ export default function CreateOrderScreen() {
           router.push("/(main)/(tabs)/(createOrder)/order-summary");
         }}
       />
+
+      <BottomModal
+        visible={modalItemVisible}
+        onClose={() => setModalItemVisible(false)}
+        heightPercentage={0.85}
+      >
+        <ItemModal onClose={setModalItemVisible} item={item} />
+      </BottomModal>
     </ScreenSearchLayout>
   );
 }

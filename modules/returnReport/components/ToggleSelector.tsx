@@ -1,5 +1,4 @@
-// components/ui/ToggleSelector.tsx
-import * as Haptics from "expo-haptics";
+import { safeHaptic } from "@/utils/safeHaptics";
 import { memo } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import Animated from "react-native-reanimated";
@@ -13,7 +12,13 @@ type ToggleSelectorProps = {
 };
 
 const ToggleSelector = memo(
-  ({ startMethod, setStartMethod, animatedStyle, animatedStyleToggle, emojis }: ToggleSelectorProps) => (
+  ({
+    startMethod,
+    setStartMethod,
+    animatedStyle,
+    animatedStyleToggle,
+    emojis,
+  }: ToggleSelectorProps) => (
     <Animated.View
       style={animatedStyleToggle}
       className="relative flex-row bg-muted dark:bg-dark-muted rounded-full p-1 mb-1 overflow-hidden"
@@ -31,14 +36,16 @@ const ToggleSelector = memo(
           <TouchableOpacity
             key={key}
             onPress={() => {
-              Haptics.selectionAsync();
+              safeHaptic("selection");
               setStartMethod(key as "serial" | "fact");
             }}
             className="flex-1 py-1 rounded-xl items-center z-10"
           >
             <Text
               className={`font-semibold text-base ${
-                active ? "text-white" : "text-foreground dark:text-dark-foreground"
+                active
+                  ? "text-white"
+                  : "text-foreground dark:text-dark-foreground"
               }`}
             >
               {label}

@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Platform,
   Pressable,
   Switch,
@@ -14,7 +15,8 @@ import {
 } from "react-native";
 
 import { useThemeStore } from "@/stores/useThemeStore";
-import * as Haptics from "expo-haptics";
+
+import { safeHaptic } from "@/utils/safeHaptics";
 import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
 import { OrderApproval } from "../types/OrderApproval";
 
@@ -23,7 +25,11 @@ interface Props {
   onPress?: () => void;
   detailModal?: () => void;
   hasPermission: boolean;
-  markComment: (fact_num: number, newComment: string) => Promise<boolean>;
+  markComment: (
+    fact_num: number,
+    newComment: string,
+    ven_des: string
+  ) => Promise<boolean>;
 }
 
 function OrderSearchCard({
@@ -34,7 +40,7 @@ function OrderSearchCard({
   markComment,
 }: Props) {
   const isAnulada = item.anulada === true;
-  const isSwitchable = item.estatus !=="2";
+  const isSwitchable = item.estatus !== "2";
   const formattedDate = useMemo(
     () => formatDatedd_dot_MMM_yyyy(item.fec_emis),
     [item.fec_emis]
@@ -63,11 +69,15 @@ function OrderSearchCard({
       } else if (!value && item.comentario.startsWith("**")) {
         newComment = item.comentario.slice(2);
       } else if (!value && !item.comentario.startsWith("**")) {
-        alert("Este pedido no está marcado con **");
+        Alert.alert("Este pedido no está marcado con **");
         return;
       }
 
-      const result = await markComment(item.fact_num, newComment);
+      const result = await markComment(
+        item.fact_num,
+        newComment,
+        item?.ven_des
+      );
 
       if (result) {
         item.comentario = newComment;
@@ -161,10 +171,10 @@ function OrderSearchCard({
             style={{ minWidth: 100 }}
           >
             <Text className="text-sm font-semibold text-white">
-              Ver detalles 
+              Ver detalles
             </Text>
           </TouchableOpacity>
-   
+
           {/* Switch */}
           {isSwitchable && (
             <View className="items-center  mt-5 gap-0">
@@ -183,9 +193,7 @@ function OrderSearchCard({
                     value={isFacturable}
                     onValueChange={(val) => {
                       handleswitch(val);
-                      Platform.OS === "android"
-                        ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
-                        : null;
+                      Platform.OS === "android" ? safeHaptic("soft") : null;
                     }}
                     {...(Platform.OS === "android"
                       ? {

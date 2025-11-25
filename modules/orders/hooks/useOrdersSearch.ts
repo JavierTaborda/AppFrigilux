@@ -1,6 +1,7 @@
 import { useRefreshControl } from "@/utils/userRefreshControl";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Alert } from "react-native";
 import {
     getPedidosFiltrados, UpdateComment
 } from "../services/OrderService";
@@ -11,7 +12,7 @@ import { useOrderModals } from "./useOrderModals";
 
 export function useOrderSearch(searchText: string) {
     /* -------------------------------------------------------------------------- */
-    /*                                  ESTADOS                                  */
+    /*                                  STATES                                  */
     /* -------------------------------------------------------------------------- */
 
     const [orders, setOrders] = useState<OrderApproval[]>([]);
@@ -69,15 +70,15 @@ export function useOrderSearch(searchText: string) {
         );
     }, [wrapRefresh]);
 
-    const markComment = async (fact_num: number, newComment: string) => {
+    const markComment = async (fact_num: number, newComment: string, vendes: string) => {
         try {
             const result = await UpdateComment(fact_num, newComment);
 
             if (!result.success) {
                 if (result.error?.statusCode === 403) {
-                    alert('No tienes permisos para ejecutar esta funcionalidad');
+                    Alert.alert(`Solo el vendedor ${vendes?.trim().toLowerCase()}, puede modificar este pedido.`);
                 } else {
-                    alert(`Error: ${result.error?.message || 'Error desconocido'}`);
+                    Alert.alert(`Error: ${result.error?.message || 'Error desconocido'}`);
                 }
                 return false;
             }
@@ -85,7 +86,7 @@ export function useOrderSearch(searchText: string) {
             return true;
         } catch (error) {
             console.error('Error al actualizar el comentario:', error);
-            alert('Ocurrió un error inesperado');
+            Alert.alert('Ocurrió un error inesperado');
             return false;
         }
     };
