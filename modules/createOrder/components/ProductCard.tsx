@@ -2,13 +2,14 @@ import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { BlurView } from "expo-blur";
-import * as Haptics from "expo-haptics";
+
+import { safeHaptic } from "@/utils/safeHaptics";
 import { useRef, useState } from "react";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withTiming
+  withTiming,
 } from "react-native-reanimated";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import QuantitySelector from "./QuantitySelector";
@@ -48,7 +49,6 @@ export default function ProductCard({
   const qtyScale = useSharedValue(1);
   const addScale = useSharedValue(1);
 
-
   const ANIM_DURATION = 100; //   ms
 
   const handleIncrease = () => {
@@ -57,7 +57,8 @@ export default function ProductCard({
       return;
     }
     increase(codart);
-    Haptics.selectionAsync();
+
+    safeHaptic("selection");
     btnScale.value = withTiming(
       0.9,
       { duration: ANIM_DURATION },
@@ -76,7 +77,7 @@ export default function ProductCard({
       return;
     }
     decrease(codart);
-    Haptics.selectionAsync();
+    safeHaptic("selection");
     btnScale.value = withTiming(
       0.9,
       { duration: ANIM_DURATION },
@@ -91,7 +92,7 @@ export default function ProductCard({
     }
 
     addItem({ codart, artdes, price, img, available, quantity: 1 });
-    Haptics.selectionAsync();
+    safeHaptic("selection");
     addScale.value = withTiming(
       1.1,
       { duration: ANIM_DURATION },
@@ -101,13 +102,13 @@ export default function ProductCard({
   const handleRemove = () => {
     pressedLong.current = true;
     removeItem(codart);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    safeHaptic("warning");
   };
   const handleMaxIncrease = () => {
     pressedLong.current = true;
     if (available && available > quantity) {
       increase(codart, available - quantity);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      safeHaptic("success");
       qtyScale.value = withTiming(
         1.1,
         { duration: ANIM_DURATION },
@@ -121,7 +122,7 @@ export default function ProductCard({
     transform: [{ scale: scale.value }],
   }));
   const handleLongPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    safeHaptic("medium");
     scale.value = withTiming(1.05, { duration: 150 });
     setShowMenu(true);
   };

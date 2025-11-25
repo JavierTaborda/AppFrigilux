@@ -1,4 +1,5 @@
-import * as Haptics from "expo-haptics";
+
+import { safeHaptic } from "@/utils/safeHaptics";
 import { useRef } from "react";
 import { useSharedValue, withTiming } from "react-native-reanimated";
 
@@ -35,7 +36,7 @@ export const useQuantityHandlers = ({
             return;
         }
         onIncrease();
-        Haptics.selectionAsync();
+        safeHaptic("selection");
         btnScale.value = withTiming(0.9, { duration: ANIM_DURATION }, () => (btnScale.value = 1));
         qtyScale.value = withTiming(1.1, { duration: ANIM_DURATION }, () => (qtyScale.value = 1));
     };
@@ -46,7 +47,7 @@ export const useQuantityHandlers = ({
             return;
         }
         onDecrease();
-        Haptics.selectionAsync();
+        safeHaptic("selection");
         btnScale.value = withTiming(0.9, { duration: ANIM_DURATION }, () => (btnScale.value = 1));
     };
 
@@ -56,21 +57,21 @@ export const useQuantityHandlers = ({
             return;
         }
         onAdd();
-        Haptics.selectionAsync();
+        safeHaptic("selection");
         addScale.value = withTiming(1.1, { duration: ANIM_DURATION }, () => (addScale.value = 1));
     };
 
     const handleRemove = () => {
         pressedLong.current = true;
         onRemove();
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        safeHaptic("warning");
     };
 
     const handleMaxIncrease = () => {
         pressedLong.current = true;
         if (available && available > quantity) {
             onMaxIncrease();
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            safeHaptic("success");
             qtyScale.value = withTiming(1.1, { duration: ANIM_DURATION }, () => (qtyScale.value = 1));
         }
     };

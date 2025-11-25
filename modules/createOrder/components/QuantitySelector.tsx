@@ -9,7 +9,7 @@
  * - Auto-remove on long-press (holding "-")
  * - Max-increase on long-press (holding "+")
  * - Animated feedback using Reanimated
- * - Haptic feedback using expo-haptics
+ * - Haptic feedback using safeHaptics
  * - "Add" mode when quantity = 0
  *
  * This component was designed with layout animation safety in mind.

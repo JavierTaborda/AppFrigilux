@@ -1,4 +1,3 @@
-// utils/safeHaptics.ts
 import * as Battery from "expo-battery";
 import * as Haptics from "expo-haptics";
 

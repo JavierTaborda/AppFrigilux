@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import * as Haptics from "expo-haptics";
 import React, { useEffect } from "react";
 import {
   Dimensions,
@@ -17,6 +16,7 @@ import Animated, {
 
 import { useThemeStore } from "@/stores/useThemeStore";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
+import { safeHaptic } from "@/utils/safeHaptics";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import OrderSummaryList from "./OrderSummaryList";
 
@@ -57,8 +57,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
     transform: [{ translateY: translateY.value }],
   }));
     const handleRemove = () => {
-     
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+         safeHaptic("warning");
       clearOrder()
     };
 
