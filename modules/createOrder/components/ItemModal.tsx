@@ -1,8 +1,10 @@
+import CustomTextInput from "@/components/inputs/CustomTextInput";
 import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import React, { useMemo, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
 import QuantitySelector from "./QuantitySelector";
@@ -14,7 +16,7 @@ type ItemModalProps = {
 };
 
 const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
-  const [discountPercent, setDiscountPercent] = useState(5);
+  const [discountPercent, setDiscountPercent] = useState<string>("");
 
   const price = Number(item?.price ?? 0);
   const cartItem = useCreateOrderStore((s) =>
@@ -25,10 +27,25 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 
   const totalGross = useMemo(() => price * quantity, [price, quantity]);
 
-  const discountAmount = useMemo(
-    () => (totalGross * discountPercent) / 100,
-    [totalGross, discountPercent]
-  );
+  const discountsArray = useMemo(() => {
+    if (!discountPercent.trim()) return [];
+    return discountPercent
+      .split("+")
+      .map((d) => Number(d.trim()))
+      .filter((n) => !isNaN(n) && n > 0);
+  }, [discountPercent]);
+
+  const discountAmount = useMemo(() => {
+    let current = totalGross;
+
+    discountsArray.forEach((percent) => {
+      const amount = (current * percent) / 100;
+      current -= amount;
+    });
+
+    return totalGross - current; // total discounted
+  }, [totalGross, discountsArray]);
+
   const subtotal = useMemo(
     () => totalGross - discountAmount,
     [totalGross, discountAmount]
@@ -36,10 +53,30 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
   const iva = useMemo(() => subtotal * 0.16, [subtotal]);
   const total = useMemo(() => subtotal + iva, [subtotal, iva]);
 
-  const addItem = useCreateOrderStore((s) => s.addItem);
-  const increase = useCreateOrderStore((s) => s.increase);
-  const decrease = useCreateOrderStore((s) => s.decrease);
-  const removeItem = useCreateOrderStore((s) => s.removeItem);
+  const handleDiscountToggle = (percent: number) => {
+    const currentDiscounts = discountPercent
+      .split("+")
+      .filter((d) => d.trim() !== "")
+      .map((d) => Number(d));
+
+    let newDiscounts: number[];
+
+    if (currentDiscounts.includes(percent)) {
+      newDiscounts = currentDiscounts.filter((d) => d !== percent);
+    } else {
+      newDiscounts = [...currentDiscounts, percent];
+    }
+
+    setDiscountPercent(newDiscounts.join("+"));
+  };
+  const handleChangeDiscount = (text: string) => {
+    // only numberes and "+"
+    const regex = /^[0-9+]*$/;
+
+    if (regex.test(text)) {
+      setDiscountPercent(text);
+    }
+  };
 
   const img = `${imageURL}${item?.codart?.trim()}.jpg`;
 
@@ -75,8 +112,8 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
         </View>
       </View>
 
-      <View className="bg-componentbg dark:bg-dark-componentbg p-3 rounded-2xl">
-        <View className=" w-full items-center">
+      <View className="bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl">
+        <View className="w-full items-center mb-5">
           <QuantitySelector
             codart={item!.codart}
             quantity={quantity}
@@ -86,71 +123,84 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
             img={img}
           />
         </View>
+        <ScrollView horizontal className="flex-row py-2 rounded-xl mb-1">
+          {[5, 10, 15, 20, 25, 30, 35, 40].map((percent) => {
+            const currentDiscounts = discountPercent
+              .split("+")
+              .filter((d) => d.trim() !== "")
+              .map((d) => Number(d));
 
-        <View className="flex-row justify-between mt-5 mb-4">
-          {[5, 10, 15, 20].map((percent) => {
-            const isSelected = discountPercent === percent;
+            const isSelected = currentDiscounts.includes(percent);
+
             return (
               <TouchableOpacity
                 key={percent}
-                onPress={() => setDiscountPercent(percent)}
-                className={`px-5 py-2 rounded-full ${
-                  isSelected
-                    ? "bg-primary dark:bg-dark-primary"
-                    : "bg-gray-200 dark:bg-gray-700"
-                }`}
+                onPress={() => handleDiscountToggle(percent)}
+                className={`flex-1 py-2 px-4 mx-2 rounded-xl items-center justify-center 
+          ${isSelected ? "bg-primary dark:bg-dark-primary" : "bg-gray-200 dark:bg-gray-700"}`}
+                style={{ minHeight: 48 }}
               >
                 <Text
-                  className={`font-semibold text-lg ${
-                    isSelected
-                      ? "text-white"
-                      : "text-foreground dark:text-dark-foreground"
-                  }`}
+                  className={`font-semibold text-base 
+            ${isSelected ? "text-white" : "text-foreground dark:text-dark-foreground"}`}
                 >
                   {percent}%
                 </Text>
               </TouchableOpacity>
             );
           })}
+        </ScrollView>
+        <View className="p-2 mb-5">
+          <CustomTextInput
+            placeholder="Descuento (ej: 5+10+2)"
+            value={discountPercent}
+            onChangeText={handleChangeDiscount}
+            editable={true}
+          />
+        </View>
+        <View className="gap-y-1 px-2 ">
+          <View className="flex-row justify-between">
+            <Text className="text-md text-gray-500 dark:text-gray-400">
+              Total bruto:
+            </Text>
+            <Text className="text-md text-gray-600 dark:text-gray-300">
+              {totalVenezuela(totalGross)} {currencyDollar}
+            </Text>
+          </View>
+
+          <View className="flex-row justify-between">
+            <Text className="text-md text-gray-500 dark:text-gray-400">
+              Descuento:
+            </Text>
+            <Text className="text-md text-red-500 font-semibold">
+              -{totalVenezuela(discountAmount)} {currencyDollar}
+            </Text>
+          </View>
+
+          <View className="flex-row justify-between">
+            <Text className="text-md text-gray-500 dark:text-gray-400">
+              Subtotal:
+            </Text>
+            <Text className="text-md text-gray-600 dark:text-gray-300">
+              {totalVenezuela(subtotal)} {currencyDollar}
+            </Text>
+          </View>
+
+          <View className="flex-row justify-between">
+            <Text className="text-md text-gray-500 dark:text-gray-400">
+              IVA:
+            </Text>
+            <Text className="text-md text-gray-600 dark:text-gray-300">
+              {totalVenezuela(iva)} {currencyDollar}
+            </Text>
+          </View>
         </View>
 
-        <View className="flex-row justify-between mb-1">
-          <Text className="text-xs text-gray-500 dark:text-gray-400">
-            Total bruto:
-          </Text>
-          <Text className="text-xs text-gray-500 dark:text-gray-400">
-            {totalVenezuela(totalGross)} {currencyDollar}
-          </Text>
-        </View>
+        <View className="h-[1px] bg-gray-300 dark:bg-gray-700 my-3" />
 
-        <View className="flex-row justify-between mb-1">
-          <Text className="text-xs text-gray-500 dark:text-gray-400">
-            Descuento:
-          </Text>
-          <Text className="text-xs text-red-500">
-            -{totalVenezuela(discountAmount)} {currencyDollar}
-          </Text>
-        </View>
-
-        <View className="flex-row justify-between mb-1">
-          <Text className="text-xs text-gray-500 dark:text-gray-400">
-            Subtotal:
-          </Text>
-          <Text className="text-xs text-gray-500 dark:text-gray-300">
-            {totalVenezuela(subtotal)} {currencyDollar}
-          </Text>
-        </View>
-
-        <View className="flex-row justify-between mb-1">
-          <Text className="text-xs text-gray-500 dark:text-gray-400">IVA</Text>
-          <Text className="text-xs text-gray-500 dark:text-gray-300">
-            {totalVenezuela(iva)} {currencyDollar}
-          </Text>
-        </View>
-
-        <View className="flex-row justify-between mt-2">
-          <Text className="text-base font-bold text-primary">Precio Final</Text>
-          <Text className="text-base font-bold text-primary">
+        <View className="flex-row justify-between items-center">
+          <Text className="text-lg font-bold text-primary">Precio Final</Text>
+          <Text className="text-lg font-bold text-primary">
             {totalVenezuela(total)} {currencyDollar}
           </Text>
         </View>
