@@ -1,12 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React, { useEffect } from "react";
-import {
-  Dimensions,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { Alert, Dimensions, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -36,10 +31,28 @@ const OrderModal: React.FC<OrderModalProps> = ({
   const { items, clearOrder } = useCreateOrderStore();
   const { isDark } = useThemeStore();
 
-  const total = items.reduce(
-    (acc, item) => acc + item.price * (item.quantity ?? 1),
-    0
-  );
+  const applyDiscounts = (price: number, discountStr: string) => {
+    if (!discountStr.trim()) return price;
+
+    const discounts = discountStr
+      .split("+")
+      .map((d) => Number(d.trim()))
+      .filter((n) => !isNaN(n) && n > 0);
+
+    return discounts.reduce((acc, d) => acc * (1 - d / 100), price);
+  };
+
+  const totalGross = items.reduce((acc, item) => {
+    return acc + item.price * (item.quantity ?? 1);
+  }, 0);
+
+  const total = items.reduce((acc, item) => {
+    const finalPrice = applyDiscounts(item.price, item.discount ?? "");
+    return acc + finalPrice * (item.quantity ?? 1);
+  }, 0);
+
+  const IVA = total * 0.16;
+  const totalWithIVA = total + IVA;
 
   const isEmpty = items.length === 0;
 
@@ -56,10 +69,20 @@ const OrderModal: React.FC<OrderModalProps> = ({
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
-    const handleRemove = () => {
-         safeHaptic("warning");
-      clearOrder()
-    };
+  const handleRemove = () => {
+    safeHaptic("warning");
+    Alert.alert("Vaciar pedido", "¿Estás seguro de vaciar el pedido?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Vaciar",
+        style: "destructive",
+        onPress: () => {
+          clearOrder();
+        },
+      },
+    ]);
+    
+  };
 
   if (!visible) return null;
 
@@ -90,7 +113,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
           {/* Header */}
           <View className="flex-row justify-between items-center mb-3">
             <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
-              <Ionicons name="bag-handle" size={24} color={isDark ? "#fff" : "#000"} /> Tu Pedido
+              <Ionicons
+                name="bag-handle"
+                size={24}
+                color={isDark ? "#fff" : "#000"}
+              />{" "}
+              Tu Pedido
             </Text>
             <TouchableOpacity
               onPress={onClose}
@@ -102,56 +130,103 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
           {/* Lista de productos */}
           {items.length === 0 ? (
-            <View className="flex-1 justify-center items-center">
-              <Ionicons name="bag-outline" size={42} color="#aaa" />
-              <Text className="text-base text-gray-400 mt-2">
-                No tienes productos.
-              </Text>
-            </View>
-          ) : (
-            <OrderSummaryList />
-          )}
-
-          {/* Footer */}
-          <View className="border-t border-white/30 mt-1">
-            <Text className="text-base font-semibold text-foreground dark:text-dark-foreground">
-              Descuento {totalVenezuela(total)} {currencyDollar}
-            </Text>
-            <Text className="text-base font-semibold text-foreground dark:text-dark-foreground">
-              Subtotal {totalVenezuela(total)} {currencyDollar}
-            </Text>
-            <Text className="text-base font-semibold text-foreground dark:text-dark-foreground">
-              IVA {currencyDollar}
-            </Text>
-            <Text className="text-xl font-semibold text-foreground dark:text-dark-foreground mb-3">
-              Total {totalVenezuela(total)} {currencyDollar}
-            </Text>
-
-            <View className="flex-row w-full space-x-2">
+            <>
+              <View className="flex-1 justify-center items-center">
+                <Ionicons name="bag-outline" size={42} color="#aaa" />
+                <Text className="text-base text-gray-400 mt-2">
+                  No tienes productos.
+                </Text>
+              </View>
               <TouchableOpacity
-                className={`flex-1 rounded-full py-4 items-center ${
-                  isEmpty ? "bg-gray-400" : "bg-primary dark:bg-dark-primary"
-                }`}
-                disabled={isEmpty}
-                onPress={onConfirm}
+                onPress={onClose}
+                className="py-4 rounded-full items-center bg-gray-300 dark:bg-gray-700"
               >
-                <Text className="text-white text-base font-semibold">
-                  Confirmar Pedido
+                <Text className="text-white font-semibold text-base">
+                  Cerrar
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleRemove}
-                className={`ml-1 p-4 rounded-full shadow-lg items-center justify-center ${
-                  isEmpty ? "bg-gray-400" : "bg-error dark:bg-dark-error"
-                }`}
-                accessibilityHint="Eliminar Pedido"
-                accessibilityLabel="Eliminar Pedido"
-                accessibilityRole="button"
-              >
-                <Ionicons name="trash" size={24} color="white" />
-              </TouchableOpacity>
-            </View>
-          </View>
+            </>
+          ) : (
+            <>
+              <OrderSummaryList />
+
+              <View className="mt-2 pt-2 border-t border-gray-300/30 dark:border-white/10">
+                <View className="space-y-1 mb-2">
+                  <View className="flex-row justify-between">
+                    <Text className="text-gray-600 dark:text-gray-300">
+                      Subtotal
+                    </Text>
+                    <Text className="text-gray-800 dark:text-gray-100 font-medium">
+                      {totalVenezuela(totalGross)} {currencyDollar}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row justify-between">
+                    <Text className="text-gray-600 dark:text-gray-300">
+                      Descuento
+                    </Text>
+                    <Text className="text-gray-800 dark:text-gray-100 font-medium">
+                      -{totalVenezuela(totalGross - total)} {currencyDollar}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-gray-600 dark:text-gray-300">
+                      Total con descuento
+                    </Text>
+                    <Text className="text-gray-800 dark:text-gray-100 font-medium">
+                      {totalVenezuela(total)} {currencyDollar}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row justify-between">
+                    <Text className="text-gray-600 dark:text-gray-300">
+                      IVA
+                    </Text>
+                    <Text className="text-gray-800 dark:text-gray-100 font-medium">
+                      +{totalVenezuela(IVA)} {currencyDollar}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row justify-between mt-1">
+                    <Text className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                      Total
+                    </Text>
+                    <Text className="text-lg font-bold text-primary dark:text-dark-primary">
+                      {totalVenezuela(totalWithIVA)} {currencyDollar}
+                    </Text>
+                  </View>
+                </View>
+
+                <View className="flex-row items-center space-x-3 mt-2 gap-1 ">
+                  <TouchableOpacity
+                    disabled={isEmpty}
+                    onPress={onConfirm}
+                    className={`flex-1 py-4 rounded-full items-center ${
+                      isEmpty
+                        ? "bg-gray-300 dark:bg-gray-700"
+                        : "bg-primary dark:bg-dark-primary"
+                    }`}
+                  >
+                    <Text className="text-white font-semibold text-base">
+                      Confirmar Pedido
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={handleRemove}
+                    disabled={isEmpty}
+                    className={`p-4 rounded-full ${
+                      isEmpty
+                        ? "bg-gray-300 dark:bg-gray-700"
+                        : "bg-red-500 dark:bg-red-600"
+                    }`}
+                  >
+                    <Ionicons name="trash" size={22} color="#fff" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </>
+          )}
         </View>
       </Animated.View>
     </View>

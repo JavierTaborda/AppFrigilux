@@ -92,8 +92,8 @@ const containerHeight = height || 40;
 
           <Animated.View entering={BounceIn} exiting={BounceOut.duration(150)}>
             <Animated.View style={qtyStyle}>
-              {fullView ? (
-                <Text className="mx-0 font-semibold text-lg text-center text-foreground dark:text-dark-foreground">
+              {!fullView ? (
+                <Text className="mx-4 font-semibold text-lg text-center text-foreground dark:text-dark-foreground">
                   {quantity}
                 </Text>
               ) : (

@@ -6,31 +6,37 @@ import { OrderItem } from "../types/orderItem";
 type CreateOrderState = {
   items: OrderItem[];
   addItem: (product: OrderItem, qty?: number) => void;
-  increase: (codart:string, by?: number)=> void;
-  decrease: (codart:string, by?: number)=> void;
+  increase: (codart: string, by?: number) => void;
+  decrease: (codart: string, by?: number) => void;
   removeItem: (codart: string) => void;
   clearOrder: () => void;
-  getSubtotal: ()=> number;
-  getItemsCount: ()=> number;
+  getSubtotal: () => number;
+  getItemsCount: () => number;
 };
 
 const useCreateOrderStore = create<CreateOrderState>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product, qty=1) => {
+      addItem: (product, qty = 1) => {
         const exists = get().items.find((i) => i.codart === product.codart);
         if (exists) {
           set({
             items: get().items.map((i) =>
               i.codart === product.codart
                 ? {
-                    ...i,
+                  ...i,
+                  discount:
+                    product.discount !== undefined &&
+                      product.discount !== i.discount
+                      ? product.discount
+                      : i.discount,
+
                     quantity: Math.min(
-                      i.quantity + qty,
-                      product.available ?? Infinity
-                    ),
-                  }
+                    i.quantity + qty,
+                    product.available ?? Infinity
+                  ),
+                }
                 : i
             ),
           });
@@ -43,18 +49,18 @@ const useCreateOrderStore = create<CreateOrderState>()(
           });
         }
       },
-      
+
       increase: (codart, by = 1) => {
         set({
           items: get().items.map((i) =>
             i.codart === codart
               ? {
-                  ...i,
-                  quantity: Math.min(
-                    i.quantity + by,
-                    i.available ?? i.quantity + by
-                  ),
-                }
+                ...i,
+                quantity: Math.min(
+                  i.quantity + by,
+                  i.available ?? i.quantity + by
+                ),
+              }
               : i
           ),
         });

@@ -74,7 +74,7 @@ export const useQuantityHandlers = ({
             return;
         }
 
-        addItem({ codart, artdes, price, img, available, quantity: 1 });
+        addItem({ codart, artdes, price, img, available, quantity: 1, discount:""});
         safeHaptic("selection");
         addScale.value = withTiming(
             1.1,

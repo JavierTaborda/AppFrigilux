@@ -2,8 +2,8 @@ import CustomTextInput from "@/components/inputs/CustomTextInput";
 import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
-import React, { useMemo, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
@@ -18,10 +18,18 @@ type ItemModalProps = {
 const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
   const [discountPercent, setDiscountPercent] = useState<string>("");
 
-  const price = Number(item?.price ?? 0);
   const cartItem = useCreateOrderStore((s) =>
     s.items.find((i) => i.codart === item?.codart)
   );
+
+  useEffect(() => {
+    if (cartItem?.discount !== undefined) {
+      setDiscountPercent(cartItem.discount.toString());
+    }
+  }, [cartItem?.discount]);
+
+  const price = Number(item?.price ?? 0);
+  const { addItem } = useCreateOrderStore();
   const quantity = cartItem?.quantity ?? 0;
   const available = item?.available ?? 0;
 
@@ -80,8 +88,50 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 
   const img = `${imageURL}${item?.codart?.trim()}.jpg`;
 
+  const handleAddItem = () => {
+    if (!cartItem) {
+      Alert.alert("Error", "No hay item seleccionado para agregar.");
+      return;
+    }
+
+    if (cartItem.discount != discountPercent) {
+      const itemToAdd = { ...cartItem, discount: discountPercent };
+
+      addItem(itemToAdd, 0);
+    }
+    onClose(false);
+  };
+  const discountSelects = [5, 10, 15, 20, 25, 30, 35, 40].map((percent) => {
+    
+    const currentDiscounts = discountPercent
+      .split("+")
+      .filter((d) => d.trim() !== "")
+      .map((d) => Number(d));
+
+    const isSelected = currentDiscounts.includes(percent);
+
+    return (
+      <TouchableOpacity
+        key={percent}
+        disabled={!cartItem}
+        onPress={() => handleDiscountToggle(percent)}
+        className={`flex-1 py-2  mx-2 rounded-xl items-center justify-center min-w-[55]
+    ${isSelected ? "bg-primary dark:bg-dark-primary" : "bg-gray-200 dark:bg-gray-700"}
+    ${!item ? "opacity-50" : ""}`}
+        style={{ minHeight: 48 }}
+      >
+        <Text
+          className={`font-semibold text-base 
+      ${isSelected ? "text-white" : "text-foreground dark:text-dark-foreground"}`}
+        >
+          {percent}%
+        </Text>
+      </TouchableOpacity>
+    );
+  });
+
   return (
-    <View className="gap-3 py-2">
+    <View className="flex-1 gap-3 py-2">
       <View className="flex-row bg-componentbg dark:bg-dark-componentbg rounded-2xl p-2">
         <View className="w-32 h-32 rounded-xl overflow-hidden bg-bgimages mr-3">
           <CustomImage img={img} />
@@ -121,34 +171,11 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
             artdes={item!.artdes}
             price={item!.price}
             img={img}
+            fullView={true}
           />
         </View>
         <ScrollView horizontal className="flex-row py-2 rounded-xl mb-1">
-          {[5, 10, 15, 20, 25, 30, 35, 40].map((percent) => {
-            const currentDiscounts = discountPercent
-              .split("+")
-              .filter((d) => d.trim() !== "")
-              .map((d) => Number(d));
-
-            const isSelected = currentDiscounts.includes(percent);
-
-            return (
-              <TouchableOpacity
-                key={percent}
-                onPress={() => handleDiscountToggle(percent)}
-                className={`flex-1 py-2 px-4 mx-2 rounded-xl items-center justify-center 
-          ${isSelected ? "bg-primary dark:bg-dark-primary" : "bg-gray-200 dark:bg-gray-700"}`}
-                style={{ minHeight: 48 }}
-              >
-                <Text
-                  className={`font-semibold text-base 
-            ${isSelected ? "text-white" : "text-foreground dark:text-dark-foreground"}`}
-                >
-                  {percent}%
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+          {discountSelects}
         </ScrollView>
         <View className="p-2 mb-5">
           <CustomTextInput
@@ -206,10 +233,10 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
         </View>
       </View>
 
-      <View className="flex-row justify-between mt-6">
+      <View className="flex-col mt-6 gap-3 absolute bottom-4 left-4 right-4">
         <TouchableOpacity
-          onPress={() => onClose(false)}
-          className="flex-1 rounded-2xl bg-primary py-3 items-center mr-2"
+          onPress={() => handleAddItem()}
+          className="rounded-2xl bg-primary py-4 items-center"
         >
           <Text className="text-white font-bold text-base">
             Agregar al Pedido
@@ -218,7 +245,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 
         <TouchableOpacity
           onPress={() => onClose(false)}
-          className="flex-1 rounded-2xl bg-gray-300 dark:bg-gray-700 py-3 items-center ml-2"
+          className="rounded-2xl bg-gray-300 dark:bg-gray-700 py-4 items-center"
         >
           <Text className="text-black dark:text-white font-bold text-base">
             Cancelar
