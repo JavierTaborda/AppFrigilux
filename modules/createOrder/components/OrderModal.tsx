@@ -12,6 +12,7 @@ import Animated, {
 import { useThemeStore } from "@/stores/useThemeStore";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { safeHaptic } from "@/utils/safeHaptics";
+import { useOrderTotals } from "../hooks/useOrderTotals";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import OrderSummaryList from "./OrderSummaryList";
 
@@ -30,29 +31,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
 }) => {
   const { items, clearOrder } = useCreateOrderStore();
   const { isDark } = useThemeStore();
-
-  const applyDiscounts = (price: number, discountStr: string) => {
-    if (!discountStr.trim()) return price;
-
-    const discounts = discountStr
-      .split("+")
-      .map((d) => Number(d.trim()))
-      .filter((n) => !isNaN(n) && n > 0);
-
-    return discounts.reduce((acc, d) => acc * (1 - d / 100), price);
-  };
-
-  const totalGross = items.reduce((acc, item) => {
-    return acc + item.price * (item.quantity ?? 1);
-  }, 0);
-
-  const total = items.reduce((acc, item) => {
-    const finalPrice = applyDiscounts(item.price, item.discount ?? "");
-    return acc + finalPrice * (item.quantity ?? 1);
-  }, 0);
-
-  const IVA = total * 0.16;
-  const totalWithIVA = total + IVA;
+  const { totalGross, total, IVA, totalWithIVA, discountAmount } =
+    useOrderTotals(items);
 
   const isEmpty = items.length === 0;
 
@@ -81,7 +61,6 @@ const OrderModal: React.FC<OrderModalProps> = ({
         },
       },
     ]);
-    
   };
 
   if (!visible) return null;
@@ -166,7 +145,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                       Descuento
                     </Text>
                     <Text className="text-gray-800 dark:text-gray-100 font-medium">
-                      -{totalVenezuela(totalGross - total)} {currencyDollar}
+                      -{totalVenezuela(discountAmount)} {currencyDollar}
                     </Text>
                   </View>
                   <View className="flex-row justify-between">
@@ -207,9 +186,16 @@ const OrderModal: React.FC<OrderModalProps> = ({
                         : "bg-primary dark:bg-dark-primary"
                     }`}
                   >
-                    <Text className="text-white font-semibold text-base">
-                      Confirmar Pedido
-                    </Text>
+                    <View className="flex-row">
+                      <Ionicons
+                        name="checkmark-sharp"
+                        size={24}
+                        color="white"
+                      />
+                      <Text className="text-lg font-semibold text-white">
+                        Confirmar pedido
+                      </Text>
+                    </View>
                   </TouchableOpacity>
 
                   <TouchableOpacity

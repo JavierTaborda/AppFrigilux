@@ -1,8 +1,9 @@
 import CustomFlatList from "@/components/ui/CustomFlatList";
 import SearchBar from "@/components/ui/SearchBar";
+import { Client } from "@/types/clients";
 import React, { useCallback, useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { Client } from "../types/clients";
+
 
 type ClientModalProps = {
   clients?: Client[];

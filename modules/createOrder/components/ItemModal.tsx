@@ -226,8 +226,8 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
         <View className="h-[1px] bg-gray-300 dark:bg-gray-700 my-3" />
 
         <View className="flex-row justify-between items-center">
-          <Text className="text-lg font-bold text-primary">Precio Final</Text>
-          <Text className="text-lg font-bold text-primary">
+          <Text className="text-lg font-bold text-primary dark:text-dark-primary">Precio Final</Text>
+          <Text className="text-lg font-bold text-primary dark:text-dark-primary">
             {totalVenezuela(total)} {currencyDollar}
           </Text>
         </View>
@@ -236,10 +236,10 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
       <View className="flex-col mt-6 gap-3 absolute bottom-4 left-4 right-4">
         <TouchableOpacity
           onPress={() => handleAddItem()}
-          className="rounded-2xl bg-primary py-4 items-center"
+          className="rounded-2xl bg-primary dark:bg-dark-primary py-4 items-center"
         >
           <Text className="text-white font-bold text-base">
-            Agregar al Pedido
+            Agregar al pedido
           </Text>
         </TouchableOpacity>
 

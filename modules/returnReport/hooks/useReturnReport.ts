@@ -1,10 +1,10 @@
 import { useAuthStore } from "@/stores/useAuthStore";
+import { Client } from "@/types/clients";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { createDevolucion, getArts, getBySerial, getClients, getMotives, getOrderByFactNumber } from "../services/ReturnReportService";
 import { Articulo } from "../types/Articulo";
-import { Client } from "../types/clients";
 import { CreateDevolucion } from "../types/createDevolucion";
 import { BarcodeItem } from "../types/Items";
 import { Motive } from "../types/motives";

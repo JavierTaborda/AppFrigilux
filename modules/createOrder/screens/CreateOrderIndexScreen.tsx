@@ -81,10 +81,105 @@ export default function CreateOrderScreen() {
     opacity: opacity.value,
   }));
 
-  if (loading) return <Loader />;
+
 
   if (error) {
     return <ErrorView error={error} getData={handleRefresh} />;
+  }
+  const data =() =>{
+    return (
+      <>
+        <CustomFlatList
+          data={productItems}
+          renderItem={({ item }) => (
+            <ProductCard
+              codart={item.codart}
+              artdes={item.artdes}
+              price={item.price}
+              //image={item.image}
+              available={item.available}
+              almacen={""}
+              setModalItemVisible={() => {
+                setItem(item);
+                setModalItemVisible(true);
+              }}
+            />
+          )}
+          keyExtractor={(item, index) => `${item.codart}-${index}`}
+          refreshing={refreshing}
+          canRefresh={canRefresh}
+          handleRefresh={handleRefresh}
+          onHeaderVisibleChange={setHeaderVisible}
+          showtitle={true}
+          numColumns={2}
+          showScrollTopButton={false}
+        />
+
+        <Animated.View
+          style={[
+            {
+              position: "absolute",
+              zIndex: 50,
+              bottom: 120,
+              paddingHorizontal: 20,
+              width: "100%",
+              flexDirection: "row",
+              gap: 12,
+            },
+            animatedStyle,
+          ]}
+        >
+          <TouchableOpacity
+            disabled={!haveOrder}
+            className="p-4 flex-1 items-center justify-center rounded-full shadow-lg  bg-primary dark:bg-dark-primary"
+            onPress={() =>
+              router.push("/(main)/(tabs)/(createOrder)/order-summary")
+            }
+          >
+            <View className="flex-row gap-1 items-center">
+              <Ionicons name="checkmark-sharp" size={24} color="white" />
+              <Text className="text-lg font-semibold text-white">
+                Confirmar pedido
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            disabled={!haveOrder}
+            onPress={() => setModalVisible(true)}
+            className={
+              "p-4 rounded-full shadow-lg bg-primary dark:bg-dark-primary"
+            }
+            accessibilityHint="Ver Pedido"
+            accessibilityLabel="Ver Pedido"
+            accessibilityRole="button"
+          >
+            <Ionicons name="bag" size={24} color="white" />
+          </TouchableOpacity>
+        </Animated.View>
+
+
+        <OrderModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onConfirm={() => {
+            setModalVisible(false);
+            router.push("/(main)/(tabs)/(createOrder)/order-summary");
+          }}
+        />
+
+        <BottomModal
+          visible={modalItemVisible}
+          onClose={() => setModalItemVisible(false)}
+          heightPercentage={0.85}
+        >
+          <ItemModal onClose={setModalItemVisible} item={item} />
+        </BottomModal>
+      </>
+    );
+  }
+  const loader =() =>{
+    return <Loader />;
   }
 
   return (
@@ -106,93 +201,7 @@ export default function CreateOrderScreen() {
         />
       }
     >
-      <CustomFlatList
-        data={productItems}
-        renderItem={({ item }) => (
-          <ProductCard
-            codart={item.codart}
-            artdes={item.artdes}
-            price={item.price}
-            //image={item.image}
-            available={item.available}
-            almacen={""}
-            setModalItemVisible={() => {
-              setItem(item);
-              setModalItemVisible(true);
-            }}
-          />
-        )}
-        keyExtractor={(item, index) => `${item.codart}-${index}`}
-        refreshing={refreshing}
-        canRefresh={canRefresh}
-        handleRefresh={handleRefresh}
-        onHeaderVisibleChange={setHeaderVisible}
-        showtitle={true}
-        numColumns={2}
-        showScrollTopButton={false}
-      />
-
-      <Animated.View
-        style={[
-          {
-            position: "absolute",
-            zIndex: 50,
-            bottom: 120,
-            paddingHorizontal: 20,
-            width: "100%",
-            flexDirection: "row",
-            gap: 12,
-          },
-          animatedStyle,
-        ]}
-      >
-        {/* Confirmar pedido */}
-        <TouchableOpacity
-          disabled={!haveOrder}
-          className="p-4 flex-1 items-center justify-center rounded-full shadow-lg  bg-primary dark:bg-dark-primary"
-          onPress={() =>
-            router.push("/(main)/(tabs)/(createOrder)/order-summary")
-          }
-        >
-          <View className="flex-row gap-1 items-center">
-            <Ionicons name="checkmark-sharp" size={24} color="white" />
-            <Text className="text-lg font-semibold text-white">
-              Confirmar pedido
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          disabled={!haveOrder}
-          onPress={() => setModalVisible(true)}
-          className={
-            "p-4 rounded-full shadow-lg bg-primary dark:bg-dark-primary"
-          }
-          accessibilityHint="Ver Pedido"
-          accessibilityLabel="Ver Pedido"
-          accessibilityRole="button"
-        >
-          <Ionicons name="bag" size={24} color="white" />
-        </TouchableOpacity>
-      </Animated.View>
-
-      {/* Modal */}
-      <OrderModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onConfirm={() => {
-          setModalVisible(false);
-          router.push("/(main)/(tabs)/(createOrder)/order-summary");
-        }}
-      />
-
-      <BottomModal
-        visible={modalItemVisible}
-        onClose={() => setModalItemVisible(false)}
-        heightPercentage={0.85}
-      >
-        <ItemModal onClose={setModalItemVisible} item={item} />
-      </BottomModal>
+      {loading ? loader() : data()}
     </ScreenSearchLayout>
   );
 }

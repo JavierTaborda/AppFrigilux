@@ -6,8 +6,11 @@ import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
 import { calculateTotals } from "../utils/calculateTotals";
 import ItemModal from "./ItemModal";
+type Props = {
+  scrollEnabled?: boolean;
 
-export default function FastFilters({}) {
+};
+export default function OrderSummaryList({scrollEnabled=true}:Props) {
   const { items } = useCreateOrderStore();
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
@@ -18,7 +21,7 @@ export default function FastFilters({}) {
   return (
     <>
       <FlatList
-  
+        scrollEnabled={scrollEnabled}
         data={items}
         keyExtractor={(item: OrderItem, index) => `${item.codart}-${index}`}
         renderItem={({ item }) => {
