@@ -1,10 +1,19 @@
+import ClientModal from "@/components/inputs/ClientModal";
 import CustomTextInput from "@/components/inputs/CustomTextInput";
 import BottomModal from "@/components/ui/BottomModal";
+import { Client } from "@/types/clients";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useState } from "react";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import OrderSummaryList from "../components/OrderSummaryList";
 import useCreateOrder from "../hooks/useCreateOrder";
 import { useOrderTotals } from "../hooks/useOrderTotals";
@@ -18,8 +27,15 @@ export default function OrderSummaryScreen() {
     useOrderTotals(items);
   const [direction, setDirection] = useState<string>("");
   const [comment, setComment] = useState<string>("");
+  // Customer Data
+  const [clients, setClients] = useState<Client[]>([]);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [modalItemVisible, setModalItemVisible] = useState<boolean>(false);
   const isEmpty = items.length === 0;
+   const [showClientModal, setShowClientModal] = useState(false);
+    const handleClientSelectPress = useCallback(() => {
+      setShowClientModal(true);
+    }, []);
   return (
     <View className="fex-1 bg-background dark:bg-dark-background">
       <View className="px-6 pt-2">
@@ -35,6 +51,16 @@ export default function OrderSummaryScreen() {
         contentContainerStyle={{ paddingBottom: 240 }}
       >
         <View className="mb-4 p-4 bg-componentbg dark:bg-dark-componentbg rounded-xl gap-y-3">
+          <Pressable
+            onPress={handleClientSelectPress}
+            className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl"
+          >
+            <Text className="text-foreground dark:text-dark-foreground">
+              {selectedClient
+                ? `${selectedClient.code.trim()} - ${selectedClient.name}`
+                : "Seleccionar cliente..."}
+            </Text>
+          </Pressable>
           <View>
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-2">
               Condición del pago
@@ -204,6 +230,16 @@ export default function OrderSummaryScreen() {
             </TouchableOpacity>
           ))}
         </View>
+      </BottomModal>
+      <BottomModal
+        visible={showClientModal}
+        onClose={() => setShowClientModal(false)}
+      >
+        <ClientModal
+          onClose={setShowClientModal}
+          setSelectedClient={setSelectedClient}
+          clients={clients}
+        />
       </BottomModal>
     </View>
   );

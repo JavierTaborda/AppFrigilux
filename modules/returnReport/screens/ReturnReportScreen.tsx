@@ -25,8 +25,8 @@ import Animated, {
   withDelay,
   withTiming,
 } from "react-native-reanimated";
+import ClientModal from "../../../components/inputs/ClientModal";
 import ArtsModal from "../components/ArtsModal";
-import ClientModal from "../components/ClientModal";
 import MotiveModal from "../components/MotiveModal";
 import SerialInput from "../components/SerialInput";
 import { useReturnReport } from "../hooks/useReturnReport";
