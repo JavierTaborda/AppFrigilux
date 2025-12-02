@@ -404,7 +404,7 @@ export default function ProductDefectScreen() {
         >
           <Text className="text-foreground dark:text-dark-foreground">
             {selectedClient
-              ? `${selectedClient.code.trim()} - ${selectedClient.name}`
+              ? `${selectedClient.co_cli.trim()} - ${selectedClient.cli_des.trim()}`
               : "Seleccionar cliente..."}
           </Text>
           <Ionicons
@@ -416,7 +416,7 @@ export default function ProductDefectScreen() {
       ) : (
         <Text className="text-foreground dark:text-dark-foreground flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl">
           {selectedClient
-            ? `${selectedClient.code.trim()} - ${selectedClient.name}`
+            ? `${selectedClient.co_cli.trim()} - ${selectedClient.cli_des.trim()}`
             : ""}
         </Text>
       )}

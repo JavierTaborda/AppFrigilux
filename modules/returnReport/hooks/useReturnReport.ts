@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/stores/useAuthStore";
-import { Client } from "@/types/clients";
+import { ClientData } from "@/types/clients";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
@@ -32,8 +32,8 @@ export function useReturnReport() {
 
 
     // Customer Data
-    const [clients, setClients] = useState<Client[]>([]);
-    const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+    const [clients, setClients] = useState<ClientData[]>([]);
+    const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
 
 
 
@@ -95,7 +95,7 @@ export function useReturnReport() {
             setCodeVen(data.codven || "");
             setVenDes(data.vendes || "");
             setSerial(data.serial || "");
-            setSelectedClient({ code: data.codcli, name: data.clides })
+            setSelectedClient({ co_cli: data.codcli, cli_des: data.clides })
 
             setBarcodeList(data.art.map((item: Articulo) => ({
                 co_art: item.co_art,
@@ -148,7 +148,7 @@ export function useReturnReport() {
             setVenDes(data.vendes || "");
             setArtDes(data.artdes || "");
             setSerial(data.serial || "");
-            setSelectedClient({ code: data.codcli, name: data.clides })
+            setSelectedClient({ co_cli: data.codcli, cli_des: data.clides })
 
             setIsData(true)
 
@@ -230,8 +230,8 @@ export function useReturnReport() {
                 estatus: "1",
                 anulada: "0",
                 cerrada: "0",
-                codcli: selectedClient?.code.trim() || "",
-                clides: selectedClient?.name || "",
+                codcli: selectedClient?.co_cli.trim() || "",
+                clides: selectedClient?.cli_des || "",
                 codven: codeVen.trim() || "",
                 vendes: venDes,
                 codart: codeArt,

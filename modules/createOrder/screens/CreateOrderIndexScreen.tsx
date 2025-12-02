@@ -1,5 +1,11 @@
-import { useEffect, useState } from "react";
-import { Dimensions, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -28,7 +34,6 @@ export default function CreateOrderScreen() {
     loading,
     error,
     productItems,
-
     handleRefresh,
     refreshing,
     canRefresh,
@@ -38,21 +43,23 @@ export default function CreateOrderScreen() {
     setSortByAvailable,
     sortByAssigned,
     setSortByAssigned,
+    handleSummary,
+    loadSummary,
   } = useCreateOrder(searchText);
 
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalItemVisible, setModalItemVisible] = useState(false);
-  const [item, setItem] = useState<OrderItem >({} as OrderItem);
+  const [item, setItem] = useState<OrderItem>({} as OrderItem);
   const router = useRouter();
   const { items } = useCreateOrderStore();
   const haveOrder = items?.length > 0;
 
   const { height } = Dimensions.get("window");
 
-  const translateY = useSharedValue(height); // start hide
-  const opacity = useSharedValue(0); // init invisible
+  const translateY = useSharedValue(height);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
     if (haveOrder) {
@@ -81,106 +88,114 @@ export default function CreateOrderScreen() {
     opacity: opacity.value,
   }));
 
-
-
   if (error) {
     return <ErrorView error={error} getData={handleRefresh} />;
   }
-  const data =() =>{
-    return (
-      <>
-        <CustomFlatList
-          data={productItems}
-          renderItem={({ item }) => (
-            <ProductCard
-              codart={item.codart}
-              artdes={item.artdes}
-              price={item.price}
-              //image={item.image}
-              available={item.available}
-              almacen={""}
-              setModalItemVisible={() => {
-                setItem(item);
-                setModalItemVisible(true);
-              }}
-            />
-          )}
-          keyExtractor={(item, index) => `${item.codart}-${index}`}
-          refreshing={refreshing}
-          canRefresh={canRefresh}
-          handleRefresh={handleRefresh}
-          onHeaderVisibleChange={setHeaderVisible}
-          showtitle={true}
-          numColumns={2}
-          showScrollTopButton={false}
-        />
 
-        <Animated.View
-          style={[
-            {
-              position: "absolute",
-              zIndex: 50,
-              bottom: 120,
-              paddingHorizontal: 20,
-              width: "100%",
-              flexDirection: "row",
-              gap: 12,
-            },
-            animatedStyle,
-          ]}
-        >
-          <TouchableOpacity
-            disabled={!haveOrder}
-            className="p-4 flex-1 items-center justify-center rounded-full shadow-lg  bg-primary dark:bg-dark-primary"
-            onPress={() =>
-              router.push("/(main)/(tabs)/(createOrder)/order-summary")
-            }
-          >
-            <View className="flex-row gap-1 items-center">
-              <Ionicons name="checkmark-sharp" size={24} color="white" />
-              <Text className="text-lg font-semibold text-white">
-                Confirmar pedido
-              </Text>
-            </View>
-          </TouchableOpacity>
+  const handleSetModalItemVisible = useCallback((item: OrderItem) => {
+    setItem(item);
+    setModalItemVisible(true);
+  }, []);
 
-          <TouchableOpacity
-            disabled={!haveOrder}
-            onPress={() => setModalVisible(true)}
-            className={
-              "p-4 rounded-full shadow-lg bg-primary dark:bg-dark-primary"
-            }
-            accessibilityHint="Ver Pedido"
-            accessibilityLabel="Ver Pedido"
-            accessibilityRole="button"
-          >
-            <Ionicons name="bag" size={24} color="white" />
-          </TouchableOpacity>
-        </Animated.View>
+  const availableProducts = useMemo(() => {
+    return productItems.filter((p) => p.available);
+  }, [productItems]);
 
+  const renderProductItem = useCallback(
+    ({ item }: { item: OrderItem }) => (
+      <ProductCard
+        codart={item.codart}
+        artdes={item.artdes}
+        price={item.price}
+        available={item.available}
+        almacen=""
+        setModalItemVisible={() => handleSetModalItemVisible(item)}
+      />
+    ),
+    [handleSetModalItemVisible]
+  );
 
-        <OrderModal
-          visible={modalVisible}
-          onClose={() => setModalVisible(false)}
-          onConfirm={() => {
-            setModalVisible(false);
-            router.push("/(main)/(tabs)/(createOrder)/order-summary");
-          }}
-        />
-
-        <BottomModal
-          visible={modalItemVisible}
-          onClose={() => setModalItemVisible(false)}
-          heightPercentage={0.85}
-        >
-          <ItemModal onClose={setModalItemVisible} item={item} />
-        </BottomModal>
-      </>
+  const CreateButton = () =>
+    loadSummary ? (
+      <ActivityIndicator color="white" />
+    ) : (
+      <View className="flex-row gap-1 items-center">
+        <Ionicons name="checkmark-sharp" size={24} color="white" />
+        <Text className="text-lg font-semibold text-white">
+          Confirmar pedido
+        </Text>
+      </View>
     );
-  }
-  const loader =() =>{
-    return <Loader />;
-  }
+    
+  const data = () => (
+    <>
+      <CustomFlatList
+        data={availableProducts}
+        renderItem={renderProductItem}
+        keyExtractor={(item, index) => `${item.codart}-${index}`}
+        refreshing={refreshing}
+        canRefresh={canRefresh}
+        handleRefresh={handleRefresh}
+        onHeaderVisibleChange={setHeaderVisible}
+        showtitle={true}
+        numColumns={2}
+        showScrollTopButton={false}
+      />
+
+      <Animated.View
+        style={[
+          {
+            position: "absolute",
+            zIndex: 50,
+            bottom: 120,
+            paddingHorizontal: 20,
+            width: "100%",
+            flexDirection: "row",
+            gap: 12,
+          },
+          animatedStyle,
+        ]}
+      >
+        <TouchableOpacity
+          disabled={!haveOrder}
+          className="p-4 flex-1 items-center justify-center rounded-full shadow-lg bg-primary dark:bg-dark-primary"
+          onPress={handleSummary}
+        >
+          {CreateButton()}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          disabled={!haveOrder}
+          onPress={() => setModalVisible(true)}
+          className="p-4 rounded-full shadow-lg bg-primary dark:bg-dark-primary"
+          accessibilityHint="Ver Pedido"
+          accessibilityLabel="Ver Pedido"
+          accessibilityRole="button"
+        >
+          <Ionicons name="bag" size={24} color="white" />
+        </TouchableOpacity>
+      </Animated.View>
+
+      <OrderModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={() => {
+          setModalVisible(false);
+          handleSummary();
+        }}
+      />
+
+      <BottomModal
+        visible={modalItemVisible}
+        onClose={() => setModalItemVisible(false)}
+        heightPercentage={0.85}
+      >
+        <ItemModal onClose={setModalItemVisible} item={item} />
+      </BottomModal>
+    </>
+  );
+
+  const loader = () => <Loader />;
 
   return (
     <ScreenSearchLayout

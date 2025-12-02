@@ -1,14 +1,14 @@
 import CustomFlatList from "@/components/ui/CustomFlatList";
 import SearchBar from "@/components/ui/SearchBar";
-import { Client } from "@/types/clients";
+import { ClientData } from "@/types/clients";
 import React, { useCallback, useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 
 type ClientModalProps = {
-  clients?: Client[];
+  clients?: ClientData[];
   visible?: boolean;
-  setSelectedClient: (client: Client) => void;
+  setSelectedClient: (client: ClientData) => void;
   onClose: (close: boolean) => void;
 };
 
@@ -20,14 +20,14 @@ const ClientModal: React.FC<ClientModalProps> = React.memo(
       const query = searchText.trim().toLowerCase();
       if (!query || query.length < 3) return clients;
       return clients.filter((c) => {
-        const code = c.code?.toLowerCase() || "";
-        const name = c.name?.toLowerCase() || "";
+        const code = c.co_cli?.toLowerCase() || "";
+        const name = c.cli_des?.toLowerCase() || "";
         return code.includes(query) || name.includes(query);
       });
     }, [searchText, clients]);
 
     const handleSelectClient = useCallback(
-      (item: Client) => {
+      (item: ClientData) => {
         setSelectedClient(item);
         onClose(false);
       },
@@ -57,14 +57,14 @@ const ClientModal: React.FC<ClientModalProps> = React.memo(
         ) : (
           <CustomFlatList
             data={filteredClients}
-            keyExtractor={(item) => item.code.toString()}
+            keyExtractor={(item) => item.co_cli.toString()}
             renderItem={({ item }) => (
               <Pressable
                 onPress={() => handleSelectClient(item)}
                 className="h-14 py-2 px-4 mb-3 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
               >
                 <Text className="text-md text-foreground dark:text-dark-foreground">
-                  {item.code} - {item.name}
+                  {item.co_cli} - {item.cli_des}
                 </Text>
               </Pressable>
             )}

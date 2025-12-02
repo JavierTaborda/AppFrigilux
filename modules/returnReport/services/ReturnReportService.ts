@@ -1,6 +1,7 @@
 import api from "@/lib/axios";
 import { Articulo } from "../types/Articulo";
-import { Client } from "../types/clients";
+
+import { ClientData } from "@/types/clients";
 import { CreateDevolucion } from "../types/createDevolucion";
 import { Motive } from "../types/motives";
 
@@ -8,7 +9,7 @@ export const getOrderByFactNumber = async (factNumber: number) => {
 
   try {
     const response = await api.get(`returns/byfactnumber/${factNumber}`);
-  
+
     return response.data;
   }
   catch (error) {
@@ -37,15 +38,18 @@ export const createDevolucion = async (dev: CreateDevolucion): Promise<boolean> 
     return false;
   }
 };
-export const getClients = async (): Promise<Client[]> => {
+export const getClients = async (): Promise<ClientData[]> => {
   try {
     const response = await api.get("customers");
 
-    const clients: Client[] = response.data.map((c: any) => ({
-      code: c.co_cli?.trim(),
-      name: c.cli_des?.split("\r\n")[0]?.trim(),
+    const clients: ClientData[] = response.data.map((c: any) => ({
+      co_cli: c.co_cli?.trim(),
+      cli_des: c.cli_des?.split("\r\n")[0]?.trim(),
+      co_zon: c.co_zon?.trim(),
+      dir_ent2: c.dir_ent2?.trim(),
+      direc1: c.direc1?.trim(),
+      direc2: c.direc2?.trim(),
     }));
-
     return clients;
   } catch (error) {
     console.error("Error fetching clients:", error);
@@ -68,7 +72,7 @@ export const getMotives = async (): Promise<Motive[]> => {
     const motives: Motive[] = response.data
     return motives;
   } catch (error) {
-    
+
     return [];
   }
 };

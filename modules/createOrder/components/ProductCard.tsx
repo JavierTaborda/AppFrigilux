@@ -104,13 +104,13 @@ export default function ProductCard({
         animationType="fade"
         onRequestClose={handleCloseMenu}
       >
-        {/* Fondo con blur */}
+     
         <BlurView
           intensity={95}
           tint="dark"
           className="flex-1 justify-center items-center"
         >
-          {/* Card ampliada en el centro */}
+         
           <Animated.View
             style={cardStyle}
             className="w-64 p-4 bg-white dark:bg-dark-componentbg rounded-2xl"
@@ -125,7 +125,6 @@ export default function ProductCard({
               {totalVenezuela(price)} {currencyDollar}
             </Text>
 
-            {/* Opciones */}
             <TouchableOpacity
               onPress={() => {
                 alert("Aplicar descuento");

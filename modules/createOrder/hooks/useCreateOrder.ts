@@ -1,11 +1,14 @@
-import { useFocusEffect } from "expo-router";
+import { ClientData } from "@/types/clients";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { getItemsByGoals } from "../services/CreateOrderService";
+import { Alert } from "react-native";
+import { getClients, getItemsByGoals } from "../services/CreateOrderService";
 import { order } from "../types/order";
 import { OrderItem } from "../types/orderItem";
 
 const useCreateOrder = (searchText: string) => {
   const [loading, setLoading] = useState(false);
+  const [loadSummary, setLoadSummary] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [neworder, setOrders] = useState<order[]>([]);
@@ -15,6 +18,7 @@ const useCreateOrder = (searchText: string) => {
   const [notUsed, setNotUsed] = useState<boolean>(false);
   const [sortByAvailable, setSortByAvailable] = useState<boolean>(false);
   const [sortByAssigned, setSortByAssigned] = useState<boolean>(false);
+  const [clients, setClients] = useState<ClientData[]>([]);
 
 
   const loadItems = async () => {
@@ -65,6 +69,23 @@ const useCreateOrder = (searchText: string) => {
     }
   };
 
+  const handleSummary = async () => {
+    setLoadSummary(true);
+    try {
+      const clients = await getClients();
+      setClients(clients);
+
+      router.push({
+        pathname: "/(main)/(tabs)/(createOrder)/order-summary",
+        params: { clients: JSON.stringify(clients) },
+      });
+    } catch {
+      Alert.alert("Ocurrió un error", "Por favor, intenta nuevamente.");
+    } finally {
+      setLoadSummary(false);
+    }
+  };
+
   useEffect(() => {
 
     setLoading(true);
@@ -98,7 +119,10 @@ const useCreateOrder = (searchText: string) => {
     productItems,
     notUsed, setNotUsed,
     sortByAvailable, setSortByAvailable,
-    sortByAssigned, setSortByAssigned
+    sortByAssigned, setSortByAssigned,
+    handleSummary,
+    clients,
+    loadSummary
   };
 };
 

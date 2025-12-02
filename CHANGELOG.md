@@ -13,8 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
--Created types globals
--Move ClientModal to Components/inputs
+- Created types globals
+- Move ClientModal to Components/inputs
+- Create DataClient interface
+- Change Client to DataClient in `ReturnModule`
 
 ### Fixed
 
