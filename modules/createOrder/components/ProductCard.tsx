@@ -81,9 +81,9 @@ export default function ProductCard({
         <Text className="text-base font-bold text-foreground dark:text-dark-foreground ">
           {totalVenezuela(price)} {currencyDollar}
         </Text>
-        {/* Stock  */}
+        
         <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1 ">
-          Disponibles: {available ?? "—"}
+          Disponibles: {available != null ? available - quantity : "—"}
         </Text>
         {quantity > 0 || true ? (
           <QuantitySelector

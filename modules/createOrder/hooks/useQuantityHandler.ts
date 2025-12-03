@@ -53,6 +53,26 @@ export const useQuantityHandlers = ({
             () => (qtyScale.value = 1)
         );
     };
+    const handleIncreaseQty = (qty?: number) => {
+        if (pressedLong.current) {
+            pressedLong.current = false;
+            return;
+        }
+        removeItem(codart);
+        increase(codart, qty);
+
+        safeHaptic("selection");
+        btnScale.value = withTiming(
+            0.9,
+            { duration: ANIM_DURATION },
+            () => (btnScale.value = 1)
+        );
+        qtyScale.value = withTiming(
+            1.1,
+            { duration: ANIM_DURATION },
+            () => (qtyScale.value = 1)
+        );
+    };
 
     const handleDecrease = () => {
         if (pressedLong.current) {
@@ -110,5 +130,6 @@ export const useQuantityHandlers = ({
         handleAdd,
         handleRemove,
         handleMaxIncrease,
+        handleIncreaseQty
     };
 };

@@ -1,6 +1,4 @@
-
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import Animated, {
   BounceIn,
@@ -32,7 +30,6 @@ export default function QuantitySelector({
   size = 32,
   fullView = false,
 }: QuantitySelectorProps) {
-
   const {
     pressedLong,
     btnScale,
@@ -43,6 +40,7 @@ export default function QuantitySelector({
     handleAdd,
     handleRemove,
     handleMaxIncrease,
+    handleIncreaseQty,
   } = useQuantityHandlers({
     codart,
     quantity,
@@ -51,7 +49,24 @@ export default function QuantitySelector({
     price,
     img,
   });
-const [inputQuantity, setInputQuantity] = useState(0);
+  const [inputQuantity, setInputQuantity] = useState(0);
+
+  const handleManualChange = (value: string) => {
+
+    const numeric = value.replace(/[^0-9]/g, "");
+    setInputQuantity(numeric === "" ? 0 : parseInt(numeric));
+  };
+  useEffect(() => {
+    if (inputQuantity !== quantity) {
+      if (inputQuantity > quantity) {
+        handleIncreaseQty(inputQuantity);
+   
+    }
+  }}, [inputQuantity]);
+
+  useEffect(() => {
+    setInputQuantity(quantity);
+  }, [quantity]);
 
   const btnStyle = useAnimatedStyle(() => ({
     transform: [{ scale: btnScale.value }],
@@ -64,8 +79,7 @@ const [inputQuantity, setInputQuantity] = useState(0);
   const addStyle = useAnimatedStyle(() => ({
     transform: [{ scale: addScale.value }],
   }));
-const containerHeight = height || 40;
-
+  const containerHeight = height || 40;
 
   if (quantity > 0) {
     return (
@@ -97,17 +111,18 @@ const containerHeight = height || 40;
                   {quantity}
                 </Text>
               ) : (
-                <TextInput
-                  value={String(quantity)}
-                  onChangeText={(text) => setInputQuantity(Number(text))}
-                  keyboardType="numeric"
-                  className="font-semibold mx-8 p-0 text-2xl text-center text-foreground dark:text-dark-foreground"
-                  
-                />
+                <>
+                  {/* <Text>{inputQuantity}</Text> */}
+                  <TextInput
+                    value={String(inputQuantity)}
+                    onChangeText={(text) => setInputQuantity(Number(text))}
+                    keyboardType="numeric"
+                    className="font-semibold mx-8 p-0 text-2xl text-center text-foreground dark:text-dark-foreground"
+                  />
+                </>
               )}
             </Animated.View>
           </Animated.View>
-
 
           <TouchableOpacity
             onPress={handleIncrease}

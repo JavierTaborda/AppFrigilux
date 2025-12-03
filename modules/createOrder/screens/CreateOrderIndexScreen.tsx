@@ -122,7 +122,7 @@ export default function CreateOrderScreen() {
       <View className="flex-row gap-1 items-center">
         <Ionicons name="checkmark-sharp" size={24} color="white" />
         <Text className="text-lg font-semibold text-white">
-          Confirmar pedido
+          Confirmar
         </Text>
       </View>
     );

@@ -8,16 +8,15 @@ import { calculateTotals } from "../utils/calculateTotals";
 import ItemModal from "./ItemModal";
 type Props = {
   scrollEnabled?: boolean;
-
 };
-export default function OrderSummaryList({scrollEnabled=true}:Props) {
+export default function OrderSummaryList({ scrollEnabled = true }: Props) {
   const { items } = useCreateOrderStore();
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
   const handleOpenItem = (item: OrderItem) => {
     setItem(item);
     setModalItemVisible(true);
-  }
+  };
   return (
     <>
       <FlatList
@@ -35,11 +34,11 @@ export default function OrderSummaryList({scrollEnabled=true}:Props) {
           return (
             <Pressable
               onPress={() => handleOpenItem(item)}
-              className="flex-row items-center my-1 py-1 rounded-xl"
+              className="flex-row items-center my-1 py-2 px-3 rounded-xl bg-componentbg dark:bg-dark-componentbg"
             >
               <Image
                 source={{ uri: item.img }}
-                className="w-16 h-16 rounded-xl bg-gray-200"
+                className="w-20 h-20 rounded-xl bg-gray-200"
               />
               <View className="flex-1 ml-2">
                 <Text
@@ -62,19 +61,24 @@ export default function OrderSummaryList({scrollEnabled=true}:Props) {
                       </View>
                     </>
                   ) : null}
-                  <Text className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                  <Text className="text-sm text-primary  dark:text-dark-primary font-semibold">
                     {totalVenezuela(subtotal)} {currencyDollar}
                   </Text>
                 </View>
-              </View>
-              <View className="items-end">
-                <Text className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                  x{item.quantity}
-                </Text>
-                <Text className="text-md text-gray-800 dark:text-gray-300">
-                  {totalVenezuela(total)}
-                  {currencyDollar}
-                </Text>
+                <View className="flex-row justify-between mt-1 items-center">
+                  <Text className="text-sm font-normal text-gray-800 dark:text-gray-200">
+                    Cantidad {item.quantity}
+                  </Text>
+                  <View className="flex-row">
+                    <Text className="text-sm font-normal text-gray-800 dark:text-gray-300">
+                      Total{" "}
+                    </Text>
+                    <Text className="text-md font-semibold text-primary dark:text-dark-primary">
+                      {totalVenezuela(total)}
+                      {currencyDollar}
+                    </Text>
+                  </View>
+                </View>
               </View>
             </Pressable>
           );

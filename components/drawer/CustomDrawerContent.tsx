@@ -74,7 +74,7 @@ export default function CustomDrawerContent(props: any) {
           <DrawerItem
            // emoji={emojis.bags}
             //emoji={emojis.approved}
-            label="Crear Pedido"
+            label="Registrar Pedido"
             href="/(main)/(tabs)/(createOrder)/create-order"
             currentPath={currentPath}
           />

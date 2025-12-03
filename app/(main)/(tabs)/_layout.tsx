@@ -173,7 +173,7 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: true,
-          title: "Crear Pedido",
+          title: "Registrar Pedido",
         }}
       />
       <Tabs.Screen
@@ -181,7 +181,7 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: true,
-          title: "Crear Pedido",
+           title: "",
         }}
       />
       <Tabs.Screen
@@ -197,7 +197,7 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: true,
-          title: "Reportar Devolución",
+          title: "Registrar Devolución",
         }}
       />
     </Tabs>

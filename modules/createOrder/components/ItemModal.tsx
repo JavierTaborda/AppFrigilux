@@ -152,7 +152,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 
           <View className="mt-1 px-2 py-1 rounded-full bg-primary/15 dark:bg-primary/25 self-start">
             <Text className="text-primary dark:text-dark-primary font-semibold text-sm">
-              {available} disponibles
+              {available-quantity} disponibles
             </Text>
           </View>
 
@@ -215,7 +215,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 
           <View className="flex-row justify-between">
             <Text className="text-md text-gray-500 dark:text-gray-400">
-              IVA:
+              IVA(16%):
             </Text>
             <Text className="text-md text-gray-600 dark:text-gray-300">
               {totalVenezuela(iva)} {currencyDollar}
@@ -226,11 +226,20 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
         <View className="h-[1px] bg-gray-300 dark:bg-gray-700 my-3" />
 
         <View className="flex-row justify-between items-center">
-          <Text className="text-lg font-bold text-primary dark:text-dark-primary">Precio Final</Text>
+          <Text className="text-lg font-bold text-primary dark:text-dark-primary">Total</Text>
           <Text className="text-lg font-bold text-primary dark:text-dark-primary">
             {totalVenezuela(total)} {currencyDollar}
           </Text>
         </View>
+
+        {/* <View className="flex-row justify-between items-center">
+          <Text className="text-lg font-bold text-primary dark:text-dark-primary">
+            Precio Final
+          </Text>
+          <Text className="text-lg font-bold text-primary dark:text-dark-primary">
+            {totalVenezuela(total/quantity)} {currencyDollar}
+          </Text>
+        </View> */}
       </View>
 
       <View className="flex-col mt-6 gap-3 absolute bottom-4 left-4 right-4">

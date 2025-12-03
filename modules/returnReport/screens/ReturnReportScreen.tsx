@@ -518,7 +518,7 @@ export default function ProductDefectScreen() {
             <ActivityIndicator color="#fff" />
           ) : (
             <Text className="text-white font-semibold text-lg">
-              Guardar devolución
+              Registrar
             </Text>
           )}
         </Pressable>

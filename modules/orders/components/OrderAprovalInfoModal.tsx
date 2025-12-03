@@ -65,7 +65,7 @@ export default function OrderModal({ visible, onClose, order }: Props) {
           label="Fecha Emisión / Vencimiento"
           value={`${formatDateMMM_dot_dd_yyyy(order.fec_emis)} / ${formatDateMMM_dot_dd_yyyy(order.fec_venc)}`}
         />
-        <Row label="Tasa" value={`${parseFloat(order.tasa).toFixed(2)} BS`} />
+        <Row label="Tasa" value={`${totalVenezuela(order.tasa)} Bs`} />
         {/* Total Neto */}
         <View
           className={`rounded-lg p-4 my-4 ${isAnulada ? "bg-red-400" : "bg-green-600"}`}

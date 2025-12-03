@@ -51,13 +51,14 @@ const OrderModal: React.FC<OrderModalProps> = ({
   }));
   const handleRemove = () => {
     safeHaptic("warning");
-    Alert.alert("Vaciar pedido", "¿Estás seguro de vaciar el pedido?", [
+    Alert.alert("¿Desea descartar el pedido?", "", [
       { text: "Cancelar", style: "cancel" },
       {
-        text: "Vaciar",
+        text: "Descartar",
         style: "destructive",
         onPress: () => {
           clearOrder();
+          onClose();
         },
       },
     ]);
@@ -88,26 +89,33 @@ const OrderModal: React.FC<OrderModalProps> = ({
           animatedStyle,
         ]}
       >
-        <View className="flex-1 rounded-3xl bg-componentbg dark:bg-dark-componentbg p-5 shadow-lg backdrop-blur-md">
-          {/* Header */}
-          <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
+        <View className="flex-1 rounded-3xl bg-background dark:bg-dark-background px-5 py-4 shadow-lg backdrop-blur-md">
+          <View className="flex-row justify-between items-center mb-2">
+            <View className="flex-row items-center space-x-2">
               <Ionicons
                 name="bag-handle"
-                size={24}
+                size={26}
                 color={isDark ? "#fff" : "#000"}
-              />{" "}
-              Tu Pedido
-            </Text>
+              />
+              <View className="ml-2">
+                <Text className="text-xl font-extrabold text-foreground dark:text-dark-foreground">
+                  Resumen
+                </Text>
+                <Text className="text-md font-semibold text-gray-500 dark:text-gray-400">
+                  {items?.length} {items?.length > 1 ? "artículos" : "artículo"}
+                </Text>
+              </View>
+            </View>
+
             <TouchableOpacity
               onPress={onClose}
-              className=" bg-slate-200 dark:bg-slate-100 rounded-full"
+              activeOpacity={0.7}
+              className="p-2 bg-componentbg dark:bg-dark-componentbg rounded-full"
             >
               <Ionicons name="close" size={22} color="#555" />
             </TouchableOpacity>
           </View>
 
-          {/* Lista de productos */}
           {items.length === 0 ? (
             <>
               <View className="flex-1 justify-center items-center">
@@ -193,13 +201,15 @@ const OrderModal: React.FC<OrderModalProps> = ({
                         color="white"
                       />
                       <Text className="text-lg font-semibold text-white">
-                        Confirmar pedido
+                        Confirmar
                       </Text>
                     </View>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPress={handleRemove}
+                    onPress={() => {
+                      handleRemove();
+                    }}
                     disabled={isEmpty}
                     className={`p-4 rounded-full ${
                       isEmpty
