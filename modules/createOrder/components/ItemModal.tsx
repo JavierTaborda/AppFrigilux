@@ -15,6 +15,8 @@ type ItemModalProps = {
   item?: OrderItem;
 };
 
+const PRESET_DISCOUNTS = [5, 10, 15, 20, 25, 30, 35, 40];
+
 const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
   const [discountPercent, setDiscountPercent] = useState<string>("");
 
@@ -22,18 +24,19 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
     s.items.find((i) => i.codart === item?.codart)
   );
 
+  const { addItem } = useCreateOrderStore();
+
+  const price = Number(item?.price ?? 0);
+  const quantity = cartItem?.quantity ?? 0;
+  const available = item?.available ?? 0;
+
+  const img = `${imageURL}${item?.codart?.trim()}.jpg`;
+
   useEffect(() => {
     if (cartItem?.discount !== undefined) {
       setDiscountPercent(cartItem.discount.toString());
     }
   }, [cartItem?.discount]);
-
-  const price = Number(item?.price ?? 0);
-  const { addItem } = useCreateOrderStore();
-  const quantity = cartItem?.quantity ?? 0;
-  const available = item?.available ?? 0;
-
-  const totalGross = useMemo(() => price * quantity, [price, quantity]);
 
   const discountsArray = useMemo(() => {
     if (!discountPercent.trim()) return [];
@@ -43,50 +46,58 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
       .filter((n) => !isNaN(n) && n > 0);
   }, [discountPercent]);
 
-  const discountAmount = useMemo(() => {
-    let current = totalGross;
-
+  const finalUnitPrice = useMemo(() => {
+    let current = price;
     discountsArray.forEach((percent) => {
-      const amount = (current * percent) / 100;
-      current -= amount;
+      current = current * (1 - percent / 100);
     });
+    return current;
+  }, [price, discountsArray]);
 
-    return totalGross - current; // total discounted
-  }, [totalGross, discountsArray]);
+  const discountPerUnit = useMemo(
+    () => price - finalUnitPrice,
+    [price, finalUnitPrice]
+  );
+
+  const totalGross = useMemo(() => price * quantity, [price, quantity]);
+
+  const totalDiscount = useMemo(
+    () => discountPerUnit * quantity,
+    [discountPerUnit, quantity]
+  );
+
 
   const subtotal = useMemo(
-    () => totalGross - discountAmount,
-    [totalGross, discountAmount]
+    () => finalUnitPrice * quantity,
+    [finalUnitPrice, quantity]
   );
+
   const iva = useMemo(() => subtotal * 0.16, [subtotal]);
   const total = useMemo(() => subtotal + iva, [subtotal, iva]);
 
   const handleDiscountToggle = (percent: number) => {
-    const currentDiscounts = discountPercent
+    const current = discountPercent
       .split("+")
       .filter((d) => d.trim() !== "")
       .map((d) => Number(d));
 
-    let newDiscounts: number[];
-
-    if (currentDiscounts.includes(percent)) {
-      newDiscounts = currentDiscounts.filter((d) => d !== percent);
-    } else {
-      newDiscounts = [...currentDiscounts, percent];
-    }
+    const newDiscounts = current.includes(percent)
+      ? current.filter((d) => d !== percent)
+      : [...current, percent];
 
     setDiscountPercent(newDiscounts.join("+"));
   };
+
   const handleChangeDiscount = (text: string) => {
-    // only numberes and "+"
-    const regex = /^[0-9+]*$/;
+    if (!/^[0-9+]*$/.test(text)) return;
 
-    if (regex.test(text)) {
-      setDiscountPercent(text);
-    }
+    const cleaned = text
+      .replace(/\+\+/g, "+")
+      .replace(/^\+/, "")
+      .replace(/\+$/, "");
+
+    setDiscountPercent(cleaned);
   };
-
-  const img = `${imageURL}${item?.codart?.trim()}.jpg`;
 
   const handleAddItem = () => {
     if (!cartItem) {
@@ -94,47 +105,23 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
       return;
     }
 
-    if (cartItem.discount != discountPercent) {
-      const itemToAdd = { ...cartItem, discount: discountPercent };
+    const itemToAdd = {
+      ...cartItem,
+      discount: discountPercent,
+    };
 
-      addItem(itemToAdd, 0);
-    }
+    addItem(itemToAdd, 0);
     onClose(false);
   };
-  const discountSelects = [5, 10, 15, 20, 25, 30, 35, 40].map((percent) => {
-    
-    const currentDiscounts = discountPercent
-      .split("+")
-      .filter((d) => d.trim() !== "")
-      .map((d) => Number(d));
-
-    const isSelected = currentDiscounts.includes(percent);
-
-    return (
-      <TouchableOpacity
-        key={percent}
-        disabled={!cartItem}
-        onPress={() => handleDiscountToggle(percent)}
-        className={`flex-1 py-2  mx-2 rounded-xl items-center justify-center min-w-[55]
-    ${isSelected ? "bg-primary dark:bg-dark-primary" : "bg-gray-200 dark:bg-gray-700"}
-    ${!item ? "opacity-50" : ""}`}
-        style={{ minHeight: 48 }}
-      >
-        <Text
-          className={`font-semibold text-base 
-      ${isSelected ? "text-white" : "text-foreground dark:text-dark-foreground"}`}
-        >
-          {percent}%
-        </Text>
-      </TouchableOpacity>
-    );
-  });
 
   return (
     <View className="flex-1 gap-3 py-2">
-      <View className="flex-row bg-componentbg dark:bg-dark-componentbg rounded-2xl p-2">
-        <View className="w-32 h-32 rounded-xl overflow-hidden bg-bgimages mr-3">
-          <CustomImage img={img} />
+      <View className="flex-row bg-componentbg dark:bg-dark-componentbg rounded-2xl p-2 gap-2" >
+        <View
+          className="w-32 h-36 my-2 rounded-xl overflow-hidden bg-bgimages mr-3 
+             items-center justify-center"
+        >
+          <CustomImage img={img}  />
         </View>
 
         <View className="flex-1 justify-between">
@@ -145,19 +132,32 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
           <Text
             className="text-sm text-foreground dark:text-dark-foreground leading-snug"
             numberOfLines={3}
-            ellipsizeMode="tail"
           >
             {item?.artdes}
           </Text>
 
-          <View className="mt-1 px-2 py-1 rounded-full bg-primary/15 dark:bg-primary/25 self-start">
+          <View className=" px-2 py-1 rounded-full bg-primary/15 dark:bg-primary/25 self-start">
             <Text className="text-primary dark:text-dark-primary font-semibold text-sm">
-              {available-quantity} disponibles
+              {available - quantity} disponibles
             </Text>
           </View>
 
-          <Text className="text-lg font-extrabold text-primary dark:text-dark-primary ">
-            {totalVenezuela(price)} {currencyDollar}
+          <View className="flex-row  overflow-hidden">
+            {discountsArray.length > 0 && (
+              <>
+                <Text className="text-sm line-through text-gray-500 dark:text-gray-300 me-2">
+                  {totalVenezuela(price)} {currencyDollar}
+                </Text>
+                <View className="bg-red-500/10 dark:bg-red-900 px-1 rounded-full border border-red-500 ml-1">
+                  <Text className="text-xs font-bold text-red-500 dark:text-red-400">
+                    {discountPercent}
+                  </Text>
+                </View>
+              </>
+            )}
+          </View>
+          <Text className="text-lg font-bold text-primary dark:text-dark-primary">
+            {totalVenezuela(finalUnitPrice)} {currencyDollar}
           </Text>
         </View>
       </View>
@@ -174,77 +174,67 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
             fullView={true}
           />
         </View>
+
         <ScrollView horizontal className="flex-row py-2 rounded-xl mb-1">
-          {discountSelects}
+          {PRESET_DISCOUNTS.map((percent) => {
+            const isSelected = discountsArray.includes(percent);
+            return (
+              <TouchableOpacity
+                key={percent}
+                onPress={() => handleDiscountToggle(percent)}
+                className={`flex-1 py-2 mx-2 rounded-xl items-center justify-center min-w-[55]
+                ${
+                  isSelected
+                    ? "bg-primary dark:bg-dark-primary"
+                    : "bg-gray-200 dark:bg-gray-700"
+                }`}
+                style={{ minHeight: 48 }}
+              >
+                <Text
+                  className={`font-semibold text-base 
+                  ${
+                    isSelected
+                      ? "text-white"
+                      : "text-foreground dark:text-dark-foreground"
+                  }`}
+                >
+                  {percent}%
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
+
         <View className="p-2 mb-5">
           <CustomTextInput
             placeholder="Descuento (ej: 5+10+2)"
             value={discountPercent}
             onChangeText={handleChangeDiscount}
-            editable={true}
           />
         </View>
-        <View className="gap-y-1 px-2 ">
-          <View className="flex-row justify-between">
-            <Text className="text-md text-gray-500 dark:text-gray-400">
-              Total bruto:
-            </Text>
-            <Text className="text-md text-gray-600 dark:text-gray-300">
-              {totalVenezuela(totalGross)} {currencyDollar}
-            </Text>
-          </View>
 
-          <View className="flex-row justify-between">
-            <Text className="text-md text-gray-500 dark:text-gray-400">
-              Descuento:
-            </Text>
-            <Text className="text-md text-red-500 font-semibold">
-              -{totalVenezuela(discountAmount)} {currencyDollar}
-            </Text>
-          </View>
-
-          <View className="flex-row justify-between">
-            <Text className="text-md text-gray-500 dark:text-gray-400">
-              Subtotal:
-            </Text>
-            <Text className="text-md text-gray-600 dark:text-gray-300">
-              {totalVenezuela(subtotal)} {currencyDollar}
-            </Text>
-          </View>
-
-          <View className="flex-row justify-between">
-            <Text className="text-md text-gray-500 dark:text-gray-400">
-              IVA(16%):
-            </Text>
-            <Text className="text-md text-gray-600 dark:text-gray-300">
-              {totalVenezuela(iva)} {currencyDollar}
-            </Text>
-          </View>
+        <View className="gap-y-1 px-2">
+          <Row label="Total bruto:" value={totalGross} />
+          <Row label="Descuento:" value={-totalDiscount} red />
+          <Row label="Subtotal:" value={subtotal} />
+          <Row label="IVA (16%):" value={iva} />
         </View>
 
         <View className="h-[1px] bg-gray-300 dark:bg-gray-700 my-3" />
 
         <View className="flex-row justify-between items-center">
-          <Text className="text-lg font-bold text-primary dark:text-dark-primary">Total</Text>
+          <Text className="text-lg font-bold text-primary dark:text-dark-primary">
+            Total
+          </Text>
           <Text className="text-lg font-bold text-primary dark:text-dark-primary">
             {totalVenezuela(total)} {currencyDollar}
           </Text>
         </View>
-
-        {/* <View className="flex-row justify-between items-center">
-          <Text className="text-lg font-bold text-primary dark:text-dark-primary">
-            Precio Final
-          </Text>
-          <Text className="text-lg font-bold text-primary dark:text-dark-primary">
-            {totalVenezuela(total/quantity)} {currencyDollar}
-          </Text>
-        </View> */}
       </View>
 
-      <View className="flex-col mt-6 gap-3 absolute bottom-4 left-4 right-4">
+      <View className="flex-col mt-6 gap-3">
         <TouchableOpacity
-          onPress={() => handleAddItem()}
+          onPress={handleAddItem}
           className="rounded-2xl bg-primary dark:bg-dark-primary py-4 items-center"
         >
           <Text className="text-white font-bold text-base">
@@ -264,5 +254,26 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
     </View>
   );
 };
+
+const Row = ({
+  label,
+  value,
+  red,
+}: {
+  label: string;
+  value: number;
+  red?: boolean;
+}) => (
+  <View className="flex-row justify-between">
+    <Text className="text-md text-gray-500 dark:text-gray-400">{label}</Text>
+    <Text
+      className={`text-md ${
+        red ? "text-red-500 font-semibold" : "text-gray-700 dark:text-gray-300"
+      }`}
+    >
+      {totalVenezuela(value)} {currencyDollar}
+    </Text>
+  </View>
+);
 
 export default ItemModal;

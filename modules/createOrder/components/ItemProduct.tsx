@@ -2,16 +2,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React, { useEffect } from "react";
 import {
-    Dimensions,
-    Text,
-    TouchableOpacity,
-    View
+  Dimensions,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import Animated, {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
 } from "react-native-reanimated";
 
 import { emojis } from "@/utils/emojis";
@@ -110,7 +110,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
               onPress={onConfirm}
             >
               <Text className="text-white text-base font-semibold">
-                Confirmar Pedido
+                Confirmar
               </Text>
             </TouchableOpacity>
           </View>

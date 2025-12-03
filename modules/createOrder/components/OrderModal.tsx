@@ -139,26 +139,18 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
               <View className="mt-2 pt-2 border-t border-gray-300/30 dark:border-white/10">
                 <View className="space-y-1 mb-2">
-                  <View className="flex-row justify-between">
-                    <Text className="text-gray-600 dark:text-gray-300">
-                      Subtotal
-                    </Text>
-                    <Text className="text-gray-800 dark:text-gray-100 font-medium">
-                      {totalVenezuela(totalGross)} {currencyDollar}
-                    </Text>
-                  </View>
-
-                  <View className="flex-row justify-between">
+                 
+                  {/* <View className="flex-row justify-between">
                     <Text className="text-gray-600 dark:text-gray-300">
                       Descuento
                     </Text>
                     <Text className="text-gray-800 dark:text-gray-100 font-medium">
                       -{totalVenezuela(discountAmount)} {currencyDollar}
                     </Text>
-                  </View>
+                  </View> */}
                   <View className="flex-row justify-between">
                     <Text className="text-gray-600 dark:text-gray-300">
-                      Total con descuento
+                      Subtotal
                     </Text>
                     <Text className="text-gray-800 dark:text-gray-100 font-medium">
                       {totalVenezuela(total)} {currencyDollar}
@@ -167,10 +159,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
                   <View className="flex-row justify-between">
                     <Text className="text-gray-600 dark:text-gray-300">
-                      IVA
+                      IVA(16%)
                     </Text>
                     <Text className="text-gray-800 dark:text-gray-100 font-medium">
-                      +{totalVenezuela(IVA)} {currencyDollar}
+                      {totalVenezuela(IVA)} {currencyDollar}
                     </Text>
                   </View>
 

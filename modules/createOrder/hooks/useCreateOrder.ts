@@ -28,9 +28,10 @@ const useCreateOrder = (searchText: string) => {
       setAllProductsItems(result);
     } catch (error) {
       return { error };
-    } finally {
-      setLoading(false);
     }
+    //  finally {
+    //   setLoading(false);
+    // }
   };
 
   useFocusEffect(
