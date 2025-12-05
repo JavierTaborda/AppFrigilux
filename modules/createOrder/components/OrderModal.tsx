@@ -10,11 +10,12 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useThemeStore } from "@/stores/useThemeStore";
-import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { safeHaptic } from "@/utils/safeHaptics";
 import { useOrderTotals } from "../hooks/useOrderTotals";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
+import ExchangeRateBadge from "./ExchangeRateBadge";
 import OrderSummaryList from "./OrderSummaryList";
+import TotalView from "./TotalView";
 
 const { height, width } = Dimensions.get("window");
 
@@ -29,7 +30,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
   onClose,
   onConfirm,
 }) => {
-  const { items, clearOrder } = useCreateOrderStore();
+  const { items, clearOrder, exchangeRate } = useCreateOrderStore();
   const { isDark } = useThemeStore();
   const { totalGross, total, IVA, totalWithIVA, discountAmount } =
     useOrderTotals(items);
@@ -89,7 +90,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
           animatedStyle,
         ]}
       >
-        <View className="flex-1 rounded-3xl bg-background dark:bg-dark-background px-5 py-4 shadow-lg backdrop-blur-md">
+        <View className="flex-1 rounded-3xl bg-background dark:bg-dark-background px-5 pt-2 pb-3 shadow-lg backdrop-blur-md">
           <View className="flex-row justify-between items-center mb-2">
             <View className="flex-row items-center space-x-2">
               <Ionicons
@@ -106,14 +107,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 </Text>
               </View>
             </View>
-
-            <TouchableOpacity
-              onPress={onClose}
-              activeOpacity={0.7}
-              className="p-2 bg-componentbg dark:bg-dark-componentbg rounded-full"
-            >
-              <Ionicons name="close" size={22} color="#555" />
-            </TouchableOpacity>
+            <ExchangeRateBadge exchangeRate={exchangeRate} onPress={() => {}} />
           </View>
 
           {items.length === 0 ? (
@@ -139,44 +133,15 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
               <View className="mt-2 pt-2 border-t border-gray-300/30 dark:border-white/10">
                 <View className="space-y-1 mb-2">
-                 
-                  {/* <View className="flex-row justify-between">
-                    <Text className="text-gray-600 dark:text-gray-300">
-                      Descuento
-                    </Text>
-                    <Text className="text-gray-800 dark:text-gray-100 font-medium">
-                      -{totalVenezuela(discountAmount)} {currencyDollar}
-                    </Text>
-                  </View> */}
-                  <View className="flex-row justify-between">
-                    <Text className="text-gray-600 dark:text-gray-300">
-                      Subtotal
-                    </Text>
-                    <Text className="text-gray-800 dark:text-gray-100 font-medium">
-                      {totalVenezuela(total)} {currencyDollar}
-                    </Text>
-                  </View>
-
-                  <View className="flex-row justify-between">
-                    <Text className="text-gray-600 dark:text-gray-300">
-                      IVA(16%)
-                    </Text>
-                    <Text className="text-gray-800 dark:text-gray-100 font-medium">
-                      {totalVenezuela(IVA)} {currencyDollar}
-                    </Text>
-                  </View>
-
-                  <View className="flex-row justify-between mt-1">
-                    <Text className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                      Total
-                    </Text>
-                    <Text className="text-lg font-bold text-primary dark:text-dark-primary">
-                      {totalVenezuela(totalWithIVA)} {currencyDollar}
-                    </Text>
-                  </View>
+                  <TotalView
+                    total={total}
+                    totalWithIVA={totalWithIVA}
+                    IVA={IVA}
+                    exchangeRate={exchangeRate}
+                  />
                 </View>
 
-                <View className="flex-row items-center space-x-3 mt-2 gap-1 ">
+                <View className="flex-row items-center space-x-3  gap-1 ">
                   <TouchableOpacity
                     disabled={isEmpty}
                     onPress={onConfirm}
@@ -215,6 +180,14 @@ const OrderModal: React.FC<OrderModalProps> = ({
               </View>
             </>
           )}
+          <TouchableOpacity
+            onPress={onClose}
+            activeOpacity={0.7}
+            className="p-1 bg-componentbg dark:bg-dark-componentbg rounded-full
+             absolute right-2 top-2"
+          >
+            <Ionicons name="close" size={20} color="#555" />
+          </TouchableOpacity>
         </View>
       </Animated.View>
     </View>

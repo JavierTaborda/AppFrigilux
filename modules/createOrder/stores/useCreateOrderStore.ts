@@ -5,6 +5,7 @@ import { OrderItem } from "../types/orderItem";
 
 type CreateOrderState = {
   items: OrderItem[];
+  exchangeRate:number;
   addItem: (product: OrderItem, qty?: number) => void;
   increase: (codart: string, by?: number) => void;
   decrease: (codart: string, by?: number) => void;
@@ -12,12 +13,40 @@ type CreateOrderState = {
   clearOrder: () => void;
   getSubtotal: () => number;
   getItemsCount: () => number;
+  syncWithProducts: (products: OrderItem[], exchange:number) => void;
 };
 
 const useCreateOrderStore = create<CreateOrderState>()(
   persist(
     (set, get) => ({
       items: [],
+      exchangeRate:0,
+      syncWithProducts: (products: OrderItem[], exchange: number) => {
+        set({
+          items: get().items
+            .map((cartItem) => {
+              const product = products.find((p) => p.codart === cartItem.codart);
+
+              if (!product) {
+                return null;
+              }
+
+              const available = product.available ?? 0;
+              return {
+                ...cartItem,
+                price: product.price,
+                quantity: Math.min(
+                  cartItem.quantity,
+                  product.quantity ?? cartItem.quantity
+                ),
+                available,
+              };
+            })
+            .filter(Boolean) as OrderItem[],
+          exchangeRate: exchange, 
+        });
+      }
+      ,
       addItem: (product, qty = 1) => {
         const exists = get().items.find((i) => i.codart === product.codart);
         if (exists) {
@@ -32,7 +61,7 @@ const useCreateOrderStore = create<CreateOrderState>()(
                       ? product.discount
                       : i.discount,
 
-                    quantity: Math.min(
+                  quantity: Math.min(
                     i.quantity + qty,
                     product.available ?? Infinity
                   ),

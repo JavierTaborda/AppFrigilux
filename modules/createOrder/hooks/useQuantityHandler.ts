@@ -8,9 +8,9 @@ type Props = {
     codart: string;
     artdes: string;
     price: number;
-    img?: string;
+    img: string;
     quantity: number;
-    available?: number;
+    available: number;
 };
 
 

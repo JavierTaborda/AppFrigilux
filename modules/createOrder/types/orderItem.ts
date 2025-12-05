@@ -5,7 +5,7 @@ export type OrderItem = {
   codven?: string; 
   asignado?: number;
   utilizado?: number; 
-  available?: number; //asignado - utilizado
+  available: number; //asignado - utilizado
   quantity: number;
   img?:string
   discount?: string;

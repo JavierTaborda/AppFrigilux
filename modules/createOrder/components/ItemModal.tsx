@@ -66,7 +66,6 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
     [discountPerUnit, quantity]
   );
 
-
   const subtotal = useMemo(
     () => finalUnitPrice * quantity,
     [finalUnitPrice, quantity]
@@ -116,15 +115,15 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 
   return (
     <View className="flex-1 gap-3 py-2">
-      <View className="flex-row bg-componentbg dark:bg-dark-componentbg rounded-2xl p-2 gap-2" >
+      <View className="flex-row bg-componentbg dark:bg-dark-componentbg rounded-2xl p-2 gap-2">
         <View
-          className="w-32 h-36 my-2 rounded-xl overflow-hidden bg-bgimages mr-3 
+          className="w-32 h-32 my-2 rounded-xl overflow-hidden bg-bgimages mr-3 
              items-center justify-center"
         >
-          <CustomImage img={img}  />
+          <CustomImage img={img} />
         </View>
 
-        <View className="flex-1 justify-between">
+        <View className="flex-1 justify-between gap-y-1">
           <Text className="text-lg font-semibold text-foreground dark:text-dark-foreground">
             {item?.codart}
           </Text>
@@ -142,23 +141,24 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
             </Text>
           </View>
 
-          <View className="flex-row  overflow-hidden">
+          <View className="flex-row  overflow-hidden gap-1">
             {discountsArray.length > 0 && (
               <>
-                <Text className="text-sm line-through text-gray-500 dark:text-gray-300 me-2">
+                <Text className="text-md line-through text-gray-500 dark:text-gray-300 me-2">
                   {totalVenezuela(price)} {currencyDollar}
                 </Text>
-                <View className="bg-red-500/10 dark:bg-red-900 px-1 rounded-full border border-red-500 ml-1">
+                <View className="bg-red-500/10 dark:bg-red-900 px-1 rounded-full border border-red-500">
                   <Text className="text-xs font-bold text-red-500 dark:text-red-400">
-                    {discountPercent}
+                    {discountPercent} %
                   </Text>
                 </View>
               </>
             )}
+
+            <Text className="text-md font-bold text-primary dark:text-dark-primary">
+              {totalVenezuela(finalUnitPrice)} {currencyDollar}
+            </Text>
           </View>
-          <Text className="text-lg font-bold text-primary dark:text-dark-primary">
-            {totalVenezuela(finalUnitPrice)} {currencyDollar}
-          </Text>
         </View>
       </View>
 

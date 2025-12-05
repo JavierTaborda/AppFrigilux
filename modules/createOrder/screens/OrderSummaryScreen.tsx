@@ -1,10 +1,10 @@
 import ClientModal from "@/components/inputs/ClientModal";
 import CustomTextInput from "@/components/inputs/CustomTextInput";
+import ExchangeInput from "@/components/inputs/ExchangeInput";
 import BottomModal from "@/components/ui/BottomModal";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { ClientData } from "@/types/clients";
 import { appColors } from "@/utils/colors";
-import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { safeHaptic } from "@/utils/safeHaptics";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -18,7 +18,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Animated, { Easing, FadeInUp } from "react-native-reanimated";
+import ExchangeRateBadge from "../components/ExchangeRateBadge";
 import OrderSummaryList from "../components/OrderSummaryList";
+import TotalView from "../components/TotalView";
 import useCreateOrder from "../hooks/useCreateOrder";
 import { useOrderTotals } from "../hooks/useOrderTotals";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
@@ -31,8 +34,8 @@ export default function OrderSummaryScreen() {
   const [isFacturable, setIsFacturable] = useState(false);
 
   const { isDark } = useThemeStore();
-  const { neworder, createOrder } = useCreateOrder("");
-  const { items } = useCreateOrderStore();
+  const createOrderData = useCreateOrder("");
+  const { items, exchangeRate } = useCreateOrderStore();
   const { totalGross, total, IVA, totalWithIVA, discountAmount } =
     useOrderTotals(items);
   const [direction, setDirection] = useState<string>("");
@@ -45,6 +48,10 @@ export default function OrderSummaryScreen() {
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const isEmpty = items.length === 0;
   const [showClientModal, setShowClientModal] = useState(false);
+  const [showExchangeModal, setShowExchangeModal] = useState(false);
+
+  const [usdValue, setUsdValue] = useState("");
+  const [bsValue, setBsValue] = useState("");
 
   const handleClientSelectPress = useCallback(() => {
     setShowClientModal(true);
@@ -68,10 +75,31 @@ export default function OrderSummaryScreen() {
     setDirection(selectedClient?.dir_ent2?.trim() || "");
   }, [selectedClient]);
 
+  if (isEmpty) {
+    return (
+      <Animated.View
+        entering={FadeInUp.duration(300).easing(Easing.inOut(Easing.quad))}
+        className="flex-1 items-center justify-center bg-background dark:bg-dark-background px-4"
+      >
+        <Text className="text-foreground dark:text-dark-foreground text-lg text-center">
+          No hay artículos en el pedido. Agrega artículos para continuar.
+        </Text>
+        <TouchableOpacity
+          onPress={() =>
+            router.push("/(main)/(tabs)/(createOrder)/create-order")
+          }
+          className="flex-row mt-4 px-6 py-3  rounded-full bg-primary dark:bg-dark-primary"
+        >
+          <Ionicons name="bag-add" size={24} color="white" />
+          <Text className="text-white font-bold py-1"> Agregar artículos</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }
   return (
     <View className="flex-1 bg-primary dark:bg-dark-primary">
       <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl">
-        <View className="px-6 pt-3">
+        <View className="px-6 pt-4">
           <Text className="text-2xl font-bold text-foreground dark:text-dark-foreground">
             Detalles del pedido
           </Text>
@@ -211,44 +239,14 @@ export default function OrderSummaryScreen() {
             </Text>
             <OrderSummaryList scrollEnabled={false} />
           </View>
-
-          <View className="mb-2 px-4 py-3 bg-componentbg dark:bg-dark-componentbg rounded-xl">
-            <View className="space-y-2 border-b border-gray-300 dark:border-gray-600 pb-1">
-              <View className="flex-row justify-between">
-                <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
-                  Subtotal
-                </Text>
-                <Text className="text-base text-foreground dark:text-dark-foreground">
-                  {totalVenezuela(total)} {currencyDollar}
-                </Text>
-              </View>
-
-              <View className="flex-row justify-between">
-                <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
-                  IVA (16%)
-                </Text>
-                <Text className="text-base text-foreground dark:text-dark-foreground">
-                  {totalVenezuela(IVA)} {currencyDollar}
-                </Text>
-              </View>
-            </View>
-
-            <View className="pt-2 flex-row justify-between items-center">
-              <Text className="ttext-md font-medium text-foreground dark:text-dark-foreground">
-                Total
-              </Text>
-              <Text className="text-xl font-bold  text-primary dark:text-dark-primary ">
-                {totalVenezuela(totalWithIVA)} {currencyDollar}
-              </Text>
-            </View>
-            <View className="flex-row justify-between">
-              <Text className="text-xs font-normal text-gray-600 dark:text-gray-400">
-                {`Tasa ${totalVenezuela(288)} Bs`}
-              </Text>
-            </View>
-          </View>
+          <TotalView
+            total={total}
+            totalWithIVA={totalWithIVA}
+            IVA={IVA}
+            exchangeRate={exchangeRate}
+          />
         </ScrollView>
-        <View className="flex-row gap-2 px-6 absolute z-50 bottom-48 left-0 right-0">
+        <View className="flex-row gap-2 px-6 absolute z-50 bottom-36 left-0 right-0">
           <TouchableOpacity
             className="p-4 flex-1 items-center justify-center rounded-full shadow-lg  bg-primary dark:bg-dark-primary"
             onPress={() =>
@@ -263,7 +261,7 @@ export default function OrderSummaryScreen() {
                   {
                     text: "Confirmar",
                     onPress: async () => {
-                      await createOrder();
+                      await createOrderData.createOrder();
                     },
                   },
                 ]
@@ -289,17 +287,10 @@ export default function OrderSummaryScreen() {
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
         </View>
-        <View
-          className="absolute top-0 right-6 z-40 rounded-2xl bg-componentbg/55 dark:bg-dark-componentbg/55 px-4 py-2 gap-0 mt-1"
-         
-        >
-          {/* <Text className="text-xs font-medium text-gray-500 dark:text-gray-400">
-            Tasa
-          </Text> */}
-          <Text className="text-base font-bold text-primary dark:text-dark-primary">
-             {totalVenezuela(288)} Bs / {currencyDollar}
-          </Text>
-        </View>
+        <ExchangeRateBadge
+          exchangeRate={exchangeRate}
+          onPress={() => setShowExchangeModal(true)}
+        />
 
         <BottomModal
           visible={showClientModal}
@@ -310,6 +301,13 @@ export default function OrderSummaryScreen() {
             setSelectedClient={setSelectedClient}
             clients={parsedClients}
           />
+        </BottomModal>
+        <BottomModal
+          visible={showExchangeModal}
+          onClose={() => setShowExchangeModal(false)}
+          heightPercentage={0.35}
+        >
+          <ExchangeInput exchangeRate={exchangeRate} />
         </BottomModal>
       </View>
     </View>

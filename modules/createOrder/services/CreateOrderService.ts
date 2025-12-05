@@ -2,11 +2,11 @@ import api from "@/lib/axios";
 import { ClientData } from "@/types/clients";
 import { OrderItem } from "../types/orderItem";
 
-export const getItemsByGoals = async  (): Promise<OrderItem[]> => {
+export const getItemsByGoals = async (): Promise<OrderItem[]> => {
   try {
     const params: any = {};
-    params.codven ="00002";
-   
+    params.codven = "00002";
+
     const response = await api.get("create-orders", { params });
     return response.data;
 
@@ -18,7 +18,7 @@ export const getItemsByGoals = async  (): Promise<OrderItem[]> => {
 export const getClients = async (): Promise<ClientData[]> => {
   try {
     const response = await api.get("customers");
-    
+
     const clients: ClientData[] = response.data.map((c: any) => ({
       co_cli: c.co_cli?.trim(),
       cli_des: c.cli_des?.split("\r\n")[0]?.trim(),
@@ -32,5 +32,15 @@ export const getClients = async (): Promise<ClientData[]> => {
   } catch (error) {
     console.error("Error fetching clients:", error);
     return [];
+  }
+};
+
+export const getExchangeRate = async (): Promise<number> => {
+  try {
+    //const response = await api.get("customers");
+
+    return 288;
+  } catch (error) {
+    throw error;
   }
 };
