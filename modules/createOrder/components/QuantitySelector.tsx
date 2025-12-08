@@ -10,10 +10,10 @@ import { useQuantityHandlers } from "../hooks/useQuantityHandler";
 type QuantitySelectorProps = {
   codart: string;
   quantity: number;
-  available?: number;
+  available: number;
   artdes: string;
   price: number;
-  img?: string;
+  img: string;
   height?: number;
   size?: number;
   fullView?: boolean;

@@ -6,6 +6,7 @@ import { OrderItem } from "../types/orderItem";
 type CreateOrderState = {
   items: OrderItem[];
   exchangeRate:number;
+  totalsVES: boolean;
   addItem: (product: OrderItem, qty?: number) => void;
   increase: (codart: string, by?: number) => void;
   decrease: (codart: string, by?: number) => void;
@@ -14,6 +15,7 @@ type CreateOrderState = {
   getSubtotal: () => number;
   getItemsCount: () => number;
   syncWithProducts: (products: OrderItem[], exchange:number) => void;
+  setTotalsVES:(value:boolean)=>void;
 };
 
 const useCreateOrderStore = create<CreateOrderState>()(
@@ -21,6 +23,7 @@ const useCreateOrderStore = create<CreateOrderState>()(
     (set, get) => ({
       items: [],
       exchangeRate:0,
+      totalsVES:false,
       syncWithProducts: (products: OrderItem[], exchange: number) => {
         set({
           items: get().items
@@ -118,6 +121,10 @@ const useCreateOrderStore = create<CreateOrderState>()(
         get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
 
       getItemsCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
+
+      setTotalsVES:(value)=> {
+        set({ totalsVES:value})
+      }
     }),
     {
       name: "create-order-storage",

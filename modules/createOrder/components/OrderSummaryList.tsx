@@ -17,7 +17,8 @@ type Props = {
 };
 
 export default function OrderSummaryList({ scrollEnabled = true }: Props) {
-  const { items, removeItem } = useCreateOrderStore();
+  const { items, removeItem, setTotalsVES, exchangeRate, totalsVES } =
+    useCreateOrderStore();
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
 
@@ -38,6 +39,15 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
             item.price,
             item.quantity ?? 1,
             item.discount ?? ""
+          );
+          const itemPrice = totalVenezuela(
+            totalsVES ? item.price * exchangeRate : item.price
+          );
+          const finalPrice = totalVenezuela(
+            totalsVES ? finalUnitPrice * exchangeRate : finalUnitPrice
+          );
+          const totalPrice = totalVenezuela(
+            totalsVES ? total * exchangeRate : total
           );
 
           return (
@@ -70,7 +80,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
                     {item.discount ? (
                       <>
                         <Text className="text-sm line-through text-gray-500">
-                          {totalVenezuela(item.price)} {currencyDollar}
+                          {itemPrice} {currencyDollar}
                         </Text>
                         <View className="mx-2 bg-red-500/10 dark:bg-red-900 px-1 rounded-full border border-red-500">
                           <Text className="text-xs font-bold text-red-500 dark:text-red-400">
@@ -81,7 +91,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
                     ) : null}
 
                     <Text className="text-sm font-semibold text-primary dark:text-dark-primary">
-                      {totalVenezuela(finalUnitPrice)} {currencyDollar}
+                      {finalPrice} {currencyDollar}
                     </Text>
                   </View>
 
@@ -95,7 +105,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
                         Total{" "}
                       </Text>
                       <Text className="text-md font-semibold text-primary dark:text-dark-primary">
-                        {totalVenezuela(total)} {currencyDollar}
+                        {totalPrice} {currencyDollar}
                       </Text>
                     </View>
                   </View>

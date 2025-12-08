@@ -18,7 +18,7 @@ type ProductCardProps = {
   codart: string;
   artdes: string;
   price: number;
-  available?: number;
+  available: number;
   almacen?: string;
   setModalItemVisible: (visible: boolean) => void;
 };

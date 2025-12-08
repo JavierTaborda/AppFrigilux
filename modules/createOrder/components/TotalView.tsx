@@ -2,10 +2,11 @@ import { totalVenezuela } from "@/utils/moneyFormat";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
+import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 type TotalsProps = {
   total: number;
@@ -21,8 +22,8 @@ export default function TotalView({
   exchangeRate,
 }: TotalsProps) {
   const [showInBs, setShowInBs] = useState(false);
+  const { setTotalsVES } = useCreateOrderStore();
 
- 
   const anim = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -33,10 +34,10 @@ export default function TotalView({
   });
 
   const toggleCurrency = () => {
-
     anim.value = 0.5;
     setTimeout(() => {
       setShowInBs(!showInBs);
+      setTotalsVES(!showInBs);
       anim.value = withTiming(1, { duration: 250 });
     }, 150);
   };

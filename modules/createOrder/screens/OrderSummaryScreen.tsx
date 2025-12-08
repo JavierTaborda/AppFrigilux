@@ -71,6 +71,19 @@ export default function OrderSummaryScreen() {
     }
     //
   };
+
+  useEffect(() => {
+    if (comment.startsWith("**") && !isFacturable) {
+      setIsFacturable(true);
+      return;
+    }
+
+    if (!comment.startsWith("**") && isFacturable) {
+      setIsFacturable(false);
+      return;
+    }
+  }, [comment]);
+
   useEffect(() => {
     setDirection(selectedClient?.dir_ent2?.trim() || "");
   }, [selectedClient]);
