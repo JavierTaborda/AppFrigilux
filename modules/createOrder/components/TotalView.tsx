@@ -1,4 +1,5 @@
 import { totalVenezuela } from "@/utils/moneyFormat";
+import { safeHaptic } from "@/utils/safeHaptics";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
@@ -10,18 +11,18 @@ import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 type TotalsProps = {
   total: number;
-  IVA: number;
+  TotalIVA: number;
   totalWithIVA: number;
   exchangeRate: number;
 };
 
 export default function TotalView({
   total,
-  IVA,
+  TotalIVA,
   totalWithIVA,
   exchangeRate,
 }: TotalsProps) {
-  const { setTotalsVES,totalsVES } = useCreateOrderStore();
+  const { setTotalsVES,totalsVES,IVA} = useCreateOrderStore();
   const [showInBs, setShowInBs] = useState(totalsVES);
   
 
@@ -37,6 +38,8 @@ export default function TotalView({
   const toggleCurrency = () => {
     anim.value = 0.5;
     setTimeout(() => {
+      
+      safeHaptic("success");
       setShowInBs(!showInBs);
       setTotalsVES(!showInBs);
       anim.value = withTiming(1, { duration: 250 });
@@ -68,14 +71,14 @@ export default function TotalView({
 
         <View className="flex-row justify-between">
           <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
-            IVA (16%)
+            IVA ({IVA*100}%)
           </Text>
           <Pressable onPress={toggleCurrency}>
             <Animated.Text
               style={animatedStyle}
               className="text-base text-foreground dark:text-dark-foreground"
             >
-              {formatValue(IVA)}
+              {formatValue(TotalIVA)}
             </Animated.Text>
           </Pressable>
         </View>

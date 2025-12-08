@@ -7,6 +7,7 @@ type CreateOrderState = {
   items: OrderItem[];
   exchangeRate:number;
   totalsVES: boolean;
+  IVA:number;
   addItem: (product: OrderItem, qty?: number) => void;
   increase: (codart: string, by?: number) => void;
   decrease: (codart: string, by?: number) => void;
@@ -14,7 +15,7 @@ type CreateOrderState = {
   clearOrder: () => void;
   getSubtotal: () => number;
   getItemsCount: () => number;
-  syncWithProducts: (products: OrderItem[], exchange:number) => void;
+  syncWithProducts: (products: OrderItem[], exchange: number, iva?: number) => void;
   setTotalsVES:(value:boolean)=>void;
 };
 
@@ -24,7 +25,8 @@ const useCreateOrderStore = create<CreateOrderState>()(
       items: [],
       exchangeRate:0,
       totalsVES:false,
-      syncWithProducts: (products: OrderItem[], exchange: number) => {
+      IVA:0,
+      syncWithProducts: (products: OrderItem[], exchange: number, iva?: number) => {
         set({
           items: get().items
             .map((cartItem) => {
@@ -47,6 +49,7 @@ const useCreateOrderStore = create<CreateOrderState>()(
             })
             .filter(Boolean) as OrderItem[],
           exchangeRate: exchange, 
+          IVA:iva,
         });
       }
       ,

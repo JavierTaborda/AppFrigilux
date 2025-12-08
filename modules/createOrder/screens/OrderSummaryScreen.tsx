@@ -36,7 +36,7 @@ export default function OrderSummaryScreen() {
   const { isDark } = useThemeStore();
   const createOrderData = useCreateOrder("");
   const { items, exchangeRate } = useCreateOrderStore();
-  const { totalGross, total, IVA, totalWithIVA, discountAmount } =
+  const { totalGross, total, TotalIVA, totalWithIVA, discountAmount } =
     useOrderTotals(items);
   const [direction, setDirection] = useState<string>("");
   const [comment, setComment] = useState<string>("");
@@ -255,7 +255,7 @@ export default function OrderSummaryScreen() {
           <TotalView
             total={total}
             totalWithIVA={totalWithIVA}
-            IVA={IVA}
+            TotalIVA={TotalIVA}
             exchangeRate={exchangeRate}
           />
         </ScrollView>

@@ -168,7 +168,7 @@ import { ClientData } from "@/types/clients";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Alert } from "react-native";
-import { getClients, getExchangeRate, getItemsByGoals } from "../services/CreateOrderService";
+import { getClients, getExchangeRate, getItemsByGoals, getIVA } from "../services/CreateOrderService";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
 
@@ -192,9 +192,9 @@ const useCreateOrder = (searchText: string) => {
     setLoading(true);
     setError(null);
     try {
-      const [result, exchange] = await Promise.all([getItemsByGoals(), getExchangeRate()]);
+      const [result, exchange, iva] = await Promise.all([getItemsByGoals(), getExchangeRate(), getIVA()]);
       setAllProductsItems(result);
-      useCreateOrderStore.getState().syncWithProducts(result, exchange);
+      useCreateOrderStore.getState().syncWithProducts(result, exchange, iva);
     } catch (err) {
       console.error("loadItems error:", err);
       setError("Error cargando productos");

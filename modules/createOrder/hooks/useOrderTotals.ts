@@ -1,3 +1,4 @@
+import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
 
 
@@ -13,6 +14,7 @@ export const applyDiscounts = (price: number, discountStr: string) => {
 };
 
 export const useOrderTotals = (items: OrderItem[]) => {
+    const { IVA } = useCreateOrderStore();
     const totalGross = items.reduce((acc, item) => {
         return acc + item.price * (item.quantity ?? 1);
     }, 0);
@@ -22,13 +24,13 @@ export const useOrderTotals = (items: OrderItem[]) => {
         return acc + finalPrice * (item.quantity ?? 1);
     }, 0);
 
-    const IVA = total * 0.16;
-    const totalWithIVA = total + IVA;
+    const TotalIVA = total * IVA;
+    const totalWithIVA = total + TotalIVA;
 
     return {
         totalGross,
         total,
-        IVA,
+        TotalIVA,
         totalWithIVA,
         discountAmount: totalGross - total,
     };

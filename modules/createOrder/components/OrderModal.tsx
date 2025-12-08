@@ -32,7 +32,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
 }) => {
   const { items, clearOrder, exchangeRate } = useCreateOrderStore();
   const { isDark } = useThemeStore();
-  const { totalGross, total, IVA, totalWithIVA, discountAmount } =
+  const { totalGross, total, TotalIVA, totalWithIVA, discountAmount } =
     useOrderTotals(items);
 
   const isEmpty = items.length === 0;
@@ -136,7 +136,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   <TotalView
                     total={total}
                     totalWithIVA={totalWithIVA}
-                    IVA={IVA}
+                    TotalIVA={TotalIVA}
                     exchangeRate={exchangeRate}
                   />
                 </View>
