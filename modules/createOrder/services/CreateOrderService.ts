@@ -44,3 +44,12 @@ export const getExchangeRate = async (): Promise<number> => {
     throw error;
   }
 };
+export const getIVA = async (): Promise<number> => {
+  try {
+    //const response = await api.get("customers");
+
+    return 0.16;
+  } catch (error) {
+    throw error;
+  }
+};

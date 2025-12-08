@@ -80,21 +80,26 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
       .filter((d) => d.trim() !== "")
       .map((d) => Number(d));
 
-    const newDiscounts = current.includes(percent)
-      ? current.filter((d) => d !== percent)
-      : [...current, percent];
-
-    setDiscountPercent(newDiscounts.join("+"));
+    if (!current.includes(percent) && current.length < 3) {
+      setDiscountPercent([...current, percent].join("+"));
+    } else if (current.includes(percent)) {
+      setDiscountPercent(current.filter((d) => d !== percent).join("+"));
+    } else {
+      Alert.alert("No se pueden aplicar más de 3 descuentos");
+    }
   };
 
   const handleChangeDiscount = (text: string) => {
     if (!/^[0-9+]*$/.test(text)) return;
 
-    const cleaned = text
-      .replace(/\+\+/g, "+")
-      .replace(/^\+/, "")
-      .replace(/\+$/, "");
+    const cleaned = text.replace(/\+\+/g, "+");
 
+    const discounts = cleaned.split("+").filter(Boolean).map(Number);
+
+    if (discounts.length > 3) {
+      Alert.alert("No se pueden aplicar más de 3 descuentos");
+      return;
+    }
     setDiscountPercent(cleaned);
   };
 

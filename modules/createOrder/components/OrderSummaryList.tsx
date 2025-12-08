@@ -1,5 +1,5 @@
 import BottomModal from "@/components/ui/BottomModal";
-import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
+import { currencyDollar, currencyVES, totalVenezuela } from "@/utils/moneyFormat";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
@@ -49,7 +49,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
           const totalPrice = totalVenezuela(
             totalsVES ? total * exchangeRate : total
           );
-
+          const currency = totalsVES ? currencyVES: currencyDollar;
           return (
             <Animated.View
               key={item.codart}
@@ -80,7 +80,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
                     {item.discount ? (
                       <>
                         <Text className="text-sm line-through text-gray-500">
-                          {itemPrice} {currencyDollar}
+                          {itemPrice} {currency}
                         </Text>
                         <View className="mx-2 bg-red-500/10 dark:bg-red-900 px-1 rounded-full border border-red-500">
                           <Text className="text-xs font-bold text-red-500 dark:text-red-400">
@@ -91,7 +91,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
                     ) : null}
 
                     <Text className="text-sm font-semibold text-primary dark:text-dark-primary">
-                      {finalPrice} {currencyDollar}
+                      {finalPrice} {currency}
                     </Text>
                   </View>
 
@@ -105,7 +105,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
                         Total{" "}
                       </Text>
                       <Text className="text-md font-semibold text-primary dark:text-dark-primary">
-                        {totalPrice} {currencyDollar}
+                        {totalPrice} {currency}
                       </Text>
                     </View>
                   </View>

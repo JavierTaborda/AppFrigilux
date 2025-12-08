@@ -21,8 +21,9 @@ export default function TotalView({
   totalWithIVA,
   exchangeRate,
 }: TotalsProps) {
-  const [showInBs, setShowInBs] = useState(false);
-  const { setTotalsVES } = useCreateOrderStore();
+  const { setTotalsVES,totalsVES } = useCreateOrderStore();
+  const [showInBs, setShowInBs] = useState(totalsVES);
+  
 
   const anim = useSharedValue(1);
 

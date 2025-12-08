@@ -1,4 +1,5 @@
 const currencyDollar = "$";
+const currencyVES = "Bs";
 
 const totalVenezuela = (value: string | number): string => {
   // Convert to number
@@ -14,5 +15,5 @@ const totalVenezuela = (value: string | number): string => {
   })}`;
 };
 
-export { currencyDollar, totalVenezuela };
+export { currencyDollar, currencyVES, totalVenezuela };
 
