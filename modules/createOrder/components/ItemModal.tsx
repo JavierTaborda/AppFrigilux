@@ -24,7 +24,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
     s.items.find((i) => i.codart === item?.codart)
   );
 
-  const { addItem } = useCreateOrderStore();
+  const { addItem, IVA } = useCreateOrderStore();
 
   const price = Number(item?.price ?? 0);
   const quantity = cartItem?.quantity ?? 0;
@@ -71,7 +71,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
     [finalUnitPrice, quantity]
   );
 
-  const iva = useMemo(() => subtotal * 0.16, [subtotal]);
+  const iva = useMemo(() => subtotal * IVA, [subtotal]);
   const total = useMemo(() => subtotal + iva, [subtotal, iva]);
 
   const handleDiscountToggle = (percent: number) => {
@@ -97,7 +97,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
     const discounts = cleaned.split("+").filter(Boolean).map(Number);
 
     if (discounts.length > 3) {
-      Alert.alert("No se pueden aplicar más de 3 descuentos");
+      Alert.alert("No se pueden aplicar más de 3 descuentos", "", [{ text: "Aceptar" }]);
       return;
     }
     setDiscountPercent(cleaned);
@@ -149,7 +149,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
           <View className="flex-row  overflow-hidden gap-1">
             {discountsArray.length > 0 && (
               <>
-                <Text className="text-md line-through text-gray-500 dark:text-gray-300 me-2">
+                <Text className="text-md line-through text-gray-500 dark:text-gray-300 mx-1">
                   {totalVenezuela(price)} {currencyDollar}
                 </Text>
                 <View className="bg-red-500/10 dark:bg-red-900 px-1 rounded-full border border-red-500">
@@ -222,7 +222,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
           <Row label="Total bruto:" value={totalGross} />
           <Row label="Descuento:" value={-totalDiscount} red />
           <Row label="Subtotal:" value={subtotal} />
-          <Row label="IVA (16%):" value={iva} />
+          <Row label={`IVA (${IVA*100}%):`} value={iva} />
         </View>
 
         <View className="h-[1px] bg-gray-300 dark:bg-gray-700 my-3" />

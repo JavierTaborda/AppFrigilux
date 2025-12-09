@@ -15,6 +15,7 @@ export const getItemsByGoals = async (): Promise<OrderItem[]> => {
     throw error;
   }
 };
+
 export const getClients = async (): Promise<ClientData[]> => {
   try {
     const response = await api.get("customers");
@@ -48,7 +49,18 @@ export const getIVA = async (): Promise<number> => {
   try {
     //const response = await api.get("customers");
 
-    return 0.16;
+    return 0.19;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getConditionsPay = async (): Promise<string[]> => {
+  try {
+    //const response = await api.get("customers");
+
+    const options = ["Contado", "Crédito 15 días", "Crédito 30 días"];
+    return options;
   } catch (error) {
     throw error;
   }

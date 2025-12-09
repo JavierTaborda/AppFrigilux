@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -10,6 +9,8 @@ import {
 import Animated, {
   BounceIn,
   Easing,
+  FadeIn,
+  FadeOut,
   FadeOutDown,
   useAnimatedStyle,
   useSharedValue,
@@ -30,9 +31,6 @@ import ProductCard from "../components/ProductCard";
 import useCreateOrder from "../hooks/useCreateOrder";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
-
-
-
 
 export default function CreateOrderScreen() {
   const [searchText, setSearchText] = useState("");
@@ -68,16 +66,19 @@ export default function CreateOrderScreen() {
   const translateY = useSharedValue(height);
   const opacity = useSharedValue(0);
 
-  const toggleOrderPanel = useCallback((open: boolean) => {
-    translateY.value = withTiming(open ? 0 : height, {
-      duration: 500,
-      easing: open ? Easing.out(Easing.exp) : Easing.in(Easing.exp),
-    });
-    opacity.value = withTiming(open ? 1 : 0, {
-      duration: 300,
-      easing: Easing.out(Easing.exp),
-    });
-  }, [height]);
+  const toggleOrderPanel = useCallback(
+    (open: boolean) => {
+      translateY.value = withTiming(open ? 0 : height, {
+        duration: 500,
+        easing: open ? Easing.out(Easing.exp) : Easing.in(Easing.exp),
+      });
+      opacity.value = withTiming(open ? 1 : 0, {
+        duration: 300,
+        easing: Easing.out(Easing.exp),
+      });
+    },
+    [height]
+  );
 
   useEffect(() => toggleOrderPanel(haveOrder), [haveOrder, toggleOrderPanel]);
 
@@ -150,14 +151,31 @@ export default function CreateOrderScreen() {
 
         {items.length > 1 && (
           <Animated.View
-            entering={BounceIn.delay(100).duration(200).easing(Easing.inOut(Easing.quad))}
-            exiting={FadeOutDown.duration(200).easing(Easing.inOut(Easing.quad))}
+            entering={BounceIn.delay(100)
+              .duration(200)
+              .easing(Easing.inOut(Easing.quad))}
+            exiting={FadeOutDown.duration(200).easing(
+              Easing.inOut(Easing.quad)
+            )}
             className="absolute right-1 top-0 bg-tertiary dark:bg-dark-tertiary rounded-full px-1 min-w-[35px] max-w-[45] items-center justify-center"
           >
-            <Text className="text-white font-bold text-sm ">{items?.length}</Text>
+            <Text className="text-white font-bold text-sm ">
+              {items?.length}
+            </Text>
           </Animated.View>
         )}
       </TouchableOpacity>
+    </Animated.View>
+  );
+  const FullScreenLoaderOverlay = (
+    <Animated.View
+      entering={FadeIn.duration(200)}
+      exiting={FadeOut.duration(200)}
+
+      className="absolute top-0 left-0 right-0 bottom-0 z-[999] justify-center align-middle bg-overlay dark:bg-dark-overlay"
+      pointerEvents="auto"
+    >
+      <ActivityIndicator size="large" color="#fff" />
     </Animated.View>
   );
 
@@ -208,11 +226,17 @@ export default function CreateOrderScreen() {
             }}
           />
 
-          <BottomModal visible={modalItemVisible} onClose={() => setModalItemVisible(false)} heightPercentage={0.85}>
+          <BottomModal
+            visible={modalItemVisible}
+            onClose={() => setModalItemVisible(false)}
+            heightPercentage={0.85}
+          >
             <ItemModal onClose={setModalItemVisible} item={item} />
           </BottomModal>
         </>
       )}
+
+      {loadSummary && FullScreenLoaderOverlay}
     </ScreenSearchLayout>
   );
 }

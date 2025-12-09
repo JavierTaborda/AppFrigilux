@@ -50,8 +50,6 @@ export default function OrderSummaryScreen() {
   const [showClientModal, setShowClientModal] = useState(false);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
 
-  const [usdValue, setUsdValue] = useState("");
-  const [bsValue, setBsValue] = useState("");
 
   const handleClientSelectPress = useCallback(() => {
     setShowClientModal(true);
@@ -242,6 +240,17 @@ export default function OrderSummaryScreen() {
                             : appColors.tertiary.DEFAULT,
                         },
                       })}
+                />
+              </View>
+              <View>
+                <Text className="text-md font-medium text-foreground dark:text-dark-foreground my-2">
+                  Correo
+                </Text>
+
+                <CustomTextInput
+                  placeholder="Correo"
+                  value={direction}
+                  onChangeText={setDirection}
                 />
               </View>
             </View>
