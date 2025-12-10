@@ -18,7 +18,6 @@ type QuantitySelectorProps = {
   size?: number;
   fullView?: boolean;
 };
-
 export default function QuantitySelector({
   quantity,
   available,
@@ -49,20 +48,27 @@ export default function QuantitySelector({
     price,
     img,
   });
+
   const [inputQuantity, setInputQuantity] = useState(0);
 
   const handleManualChange = (value: string) => {
-
     const numeric = value.replace(/[^0-9]/g, "");
-    setInputQuantity(numeric === "" ? 0 : parseInt(numeric));
-  };
-  useEffect(() => {
-    if (inputQuantity !== quantity) {
-      if (inputQuantity > quantity) {
-        handleIncreaseQty(inputQuantity);
-   
+    const qty = numeric === "" ? 0 : parseInt(numeric);
+    if (qty <= 0) {
+      setInputQuantity(0);
+     
+      return;
     }
-  }}, [inputQuantity]);
+
+    if (qty > available) {
+      setInputQuantity(available);
+      handleIncreaseQty(available, quantity);
+      return;
+    }
+
+    setInputQuantity(qty);
+    handleIncreaseQty(qty, quantity);
+  };
 
   useEffect(() => {
     setInputQuantity(quantity);
@@ -79,15 +85,17 @@ export default function QuantitySelector({
   const addStyle = useAnimatedStyle(() => ({
     transform: [{ scale: addScale.value }],
   }));
+
   const containerHeight = height || 40;
 
   if (quantity > 0) {
     return (
       <Animated.View
         style={[{ height: containerHeight }]}
-        className="flex-row items-center justify-center gap-4 "
+        className="flex-row items-center justify-center gap-4"
       >
         <Animated.View style={btnStyle} className="flex-row items-center">
+          {/* DECREASE */}
           <TouchableOpacity
             onPress={handleDecrease}
             onLongPress={() => {
@@ -104,6 +112,7 @@ export default function QuantitySelector({
             </Text>
           </TouchableOpacity>
 
+          {/* QUANTITY */}
           <Animated.View entering={BounceIn} exiting={BounceOut.duration(150)}>
             <Animated.View style={qtyStyle}>
               {!fullView ? (
@@ -111,19 +120,17 @@ export default function QuantitySelector({
                   {quantity}
                 </Text>
               ) : (
-                <>
-                  {/* <Text>{inputQuantity}</Text> */}
-                  <TextInput
-                    value={String(inputQuantity)}
-                    onChangeText={(text) => setInputQuantity(Number(text))}
-                    keyboardType="numeric"
-                    className="font-semibold mx-8 p-0 text-2xl text-center text-foreground dark:text-dark-foreground"
-                  />
-                </>
+                <TextInput
+                  value={String(inputQuantity)}
+                  onChangeText={handleManualChange}
+                  keyboardType="numeric"
+                  className="font-semibold mx-8 p-0 text-2xl text-center text-foreground dark:text-dark-foreground"
+                />
               )}
             </Animated.View>
           </Animated.View>
 
+          {/* INCREASE */}
           <TouchableOpacity
             onPress={handleIncrease}
             onLongPress={() => {
@@ -149,7 +156,7 @@ export default function QuantitySelector({
           onPress={handleAdd}
           onLongPress={() => (pressedLong.current = true)}
           onPressOut={() => (pressedLong.current = false)}
-          className="flex-1 rounded-2xl items-center  justify-center bg-primary dark:bg-dark-primary"
+          className="flex-1 rounded-2xl items-center justify-center bg-primary dark:bg-dark-primary"
         >
           <Text className="text-white font-bold">Agregar</Text>
         </TouchableOpacity>

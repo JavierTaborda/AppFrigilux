@@ -21,7 +21,7 @@ const useCreateOrder = (searchText: string) => {
   const [sortByAvailable, setSortByAvailable] = useState<boolean>(false);
   const [sortByAssigned, setSortByAssigned] = useState<boolean>(false);
   const [clients, setClients] = useState<ClientData[]>([]);
-  const [conditionsPay, setCondtionsPay] = useState<ClientData[]>([]);
+  const [conditionsPay, setCondtionsPay] = useState<string[]>([]);
   const { items } = useCreateOrderStore();
 
   // Load items from backend
@@ -82,10 +82,11 @@ const useCreateOrder = (searchText: string) => {
     try {
       const [clientsResult, conditionsPay] = await Promise.all([getClients(), getConditionsPay()]);
       setClients(clientsResult);
+      setCondtionsPay(conditionsPay);
 
       router.push({
         pathname: "/(main)/(tabs)/(createOrder)/order-summary",
-        params: { clients: JSON.stringify(clientsResult) },
+        params: { clients: JSON.stringify(clientsResult), options: JSON.stringify(conditionsPay) },
       });
     } catch (err) {
       console.error("handleSummary error:", err);

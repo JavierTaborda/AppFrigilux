@@ -28,28 +28,34 @@ import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 export default function OrderSummaryScreen() {
   const { clients } = useLocalSearchParams<{ clients?: string }>();
+  const { options } = useLocalSearchParams<{ options?: string }>();
   const parsedClients: ClientData[] = clients ? JSON.parse(clients) : [];
+  const parsedOptions: string[] = options ? JSON.parse(options) : [];
 
   const router = useRouter();
   const [isFacturable, setIsFacturable] = useState(false);
 
   const { isDark } = useThemeStore();
   const createOrderData = useCreateOrder("");
+
   const { items, exchangeRate } = useCreateOrderStore();
+
   const { totalGross, total, TotalIVA, totalWithIVA, discountAmount } =
     useOrderTotals(items);
+
+  //INPUT STATES
   const [direction, setDirection] = useState<string>("");
   const [comment, setComment] = useState<string>("");
-
-  const [selected, setSelected] = useState("Contado");
-  const options = ["Contado", "Crédito 15 días", "Crédito 30 días"];
+  const [selected, setSelected] = useState<string>(
+    parsedOptions.length > 0 ? parsedOptions[0] : ""
+  );
+  const [email, setEmail] = useState<string>("")
 
   // Customer Data
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const isEmpty = items.length === 0;
   const [showClientModal, setShowClientModal] = useState(false);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
-
 
   const handleClientSelectPress = useCallback(() => {
     setShowClientModal(true);
@@ -84,6 +90,7 @@ export default function OrderSummaryScreen() {
 
   useEffect(() => {
     setDirection(selectedClient?.dir_ent2?.trim() || "");
+    setEmail(selectedClient?.co_cli || "")
   }, [selectedClient]);
 
   if (isEmpty) {
@@ -145,7 +152,7 @@ export default function OrderSummaryScreen() {
                 showsHorizontalScrollIndicator={false}
                 className="flex-row gap-3 pt-4"
               >
-                {options.map((option) => {
+                {parsedOptions.map((option) => {
                   const isActive = selected === option;
                   return (
                     <TouchableOpacity
@@ -249,8 +256,8 @@ export default function OrderSummaryScreen() {
 
                 <CustomTextInput
                   placeholder="Correo"
-                  value={direction}
-                  onChangeText={setDirection}
+                  value={email}
+                  onChangeText={setEmail}
                 />
               </View>
             </View>
@@ -327,7 +334,7 @@ export default function OrderSummaryScreen() {
         <BottomModal
           visible={showExchangeModal}
           onClose={() => setShowExchangeModal(false)}
-          heightPercentage={0.35}
+          heightPercentage={0.385}
         >
           <ExchangeInput exchangeRate={exchangeRate} />
         </BottomModal>
