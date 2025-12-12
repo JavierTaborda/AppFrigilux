@@ -26,13 +26,14 @@ import useCreateOrder from "../hooks/useCreateOrder";
 import { useOrderTotals } from "../hooks/useOrderTotals";
 import { PedidoDTO } from "../interfaces/pedidoDTO";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
+import { Conditions } from "../types/conditions";
 import { calculateTotals } from "../utils/calculateTotals";
 
 export default function OrderSummaryScreen() {
   const { clients } = useLocalSearchParams<{ clients?: string }>();
   const { options } = useLocalSearchParams<{ options?: string }>();
   const parsedClients: ClientData[] = clients ? JSON.parse(clients) : [];
-  const parsedOptions: string[] = options ? JSON.parse(options) : [];
+  const parsedOptions: Conditions[] = options ? JSON.parse(options) : [];
 
   const router = useRouter();
   const [isFacturable, setIsFacturable] = useState(false);
@@ -49,7 +50,7 @@ export default function OrderSummaryScreen() {
   const [direction, setDirection] = useState<string>("");
   const [comment, setComment] = useState<string>("");
   const [selected, setSelected] = useState<string>(
-    parsedOptions.length > 0 ? parsedOptions[0] : ""
+    parsedOptions.length > 0 ? parsedOptions[0].cond_des : ""
   );
   const [email, setEmail] = useState<string>("");
 
@@ -170,6 +171,37 @@ export default function OrderSummaryScreen() {
     };
   };
 
+  type ConditionsProps={
+    option: Conditions;
+    isActive: boolean;
+    onPress: () => void;
+  }
+  const ConditionChip = ({ option, isActive, onPress }: ConditionsProps) => (
+    <TouchableOpacity
+      key={option.co_cond}
+      onPress={onPress}
+      activeOpacity={0.7}
+      className={`flex-row items-center gap-1 px-4 ms-1 py-2 rounded-full ${
+        isActive
+          ? "bg-primary dark:bg-dark-primary"
+          : "bg-gray-200 dark:bg-gray-700"
+      }`}
+    >
+      <Ionicons
+        name={isActive ? "checkmark-circle" : "ellipse-outline"}
+        size={20}
+        color={isActive ? "#fff" : "#555"}
+      />
+      <Text
+        className={`font-semibold ${
+          isActive ? "text-white" : "text-foreground dark:text-dark-foreground"
+        }`}
+      >
+        {option.cond_des.trim()}
+      </Text>
+    </TouchableOpacity>
+  );
+
   if (isEmpty) {
     return (
       <Animated.View
@@ -220,45 +252,34 @@ export default function OrderSummaryScreen() {
               <Ionicons name="chevron-down" size={20} color="gray" />
             </TouchableOpacity>
             <View>
-              <Text className="text-md font-medium text-foreground dark:text-dark-foreground mb-2">
-                Condición de pago
-              </Text>
+              <View className="mb-2">
+                <View className="flex-row">
+                <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                  Condición de pago 
+                </Text>
+                {selected && (
+                  <Text className="text-md ml-2 font-semibold text-primary dark:text-dark-primary">
+                    {selected}
+                  </Text>
+                )}</View>
+              </View>
 
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                className="flex-row gap-3 pt-4"
+                className="flex-row gap-3 pt-"
               >
-                {parsedOptions.map((option) => {
-                  const isActive = selected === option;
-                  return (
-                    <TouchableOpacity
-                      key={option}
-                      onPress={() => setSelected(option)}
-                      activeOpacity={0.7}
-                      className={`flex-row items-center gap-1 px-4 ms-1 py-2 rounded-full ${
-                        isActive
-                          ? "bg-primary dark:bg-dark-primary"
-                          : "bg-gray-200 dark:bg-gray-700"
-                      }`}
-                    >
-                      <Ionicons
-                        name={isActive ? "checkmark-circle" : "ellipse-outline"}
-                        size={20}
-                        color={isActive ? "#fff" : "#555"}
-                      />
-                      <Text
-                        className={`font-semibold ${
-                          isActive
-                            ? "text-white"
-                            : "text-foreground dark:text-dark-foreground"
-                        }`}
-                      >
-                        {option}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
+                {parsedOptions.map((option) => (
+                  <ConditionChip
+                    key={option.co_cond}
+                    option={option}
+                    isActive={selected === option.cond_des}
+                    onPress={() => {
+                      safeHaptic("light");
+                      setSelected(option.cond_des);
+                    }}
+                  />
+                ))}
               </ScrollView>
             </View>
             <View>

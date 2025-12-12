@@ -1,6 +1,7 @@
 import api from "@/lib/axios";
 import { ClientData } from "@/types/clients";
 import { ExchangeRate } from "../../../types/exchangerate";
+import { Conditions } from "../types/conditions";
 import { OrderItem } from "../types/orderItem";
 
 export const getItemsByGoals = async (): Promise<OrderItem[]> => {
@@ -57,12 +58,10 @@ export const getIVA = async (): Promise<number> => {
   }
 };
 
-export const getConditionsPay = async (): Promise<string[]> => {
+export const getConditionsPay = async (): Promise<Conditions[]> => {
   try {
-    //const response = await api.get("customers");
-
-    const options = ["Contado", "Crédito 15 días", "Crédito 30 días"];
-    return options;
+    const response = await api.get("create-orders/conditions");
+    return response.data;
   } catch (error) {
     throw error;
   }

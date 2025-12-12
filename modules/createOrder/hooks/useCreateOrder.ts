@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA } from "../services/CreateOrderService";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
+import { Conditions } from "../types/conditions";
 import { OrderItem } from "../types/orderItem";
 
 const useCreateOrder = (searchText: string) => {
@@ -21,7 +22,7 @@ const useCreateOrder = (searchText: string) => {
   const [sortByAvailable, setSortByAvailable] = useState<boolean>(false);
   const [sortByAssigned, setSortByAssigned] = useState<boolean>(false);
   const [clients, setClients] = useState<ClientData[]>([]);
-  const [conditionsPay, setCondtionsPay] = useState<string[]>([]);
+  const [conditionsPay, setCondtionsPay] = useState<Conditions[]>([]);
   const { items } = useCreateOrderStore();
 
   // Load items from backend
