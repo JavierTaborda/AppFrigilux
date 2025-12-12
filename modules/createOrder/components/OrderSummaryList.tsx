@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default function OrderSummaryList({ scrollEnabled = true }: Props) {
-  const { items, removeItem, setTotalsVES, exchangeRate, totalsVES } =
+  const { items, removeItem, setTotalsVES, exchangeRate, totalsVES,IVA } =
     useCreateOrderStore();
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
@@ -38,7 +38,8 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
           const { subtotal, total, finalUnitPrice } = calculateTotals(
             item.price,
             item.quantity ?? 1,
-            item.discount ?? ""
+            item.discount ?? "",
+            IVA
           );
           const itemPrice = totalVenezuela(
             totalsVES ? item.price * exchangeRate : item.price

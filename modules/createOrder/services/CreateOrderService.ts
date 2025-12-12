@@ -1,5 +1,6 @@
 import api from "@/lib/axios";
 import { ClientData } from "@/types/clients";
+import { ExchangeRate } from "../../../types/exchangerate";
 import { OrderItem } from "../types/orderItem";
 
 export const getItemsByGoals = async (): Promise<OrderItem[]> => {
@@ -36,11 +37,12 @@ export const getClients = async (): Promise<ClientData[]> => {
   }
 };
 
-export const getExchangeRate = async (): Promise<number> => {
+export const getExchangeRate = async (): Promise<ExchangeRate> => {
   try {
-    //const response = await api.get("customers");
+    const response = await api.get("create-orders/exchangerate");
+    const result: ExchangeRate= response.data
 
-    return 288;
+    return result;
   } catch (error) {
     throw error;
   }

@@ -1,11 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { ExchangeRate } from "../../../types/exchangerate";
 import { OrderItem } from "../types/orderItem";
 
 type CreateOrderState = {
   items: OrderItem[];
-  exchangeRate:number;
+  exchangeRate: ExchangeRate;
   totalsVES: boolean;
   IVA:number;
   addItem: (product: OrderItem, qty?: number) => void;
@@ -15,7 +16,7 @@ type CreateOrderState = {
   clearOrder: () => void;
   getSubtotal: () => number;
   getItemsCount: () => number;
-  syncWithProducts: (products: OrderItem[], exchange: number, iva?: number) => void;
+  syncWithProducts: (products: OrderItem[], exchange: ExchangeRate, iva?: number) => void;
   setTotalsVES:(value:boolean)=>void;
 };
 
@@ -23,10 +24,14 @@ const useCreateOrderStore = create<CreateOrderState>()(
   persist(
     (set, get) => ({
       items: [],
-      exchangeRate:0,
+      exchangeRate: {
+        tasa_v:0,
+        fecha: new Date(),
+        co_mone:""
+      },
       totalsVES:false,
       IVA:0,
-      syncWithProducts: (products: OrderItem[], exchange: number, iva?: number) => {
+      syncWithProducts: (products: OrderItem[], exchange: ExchangeRate, iva?: number) => {
         set({
           items: get().items
             .map((cartItem) => {

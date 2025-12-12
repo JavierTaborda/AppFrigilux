@@ -85,7 +85,9 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
     } else if (current.includes(percent)) {
       setDiscountPercent(current.filter((d) => d !== percent).join("+"));
     } else {
-      Alert.alert("No se pueden aplicar más de 3 descuentos");
+        Alert.alert("No se pueden aplicar más de 3 descuentos", "", [
+          { text: "Aceptar" },
+        ]);
     }
   };
 

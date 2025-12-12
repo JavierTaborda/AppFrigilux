@@ -7,13 +7,14 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { ExchangeRate } from "../../../types/exchangerate";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 type TotalsProps = {
   total: number;
   TotalIVA: number;
   totalWithIVA: number;
-  exchangeRate: number;
+  exchangeRate: ExchangeRate;
 };
 
 export default function TotalView({
@@ -48,7 +49,7 @@ export default function TotalView({
 
   const formatValue = (value: number) => {
     return showInBs
-      ? `${totalVenezuela(value * exchangeRate)} Bs`
+      ? `${totalVenezuela(value * exchangeRate.tasa_v)} Bs`
       : `${totalVenezuela(value)} $`;
   };
 

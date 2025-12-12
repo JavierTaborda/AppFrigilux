@@ -1,9 +1,10 @@
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import React from "react";
 import { Pressable, Text } from "react-native";
+import { ExchangeRate } from "../../../types/exchangerate";
 
 type ExchangeRateBadgeProps = {
-  exchangeRate: number;
+  exchangeRate: ExchangeRate;
 
   onPress: () => void;
 };
@@ -22,7 +23,7 @@ const ExchangeRateBadge: React.FC<ExchangeRateBadgeProps> = ({
         Tasa
       </Text>
       <Text className="text-sm font-normal text-gray-600 dark:text-gray-400">
-        {totalVenezuela(exchangeRate)} Bs/{currencyDollar}
+        {totalVenezuela(exchangeRate.tasa_v)} Bs/{currencyDollar}
       </Text>
     </Pressable>
   );

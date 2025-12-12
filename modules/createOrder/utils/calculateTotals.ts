@@ -11,7 +11,7 @@ export const calculateTotals = (
     price: number,
     quantity: number,
     discountStr: string,
-    ivaRate: number = 0.16
+    ivaRate: number,
 ): TotalsResult => {
     const totalGross = price * quantity;
 

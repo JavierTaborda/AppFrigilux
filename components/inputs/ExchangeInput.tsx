@@ -1,3 +1,5 @@
+import { ExchangeRate } from "@/types/exchangerate";
+import { formatDateMMM_dot_dd_yyyy } from "@/utils/datesFormat";
 import { currencyDollar } from "@/utils/moneyFormat";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
@@ -5,7 +7,7 @@ import { Text, View } from "react-native";
 import CustomTextInput from "./CustomTextInput";
 
 type ExchangeInputProps = {
-  exchangeRate: number; 
+  exchangeRate: ExchangeRate; 
 
 };
 
@@ -21,7 +23,7 @@ const ExchangeInput: React.FC<ExchangeInputProps> = ({
     setUsdValue(value);
     const numericUsd = parseFloat(value);
     if (!isNaN(numericUsd)) {
-      setBsValue((numericUsd * exchangeRate).toString());
+      setBsValue((numericUsd * exchangeRate.tasa_v).toString());
     } else {
       setBsValue("");
     }
@@ -32,16 +34,21 @@ const ExchangeInput: React.FC<ExchangeInputProps> = ({
     setBsValue(value);
     const numericBs = parseFloat(value);
     if (!isNaN(numericBs)) {
-      setUsdValue((numericBs / exchangeRate).toString());
+      setUsdValue((numericBs / exchangeRate.tasa_v).toString());
     } else {
       setUsdValue("");
     }
   };
+  
+  const date = formatDateMMM_dot_dd_yyyy(exchangeRate.fecha.toString());
 
   return (
     <View className="">
-      <Text className="text-center font-bold text-xl text-foreground dark:text-dark-foreground mb-6">
+      <Text className="text-center font-bold text-xl text-foreground dark:text-dark-foreground m-1">
         Tasa de Cambio
+      </Text>
+      <Text className="text-center font-semibold text-md text-primary dark:text-dark-primary mb-6">
+        {date}
       </Text>
 
       <View className="flex-row items-center justify-between">
@@ -69,7 +76,7 @@ const ExchangeInput: React.FC<ExchangeInputProps> = ({
             Bs
           </Text>
           <CustomTextInput
-            placeholder={`${exchangeRate} Bs`}
+            placeholder={`${exchangeRate.tasa_v} Bs`}
             value={bsValue}
             onChangeText={handleBsChange}
             keyboardType="numeric"

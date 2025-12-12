@@ -24,7 +24,9 @@ import OrderSummaryList from "../components/OrderSummaryList";
 import TotalView from "../components/TotalView";
 import useCreateOrder from "../hooks/useCreateOrder";
 import { useOrderTotals } from "../hooks/useOrderTotals";
+import { PedidoDTO } from "../interfaces/pedidoDTO";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
+import { calculateTotals } from "../utils/calculateTotals";
 
 export default function OrderSummaryScreen() {
   const { clients } = useLocalSearchParams<{ clients?: string }>();
@@ -38,7 +40,7 @@ export default function OrderSummaryScreen() {
   const { isDark } = useThemeStore();
   const createOrderData = useCreateOrder("");
 
-  const { items, exchangeRate } = useCreateOrderStore();
+  const { items, exchangeRate, IVA } = useCreateOrderStore();
 
   const { totalGross, total, TotalIVA, totalWithIVA, discountAmount } =
     useOrderTotals(items);
@@ -49,7 +51,7 @@ export default function OrderSummaryScreen() {
   const [selected, setSelected] = useState<string>(
     parsedOptions.length > 0 ? parsedOptions[0] : ""
   );
-  const [email, setEmail] = useState<string>("")
+  const [email, setEmail] = useState<string>("");
 
   // Customer Data
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
@@ -90,8 +92,83 @@ export default function OrderSummaryScreen() {
 
   useEffect(() => {
     setDirection(selectedClient?.dir_ent2?.trim() || "");
-    setEmail(selectedClient?.co_cli || "")
+    setEmail(selectedClient?.co_cli || "");
   }, [selectedClient]);
+
+  const buildPedido = (): PedidoDTO => {
+    const fact_num = Date.now(); 
+    // generate totals
+    const totals = items.reduce(
+      (acc, item) => {
+        const { subtotal, total, iva, totalGross } = calculateTotals(
+          item.price,
+          item.quantity ?? 1,
+          item.discount ?? "",
+          IVA
+        );
+
+        acc.tot_bruto += subtotal;
+  
+        acc.tot_iva += iva;
+        acc.tot_neto += total;
+
+        return acc;
+      },
+      { tot_bruto: 0, tot_iva: 0, tot_neto: 0 }
+    );
+
+    return {
+      fact_num,
+
+      // cliente + info general
+      contrib: isFacturable,
+      comentario: comment,
+      dir_ent: direction,
+      co_cli: selectedClient?.co_cli ,
+      nombre: selectedClient?.cli_des ,
+      //rif: selectedClient?.rif ?? null,
+      forma_pag: selected,
+      //telefono: selectedClient?.telefonos ?? null,
+
+      tot_bruto: totals.tot_bruto,
+      iva: totals.tot_iva,
+      tot_neto: totals.tot_neto,
+
+      
+      fec_emis: new Date().toISOString(),
+      fec_venc: new Date().toISOString(),
+
+      // ----------- MONEDA ----------- //
+      moneda: "USD",
+      tasa: exchangeRate?.tasa_v,
+
+      // ----------- ITEMS ----------- //
+      reng_ped: items.map((item, index) => {
+        const { subtotal, total, iva, finalUnitPrice } =
+          calculateTotals(item.price, item.quantity ?? 1, item.discount ?? "",IVA);
+
+        return {
+          fact_num,
+          reng_num: index + 1,
+
+          co_art: item.codart,
+          des_art: item.artdes,
+
+          stotal_art: subtotal,
+          total_art: total, //
+          reng_neto: total, // total + IVA
+          imp_prod: iva, // IVA del ítem
+
+          cant_prod: item.quantity,
+          prec_vta: finalUnitPrice, // con descuento aplicado
+          unidad: "0001  ",
+
+        
+          pendiente: item.quantity,
+        };
+      }),
+    };
+  };
 
   if (isEmpty) {
     return (

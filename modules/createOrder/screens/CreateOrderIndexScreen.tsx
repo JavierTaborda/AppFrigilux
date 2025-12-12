@@ -87,7 +87,6 @@ export default function CreateOrderScreen() {
     opacity: opacity.value,
   }));
 
-  if (error) return <ErrorView error={error} getData={handleRefresh} />;
 
   const handleSetModalItemVisible = useCallback((it: OrderItem) => {
     setItem(it);
@@ -178,6 +177,7 @@ export default function CreateOrderScreen() {
       <ActivityIndicator size="large" color="#fff" />
     </Animated.View>
   );
+  if (error) return <ErrorView error={error} getData={handleRefresh} />;
 
   return (
     <ScreenSearchLayout
