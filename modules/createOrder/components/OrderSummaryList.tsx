@@ -42,13 +42,13 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
             IVA
           );
           const itemPrice = totalVenezuela(
-            totalsVES ? item.price * exchangeRate : item.price
+            totalsVES ? item.price * exchangeRate.tasa_v : item.price
           );
           const finalPrice = totalVenezuela(
-            totalsVES ? finalUnitPrice * exchangeRate : finalUnitPrice
+            totalsVES ? finalUnitPrice * exchangeRate.tasa_v : finalUnitPrice
           );
           const totalPrice = totalVenezuela(
-            totalsVES ? total * exchangeRate : total
+            totalsVES ? total * exchangeRate.tasa_v : total
           );
           const currency = totalsVES ? currencyVES: currencyDollar;
           return (

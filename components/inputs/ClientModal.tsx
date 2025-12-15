@@ -64,7 +64,7 @@ const ClientModal: React.FC<ClientModalProps> = React.memo(
                 className="h-14 py-2 px-4 mb-3 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
               >
                 <Text className="text-md text-foreground dark:text-dark-foreground">
-                  {item.co_cli} - {item.cli_des}
+                  {item.co_cli?.trim()} - {item.cli_des?.trim()}
                 </Text>
               </Pressable>
             )}

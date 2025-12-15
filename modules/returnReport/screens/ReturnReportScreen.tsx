@@ -66,7 +66,8 @@ export default function ProductDefectScreen() {
     setSelectedClient,
     showClientModal,
     setShowClientModal,
-    showMotiveModal, setShowMotiveModal,
+    showMotiveModal,
+    setShowMotiveModal,
     codeVen,
     venDes,
     setCodeArt,
@@ -85,7 +86,7 @@ export default function ProductDefectScreen() {
     handleManual,
     showArtModal,
     setShowArtModal,
-    motives
+    motives,
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
@@ -232,7 +233,7 @@ export default function ProductDefectScreen() {
   const handleClientSelectPress = useCallback(() => {
     setShowClientModal(true);
   }, []);
-  const handleMotiveSelectPress= useCallback(() => {
+  const handleMotiveSelectPress = useCallback(() => {
     setShowMotiveModal(true);
   }, []);
 
@@ -250,14 +251,16 @@ export default function ProductDefectScreen() {
   const renderToggleSelector = () =>
     !isData &&
     !isManual && (
-      // <ToggleSelector
-      //   startMethod={startMethod}
-      //   setStartMethod={setStartMethod}
-      //   animatedStyle={animatedStyle}
-      //   animatedStyleToggle={animatedStyleToggle}
-      //   emojis={emojis}
-      // />
-      <View className="" />
+      <>
+        {/* <ToggleSelector
+          startMethod={startMethod}
+          setStartMethod={setStartMethod}
+          animatedStyle={animatedStyle}
+          animatedStyleToggle={animatedStyleToggle}
+          emojis={emojis}
+        />
+        <View className="" /> */}
+      </>
     );
 
   const renderSearchSection = () =>
@@ -423,7 +426,6 @@ export default function ProductDefectScreen() {
     </Animated.View>
   );
 
-
   const renderReturnDetails = () => (
     <Animated.View
       style={sectionAnimatedStyle}
@@ -438,9 +440,7 @@ export default function ProductDefectScreen() {
           className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl"
         >
           <Text className="text-foreground dark:text-dark-foreground">
-            {reason
-              ? `${reason}`
-              : "Seleccionar motivo..."}
+            {reason ? `${reason}` : "Seleccionar motivo..."}
           </Text>
           <Ionicons
             name="chevron-forward"
@@ -517,9 +517,7 @@ export default function ProductDefectScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text className="text-white font-semibold text-lg">
-              Registrar
-            </Text>
+            <Text className="text-white font-semibold text-lg">Registrar</Text>
           )}
         </Pressable>
       </Animated.View>

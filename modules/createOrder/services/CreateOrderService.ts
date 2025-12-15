@@ -22,14 +22,20 @@ export const getClients = async (): Promise<ClientData[]> => {
   try {
     const response = await api.get("customers");
 
-    const clients: ClientData[] = response.data.map((c: any) => ({
-      co_cli: c.co_cli?.trim(),
-      cli_des: c.cli_des?.split("\r\n")[0]?.trim(),
-      co_zon: c.co_zon?.trim(),
-      dir_ent2: c.dir_ent2?.trim(),
-      direc1: c.direc1?.trim(),
-      direc2: c.direc2?.trim(),
-    }));
+    // const clients: ClientData[] = response.data.map((c: any) => ({
+    //   co_cli: c.co_cli?.trim(),
+    //   cli_des: c.cli_des?.split("\r\n")[0]?.trim(),
+    //   co_zon: c.co_zon?.trim(),
+    //   dir_ent2: c.dir_ent2?.trim(),
+    //   direc1: c.direc1?.trim(),
+    //   direc2: c.direc2?.trim(),
+    //   telefonos: c.telefonos,
+    //   email: c.email,
+    //   rif: c.rif
+    // }));
+
+    const clients: ClientData[] = response.data;
+
 
     return clients;
   } catch (error) {
@@ -50,9 +56,8 @@ export const getExchangeRate = async (): Promise<ExchangeRate> => {
 };
 export const getIVA = async (): Promise<number> => {
   try {
-    //const response = await api.get("customers");
-
-    return 0.19;
+    const response = await api.get("create-orders/iva");
+    return response.data.tasa
   } catch (error) {
     throw error;
   }

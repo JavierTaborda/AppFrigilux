@@ -34,6 +34,7 @@ export function formatDatedd_dot_MMM_yyyy(dateString?: string): string {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    timeZone: "UTC"
   });
 
   const formatted = formatter.format(date); // ej: "18 jun 2025"

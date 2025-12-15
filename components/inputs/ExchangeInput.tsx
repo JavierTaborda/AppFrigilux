@@ -1,5 +1,5 @@
 import { ExchangeRate } from "@/types/exchangerate";
-import { formatDateMMM_dot_dd_yyyy } from "@/utils/datesFormat";
+import { formatDatedd_dot_MMM_yyyy } from "@/utils/datesFormat";
 import { currencyDollar } from "@/utils/moneyFormat";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
@@ -40,7 +40,9 @@ const ExchangeInput: React.FC<ExchangeInputProps> = ({
     }
   };
   
-  const date = formatDateMMM_dot_dd_yyyy(exchangeRate.fecha.toString());
+
+  const date = formatDatedd_dot_MMM_yyyy(exchangeRate.fecha.toString());
+
 
   return (
     <View className="">

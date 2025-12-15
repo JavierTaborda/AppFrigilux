@@ -93,9 +93,10 @@ export default function OrderSummaryScreen() {
 
   useEffect(() => {
     setDirection(selectedClient?.dir_ent2?.trim() || "");
-    setEmail(selectedClient?.co_cli || "");
-  }, [selectedClient]);
+    setEmail(selectedClient?.email?.trim() || "");
 
+  }, [selectedClient]);
+ 
   const buildPedido = (): PedidoDTO => {
     const fact_num = Date.now(); 
     // generate totals

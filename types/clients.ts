@@ -9,5 +9,9 @@ export interface ClientData {
     co_zon?: string;    
     dir_ent2?: string;  
     direc1?: string;    
-    direc2?: string;    
+    direc2?: string;  
+    rif: string;
+    telefonos: string;
+    email: string;
+
 }
