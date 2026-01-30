@@ -1,2 +1,2 @@
-import ProductDefectScreen from "@/modules/returnReport/screens/ReturnReportScreen";
+import ProductDefectScreen from "@/features/returnReport/screens/ReturnReportScreen";
 export default ProductDefectScreen;

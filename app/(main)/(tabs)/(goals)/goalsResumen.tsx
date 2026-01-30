@@ -1,2 +1,1 @@
-export { default } from "@/modules/goals/screens/GoalsScreen";
-
+export { default } from "@/features/goals/screens/GoalsScreen";

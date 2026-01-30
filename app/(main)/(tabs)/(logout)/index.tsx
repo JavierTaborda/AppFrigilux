@@ -1,2 +1,1 @@
-export { default } from '@/modules/logout/LogoutScreen';
-
+export { default } from "@/features/logout/LogoutScreen";

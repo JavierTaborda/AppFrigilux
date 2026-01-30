@@ -1,2 +1,1 @@
-export { default } from "@/modules/createOrder/screens/OrderSummaryScreen";
-
+export { default } from "@/features/createOrder/screens/OrderSummaryScreen";

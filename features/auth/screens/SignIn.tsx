@@ -1,18 +1,18 @@
 import {
-  ActivityIndicator,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    ActivityIndicator,
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import EmailOTPForm from "@/modules/auth/components/EmailOTPForm";
-import PasswordForm from "@/modules/auth/components/PasswordForm";
-import { useSignIn } from "@/modules/auth/hooks/useSignIn";
+import EmailOTPForm from "@/features/auth/components/EmailOTPForm";
+import PasswordForm from "@/features/auth/components/PasswordForm";
+import { useSignIn } from "@/features/auth/hooks/useSignIn";
 
 export default function SignIn() {
   const {

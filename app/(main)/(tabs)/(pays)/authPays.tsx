@@ -1,1 +1,1 @@
-export { default } from '@/modules/pays/screens/AuthPayScreen';
+export { default } from "@/features/pays/screens/AuthPayScreen";

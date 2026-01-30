@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Create DataClient interface
 - Change Client to DataClient in `ReturnModule`
 - add @shopify/flash-list
+- folder `modules` changed to `features`
 
 ### Fixed
 

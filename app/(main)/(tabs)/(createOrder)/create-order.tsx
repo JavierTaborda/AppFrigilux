@@ -1,2 +1,1 @@
-export { default } from "@/modules/createOrder/screens/CreateOrderIndexScreen";
-
+export { default } from "@/features/createOrder/screens/CreateOrderIndexScreen";

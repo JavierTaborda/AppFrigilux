@@ -1,2 +1,1 @@
-export { default } from '@/modules/orders/screens/OrderApprovalScreen';
-
+export { default } from "@/features/orders/screens/OrderApprovalScreen";

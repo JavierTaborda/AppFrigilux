@@ -1,3 +1,1 @@
-
-export { default } from '@/modules/auth/screens/SignIn';
-
+export { default } from "@/features/auth/screens/SignIn";

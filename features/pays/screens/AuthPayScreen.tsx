@@ -1,20 +1,25 @@
-import { useState } from 'react';
-import { FlatList, View } from 'react-native';
+import { useState } from "react";
+import { FlatList, View } from "react-native";
 
-import { useAuthPays } from '@/modules/pays/hooks/useAuthPays';
+import { useAuthPays } from "@/features/pays/hooks/useAuthPays";
 
-import ScreenSearchLayout from '@/components/screens/ScreenSearchLayout';
-import Loader from '@/components/ui/Loader';
-import { Text } from 'react-native';
-import AuthPayCard from '../components/AuthPayCard';
-import AuthPayModal from '../components/AuthPayModal';
-import FiltersModal from '../components/FilterModal';
-import { AuthPay } from '../types/AuthPay';
+import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
+import Loader from "@/components/ui/Loader";
+import { Text } from "react-native";
+import AuthPayCard from "../components/AuthPayCard";
+import AuthPayModal from "../components/AuthPayModal";
+import FiltersModal from "../components/FilterModal";
+import { AuthPay } from "../types/AuthPay";
 
 export default function AuthorizationScreen() {
-  const { pays, loading, totalDocumentsAuth, totalAutorizadoUSD, totalAutorizadoVED } = useAuthPays();
-  const [searchText, setSearchText] = useState('');
-
+  const {
+    pays,
+    loading,
+    totalDocumentsAuth,
+    totalAutorizadoUSD,
+    totalAutorizadoVED,
+  } = useAuthPays();
+  const [searchText, setSearchText] = useState("");
 
   // State Filters
   const [filterModalVisible, setFilterModalVisible] = useState(false);
@@ -34,20 +39,20 @@ export default function AuthorizationScreen() {
 
   const handleAuthorize = () => {
     if (selectedItem) {
-      alert('Pago Autorizado')
+      alert("Pago Autorizado");
       // TODO: real logic
     }
     setAuthModalVisible(false);
   };
 
   const filteredPays = pays.filter((item) =>
-    `${item.observacion} ${item.beneficiario}`.toLowerCase().includes(searchText.toLowerCase())
+    `${item.observacion} ${item.beneficiario}`
+      .toLowerCase()
+      .includes(searchText.toLowerCase()),
   );
 
   if (loading) {
-    return (
-      <Loader />
-    );
+    return <Loader />;
   }
 
   return (
@@ -59,18 +64,19 @@ export default function AuthorizationScreen() {
         setSearchText={setSearchText}
         placeholder="Observación o Beneficiario..."
         onFilterPress={() => setFilterModalVisible(true)}
-        headerVisible={false}>
-        
-
+        headerVisible={false}
+      >
         {/* Pay List */}
         <FlatList
           data={filteredPays}
           keyExtractor={(item, index) => `${item.numerodocumento}-${index}`}
           renderItem={({ item }) => (
-            <AuthPayCard item={item} onPress={() => handleOpenAuthModal(item)} />
+            <AuthPayCard
+              item={item}
+              onPress={() => handleOpenAuthModal(item)}
+            />
           )}
           contentContainerStyle={{ paddingBottom: 100 }}
-
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-10">
               <Text className="text-mutedForeground dark:text-dark-mutedForeground text-center">
@@ -83,13 +89,11 @@ export default function AuthorizationScreen() {
 
       {/* Modal Filters */}
       {filterModalVisible && (
-
         <FiltersModal
           visible={filterModalVisible}
           onClose={() => setFilterModalVisible(false)}
           onApply={handleApplyFilters}
         />
-
       )}
 
       {authModalVisible && (
@@ -100,7 +104,6 @@ export default function AuthorizationScreen() {
           onAuthorize={handleAuthorize}
         />
       )}
-
     </>
   );
 }
