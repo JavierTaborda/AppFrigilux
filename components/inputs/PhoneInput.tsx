@@ -1,6 +1,6 @@
-import { appColors } from "@/utils/colors";
-import { FontAwesome } from '@expo/vector-icons';
-import React, { useState } from "react";
+import { appTheme } from "@/utils/appTheme";
+import { FontAwesome } from "@expo/vector-icons";
+import { useState } from "react";
 import { Text, TextInput, View } from "react-native";
 
 interface PhoneInputProps {
@@ -9,39 +9,45 @@ interface PhoneInputProps {
   error?: string;
 }
 
-export default function PhoneInput({ value, onChange, error }: PhoneInputProps) {
+export default function PhoneInput({
+  value,
+  onChange,
+  error,
+}: PhoneInputProps) {
   const [touched, setTouched] = useState(false);
 
   const handleChange = (text: string) => {
-    const cleaned = text.replace(/[^\d]/g, '');
+    const cleaned = text.replace(/[^\d]/g, "");
     if (/^58\d{0,10}$/.test(cleaned)) {
-      onChange('+58' + cleaned.slice(2));
+      onChange("+58" + cleaned.slice(2));
     }
   };
 
-  const isValid = /^58\d{10}$/.test(value.replace('+', ''));
+  const isValid = /^58\d{10}$/.test(value.replace("+", ""));
 
   return (
     <View>
       <View
         className={`flex-row items-center border rounded-xl px-4 dark:text-white bg-transparent dark:bg-dark-componentbg
-          ${touched && !isValid ? 'border-red-500 dark:border-red-300' : 'border-gray-300 dark:border-gray-600'}
+          ${touched && !isValid ? "border-red-500 dark:border-red-300" : "border-gray-300 dark:border-gray-600"}
         `}
       >
         <FontAwesome
           name="phone"
           size={20}
-          color={touched && !isValid ? appColors.error : appColors.placeholdercolor}
+          color={
+            touched && !isValid ? appTheme.error : appTheme.placeholdercolor
+          }
         />
         <Text className="text-black dark:text-white ml-2 py-4">+58</Text>
         <TextInput
           className="flex-1 p-4 text-black dark:text-white"
           keyboardType="phone-pad"
           placeholder="4121234567"
-          placeholderTextColor={appColors.placeholdercolor}
-          value={value.replace('+58', '')}
+          placeholderTextColor={appTheme.placeholdercolor}
+          value={value.replace("+58", "")}
           onChangeText={(text) => {
-            handleChange('+58' + text);
+            handleChange("+58" + text);
             setTouched(true);
           }}
           autoCapitalize="none"

@@ -1,6 +1,6 @@
-import { appColors } from "@/utils/colors";
-import { FontAwesome } from '@expo/vector-icons';
-import React, { useState } from "react";
+import { appTheme } from "@/utils/appTheme";
+import { FontAwesome } from "@expo/vector-icons";
+import { useState } from "react";
 import { Text, TextInput, View } from "react-native";
 
 export default function RateInput({
@@ -20,19 +20,21 @@ export default function RateInput({
     <View>
       <View
         className={`flex-row items-center border rounded-xl px-4 dark:text-white bg-transparent dark:bg-dark-componentbg
-          ${touched && !isValid ? 'border-red-500 dark:border-red-300' : 'border-gray-300 dark:border-gray-600'}
+          ${touched && !isValid ? "border-red-500 dark:border-red-300" : "border-gray-300 dark:border-gray-600"}
         `}
       >
         <FontAwesome
           name="money"
           size={20}
-          color={touched && !isValid ? appColors.error : appColors.placeholdercolor}
+          color={
+            touched && !isValid ? appTheme.error : appTheme.placeholdercolor
+          }
         />
         <TextInput
           className="flex-1 p-4 text-black dark:text-white"
           placeholder={placeholder}
           value={value?.toString()}
-          placeholderTextColor={appColors.placeholdercolor}
+          placeholderTextColor={appTheme.placeholdercolor}
           keyboardType="decimal-pad"
           onBlur={() => setTouched(true)}
           onChangeText={(text) => {
@@ -40,7 +42,7 @@ export default function RateInput({
             if (!isNaN(parsed)) {
               onChangeValue(parsed);
             } else {
-              onChangeValue(0.00); // predr
+              onChangeValue(0.0); // predr
             }
           }}
         />

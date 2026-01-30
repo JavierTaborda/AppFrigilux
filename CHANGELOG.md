@@ -17,10 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move ClientModal to Components/inputs
 - Create DataClient interface
 - Change Client to DataClient in `ReturnModule`
+- add @shopify/flash-list
 
 ### Fixed
 
 ### Removed
+
+- colors and AppColors
 
 ## [1.0.4] - 2025-11-25
 
@@ -68,45 +71,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `pickImage` helper — Simplified helper to pick and upload images to Supabase Storage (works with Expo Image Picker and handles resizing/formatting before upload).
 - deleteImage in `uploadImage` from returnModule.
 - safeHaptic utility
-    A new `safeHaptic` helper to standardize haptic feedback across the app:
-    -Centralized API for triggering haptics from anywhere in the codebase.
-    -Full TypeScript support with a defined set of haptic types for autocomplete and safety.
-    -Graceful fallback when haptics are unavailable (no-op instead of throwing).
-    -Easy to extend: add new types in one place.
-    -Consistent UX across iOS and Android (maps to the best available native haptic).
+  A new `safeHaptic` helper to standardize haptic feedback across the app:
+  -Centralized API for triggering haptics from anywhere in the codebase.
+  -Full TypeScript support with a defined set of haptic types for autocomplete and safety.
+  -Graceful fallback when haptics are unavailable (no-op instead of throwing).
+  -Easy to extend: add new types in one place.
+  -Consistent UX across iOS and Android (maps to the best available native haptic).
 
-    Available haptic types:
-    -`success`
-    -`warning`
-    -`error`
-    -`selection`
-    -`light`
-    -`medium`
-    -`heavy`
-    -`rigid`
-    -`soft`
+  Available haptic types: -`success` -`warning` -`error` -`selection` -`light` -`medium` -`heavy` -`rigid` -`soft`
 
-    Usage:
+  Usage:
 
-    ```ts
-    import { safeHaptic } from "@/utils/safeHaptics";
+  ```ts
+  import { safeHaptic } from "@/utils/safeHaptics";
 
-    safeHaptic("success");
-    safeHaptic("warning");
-    safeHaptic("selection");
-    safeHaptic("heavy");
-    ```
+  safeHaptic("success");
+  safeHaptic("warning");
+  safeHaptic("selection");
+  safeHaptic("heavy");
+  ```
 
 ### Changed
 
 - Styles and UI in `CustomDrawerContent` and `DrawerItem`
 - OrderSearScreen: Only show Switch if the order satus is diferent from 2
 - `CustomFlatList` with built‑in pagination:
-    -Added automatic pagination: items are loaded in batches (pageSize, default 20).
-    -Implemented incremental loading via onEndReached, reducing initial render workload.
-    -Introduced loading spinner in ListFooterComponent to indicate when more items are being fetched.
-    -Optimized scroll‑to‑top button using scrollToOffset for smoother navigation.
-    -Tuned FlatList props (initialNumToRender, maxToRenderPerBatch, windowSize) for better virtualization.
+  -Added automatic pagination: items are loaded in batches (pageSize, default 20).
+  -Implemented incremental loading via onEndReached, reducing initial render workload.
+  -Introduced loading spinner in ListFooterComponent to indicate when more items are being fetched.
+  -Optimized scroll‑to‑top button using scrollToOffset for smoother navigation.
+  -Tuned FlatList props (initialNumToRender, maxToRenderPerBatch, windowSize) for better virtualization.
 
 ### Fixed
 
@@ -166,7 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UI and styles in TitleText from CustomFlatList
 - Text for list in OrdersModule
 - buttons in HomeScreen
-- function in  `useHomeScreen` for get the current mont and year
+- function in `useHomeScreen` for get the current mont and year
 - hide the emojis and icon in home screen and drawer
 
 ### Fixed
@@ -174,7 +168,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The app crashes when the `pedido.co_art` is null, a validation check has been implemented.
 - Added validation for discount for product list in Orders Module `hasDiscount = discount !== "0" && discount.length > 0`
 - Expanding the second item and image in ProductList causes the first item to render incompletely. Only one item was configured for expansion.
-- Prevented automatic write on first render: Added a didMount flag to avoid triggering `setBiometricEnabled()` when th  e component first loads im profile.
+- Prevented automatic write on first render: Added a didMount flag to avoid triggering `setBiometricEnabled()` when th e component first loads im profile.
 - The biometric toggle no longer defaults to true on first app launch if the saved value is false.
 
 ## [0.0.2](https://github.com/JavierTaborda/AppFrigilux/releases/tag/v0.0.2) - 2025-10-08

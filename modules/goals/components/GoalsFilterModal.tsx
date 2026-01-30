@@ -1,12 +1,12 @@
 import FilterModal from "@/components/ui/FilterModal";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { Seller } from "../types/Seller";
 
@@ -16,7 +16,7 @@ interface GoalsFilterModalProps {
   onApply: (
     selectedSellers: string[],
     selectedCategory: string | undefined,
-    selectedUsedValue: string | undefined
+    selectedUsedValue: string | undefined,
   ) => void;
   sellers: Seller[];
   category: any[];
@@ -55,11 +55,11 @@ export default function GoalsFilterModal({
     setInternalSelected((prev) =>
       prev.includes(co_ven)
         ? prev.filter((id) => id !== co_ven)
-        : [...prev, co_ven]
+        : [...prev, co_ven],
     );
   };
   const [internalCategory, setInternalCategory] = useState<string | undefined>(
-    selectedCategory
+    selectedCategory,
   );
   const [internalUsedValue, setInternalUsedValue] = useState<
     string | undefined
@@ -94,7 +94,7 @@ export default function GoalsFilterModal({
       <View className="bg-background dark:bg-dark-background px-4 mb-4">
         {loading ? (
           <View className="flex-1 justify-center items-center py-10">
-            <ActivityIndicator color={appColors.primary.DEFAULT} />
+            <ActivityIndicator color={appTheme.primary.DEFAULT} />
           </View>
         ) : sellers.length === 0 ? (
           <View className="p-8 items-center">
@@ -117,7 +117,7 @@ export default function GoalsFilterModal({
                   key={opt.value}
                   onPress={() =>
                     setInternalUsedValue((prev) =>
-                      prev === opt.value ? undefined : opt.value
+                      prev === opt.value ? undefined : opt.value,
                     )
                   }
                   className={`px-4 py-2 rounded-full border ${
@@ -151,7 +151,7 @@ export default function GoalsFilterModal({
                   key={opt.codcat}
                   onPress={() =>
                     setInternalCategory((prev) =>
-                      prev === opt.codcat ? undefined : opt.codcat
+                      prev === opt.codcat ? undefined : opt.codcat,
                     )
                   }
                   className={`px-4 py-2 rounded-full border ${

@@ -1,23 +1,23 @@
 import CustomDateTimePicker from "@/components/inputs/CustomDateTimePicker";
 import FilterModal from "@/components/ui/FilterModal";
 import ScrollSelect from "@/components/ui/ScrollSelect";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import React, { useState } from "react";
 import {
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    Platform,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { Switch } from "react-native-gesture-handler";
 import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
 import {
-  OrderFilters,
-  OrderProcesado,
-  OrderStatus,
-  procesadosOptions,
-  statusOptions,
+    OrderFilters,
+    OrderProcesado,
+    OrderStatus,
+    procesadosOptions,
+    statusOptions,
 } from "../types/OrderFilters";
 
 interface OrderFilterModalProps {
@@ -27,7 +27,7 @@ interface OrderFilterModalProps {
     zones: string[];
     sellers: string[];
     statusList: statusOptions[];
-    procesadoslist:procesadosOptions[];
+    procesadoslist: procesadosOptions[];
   };
   filters: OrderFilters;
   onApply: (newFilters: OrderFilters) => void;
@@ -43,7 +43,7 @@ export default function OrderFilterModal({
   hasPermission,
 }: OrderFilterModalProps) {
   const [startDate, setStartDate] = useState<Date | undefined>(
-    filters.startDate
+    filters.startDate,
   );
   const [endDate, setEndDate] = useState<Date | undefined>(filters.endDate);
   const [status, setStatus] = useState<OrderStatus>(filters.status);
@@ -51,7 +51,7 @@ export default function OrderFilterModal({
   const [zone, setZone] = useState<string | undefined>(filters.zone);
   const [seller, setSeller] = useState<string | undefined>(filters.seller);
   const [anulado, setAnulado] = useState<boolean | undefined>(
-    filters.cancelled
+    filters.cancelled,
   );
 
   const [showStartPicker, setShowStartPicker] = useState(false);
@@ -202,11 +202,11 @@ export default function OrderFilterModal({
               onValueChange={() => setAnulado(anulado ? undefined : true)}
               thumbColor={
                 anulado
-                  ? Platform.select({ android: appColors.error })
-                  : Platform.select({ android: appColors.muted })
+                  ? Platform.select({ android: appTheme.error })
+                  : Platform.select({ android: appTheme.muted })
               }
               trackColor={{
-                true: appColors.error,
+                true: appTheme.error,
               }}
             />
           </View>

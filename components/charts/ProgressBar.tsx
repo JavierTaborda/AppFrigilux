@@ -1,5 +1,5 @@
 import { useThemeStore } from "@/stores/useThemeStore";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import * as Progress from "react-native-progress";
 interface Props {
   progress: number;
@@ -8,7 +8,7 @@ interface Props {
 export default function ProgressBar({ progress, color }: Props) {
   const { isDark } = useThemeStore();
   if (!color)
-    color = isDark ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT;
+    color = isDark ? appTheme.dark.primary.DEFAULT : appTheme.primary.DEFAULT;
   return (
     <Progress.Bar
       progress={progress}
@@ -17,7 +17,7 @@ export default function ProgressBar({ progress, color }: Props) {
       color={color}
       borderRadius={4}
       borderWidth={0}
-      unfilledColor={isDark ? appColors.dark.muted : appColors.muted}
+      unfilledColor={isDark ? appTheme.dark.muted : appTheme.muted}
       height={8}
       style={{ marginTop: 1 }}
     />

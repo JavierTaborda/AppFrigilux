@@ -1,5 +1,5 @@
 
-export const appColors = {
+export const appTheme = {
   primary: {
     DEFAULT: "rgb(35, 162, 71)",
     light: "rgb(76, 207, 120)",

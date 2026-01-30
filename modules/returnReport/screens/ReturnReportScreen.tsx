@@ -3,27 +3,27 @@ import CustomTextInput from "@/components/inputs/CustomTextInput";
 import BottomModal from "@/components/ui/BottomModal";
 import CustomImage from "@/components/ui/CustomImagen";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { imageURL } from "@/utils/imageURL";
 import { safeHaptic } from "@/utils/safeHaptics";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
+    ActivityIndicator,
+    Pressable,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    useWindowDimensions,
+    View,
 } from "react-native";
 import Animated, {
-  Easing,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withTiming,
+    Easing,
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue,
+    withDelay,
+    withTiming,
 } from "react-native-reanimated";
 import ClientModal from "../../../components/inputs/ClientModal";
 import ArtsModal from "../components/ArtsModal";
@@ -94,8 +94,8 @@ export default function ProductDefectScreen() {
 
   // Memoized values
   const isDarkPrimary = useMemo(
-    () => (isDark ? appColors.dark.primary.DEFAULT : appColors.primary.DEFAULT),
-    [isDark]
+    () => (isDark ? appTheme.dark.primary.DEFAULT : appTheme.primary.DEFAULT),
+    [isDark],
   );
 
   // Animation values
@@ -114,7 +114,7 @@ export default function ProductDefectScreen() {
   useEffect(() => {
     toggleX.value = withTiming(
       startMethod === "serial" ? 0 : 1,
-      ANIMATION_CONFIG
+      ANIMATION_CONFIG,
     );
   }, [startMethod, toggleX]);
 

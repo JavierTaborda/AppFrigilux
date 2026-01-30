@@ -4,19 +4,19 @@ import ExchangeInput from "@/components/inputs/ExchangeInput";
 import BottomModal from "@/components/ui/BottomModal";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { ClientData } from "@/types/clients";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { safeHaptic } from "@/utils/safeHaptics";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
-  Alert,
-  Platform,
-  ScrollView,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    Platform,
+    ScrollView,
+    Switch,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, { Easing, FadeInUp } from "react-native-reanimated";
 import ExchangeRateBadge from "../components/ExchangeRateBadge";
@@ -50,7 +50,7 @@ export default function OrderSummaryScreen() {
   const [direction, setDirection] = useState<string>("");
   const [comment, setComment] = useState<string>("");
   const [selected, setSelected] = useState<string>(
-    parsedOptions.length > 0 ? parsedOptions[0].cond_des : ""
+    parsedOptions.length > 0 ? parsedOptions[0].cond_des : "",
   );
   const [email, setEmail] = useState<string>("");
 
@@ -94,11 +94,10 @@ export default function OrderSummaryScreen() {
   useEffect(() => {
     setDirection(selectedClient?.dir_ent2?.trim() || "");
     setEmail(selectedClient?.email?.trim() || "");
-
   }, [selectedClient]);
- 
+
   const buildPedido = (): PedidoDTO => {
-    const fact_num = Date.now(); 
+    const fact_num = Date.now();
     // generate totals
     const totals = items.reduce(
       (acc, item) => {
@@ -106,17 +105,17 @@ export default function OrderSummaryScreen() {
           item.price,
           item.quantity ?? 1,
           item.discount ?? "",
-          IVA
+          IVA,
         );
 
         acc.tot_bruto += subtotal;
-  
+
         acc.tot_iva += iva;
         acc.tot_neto += total;
 
         return acc;
       },
-      { tot_bruto: 0, tot_iva: 0, tot_neto: 0 }
+      { tot_bruto: 0, tot_iva: 0, tot_neto: 0 },
     );
 
     return {
@@ -126,8 +125,8 @@ export default function OrderSummaryScreen() {
       contrib: isFacturable,
       comentario: comment,
       dir_ent: direction,
-      co_cli: selectedClient?.co_cli ,
-      nombre: selectedClient?.cli_des ,
+      co_cli: selectedClient?.co_cli,
+      nombre: selectedClient?.cli_des,
       //rif: selectedClient?.rif ?? null,
       forma_pag: selected,
       //telefono: selectedClient?.telefonos ?? null,
@@ -136,7 +135,6 @@ export default function OrderSummaryScreen() {
       iva: totals.tot_iva,
       tot_neto: totals.tot_neto,
 
-      
       fec_emis: new Date().toISOString(),
       fec_venc: new Date().toISOString(),
 
@@ -146,8 +144,12 @@ export default function OrderSummaryScreen() {
 
       // ----------- ITEMS ----------- //
       reng_ped: items.map((item, index) => {
-        const { subtotal, total, iva, finalUnitPrice } =
-          calculateTotals(item.price, item.quantity ?? 1, item.discount ?? "",IVA);
+        const { subtotal, total, iva, finalUnitPrice } = calculateTotals(
+          item.price,
+          item.quantity ?? 1,
+          item.discount ?? "",
+          IVA,
+        );
 
         return {
           fact_num,
@@ -165,18 +167,17 @@ export default function OrderSummaryScreen() {
           prec_vta: finalUnitPrice, // con descuento aplicado
           unidad: "0001  ",
 
-        
           pendiente: item.quantity,
         };
       }),
     };
   };
 
-  type ConditionsProps={
+  type ConditionsProps = {
     option: Conditions;
     isActive: boolean;
     onPress: () => void;
-  }
+  };
   const ConditionChip = ({ option, isActive, onPress }: ConditionsProps) => (
     <TouchableOpacity
       key={option.co_cond}
@@ -255,14 +256,15 @@ export default function OrderSummaryScreen() {
             <View>
               <View className="mb-2">
                 <View className="flex-row">
-                <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                  Condición de pago 
-                </Text>
-                {selected && (
-                  <Text className="text-md ml-2 font-semibold text-primary dark:text-dark-primary">
-                    {selected}
+                  <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                    Condición de pago
                   </Text>
-                )}</View>
+                  {selected && (
+                    <Text className="text-md ml-2 font-semibold text-primary dark:text-dark-primary">
+                      {selected}
+                    </Text>
+                  )}
+                </View>
               </View>
 
               <ScrollView
@@ -325,25 +327,25 @@ export default function OrderSummaryScreen() {
                     ? {
                         thumbColor: isFacturable
                           ? isDark
-                            ? appColors.dark.tertiary.DEFAULT
-                            : appColors.tertiary.DEFAULT
+                            ? appTheme.dark.tertiary.DEFAULT
+                            : appTheme.tertiary.DEFAULT
                           : isDark
-                            ? appColors.dark.mutedForeground
-                            : appColors.muted,
+                            ? appTheme.dark.mutedForeground
+                            : appTheme.muted,
                         trackColor: {
                           false: isDark
-                            ? appColors.dark.mutedForeground
-                            : appColors.muted,
+                            ? appTheme.dark.mutedForeground
+                            : appTheme.muted,
                           true: isDark
-                            ? appColors.dark.tertiary.DEFAULT
-                            : appColors.tertiary.DEFAULT,
+                            ? appTheme.dark.tertiary.DEFAULT
+                            : appTheme.tertiary.DEFAULT,
                         },
                       }
                     : {
                         trackColor: {
                           true: isDark
-                            ? appColors.dark.tertiary.DEFAULT
-                            : appColors.tertiary.DEFAULT,
+                            ? appTheme.dark.tertiary.DEFAULT
+                            : appTheme.tertiary.DEFAULT,
                         },
                       })}
                 />
@@ -392,7 +394,7 @@ export default function OrderSummaryScreen() {
                       await createOrderData.createOrder();
                     },
                   },
-                ]
+                ],
               )
             }
           >

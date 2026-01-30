@@ -1,6 +1,8 @@
 import { useScrollHeader } from "@/hooks/useScrollHeader";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { Ionicons } from "@expo/vector-icons";
+import { FlashList, FlashListProps, FlashListRef } from "@shopify/flash-list";
+
 import React, {
   useCallback,
   useEffect,
@@ -10,8 +12,6 @@ import React, {
 } from "react";
 import {
   ActivityIndicator,
-  FlatList,
-  FlatListProps,
   Platform,
   RefreshControl,
   StyleSheet,
@@ -21,11 +21,10 @@ import {
   View,
 } from "react-native";
 import TitleText from "./TitleText";
-
 type Props<T> = {
   data: T[];
-  renderItem: FlatListProps<T>["renderItem"];
-  keyExtractor: FlatListProps<T>["keyExtractor"];
+  renderItem: FlashListProps<T>["renderItem"];
+  keyExtractor: FlashListProps<T>["keyExtractor"];
   refreshing: boolean;
   canRefresh: boolean;
   handleRefresh: () => void;
@@ -37,7 +36,7 @@ type Props<T> = {
   subtitle?: string;
   numColumns?: number;
   showScrollTopButton?: boolean;
-  pageSize?: number; // items per batch
+  pageSize?: number;
 };
 
 function CustomFlatList<T>({
@@ -57,15 +56,14 @@ function CustomFlatList<T>({
   showScrollTopButton = true,
   pageSize = 20,
 }: Props<T>) {
-  const flatListRef = useRef<FlatList<T>>(null);
+  const flashListRef = useRef<FlashListRef<T>>(null);
   const { handleScroll, showScrollTop, headerVisible } = useScrollHeader();
 
   const [page, setPage] = useState(1);
 
-  
   const paginatedData = useMemo(
     () => data.slice(0, page * pageSize),
-    [data, page, pageSize]
+    [data, page, pageSize],
   );
 
   useEffect(() => {
@@ -91,7 +89,6 @@ function CustomFlatList<T>({
 
   return (
     <>
-      
       {!canRefresh && cooldown ? (
         <TouchableOpacity
           onPress={onCooldownPress}
@@ -108,7 +105,7 @@ function CustomFlatList<T>({
       {showScrollTop && showScrollTopButton && (
         <TouchableOpacity
           onPress={() =>
-            flatListRef.current?.scrollToOffset({ offset: 0, animated: true })
+            flashListRef.current?.scrollToOffset({ offset: 0, animated: true })
           }
           style={styles.scrollTopButton}
           className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg"
@@ -120,20 +117,15 @@ function CustomFlatList<T>({
       )}
 
       {/* List */}
-      <FlatList
-        ref={flatListRef}
+      <FlashList
+        ref={flashListRef}
         data={paginatedData}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        progressViewOffset={100}
-        key={numColumns}
         numColumns={numColumns}
-        columnWrapperStyle={
-          numColumns > 1 ? { justifyContent: "space-between" } : undefined
-        }
         refreshControl={
           <RefreshControl
             refreshing={canRefresh ? refreshing : false}
@@ -143,14 +135,14 @@ function CustomFlatList<T>({
               enabled: canRefresh,
               progressViewOffset: 100,
               colors: [
-                appColors.primary.DEFAULT,
-                appColors.primary.light,
-                appColors.secondary.DEFAULT,
+                appTheme.primary.DEFAULT,
+                appTheme.primary.light,
+                appTheme.secondary.DEFAULT,
               ],
             })}
-            tintColor={appColors.primary.DEFAULT}
+            tintColor={appTheme.primary.DEFAULT}
             title="Recargando..."
-            titleColor={appColors.primary.DEFAULT}
+            titleColor={appTheme.primary.DEFAULT}
           />
         }
         ListHeaderComponent={
@@ -172,17 +164,13 @@ function CustomFlatList<T>({
             <View style={{ paddingVertical: 20 }}>
               <ActivityIndicator
                 size="small"
-                color={appColors.primary.DEFAULT}
+                color={appTheme.primary.DEFAULT}
               />
             </View>
           ) : null
         }
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
-        initialNumToRender={10}
-        windowSize={5}
-        maxToRenderPerBatch={10}
-        removeClippedSubviews
       />
     </>
   );
@@ -209,7 +197,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 100,
     right: 20,
-    zIndex: 1000,
+    zIndex: 50,
     elevation: 10,
   },
   listContent: {

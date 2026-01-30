@@ -1,14 +1,14 @@
 import { useThemeStore } from "@/stores/useThemeStore";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { useEffect } from "react";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -20,7 +20,6 @@ interface FilterModalProps {
   children?: React.ReactNode;
   title?: string;
 }
-
 
 export default function FilterModal({
   visible,
@@ -35,22 +34,20 @@ export default function FilterModal({
   const translateY = useSharedValue(300);
   const opacity = useSharedValue(0);
 
-useEffect(() => {
-  translateY.value = withTiming(visible ? 0 : 300, {
-    duration: visible ? 300 : 250,
-    easing: Easing.out(Easing.exp),
-  });
-  opacity.value = withTiming(visible ? 1 : 0, {
-    duration: visible ? 300 : 250,
-  });
-}, [visible]);
-
+  useEffect(() => {
+    translateY.value = withTiming(visible ? 0 : 300, {
+      duration: visible ? 300 : 250,
+      easing: Easing.out(Easing.exp),
+    });
+    opacity.value = withTiming(visible ? 1 : 0, {
+      duration: visible ? 300 : 250,
+    });
+  }, [visible]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
     opacity: opacity.value,
   }));
-
 
   return (
     <Modal
@@ -76,7 +73,6 @@ useEffect(() => {
           style={[
             animatedStyle,
             {
-
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               padding: 4,
@@ -96,7 +92,7 @@ useEffect(() => {
               <Ionicons
                 name="close"
                 size={24}
-                color={appColors.mutedForeground}
+                color={appTheme.mutedForeground}
               />
             </TouchableOpacity>
           </View>
@@ -128,4 +124,3 @@ useEffect(() => {
     </Modal>
   );
 }
-

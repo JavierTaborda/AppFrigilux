@@ -1,28 +1,28 @@
 import React, { forwardRef, useEffect } from "react";
 import {
-  Dimensions,
-  Modal,
-  Platform,
-  StatusBar,
-  TouchableOpacity,
-  View,
-  ViewProps,
+    Dimensions,
+    Modal,
+    Platform,
+    StatusBar,
+    TouchableOpacity,
+    View,
+    ViewProps,
 } from "react-native";
 import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
+    Gesture,
+    GestureDetector,
+    GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from "react-native-reanimated";
 
 import { scheduleOnRN } from "react-native-worklets";
 
 import { useThemeStore } from "@/stores/useThemeStore";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -50,7 +50,7 @@ export default function BottomModal({
     Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
   const modalHeight =
     (windowHeight - statusBarHeight) * heightPercentage + insets.bottom;
-  const {isDark} = useThemeStore()
+  const { isDark } = useThemeStore();
   const translateY = useSharedValue(modalHeight);
   const ANIMATION_CONFIG = {
     damping: 20,
@@ -85,7 +85,6 @@ export default function BottomModal({
     left: 0,
     right: 0,
   }));
-  
 
   return (
     <Modal
@@ -96,23 +95,23 @@ export default function BottomModal({
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <View className="flex-1 justify-end">
-               <BlurView
-                  intensity={40}
-                  tint="dark"
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                  }}
-                >
-                  <TouchableOpacity
-                    className="flex-1"
-                    activeOpacity={1}
-                    onPress={onClose}
-                  />
-                </BlurView>
+          <BlurView
+            intensity={40}
+            tint="dark"
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+            }}
+          >
+            <TouchableOpacity
+              className="flex-1"
+              activeOpacity={1}
+              onPress={onClose}
+            />
+          </BlurView>
           <AnimatedView
             style={[
               sheetStyle,
@@ -121,8 +120,8 @@ export default function BottomModal({
                 paddingBottom: insets.bottom,
                 paddingHorizontal: 20,
                 backgroundColor: isDark
-                  ? appColors.dark.background
-                  : appColors.background,
+                  ? appTheme.dark.background
+                  : appTheme.background,
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
               },

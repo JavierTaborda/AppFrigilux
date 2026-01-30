@@ -1,15 +1,15 @@
 import { useThemeStore } from "@/stores/useThemeStore";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { FontAwesome } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import {
-  Modal,
-  Platform,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
+    Modal,
+    Platform,
+    Pressable,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -42,7 +42,7 @@ export default function CustomPicker({
   const handleValueChange = (value: string) => {
     setTouched(true);
     onValueChange(value);
-   // if (Platform.OS === "ios") setIosModalVisible(false);
+    // if (Platform.OS === "ios") setIosModalVisible(false);
   };
 
   const iconName = FontAwesome.glyphMap[icon] ? icon : "list";
@@ -61,10 +61,10 @@ export default function CustomPicker({
           size={20}
           color={
             touched && !isValid
-              ? appColors.error
+              ? appTheme.error
               : theme === "dark"
-                ? (appColors.dark.secondary?.DEFAULT ?? "#ccc")
-                : (appColors.secondary?.DEFAULT ?? "#333")
+                ? (appTheme.dark.secondary?.DEFAULT ?? "#ccc")
+                : (appTheme.secondary?.DEFAULT ?? "#333")
           }
         />
 
@@ -76,9 +76,9 @@ export default function CustomPicker({
               style={{
                 color: isValid
                   ? theme === "dark"
-                    ? (appColors.dark.foreground ?? "#fff")
-                    : (appColors.foreground ?? "#000")
-                  : (appColors.placeholdercolor ?? "#999"),
+                    ? (appTheme.dark.foreground ?? "#fff")
+                    : (appTheme.foreground ?? "#000")
+                  : (appTheme.placeholdercolor ?? "#999"),
                 backgroundColor: "transparent",
               }}
             >
@@ -153,8 +153,8 @@ export default function CustomPicker({
                   style={{
                     color:
                       theme === "dark"
-                        ? (appColors.dark.foreground ?? "#fff")
-                        : (appColors.foreground ?? "#000"),
+                        ? (appTheme.dark.foreground ?? "#fff")
+                        : (appTheme.foreground ?? "#000"),
                   }}
                 >
                   <Picker.Item label={placeholder} value="" />

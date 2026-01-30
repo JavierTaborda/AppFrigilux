@@ -1,6 +1,6 @@
 import FilterModal from "@/components/ui/FilterModal";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { currencyDollar } from "@/utils/moneyFormat";
 import Slider from "@react-native-community/slider";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -52,19 +52,18 @@ export default function MountRangeModal({
   const sliderColors = useMemo(
     () => ({
       minTrack: isDark
-        ? appColors.dark.primary.DEFAULT
-        : appColors.primary.DEFAULT,
-      maxTrack: isDark
-        ? appColors.dark.componentbg
-        : appColors.placeholdercolor,
-      thumb: isDark ? appColors.dark.mutedForeground : appColors.componentbg,
+        ? appTheme.dark.primary.DEFAULT
+        : appTheme.primary.DEFAULT,
+      maxTrack: isDark ? appTheme.dark.componentbg : appTheme.placeholdercolor,
+      thumb: isDark ? appTheme.dark.mutedForeground : appTheme.componentbg,
     }),
-    [isDark]
+    [isDark],
   );
 
   const handleApply = () => {
-    if (min > max) { return alert("Rango inválido, verifique que el monto mínimo sea menor."); }
-    else {
+    if (min > max) {
+      return alert("Rango inválido, verifique que el monto mínimo sea menor.");
+    } else {
       onApply(min, max);
       onClose();
     }
@@ -124,10 +123,10 @@ export default function MountRangeModal({
             value={max}
             onValueChange={(val) => {
               maxRef.current = val;
-              setDragMax(val); 
+              setDragMax(val);
             }}
             onSlidingComplete={(val) => {
-              setMax(val); 
+              setMax(val);
             }}
             minimumTrackTintColor={sliderColors.minTrack}
             maximumTrackTintColor={sliderColors.maxTrack}

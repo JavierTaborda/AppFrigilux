@@ -1,4 +1,4 @@
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { TextInput, View } from "react-native";
 
 type Props = {
@@ -29,7 +29,7 @@ export default function CustomTextInput({
           className="py-4 text-foreground dark:text-dark-foreground"
           placeholder={placeholder}
           value={value}
-          placeholderTextColor={appColors.placeholdercolor}
+          placeholderTextColor={appTheme.placeholdercolor}
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}
           onChangeText={onChangeText}

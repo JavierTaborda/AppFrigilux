@@ -1,4 +1,4 @@
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { useEffect, useRef } from "react";
 import { Dimensions, ScrollView, Text, View } from "react-native";
 import { LineChart } from "react-native-chart-kit";
@@ -25,43 +25,41 @@ export const ChartLineView = ({
     datasets: [
       {
         data: values,
-        color: () => appColors.primary.DEFAULT,
+        color: () => appTheme.primary.DEFAULT,
       },
     ],
   };
 
   const chartConfig = {
-    backgroundColor: isDark
-      ? appColors.dark.componentbg
-      : appColors.componentbg,
+    backgroundColor: isDark ? appTheme.dark.componentbg : appTheme.componentbg,
     backgroundGradientFrom: isDark
-      ? appColors.dark.componentbg
-      : appColors.componentbg,
+      ? appTheme.dark.componentbg
+      : appTheme.componentbg,
     backgroundGradientTo: isDark
-      ? appColors.dark.componentbg
-      : appColors.componentbg,
+      ? appTheme.dark.componentbg
+      : appTheme.componentbg,
     decimalPlaces: 0,
     color: () =>
-      isDark ? appColors.dark.mutedForeground : appColors.mutedForeground,
+      isDark ? appTheme.dark.mutedForeground : appTheme.mutedForeground,
     labelColor: () =>
-      isDark ? appColors.dark.foreground : appColors.foreground || "#000",
+      isDark ? appTheme.dark.foreground : appTheme.foreground || "#000",
     barPercentage: 1,
     propsForDots: {
       r: "4.5",
       strokeWidth: "3",
     },
   };
-    const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     if (values.length > 0) {
       setTimeout(() => {
-        scrollRef.current?.scrollTo({ x: 0, animated: false }); 
+        scrollRef.current?.scrollTo({ x: 0, animated: false });
         animateScrollToEnd();
       }, 400);
     }
   }, [values]);
-  
+
   const animateScrollToEnd = () => {
     scrollRef.current?.scrollToEnd({ animated: true });
   };

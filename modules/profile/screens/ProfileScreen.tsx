@@ -39,7 +39,7 @@ export default function ProfileScreen() {
           <View className="items-center px-4 py-3 rounded-xl w-[80%]   bg-componentbg dark:bg-dark-componentbg">
             <Text className="text-lg  dark:text-white">{name}</Text>
           </View>
-        )} 
+        )}
         {session?.user?.email && (
           <View className="items-center px-4 py-3 rounded-xl w-[80%]   bg-componentbg dark:bg-dark-componentbg">
             <Text className="text-lg  dark:text-white">
@@ -66,7 +66,7 @@ export default function ProfileScreen() {
           activeOpacity={0.7}
           disabled={isloading}
         >
-          <MaterialIcons name="logout" size={20} color={appColors.error} />
+          <MaterialIcons name="logout" size={20} color={appTheme.error} />
           <Text className="text-error font-medium ml-2">Salir</Text>
         </TouchableOpacity> */}
       </View>

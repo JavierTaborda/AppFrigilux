@@ -1,5 +1,5 @@
 import { useThemeStore } from "@/stores/useThemeStore";
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { Ionicons } from "@expo/vector-icons";
 import type { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
 import { DrawerToggleButton } from "@react-navigation/drawer";
@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function getTabIcon(
   routeName: string,
-  focused: boolean
+  focused: boolean,
 ): keyof typeof Ionicons.glyphMap {
   switch (routeName) {
     case "(home)/index":
@@ -54,7 +54,7 @@ export default function TabLayout() {
 
           //Color  ripple
           const rippleColor = focused
-            ? appColors.primary.DEFAULT
+            ? appTheme.primary.DEFAULT
             : isDark
               ? "rgba(255,255,255,0.15)"
               : "rgba(0,0,0,0.08)";
@@ -92,20 +92,20 @@ export default function TabLayout() {
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom,
           backgroundColor: isDark
-            ? appColors.dark.background
-            : appColors.background,
+            ? appTheme.dark.background
+            : appTheme.background,
           borderTopWidth: 1,
-          borderTopColor: isDark
-            ? appColors.dark.separator
-            : appColors.separator,
+          borderTopColor: isDark ? appTheme.dark.separator : appTheme.separator,
 
           shadowOpacity: 0,
           shadowRadius: 0,
           elevation: 0,
         },
 
-        tabBarActiveTintColor: isDark ? appColors.dark.primary.DEFAULT: appColors.primary.DEFAULT,
-        tabBarInactiveTintColor: appColors.mutedForeground,
+        tabBarActiveTintColor: isDark
+          ? appTheme.dark.primary.DEFAULT
+          : appTheme.primary.DEFAULT,
+        tabBarInactiveTintColor: appTheme.mutedForeground,
         //  Tab item style
         tabBarLabelStyle: {
           fontSize: 12,
@@ -115,15 +115,13 @@ export default function TabLayout() {
         headerShown: true,
         headerLeft: () => (
           <DrawerToggleButton
-            tintColor={
-              isDark ? appColors.dark.foreground : appColors.background
-            }
+            tintColor={isDark ? appTheme.dark.foreground : appTheme.background}
           />
         ),
         headerStyle: {
           backgroundColor: isDark
-            ? appColors.dark.primary.DEFAULT
-            : appColors.primary.DEFAULT,
+            ? appTheme.dark.primary.DEFAULT
+            : appTheme.primary.DEFAULT,
           borderBottomWidth: 0,
           elevation: 4,
           shadowColor: "#000",
@@ -132,8 +130,8 @@ export default function TabLayout() {
           shadowRadius: 2,
         },
         headerTintColor: isDark
-          ? appColors.dark.foreground
-          : appColors.background,
+          ? appTheme.dark.foreground
+          : appTheme.background,
       })}
     >
       <Tabs.Screen name="(home)/index" options={{ title: "Inicio" }} />
@@ -181,7 +179,7 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: true,
-           title: "",
+          title: "",
         }}
       />
       <Tabs.Screen

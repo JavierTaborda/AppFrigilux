@@ -1,17 +1,17 @@
-import { appColors } from "@/utils/colors";
+import { appTheme } from "@/utils/appTheme";
 import { formatDatedd_dot_MMM_yyyy } from "@/utils/datesFormat";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  Pressable,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Platform,
+    Pressable,
+    Switch,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 import { useThemeStore } from "@/stores/useThemeStore";
@@ -28,7 +28,7 @@ interface Props {
   markComment: (
     fact_num: number,
     newComment: string,
-    ven_des: string
+    ven_des: string,
   ) => Promise<boolean>;
 }
 
@@ -43,7 +43,7 @@ function OrderSearchCard({
   const isSwitchable = item.estatus !== "2";
   const formattedDate = useMemo(
     () => formatDatedd_dot_MMM_yyyy(item.fec_emis),
-    [item.fec_emis]
+    [item.fec_emis],
   );
 
   const handlePressInfoModal = () => {
@@ -54,7 +54,7 @@ function OrderSearchCard({
     detailModal?.();
   };
   const [isFacturable, setIsFacturable] = useState(
-    item.comentario.startsWith("**") === true
+    item.comentario.startsWith("**") === true,
   );
   const [switchLoad, setSwitchLoad] = useState<boolean>(false);
   const { isDark } = useThemeStore();
@@ -76,7 +76,7 @@ function OrderSearchCard({
       const result = await markComment(
         item.fact_num,
         newComment,
-        item?.ven_des
+        item?.ven_des,
       );
 
       if (result) {
@@ -184,8 +184,8 @@ function OrderSearchCard({
                     size="small"
                     color={
                       isDark
-                        ? appColors.dark.tertiary.DEFAULT
-                        : appColors.tertiary.DEFAULT
+                        ? appTheme.dark.tertiary.DEFAULT
+                        : appTheme.tertiary.DEFAULT
                     }
                   />
                 ) : (
@@ -199,25 +199,25 @@ function OrderSearchCard({
                       ? {
                           thumbColor: isFacturable
                             ? isDark
-                              ? appColors.dark.tertiary.DEFAULT
-                              : appColors.tertiary.DEFAULT
+                              ? appTheme.dark.tertiary.DEFAULT
+                              : appTheme.tertiary.DEFAULT
                             : isDark
-                              ? appColors.dark.mutedForeground
-                              : appColors.muted,
+                              ? appTheme.dark.mutedForeground
+                              : appTheme.muted,
                           trackColor: {
                             false: isDark
-                              ? appColors.dark.mutedForeground
-                              : appColors.muted,
+                              ? appTheme.dark.mutedForeground
+                              : appTheme.muted,
                             true: isDark
-                              ? appColors.dark.tertiary.DEFAULT
-                              : appColors.tertiary.DEFAULT,
+                              ? appTheme.dark.tertiary.DEFAULT
+                              : appTheme.tertiary.DEFAULT,
                           },
                         }
                       : {
                           trackColor: {
                             true: isDark
-                              ? appColors.dark.tertiary.DEFAULT
-                              : appColors.tertiary.DEFAULT,
+                              ? appTheme.dark.tertiary.DEFAULT
+                              : appTheme.tertiary.DEFAULT,
                           },
                         })}
                   />
