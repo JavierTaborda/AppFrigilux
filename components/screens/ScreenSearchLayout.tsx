@@ -1,7 +1,7 @@
-import FilterButton from '@/components/ui/FilterButton';
-import { useEffect } from 'react';
-import { ScrollView, View } from 'react-native';
-import SearchBar from '../ui/SearchBar';
+import FilterButton from "@/components/ui/FilterButton";
+import { useEffect } from "react";
+import { ScrollView, View } from "react-native";
+import SearchBar from "../ui/SearchBar";
 
 // Reanimated v4
 import Animated, {
@@ -9,7 +9,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 
 type ScreenSearchLayoutProps = {
   searchText: string;
@@ -20,7 +20,7 @@ type ScreenSearchLayoutProps = {
   children: React.ReactNode;
   extrafilter?: boolean;
   extraFiltersComponent?: React.ReactNode;
-  showfilterButton?:boolean;
+  showfilterButton?: boolean;
   headerVisible?: boolean;
 };
 /**
@@ -39,20 +39,18 @@ type ScreenSearchLayoutProps = {
  * @param {boolean} [headerVisible] - Controls the visibility of the animated extra filter section. Defaults to true.
  */
 
-
 export default function ScreenSearchLayout({
   searchText,
   setSearchText,
-  placeholder = '',
+  placeholder = "",
   onFilterPress,
   children,
   extrafilter = false,
   extraFiltersComponent,
   filterCount,
   headerVisible = true,
-  showfilterButton=true,
+  showfilterButton = true,
 }: ScreenSearchLayoutProps) {
-
   const animatedValue = useSharedValue(headerVisible ? 1 : 0);
 
   useEffect(() => {
@@ -62,20 +60,16 @@ export default function ScreenSearchLayout({
     });
   }, [headerVisible]);
 
-  // Use useAnimatedStyle 
+  // Use useAnimatedStyle
   const animatedStyle = useAnimatedStyle(() => ({
     height: animatedValue.value * 48,
     opacity: animatedValue.value,
-    transform: [
-      { scaleY: 0.95 + 0.05 * animatedValue.value },
-    ],
-    overflow: 'hidden',
+    transform: [{ scaleY: 0.95 + 0.05 * animatedValue.value }],
+    overflow: "hidden",
   }));
 
   return (
     <View className="flex-1  bg-primary dark:bg-dark-primary ">
-     
-
       <View className="flex-1 relative bg-background dark:bg-dark-background rounded-t-3xl pt-3 ">
         {/* Search & Filter row */}
         <View className="flex-row items-center gap-0 pb-2 px-4">
@@ -102,14 +96,15 @@ export default function ScreenSearchLayout({
                 showsHorizontalScrollIndicator={false}
                 contentContainerClassName="gap-1.5"
               >
-                
-                {showfilterButton && (<View className="justify-center items-start">
-                  <FilterButton
-                    onPress={onFilterPress}
-                    filterCount={filterCount}
-                    title={extrafilter}
-                  />
-                </View>)}
+                {showfilterButton && (
+                  <View className="justify-center items-start">
+                    <FilterButton
+                      onPress={onFilterPress}
+                      filterCount={filterCount}
+                      title={extrafilter}
+                    />
+                  </View>
+                )}
                 <View>{extraFiltersComponent}</View>
               </ScrollView>
             </View>

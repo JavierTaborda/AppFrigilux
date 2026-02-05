@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Frigilux App",
+    "name": "Frigilux App SGE",
     "slug": "frigiluxapp",
     "version": "1.0.5",
     "owner": "cyberluxexpo",
@@ -8,11 +8,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "appexamplefrigilux",
     "userInterfaceStyle": "automatic",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.frigiluxsge.mobile",
