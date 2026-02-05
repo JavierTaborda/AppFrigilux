@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import BiometricToggle from "../components/BiometricView";
 
-const TERMS_URL = "https://app.friginet.xyz/privacy";
+const TERMS_URL = `${process.env.EXPO_PUBLIC_WEB_URL}/privacy`;
 
 export default function ProfileScreen() {
   const { session, name, userId, signOut, signOutSoft, initializeAuth } =

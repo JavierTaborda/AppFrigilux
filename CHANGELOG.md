@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Maintenance screen
 - Add DeleteAccountScreen
 - Store in AuthProvider to check the maintenance status and delete Account status
+- Env to save web url
 
 ### Changed
 
