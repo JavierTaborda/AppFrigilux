@@ -11,7 +11,7 @@ import { ModuleButton } from "../components/ModuleButton";
 import { useHomeScreen } from "../hooks/useHomeScreen";
 
 export default function HomeScreen() {
-  const { session,name } = useAuthStore();
+  const { session, name } = useAuthStore();
   const { isDark } = useThemeStore();
   const {
     loading,
@@ -123,7 +123,7 @@ export default function HomeScreen() {
               bgColor="bg-green-500 dark:bg-green-400"
             />
           </View>
-          <View className="w-[49%] mb-4">
+          {/* <View className="w-[49%] mb-4">
             <ModuleButton
               //icon={emojis.list}
               //icon={emojis.approved}
@@ -131,7 +131,7 @@ export default function HomeScreen() {
               onPress={() => router.push("/(main)/(tabs)/(returnReport)")}
               bgColor="bg-green-600 dark:bg-green-300"
             />
-          </View>
+          </View> */}
           {/* <View className="w-[49%] mb-4">
             <ModuleButton
               //icon={emojis.bags}
