@@ -129,7 +129,7 @@ export function useGoalsResumen(searchText: string) {
 
   /** Apply filters */
   useEffect(() => {
-    setLoading(true);
+
 
     let filteredgoals: Goals[] = [...allGoals];
 
@@ -166,7 +166,7 @@ export function useGoalsResumen(searchText: string) {
   
 
     setGoals(filteredgoals);
-    setLoading(false)
+   
 
   }, [allGoals, searchText, notUsed, sortByUsed, sortByAssigned, selectedCategory, selectedUsedValue]);
 

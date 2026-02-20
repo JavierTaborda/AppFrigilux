@@ -5,12 +5,12 @@ import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import FastFilters from "../components/FastFilters";
 import GoalItemCard from "../components/GoalItemCard";
+import GoalsResumen from "../components/GoalResumen";
 import GoalsFilterModal from "../components/GoalsFilterModal";
 import { useGoalsResumen } from "../hooks/useGoalsResumen";
 import { Goals } from "../types/Goals";
@@ -62,7 +62,7 @@ export default function GoalsScreen() {
   useFocusEffect(
     useCallback(() => {
       setSearchText("");
-    }, [])
+    }, []),
   );
 
   const resumenData = useMemo(
@@ -83,11 +83,27 @@ export default function GoalsScreen() {
         value: totalDisponible,
       },
     ],
-    [totalAsignada, totalUtilizado, totalDisponible]
+    [totalAsignada, totalUtilizado, totalDisponible],
   );
 
-  const renderItem = ({ item }: { item: Goals }) => (
-    <GoalItemCard item={item} hasPermission={hasPermission} />
+  const renderItem = useCallback(
+    ({ item }: { item: Goals }) => (
+      <GoalItemCard item={item} hasPermission={hasPermission} />
+    ),
+    [hasPermission],
+  );
+  const extraFilters = useMemo(
+    () => (
+      <FastFilters
+        notUsed={notUsed}
+        setNotUsed={setNotUsed}
+        sortByUsed={sortByUsed}
+        setSortByUsed={setSortByUsed}
+        sortByAssigned={sortByAssigned}
+        setSortByAssigned={setSortByAssigned}
+      />
+    ),
+    [notUsed, sortByUsed, sortByAssigned],
   );
 
   if (error) return <ErrorView error={error} getData={loadGoals} />;
@@ -102,47 +118,12 @@ export default function GoalsScreen() {
         extrafilter={true}
         headerVisible={headerVisible}
         filterCount={totalFilters}
-        extraFiltersComponent={
-          <FastFilters
-            notUsed={notUsed}
-            setNotUsed={setNotUsed}
-            sortByUsed={sortByUsed}
-            setSortByUsed={setSortByUsed}
-            sortByAssigned={sortByAssigned}
-            setSortByAssigned={setSortByAssigned}
-          />
-        }
+        extraFiltersComponent={extraFilters}
       >
         {!loading ? (
           <>
             <View className="mx-4 pb-0.5">
-              <ScrollView
-                className="py-0.5 pb-2"
-                horizontal
-                contentContainerClassName="flex-row justify-between items-stretch gap-2 px-1 min-w-full"
-                showsHorizontalScrollIndicator={false}
-              >
-                {resumenData.map((item, index) => (
-                  <View
-                    key={index}
-                    className="items-center p-2 bg-componentbg dark:bg-dark-componentbg shadow-sm shadow-black/10 rounded-xl min-w-32"
-                  >
-                    <View className="flex-row items-center gap-1 mb-1">
-                      <Ionicons
-                        name={item.icon as any}
-                        size={14}
-                        color={isDark ? "white" : "black"}
-                      />
-                      <Text className="text-sm text-foreground dark:text-dark-foreground">
-                        {item.label}
-                      </Text>
-                    </View>
-                    <Text className="text-3xl font-bold text-primary dark:text-dark-primary">
-                      {item.value}
-                    </Text>
-                  </View>
-                ))}
-              </ScrollView>
+              <GoalsResumen data={resumenData} isDark={isDark} />
 
               <View className="mt-1 px-2">
                 <ProgressBar progress={totalPercent} />

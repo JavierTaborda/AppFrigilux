@@ -2,11 +2,11 @@ import FilterModal from "@/components/ui/FilterModal";
 import { appTheme } from "@/utils/appTheme";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Seller } from "../types/Seller";
 
@@ -20,8 +20,8 @@ interface GoalsFilterModalProps {
   ) => void;
   sellers: Seller[];
   category: any[];
-  selectedSellers: string[]; // selección inicial
-  selectedCategory: string | undefined; // selección inicial
+  selectedSellers: string[];
+  selectedCategory: string | undefined;
   usedValues: any[];
   seletedUsedValue: string | undefined;
   hasPermission: boolean;
@@ -41,10 +41,8 @@ export default function GoalsFilterModal({
   hasPermission,
   loading,
 }: GoalsFilterModalProps) {
-  // Estado interno del modal
   const [internalSelected, setInternalSelected] = useState<string[]>([]);
 
-  // Cuando el modal se abre, cargamos la selección actual
   useEffect(() => {
     if (visible) {
       setInternalSelected(selectedSellers || []);
