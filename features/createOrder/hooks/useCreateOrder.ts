@@ -2,7 +2,7 @@
 
 import { ClientData } from "@/types/clients";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA } from "../services/CreateOrderService";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
@@ -23,19 +23,45 @@ const useCreateOrder = (searchText: string) => {
   const [sortByAssigned, setSortByAssigned] = useState<boolean>(false);
   const [clients, setClients] = useState<ClientData[]>([]);
   const [conditionsPay, setCondtionsPay] = useState<Conditions[]>([]);
-  const { items } = useCreateOrderStore();
+  //const { items } = useCreateOrderStore();
 
   // Load items from backend
+  // const loadItems = useCallback(async () => {
+  //   setLoading(true);
+  //   setError(null);
+  //   try {
+  //     const [result, exchange, iva] = await Promise.all([getItemsByGoals(), getExchangeRate(), getIVA()]);
+  //     setAllProductsItems(result);
+  //     useCreateOrderStore.getState().syncWithProducts(result, exchange, iva);
+  //   } catch (err) {
+  //     console.error("loadItems error:", err);
+  //     setError("Error cargando productos");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
+  
+  const loadedRef = useRef(false);
+
   const loadItems = useCallback(async () => {
+    if (loadedRef.current) return;
+
+    loadedRef.current = true;
     setLoading(true);
     setError(null);
+
     try {
-      const [result, exchange, iva] = await Promise.all([getItemsByGoals(), getExchangeRate(), getIVA()]);
+      const [result, exchange, iva] = await Promise.all([
+        getItemsByGoals(),
+        getExchangeRate(),
+        getIVA(),
+      ]);
+
       setAllProductsItems(result);
       useCreateOrderStore.getState().syncWithProducts(result, exchange, iva);
     } catch (err) {
-      console.error("loadItems error:", err);
       setError("Error cargando productos");
+      loadedRef.current = false;
     } finally {
       setLoading(false);
     }
@@ -61,14 +87,13 @@ const useCreateOrder = (searchText: string) => {
   }, []);
 
   const handleRefresh = useCallback(async () => {
+    if (!canRefresh) return;
+
     setRefreshing(true);
     setCanRefresh(false);
-    setError(null);
+
     try {
       await loadItems();
-    } catch (err) {
-      console.error("handleRefresh error:", err);
-      setError("Error refreshing data");
     } finally {
       setRefreshing(false);
       setCanRefresh(true);
@@ -82,8 +107,9 @@ const useCreateOrder = (searchText: string) => {
     setLoadSummary(true);
     try {
       const [clientsResult, conditionsPay] = await Promise.all([getClients(), getConditionsPay()]);
-      setClients(clientsResult);
+       setClients(clientsResult);
       setCondtionsPay(conditionsPay);
+      
 
       router.push({
         pathname: "/(main)/(tabs)/(createOrder)/order-summary",

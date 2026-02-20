@@ -10,13 +10,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
-    Alert,
-    Platform,
-    ScrollView,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Platform,
+  ScrollView,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Animated, { Easing, FadeInUp } from "react-native-reanimated";
 import ExchangeRateBadge from "../components/ExchangeRateBadge";

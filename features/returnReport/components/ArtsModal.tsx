@@ -13,7 +13,7 @@ type ArtsModalProps = {
   onClose: (close: boolean) => void;
 };
 
-const PAGE_SIZE = 20; 
+const PAGE_SIZE = 20;
 
 const ArtItem = React.memo(
   ({ item, onSelect }: { item: Articulo; onSelect: (a: Articulo) => void }) => (
@@ -24,14 +24,14 @@ const ArtItem = React.memo(
       <View className="w-14 h-14 rounded-lg bg-bgimages overflow-hidden">
         <CustomImage img={`${imageURL}${item.co_art?.trim()}.jpg`} />
       </View>
-      
+
       <View className="flex-1">
         <Text className="font-normal text-foreground dark:text-dark-foreground">
           {item.co_art?.trim()} - {item.art_des?.trim()}
         </Text>
       </View>
     </Pressable>
-  )
+  ),
 );
 
 const ArtsModal: React.FC<ArtsModalProps> = React.memo(
@@ -45,13 +45,13 @@ const ArtsModal: React.FC<ArtsModalProps> = React.memo(
       return arts.filter(
         ({ co_art = "", art_des = "" }) =>
           co_art.toLowerCase().includes(query) ||
-          art_des.toLowerCase().includes(query)
+          art_des.toLowerCase().includes(query),
       );
     }, [searchText, arts]);
 
     const paginatedArts = useMemo(
       () => filteredArts.slice(0, PAGE_SIZE * page),
-      [filteredArts, page]
+      [filteredArts, page],
     );
 
     const handleSelectArt = useCallback(
@@ -59,10 +59,8 @@ const ArtsModal: React.FC<ArtsModalProps> = React.memo(
         setCodeArt(art.co_art);
         onClose(false);
       },
-      [setCodeArt, onClose]
+      [setCodeArt, onClose],
     );
-
-
 
     if (!visible) return null;
 
@@ -85,27 +83,25 @@ const ArtsModal: React.FC<ArtsModalProps> = React.memo(
             No se encontraron artículos.
           </Text>
         ) : (
-          <CustomFlatList
-            data={filteredArts} 
-            keyExtractor={(item) => item.co_art}
-            renderItem={({ item }) => (
-              <ArtItem item={item} onSelect={handleSelectArt} />
-            )}
-            refreshing={false} 
-            canRefresh={false} 
-            handleRefresh={() => {}} 
-            title={`${filteredArts.length} artículos`}
-          
-            pageSize={20}  
-          />
-         
+          <View className="h-[85%]">
+            <CustomFlatList
+              data={filteredArts}
+              keyExtractor={(item) => item.co_art}
+              renderItem={({ item }) => (
+                <ArtItem item={item} onSelect={handleSelectArt} />
+              )}
+              refreshing={false}
+              canRefresh={false}
+              handleRefresh={() => {}}
+              title={`${filteredArts.length} artículos`}
+              pageSize={20}
+            />
+          </View>
         )}
       </View>
     );
-  }
+  },
 );
 
 ArtsModal.displayName = "ArtsModal";
 export default ArtsModal;
-
-

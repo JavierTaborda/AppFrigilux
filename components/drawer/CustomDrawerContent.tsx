@@ -61,24 +61,24 @@ export default function CustomDrawerContent(props: any) {
           href="/(main)/(tabs)/(goals)/goalsResumen"
           currentPath={currentPath}
         />
-        {/* <DrawerItem
+        <DrawerItem
           //emoji={emojis.list}
           //emoji={emojis.approved}
           // icon="bag-check"
           label="Reportar Devolución"
           href="/(main)/(tabs)/(returnReport)"
           currentPath={currentPath}
-        /> */}
+        />
 
-        {/* {role === "1" && (
+        {role === "1" && (
           <DrawerItem
-           // emoji={emojis.bags}
+            // emoji={emojis.bags}
             //emoji={emojis.approved}
             label="Registrar Pedido"
             href="/(main)/(tabs)/(createOrder)/create-order"
             currentPath={currentPath}
           />
-        )} */}
+        )}
       </View>
     </DrawerContentScrollView>
   );

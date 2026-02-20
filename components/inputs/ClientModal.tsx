@@ -4,7 +4,6 @@ import { ClientData } from "@/types/clients";
 import React, { useCallback, useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-
 type ClientModalProps = {
   clients?: ClientData[];
   visible?: boolean;
@@ -31,7 +30,7 @@ const ClientModal: React.FC<ClientModalProps> = React.memo(
         setSelectedClient(item);
         onClose(false);
       },
-      [setSelectedClient, onClose]
+      [setSelectedClient, onClose],
     );
 
     if (!visible) return null;
@@ -55,30 +54,32 @@ const ClientModal: React.FC<ClientModalProps> = React.memo(
             No se encontraron clientes.
           </Text>
         ) : (
-          <CustomFlatList
-            data={filteredClients}
-            keyExtractor={(item) => item.co_cli.toString()}
-            renderItem={({ item }) => (
-              <Pressable
-                onPress={() => handleSelectClient(item)}
-                className="h-14 py-2 px-4 mb-3 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
-              >
-                <Text className="text-md text-foreground dark:text-dark-foreground">
-                  {item.co_cli?.trim()} - {item.cli_des?.trim()}
-                </Text>
-              </Pressable>
-            )}
-            refreshing={false}
-            canRefresh={false}
-            handleRefresh={() => {}}
-            title={`${filteredClients.length}`}
-            subtitle={`Clientes disponibles`}
-            pageSize={20}
-          />
+          <View className="h-[85%]">
+            <CustomFlatList
+              data={filteredClients}
+              keyExtractor={(item) => item.co_cli.toString()}
+              renderItem={({ item }) => (
+                <Pressable
+                  onPress={() => handleSelectClient(item)}
+                  className="h-14 py-2 px-4 mb-3 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
+                >
+                  <Text className="text-md text-foreground dark:text-dark-foreground">
+                    {item.co_cli?.trim()} - {item.cli_des?.trim()}
+                  </Text>
+                </Pressable>
+              )}
+              refreshing={false}
+              canRefresh={false}
+              handleRefresh={() => {}}
+              title={`${filteredClients.length}`}
+              subtitle="Clientes disponibles"
+              pageSize={20}
+            />
+          </View>
         )}
       </View>
     );
-  }
+  },
 );
 
 ClientModal.displayName = "ClientModal";

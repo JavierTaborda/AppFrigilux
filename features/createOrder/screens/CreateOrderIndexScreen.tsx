@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  Pressable,
   Text,
-  TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import Animated, {
@@ -60,6 +61,7 @@ export default function CreateOrderScreen() {
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
   const { items } = useCreateOrderStore();
+
   const haveOrder = items?.length > 0;
 
   // Animation shared values
@@ -77,7 +79,7 @@ export default function CreateOrderScreen() {
         easing: Easing.out(Easing.exp),
       });
     },
-    [height]
+    [height],
   );
 
   useEffect(() => toggleOrderPanel(haveOrder), [haveOrder, toggleOrderPanel]);
@@ -87,7 +89,6 @@ export default function CreateOrderScreen() {
     opacity: opacity.value,
   }));
 
-
   const handleSetModalItemVisible = useCallback((it: OrderItem) => {
     setItem(it);
     setModalItemVisible(true);
@@ -96,16 +97,18 @@ export default function CreateOrderScreen() {
   // renderItem is stable thanks to useCallback
   const renderProductItem = useCallback(
     ({ item }: { item: OrderItem }) => (
-      <ProductCard
-        codart={item.codart}
-        artdes={item.artdes}
-        price={item.price}
-        available={item.available}
-        almacen=""
-        setModalItemVisible={() => handleSetModalItemVisible(item)}
-      />
+      <View className="flex-1 m-1.5">
+        <ProductCard
+          codart={item.codart}
+          artdes={item.artdes}
+          price={item.price}
+          available={item.available}
+          almacen=""
+          setModalItemVisible={() => handleSetModalItemVisible(item)}
+        />
+      </View>
     ),
-    [handleSetModalItemVisible]
+    [handleSetModalItemVisible],
   );
 
   const bottomButtons = (
@@ -123,7 +126,7 @@ export default function CreateOrderScreen() {
         animatedStyle,
       ]}
     >
-      <TouchableOpacity
+      <Pressable
         disabled={!haveOrder}
         className="p-4 flex-1 items-center justify-center rounded-full shadow-lg bg-primary dark:bg-dark-primary"
         onPress={handleSummary}
@@ -136,9 +139,9 @@ export default function CreateOrderScreen() {
             <Text className="text-lg font-semibold text-white">Confirmar</Text>
           </View>
         )}
-      </TouchableOpacity>
+      </Pressable>
 
-      <TouchableOpacity
+      <Pressable
         disabled={!haveOrder}
         onPress={() => setModalVisible(true)}
         className="p-4 rounded-full shadow-lg bg-primary dark:bg-dark-primary"
@@ -154,7 +157,7 @@ export default function CreateOrderScreen() {
               .duration(200)
               .easing(Easing.inOut(Easing.quad))}
             exiting={FadeOutDown.duration(200).easing(
-              Easing.inOut(Easing.quad)
+              Easing.inOut(Easing.quad),
             )}
             className="absolute right-1 top-0 bg-tertiary dark:bg-dark-tertiary rounded-full px-1 min-w-[35px] max-w-[45] items-center justify-center"
           >
@@ -163,20 +166,39 @@ export default function CreateOrderScreen() {
             </Text>
           </Animated.View>
         )}
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
   const FullScreenLoaderOverlay = (
     <Animated.View
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(200)}
-
       className="absolute top-0 left-0 right-0 bottom-0 z-[999] justify-center align-middle bg-overlay dark:bg-dark-overlay"
       pointerEvents="auto"
     >
       <ActivityIndicator size="large" color="#fff" />
     </Animated.View>
   );
+  const extraFilters = useMemo(
+    () => (
+      <FastFilters
+        notUsed={notUsed}
+        setNotUsed={setNotUsed}
+        sortByAvailable={sortByAvailable}
+        setSortByAvailable={setSortByAvailable}
+        sortByAssigned={sortByAssigned}
+        setSortByAssigned={setSortByAssigned}
+      />
+    ),
+    [notUsed, sortByAvailable, sortByAssigned],
+  );
+  const { width } = useWindowDimensions();
+
+  const numColumns = useMemo(() => {
+    if (width >= 900) return 4;
+    if (width >= 600) return 3;
+    return 2;
+  }, [width]);
   if (error) return <ErrorView error={error} getData={handleRefresh} />;
 
   return (
@@ -187,16 +209,7 @@ export default function CreateOrderScreen() {
       onFilterPress={() => setFilterModalVisible(true)}
       headerVisible={headerVisible}
       extrafilter={true}
-      extraFiltersComponent={
-        <FastFilters
-          notUsed={notUsed}
-          setNotUsed={setNotUsed}
-          sortByAvailable={sortByAvailable}
-          setSortByAvailable={setSortByAvailable}
-          sortByAssigned={sortByAssigned}
-          setSortByAssigned={setSortByAssigned}
-        />
-      }
+      extraFiltersComponent={extraFilters}
     >
       {loading ? (
         <Loader />
@@ -211,7 +224,7 @@ export default function CreateOrderScreen() {
             handleRefresh={handleRefresh}
             onHeaderVisibleChange={setHeaderVisible}
             showtitle={true}
-            numColumns={2}
+            numColumns={numColumns}
             showScrollTopButton={false}
           />
 

@@ -4,8 +4,8 @@ import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { BlurView } from "expo-blur";
 
 import { safeHaptic } from "@/utils/safeHaptics";
-import { useState } from "react";
-import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { memo, useCallback, useState } from "react";
+import { Modal, Pressable, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -23,24 +23,26 @@ type ProductCardProps = {
   setModalItemVisible: (visible: boolean) => void;
 };
 
-export default function ProductCard({
+function ProductCard({
   codart,
   artdes,
   price,
   available,
   setModalItemVisible,
 }: ProductCardProps) {
-  const cartItem = useCreateOrderStore((s) =>
-    s.items.find((i) => i.codart === codart)
+  // const cartItem = useCreateOrderStore((s) =>
+  //   s.items.find((i) => i.codart === codart),
+  // );
+  const cartItem = useCreateOrderStore(
+    useCallback((s) => s.items.find((i) => i.codart === codart), [codart]),
   );
- 
+
   const removeItem = useCreateOrderStore((s) => s.removeItem);
   const [showMenu, setShowMenu] = useState(false);
 
   const img = `${imageURL}${codart?.trim()}.jpg`;
   const quantity = cartItem?.quantity ?? 0;
 
- 
   const scale = useSharedValue(1);
 
   const cardStyle = useAnimatedStyle(() => ({
@@ -59,7 +61,7 @@ export default function ProductCard({
   return (
     <>
       <Pressable
-        className="bg-white dark:bg-dark-componentbg rounded-xl p-3 mb-4 w-[48%] shadow shadow-gray-200 dark:shadow-black/20"
+        className="bg-componentbg dark:bg-dark-componentbg rounded-xl p-3 mb-4   shadow shadow-gray-200 dark:shadow-black/20"
         onPress={() => setModalItemVisible(true)}
         onLongPress={handleLongPress}
       >
@@ -81,7 +83,7 @@ export default function ProductCard({
         <Text className="text-base font-bold text-foreground dark:text-dark-foreground ">
           {totalVenezuela(price)} {currencyDollar}
         </Text>
-        
+
         <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1 ">
           Disponibles: {available != null ? available - quantity : "—"}
         </Text>
@@ -104,13 +106,11 @@ export default function ProductCard({
         animationType="fade"
         onRequestClose={handleCloseMenu}
       >
-     
         <BlurView
           intensity={95}
           tint="dark"
           className="flex-1 justify-center items-center"
         >
-         
           <Animated.View
             style={cardStyle}
             className="w-64 p-4 bg-white dark:bg-dark-componentbg rounded-2xl"
@@ -125,7 +125,7 @@ export default function ProductCard({
               {totalVenezuela(price)} {currencyDollar}
             </Text>
 
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 alert("Aplicar descuento");
                 handleCloseMenu();
@@ -135,9 +135,9 @@ export default function ProductCard({
               <Text className="text-primary font-semibold text-center">
                 Aplicar descuento
               </Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 removeItem(codart);
                 handleCloseMenu();
@@ -147,14 +147,15 @@ export default function ProductCard({
               <Text className="text-red-500 font-semibold text-center">
                 Eliminar del carrito
               </Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity onPress={handleCloseMenu} className="py-2 mt-2">
+            <Pressable onPress={handleCloseMenu} className="py-2 mt-2">
               <Text className="text-blue-500 text-center">Cerrar</Text>
-            </TouchableOpacity>
+            </Pressable>
           </Animated.View>
         </BlurView>
       </Modal>
     </>
   );
 }
+export default memo(ProductCard);
