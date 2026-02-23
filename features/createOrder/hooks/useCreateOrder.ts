@@ -77,6 +77,7 @@ const useCreateOrder = (searchText: string) => {
     setLoading(true);
     try {
       await new Promise((res) => setTimeout(res, 1000));
+     
       return { success: true };
     } catch (err) {
       console.error("createOrder error:", err);

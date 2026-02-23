@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Platform,
+  Pressable,
   ScrollView,
   Switch,
   Text,
@@ -68,15 +69,12 @@ export default function OrderSummaryScreen() {
     setIsFacturable(val);
 
     if (!val) {
-      // No Facturable
       if (comment.startsWith("**")) {
         setComment(comment.replace("**", ""));
       }
     } else {
-      // Facturable
       if (!comment.startsWith("**")) setComment("**" + comment);
     }
-    //
   };
 
   useEffect(() => {
@@ -164,13 +162,20 @@ export default function OrderSummaryScreen() {
           imp_prod: iva, // IVA del ítem
 
           cant_prod: item.quantity,
-          prec_vta: finalUnitPrice, // con descuento aplicado
+          prec_vta: finalUnitPrice,
           unidad: "0001  ",
 
           pendiente: item.quantity,
         };
       }),
     };
+  };
+
+  const handleCreateOrder = async () => {
+    const result = await createOrderData.createOrder();
+    if (result) {
+      alert("Hola");
+    }
   };
 
   type ConditionsProps = {
@@ -377,7 +382,7 @@ export default function OrderSummaryScreen() {
           />
         </ScrollView>
         <View className="flex-row gap-2 px-6 absolute z-50 bottom-36 left-0 right-0">
-          <TouchableOpacity
+          <Pressable
             className="p-4 flex-1 items-center justify-center rounded-full shadow-lg  bg-primary dark:bg-dark-primary"
             onPress={() =>
               Alert.alert(
@@ -391,7 +396,7 @@ export default function OrderSummaryScreen() {
                   {
                     text: "Confirmar",
                     onPress: async () => {
-                      await createOrderData.createOrder();
+                      handleCreateOrder();
                     },
                   },
                 ],
@@ -404,9 +409,9 @@ export default function OrderSummaryScreen() {
                 Confirmar
               </Text>
             </View>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             onPress={() =>
               router.push("/(main)/(tabs)/(createOrder)/create-order")
             }
@@ -415,7 +420,7 @@ export default function OrderSummaryScreen() {
             }
           >
             <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
         <ExchangeRateBadge
           exchangeRate={exchangeRate}
