@@ -98,12 +98,8 @@ export default function CreateOrderScreen() {
       return (
         <View className="flex-1 m-1.5">
           <ProductCard
-            codart={item.codart}
-            artdes={item.artdes}
-            price={item.price}
-            available={item.available}
-            almacen=""
-            setModalItemVisible={() => handleSetModalItemVisible(item)}
+            item={item}
+            setModalItemVisible={handleSetModalItemVisible}
             IVA={IVA}
           />
         </View>
@@ -111,6 +107,7 @@ export default function CreateOrderScreen() {
     },
     [handleSetModalItemVisible],
   );
+
   const bottomButtons = (
     <Animated.View
       style={[
@@ -218,7 +215,7 @@ export default function CreateOrderScreen() {
           <CustomFlatList
             data={filteredProducts}
             renderItem={renderProductItem}
-            keyExtractor={(item, index) => `${item.codart}-${index}`}
+            keyExtractor={(item) => item.codart}
             refreshing={refreshing}
             canRefresh={canRefresh}
             handleRefresh={handleRefresh}

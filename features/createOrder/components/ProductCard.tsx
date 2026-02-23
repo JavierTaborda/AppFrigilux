@@ -12,38 +12,31 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
+import { OrderItem } from "../types/orderItem";
 import QuantitySelector from "./QuantitySelector";
 
 type ProductCardProps = {
-  codart: string;
-  artdes: string;
-  price: number;
-  available: number;
+  item: OrderItem;
   IVA: number;
-  almacen?: string;
 
-  setModalItemVisible: (visible: boolean) => void;
+  setModalItemVisible: (it: OrderItem) => void;
 };
 
-function ProductCard({
-  codart,
-  artdes,
-  price,
-  available,
-  setModalItemVisible,
-  IVA,
-}: ProductCardProps) {
+function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
   // const cartItem = useCreateOrderStore((s) =>
   //   s.items.find((i) => i.codart === codart),
   // );
   const cartItem = useCreateOrderStore(
-    useCallback((s) => s.items.find((i) => i.codart === codart), [codart]),
+    useCallback(
+      (s) => s.items.find((i) => i.codart === item.codart),
+      [item.codart],
+    ),
   );
 
   const removeItem = useCreateOrderStore((s) => s.removeItem);
   const [showMenu, setShowMenu] = useState(false);
 
-  const img = `${imageURL}${codart?.trim()}.jpg`;
+  const img = `${imageURL}${item.codart?.trim()}.jpg`;
   const quantity = cartItem?.quantity ?? 0;
 
   const scale = useSharedValue(1);
@@ -62,12 +55,12 @@ function ProductCard({
     setShowMenu(false);
   };
 
-  const Price = totalVenezuela(price * (1 + IVA));
+  const Price = totalVenezuela(item.price * (1 + IVA));
   return (
     <>
       <Pressable
         className="bg-componentbg dark:bg-dark-componentbg rounded-xl p-3 mb-4   shadow shadow-gray-200 dark:shadow-black/20"
-        onPress={() => setModalItemVisible(true)}
+        onPress={() => setModalItemVisible(item)}
         onLongPress={handleLongPress}
       >
         <View className="flex-1 items-center justify-center pb-1">
@@ -76,29 +69,30 @@ function ProductCard({
           </View>
         </View>
         <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground  ">
-          {codart}
+          {item.codart}
         </Text>
         <Text
           className="text-xs font-normal text-foreground dark:text-dark-foreground  w-full leading-snug break-words min-h-10"
           numberOfLines={2}
           ellipsizeMode="tail"
         >
-          {artdes}
+          {item.artdes}
         </Text>
         <Text className="text-base font-bold text-foreground dark:text-dark-foreground ">
           {Price} {currencyDollar}
         </Text>
 
         <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1 ">
-          Disponibles: {available != null ? available - quantity : "—"}
+          Disponibles:{" "}
+          {item.available != null ? item.available - quantity : "—"}
         </Text>
         {quantity > 0 || true ? (
           <QuantitySelector
-            codart={codart}
+            codart={item.codart}
             quantity={quantity}
-            available={available}
-            artdes={artdes}
-            price={price}
+            available={item.available}
+            artdes={item.artdes}
+            price={item.price}
             img={img}
             fullView={false}
           />
@@ -124,10 +118,10 @@ function ProductCard({
               <CustomImage img={img} />
             </View>
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground mb-2">
-              {artdes}
+              {item.artdes}
             </Text>
             <Text className="text-base font-semibold text-foreground dark:text-dark-foreground mb-4">
-              {totalVenezuela(price)} {currencyDollar}
+              {totalVenezuela(item.price)} {currencyDollar}
             </Text>
 
             <Pressable
@@ -144,7 +138,7 @@ function ProductCard({
 
             <Pressable
               onPress={() => {
-                removeItem(codart);
+                removeItem(item.codart);
                 handleCloseMenu();
               }}
               className="py-2"

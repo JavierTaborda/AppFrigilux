@@ -81,12 +81,17 @@ function CustomFlatList<T>({
     }
   };
 
+  // const loadMore = useCallback(() => {
+  //   if (paginatedData.length < data.length) {
+  //     setPage((prev) => prev + 1);
+  //   }
+  // }, [paginatedData, data]);
   const loadMore = useCallback(() => {
-    if (paginatedData.length < data.length) {
-      setPage((prev) => prev + 1);
-    }
-  }, [paginatedData, data]);
-
+    setPage((prev) => {
+      if (prev * pageSize < data.length) return prev + 1;
+      return prev;
+    });
+  }, [data.length, pageSize]);
   return (
     <>
       {!canRefresh && cooldown ? (
@@ -121,10 +126,11 @@ function CustomFlatList<T>({
         ref={flashListRef}
         data={paginatedData}
         keyExtractor={keyExtractor}
+        masonry
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         onScroll={handleScroll}
-        scrollEventThrottle={16}
+        scrollEventThrottle={32}
         numColumns={numColumns}
         refreshControl={
           <RefreshControl
