@@ -24,7 +24,6 @@ import CustomFlatList from "@/components/ui/CustomFlatList";
 import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import FastFilters from "../components/FastFilters";
 import ItemModal from "../components/ItemModal";
 import OrderModal from "../components/OrderModal";
@@ -35,7 +34,7 @@ import { OrderItem } from "../types/orderItem";
 
 export default function CreateOrderScreen() {
   const [searchText, setSearchText] = useState("");
-  const router = useRouter();
+  //const router = useRouter();
   const { height } = Dimensions.get("window");
 
   const {
@@ -60,7 +59,7 @@ export default function CreateOrderScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
-  const { items } = useCreateOrderStore();
+  const { items, IVA } = useCreateOrderStore();
 
   const haveOrder = items?.length > 0;
 
@@ -94,23 +93,24 @@ export default function CreateOrderScreen() {
     setModalItemVisible(true);
   }, []);
 
-  // renderItem is stable thanks to useCallback
   const renderProductItem = useCallback(
-    ({ item }: { item: OrderItem }) => (
-      <View className="flex-1 m-1.5">
-        <ProductCard
-          codart={item.codart}
-          artdes={item.artdes}
-          price={item.price}
-          available={item.available}
-          almacen=""
-          setModalItemVisible={() => handleSetModalItemVisible(item)}
-        />
-      </View>
-    ),
+    ({ item }: { item: OrderItem }) => {
+      return (
+        <View className="flex-1 m-1.5">
+          <ProductCard
+            codart={item.codart}
+            artdes={item.artdes}
+            price={item.price}
+            available={item.available}
+            almacen=""
+            setModalItemVisible={() => handleSetModalItemVisible(item)}
+            IVA={IVA}
+          />
+        </View>
+      );
+    },
     [handleSetModalItemVisible],
   );
-
   const bottomButtons = (
     <Animated.View
       style={[

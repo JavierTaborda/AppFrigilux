@@ -1,5 +1,9 @@
 import BottomModal from "@/components/ui/BottomModal";
-import { currencyDollar, currencyVES, totalVenezuela } from "@/utils/moneyFormat";
+import {
+  currencyDollar,
+  currencyVES,
+  totalVenezuela,
+} from "@/utils/moneyFormat";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
@@ -17,7 +21,7 @@ type Props = {
 };
 
 export default function OrderSummaryList({ scrollEnabled = true }: Props) {
-  const { items, removeItem, setTotalsVES, exchangeRate, totalsVES,IVA } =
+  const { items, removeItem, setTotalsVES, exchangeRate, totalsVES, IVA } =
     useCreateOrderStore();
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
@@ -39,18 +43,24 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
             item.price,
             item.quantity ?? 1,
             item.discount ?? "",
-            IVA
+            IVA,
           );
+
+          const basePrice = item.price;
+          const priceWithIVA = basePrice * (1 + IVA);
           const itemPrice = totalVenezuela(
-            totalsVES ? item.price * exchangeRate.tasa_v : item.price
+            totalsVES ? priceWithIVA * exchangeRate.tasa_v : priceWithIVA,
           );
+          const unitpriceWithIVA = finalUnitPrice * (1 + IVA);
           const finalPrice = totalVenezuela(
-            totalsVES ? finalUnitPrice * exchangeRate.tasa_v : finalUnitPrice
+            totalsVES
+              ? unitpriceWithIVA * exchangeRate.tasa_v
+              : unitpriceWithIVA,
           );
           const totalPrice = totalVenezuela(
-            totalsVES ? total * exchangeRate.tasa_v : total
+            totalsVES ? total * exchangeRate.tasa_v : total,
           );
-          const currency = totalsVES ? currencyVES: currencyDollar;
+          const currency = totalsVES ? currencyVES : currencyDollar;
           return (
             <Animated.View
               key={item.codart}

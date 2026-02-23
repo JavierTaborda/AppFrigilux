@@ -19,7 +19,9 @@ type ProductCardProps = {
   artdes: string;
   price: number;
   available: number;
+  IVA: number;
   almacen?: string;
+
   setModalItemVisible: (visible: boolean) => void;
 };
 
@@ -29,6 +31,7 @@ function ProductCard({
   price,
   available,
   setModalItemVisible,
+  IVA,
 }: ProductCardProps) {
   // const cartItem = useCreateOrderStore((s) =>
   //   s.items.find((i) => i.codart === codart),
@@ -58,6 +61,8 @@ function ProductCard({
     scale.value = withTiming(1, { duration: 150 });
     setShowMenu(false);
   };
+
+  const Price = totalVenezuela(price * (1 + IVA));
   return (
     <>
       <Pressable
@@ -81,7 +86,7 @@ function ProductCard({
           {artdes}
         </Text>
         <Text className="text-base font-bold text-foreground dark:text-dark-foreground ">
-          {totalVenezuela(price)} {currencyDollar}
+          {Price} {currencyDollar}
         </Text>
 
         <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1 ">
