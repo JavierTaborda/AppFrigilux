@@ -8,8 +8,9 @@ import { appTheme } from "@/utils/appTheme";
 import { safeHaptic } from "@/utils/safeHaptics";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Platform,
   Pressable,
@@ -30,164 +31,16 @@ import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { Conditions } from "../types/conditions";
 import { calculateTotals } from "../utils/calculateTotals";
 
-export default function OrderSummaryScreen() {
-  const { clients } = useLocalSearchParams<{ clients?: string }>();
-  const { options } = useLocalSearchParams<{ options?: string }>();
-  const parsedClients: ClientData[] = clients ? JSON.parse(clients) : [];
-  const parsedOptions: Conditions[] = options ? JSON.parse(options) : [];
+type ConditionsProps = {
+  option: Conditions;
+  isActive: boolean;
+  onPress: () => void;
+};
 
-  const router = useRouter();
-  const [isFacturable, setIsFacturable] = useState(false);
-
-  const { isDark } = useThemeStore();
-  const createOrderData = useCreateOrder("");
-
-  const { items, exchangeRate, IVA } = useCreateOrderStore();
-
-  const { totalGross, total, TotalIVA, totalWithIVA, discountAmount } =
-    useOrderTotals(items);
-
-  //INPUT STATES
-  const [direction, setDirection] = useState<string>("");
-  const [comment, setComment] = useState<string>("");
-  const [selected, setSelected] = useState<string>(
-    parsedOptions.length > 0 ? parsedOptions[0].cond_des : "",
-  );
-  const [email, setEmail] = useState<string>("");
-
-  // Customer Data
-  const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
-  const isEmpty = items.length === 0;
-  const [showClientModal, setShowClientModal] = useState(false);
-  const [showExchangeModal, setShowExchangeModal] = useState(false);
-
-  const handleClientSelectPress = useCallback(() => {
-    setShowClientModal(true);
-  }, []);
-
-  const handleswitch = (val: boolean) => {
-    setIsFacturable(val);
-
-    if (!val) {
-      if (comment.startsWith("**")) {
-        setComment(comment.replace("**", ""));
-      }
-    } else {
-      if (!comment.startsWith("**")) setComment("**" + comment);
-    }
-  };
-
-  useEffect(() => {
-    if (comment.startsWith("**") && !isFacturable) {
-      setIsFacturable(true);
-      return;
-    }
-
-    if (!comment.startsWith("**") && isFacturable) {
-      setIsFacturable(false);
-      return;
-    }
-  }, [comment]);
-
-  useEffect(() => {
-    setDirection(selectedClient?.dir_ent2?.trim() || "");
-    setEmail(selectedClient?.email?.trim() || "");
-  }, [selectedClient]);
-
-  const buildPedido = (): PedidoDTO => {
-    const fact_num = Date.now();
-    // generate totals
-    const totals = items.reduce(
-      (acc, item) => {
-        const { subtotal, total, iva, totalGross } = calculateTotals(
-          item.price,
-          item.quantity ?? 1,
-          item.discount ?? "",
-          IVA,
-        );
-
-        acc.tot_bruto += subtotal;
-
-        acc.tot_iva += iva;
-        acc.tot_neto += total;
-
-        return acc;
-      },
-      { tot_bruto: 0, tot_iva: 0, tot_neto: 0 },
-    );
-
-    return {
-      fact_num,
-
-      // cliente + info general
-      contrib: isFacturable,
-      comentario: comment,
-      dir_ent: direction,
-      co_cli: selectedClient?.co_cli,
-      nombre: selectedClient?.cli_des,
-      //rif: selectedClient?.rif ?? null,
-      forma_pag: selected,
-      //telefono: selectedClient?.telefonos ?? null,
-
-      tot_bruto: totals.tot_bruto,
-      iva: totals.tot_iva,
-      tot_neto: totals.tot_neto,
-
-      fec_emis: new Date().toISOString(),
-      fec_venc: new Date().toISOString(),
-
-      // ----------- MONEDA ----------- //
-      moneda: "USD",
-      tasa: exchangeRate?.tasa_v,
-
-      // ----------- ITEMS ----------- //
-      reng_ped: items.map((item, index) => {
-        const { subtotal, total, iva, finalUnitPrice } = calculateTotals(
-          item.price,
-          item.quantity ?? 1,
-          item.discount ?? "",
-          IVA,
-        );
-
-        return {
-          fact_num,
-          reng_num: index + 1,
-
-          co_art: item.codart,
-          des_art: item.artdes,
-
-          stotal_art: subtotal,
-          total_art: total, //
-          reng_neto: total, // total + IVA
-          imp_prod: iva, // IVA del ítem
-
-          cant_prod: item.quantity,
-          prec_vta: finalUnitPrice,
-          unidad: "0001  ",
-
-          pendiente: item.quantity,
-        };
-      }),
-    };
-  };
-
-  const handleCreateOrder = async () => {
-    const result = await createOrderData.createOrder();
-    if (result) {
-      alert("Hola");
-    }
-  };
-
-  type ConditionsProps = {
-    option: Conditions;
-    isActive: boolean;
-    onPress: () => void;
-  };
-  const ConditionChip = ({ option, isActive, onPress }: ConditionsProps) => (
-    <TouchableOpacity
-      key={option.co_cond}
+const ConditionChip = React.memo(
+  ({ option, isActive, onPress }: ConditionsProps) => (
+    <Pressable
       onPress={onPress}
-      activeOpacity={0.7}
       className={`flex-row items-center gap-1 px-4 ms-1 py-2 rounded-full ${
         isActive
           ? "bg-primary dark:bg-dark-primary"
@@ -206,30 +59,198 @@ export default function OrderSummaryScreen() {
       >
         {option.cond_des.trim()}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
+  ),
+);
+
+const EmptyOrder = React.memo(() => {
+  const router = useRouter();
+  return (
+    <Animated.View
+      entering={FadeInUp.duration(300).easing(Easing.inOut(Easing.quad))}
+      className="flex-1 items-center justify-center bg-background dark:bg-dark-background px-4"
+    >
+      <Text className="text-foreground dark:text-dark-foreground text-lg text-center">
+        No hay artículos en el pedido. Agrega artículos para continuar.
+      </Text>
+      <TouchableOpacity
+        onPress={() => router.push("/(main)/(tabs)/(createOrder)/create-order")}
+        className="flex-row mt-4 px-6 py-3 rounded-full bg-primary dark:bg-dark-primary"
+      >
+        <Ionicons name="bag-add" size={24} color="white" />
+        <Text className="text-white font-bold py-1"> Agregar artículos</Text>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+});
+
+export default function OrderSummaryScreen() {
+  const { clients, options } = useLocalSearchParams<{
+    clients?: string;
+    options?: string;
+  }>();
+
+  const parsedClients = useMemo<ClientData[]>(
+    () => (clients ? JSON.parse(clients) : []),
+    [clients],
+  );
+  const parsedOptions = useMemo<Conditions[]>(
+    () => (options ? JSON.parse(options) : []),
+    [options],
   );
 
-  if (isEmpty) {
-    return (
-      <Animated.View
-        entering={FadeInUp.duration(300).easing(Easing.inOut(Easing.quad))}
-        className="flex-1 items-center justify-center bg-background dark:bg-dark-background px-4"
-      >
-        <Text className="text-foreground dark:text-dark-foreground text-lg text-center">
-          No hay artículos en el pedido. Agrega artículos para continuar.
-        </Text>
-        <TouchableOpacity
-          onPress={() =>
-            router.push("/(main)/(tabs)/(createOrder)/create-order")
-          }
-          className="flex-row mt-4 px-6 py-3  rounded-full bg-primary dark:bg-dark-primary"
-        >
-          <Ionicons name="bag-add" size={24} color="white" />
-          <Text className="text-white font-bold py-1"> Agregar artículos</Text>
-        </TouchableOpacity>
-      </Animated.View>
+  const router = useRouter();
+  const { isDark } = useThemeStore();
+  const { items, exchangeRate, IVA } = useCreateOrderStore();
+  const { total, TotalIVA, totalWithIVA } = useOrderTotals(items);
+  const createOrderData = useCreateOrder("");
+
+  const [isFacturable, setIsFacturable] = useState(false);
+  const [direction, setDirection] = useState("");
+  const [comment, setComment] = useState("");
+  const [email, setEmail] = useState("");
+  const [selected, setSelected] = useState(parsedOptions[0]?.cond_des ?? "");
+  const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
+  const [showClientModal, setShowClientModal] = useState(false);
+  const [showExchangeModal, setShowExchangeModal] = useState(false);
+  const [loadingOrder, setLoadingOrder] = useState(false);
+
+  const isEmpty = items.length === 0;
+
+  const resetForm = useCallback(() => {
+    setIsFacturable(false);
+    setDirection("");
+    setComment("");
+    setEmail("");
+    setSelected("");
+    setSelectedClient(null);
+  }, [parsedOptions]);
+
+  useEffect(() => {
+    setDirection(selectedClient?.dir_ent2?.trim() ?? "");
+    setEmail(selectedClient?.email?.trim() ?? "");
+  }, [selectedClient]);
+
+  useEffect(() => {
+    if (comment.startsWith("**") && !isFacturable) setIsFacturable(true);
+    else if (!comment.startsWith("**") && isFacturable) setIsFacturable(false);
+  }, [comment]);
+
+  const handleSwitch = useCallback((val: boolean) => {
+    setIsFacturable(val);
+    setComment((prev) => {
+      if (!val) return prev.startsWith("**") ? prev.replace("**", "") : prev;
+      return prev.startsWith("**") ? prev : "**" + prev;
+    });
+  }, []);
+
+  const pedido = useMemo((): PedidoDTO => {
+    const fact_num = Date.now();
+
+    const totals = items.reduce(
+      (acc, item) => {
+        const { subtotal, total, iva } = calculateTotals(
+          item.price,
+          item.quantity ?? 1,
+          item.discount ?? "",
+          IVA,
+        );
+        acc.tot_bruto += subtotal;
+        acc.tot_iva += iva;
+        acc.tot_neto += total;
+        return acc;
+      },
+      { tot_bruto: 0, tot_iva: 0, tot_neto: 0 },
     );
-  }
+
+    return {
+      fact_num,
+      contrib: isFacturable,
+      comentario: comment,
+      dir_ent: direction,
+      co_cli: selectedClient?.co_cli,
+      nombre: selectedClient?.cli_des,
+      forma_pag: selected,
+      tot_bruto: totals.tot_bruto,
+      iva: totals.tot_iva,
+      tot_neto: totals.tot_neto,
+      fec_emis: new Date().toISOString(),
+      fec_venc: new Date().toISOString(),
+      moneda: "USD",
+      tasa: exchangeRate?.tasa_v,
+      reng_ped: items.map((item, index) => {
+        const { subtotal, total, iva, finalUnitPrice } = calculateTotals(
+          item.price,
+          item.quantity ?? 1,
+          item.discount ?? "",
+          IVA,
+        );
+        return {
+          fact_num,
+          reng_num: index + 1,
+          co_art: item.codart,
+          des_art: item.artdes,
+          stotal_art: subtotal,
+          total_art: total,
+          reng_neto: total,
+          imp_prod: iva,
+          cant_prod: item.quantity,
+          prec_vta: finalUnitPrice,
+          unidad: "0001",
+          pendiente: item.quantity,
+        };
+      }),
+    };
+  }, [
+    items,
+    isFacturable,
+    comment,
+    direction,
+    selectedClient,
+    selected,
+    exchangeRate,
+    IVA,
+  ]);
+
+  const handleCreateOrder = useCallback(async () => {
+    if (!selectedClient) {
+      Alert.alert("Cliente requerido", "Por favor selecciona un cliente.");
+      return;
+    }
+
+    Alert.alert("Confirmar pedido", "¿Estás seguro de confirmar el pedido?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Confirmar",
+        onPress: async () => {
+          setLoadingOrder(true);
+          try {
+            const result = await createOrderData.createOrder();
+            Alert.alert("Éxito", "Pedido creado correctamente.");
+            resetForm();
+            router.push("/(main)/(tabs)/(createOrder)/create-order");
+          } catch (err) {
+            Alert.alert(
+              "Error",
+              "No se pudo crear el pedido. Intenta nuevamente.",
+            );
+          } finally {
+            setLoadingOrder(false);
+          }
+        },
+      },
+    ]);
+  }, [pedido, selectedClient, router]);
+
+  const handleConditionPress = useCallback((cond_des: string) => {
+    safeHaptic("light");
+    setSelected(cond_des);
+  }, []);
+  useEffect(() => {
+    resetForm();
+  }, [isEmpty]);
+  if (isEmpty) return <EmptyOrder />;
+
   return (
     <View className="flex-1 bg-primary dark:bg-dark-primary">
       <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl">
@@ -238,6 +259,7 @@ export default function OrderSummaryScreen() {
             Detalles del pedido
           </Text>
         </View>
+
         <ScrollView
           className="px-4 pt-2"
           contentContainerStyle={{ paddingBottom: 240 }}
@@ -255,46 +277,36 @@ export default function OrderSummaryScreen() {
                   ? `${selectedClient.co_cli.trim()} - ${selectedClient.cli_des.trim()}`
                   : "Seleccionar cliente..."}
               </Text>
-
               <Ionicons name="chevron-down" size={20} color="gray" />
             </TouchableOpacity>
-            <View>
-              <View className="mb-2">
-                <View className="flex-row">
-                  <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-                    Condición de pago
-                  </Text>
-                  {selected && (
-                    <Text className="text-md ml-2 font-semibold text-primary dark:text-dark-primary">
-                      {selected}
-                    </Text>
-                  )}
-                </View>
-              </View>
 
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                className="flex-row gap-3 pt-"
-              >
+            <View>
+              <View className="flex-row mb-2">
+                <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                  Condición de pago
+                </Text>
+                {selected && (
+                  <Text className="text-md ml-2 font-semibold text-primary dark:text-dark-primary">
+                    {selected}
+                  </Text>
+                )}
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {parsedOptions.map((option) => (
                   <ConditionChip
                     key={option.co_cond}
                     option={option}
                     isActive={selected === option.cond_des}
-                    onPress={() => {
-                      safeHaptic("light");
-                      setSelected(option.cond_des);
-                    }}
+                    onPress={() => handleConditionPress(option.cond_des)}
                   />
                 ))}
               </ScrollView>
             </View>
+
             <View>
               <Text className="text-md font-medium text-foreground dark:text-dark-foreground mb-2">
                 Dirección de entrega
               </Text>
-
               <CustomTextInput
                 placeholder="Escribe la dirección de entrega"
                 value={direction}
@@ -317,16 +329,16 @@ export default function OrderSummaryScreen() {
               />
             </View>
 
-            <View className="px-1 mb-1">
-              <Text className="text-md font-medium text-foreground dark:text-dark-foreground mb-2">
+            <View className="px-1 mb-1 gap-y-2">
+              <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
                 Facturar
               </Text>
-              <View className="w-[50] h-[35]  justify-center">
+              <View className="w-[50] h-[35] justify-center">
                 <Switch
                   value={isFacturable}
                   onValueChange={(val) => {
-                    handleswitch(val);
-                    Platform.OS === "android" ? safeHaptic("soft") : null;
+                    handleSwitch(val);
+                    if (Platform.OS === "android") safeHaptic("soft");
                   }}
                   {...(Platform.OS === "android"
                     ? {
@@ -355,25 +367,25 @@ export default function OrderSummaryScreen() {
                       })}
                 />
               </View>
-              <View>
-                <Text className="text-md font-medium text-foreground dark:text-dark-foreground my-2">
-                  Correo
-                </Text>
-
-                <CustomTextInput
-                  placeholder="Correo"
-                  value={email}
-                  onChangeText={setEmail}
-                />
-              </View>
+              <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+                Correo
+              </Text>
+              <CustomTextInput
+                placeholder="Correo"
+                value={email}
+                onChangeText={setEmail}
+              />
             </View>
           </View>
+
+          {/* Artículos */}
           <View className="mb-4 bg-componentbg dark:bg-dark-componentbg px-4 py-2 rounded-xl">
             <Text className="text-md font-medium text-foreground dark:text-dark-foreground mb-2">
               Artículos
             </Text>
             <OrderSummaryList scrollEnabled={false} />
           </View>
+
           <TotalView
             total={total}
             totalWithIVA={totalWithIVA}
@@ -381,33 +393,24 @@ export default function OrderSummaryScreen() {
             exchangeRate={exchangeRate}
           />
         </ScrollView>
+
         <View className="flex-row gap-2 px-6 absolute z-50 bottom-36 left-0 right-0">
           <Pressable
-            className="p-4 flex-1 items-center justify-center rounded-full shadow-lg  bg-primary dark:bg-dark-primary"
-            onPress={() =>
-              Alert.alert(
-                "Confirmar pedido",
-                "¿Estás seguro de confirmar el pedido?",
-                [
-                  {
-                    text: "Cancelar",
-                    style: "cancel",
-                  },
-                  {
-                    text: "Confirmar",
-                    onPress: async () => {
-                      handleCreateOrder();
-                    },
-                  },
-                ],
-              )
-            }
+            className="p-4 flex-1 items-center justify-center rounded-full shadow-lg bg-primary dark:bg-dark-primary"
+            onPress={handleCreateOrder}
+            disabled={loadingOrder}
           >
             <View className="flex-row gap-1 items-center">
-              <Ionicons name="checkmark-sharp" size={24} color="white" />
-              <Text className="text-lg font-semibold text-white">
-                Confirmar
-              </Text>
+              {loadingOrder ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <>
+                  <Ionicons name="checkmark-sharp" size={24} color="white" />
+                  <Text className="text-lg font-semibold text-white">
+                    Confirmar
+                  </Text>
+                </>
+              )}
             </View>
           </Pressable>
 
@@ -415,13 +418,12 @@ export default function OrderSummaryScreen() {
             onPress={() =>
               router.push("/(main)/(tabs)/(createOrder)/create-order")
             }
-            className={
-              "p-4 rounded-full shadow-lg bg-primary dark:bg-dark-primary"
-            }
+            className="p-4 rounded-full shadow-lg bg-primary dark:bg-dark-primary"
           >
             <Ionicons name="arrow-back" size={24} color="white" />
           </Pressable>
         </View>
+
         <ExchangeRateBadge
           exchangeRate={exchangeRate}
           onPress={() => setShowExchangeModal(true)}
@@ -437,6 +439,7 @@ export default function OrderSummaryScreen() {
             clients={parsedClients}
           />
         </BottomModal>
+
         <BottomModal
           visible={showExchangeModal}
           onClose={() => setShowExchangeModal(false)}

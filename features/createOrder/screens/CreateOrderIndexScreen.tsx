@@ -96,7 +96,7 @@ export default function CreateOrderScreen() {
   const renderProductItem = useCallback(
     ({ item }: { item: OrderItem }) => {
       return (
-        <View className="flex-1 m-1.5">
+        <View className="flex-1 m-1 ">
           <ProductCard
             item={item}
             setModalItemVisible={handleSetModalItemVisible}
