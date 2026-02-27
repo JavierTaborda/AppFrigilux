@@ -145,8 +145,12 @@ export default function OrderSummaryScreen() {
   }, []);
 
   const pedido = useMemo((): PedidoDTO => {
-    const fact_num = Date.now();
-
+    const fact_num = 0;
+    const vencimientoDays =
+      parsedOptions.find((opt) => opt.cond_des === selected)?.dias_cred ?? 0;
+    const fecVenc = new Date(
+      Date.now() + vencimientoDays * 24 * 60 * 60 * 1000,
+    ).toISOString();
     const totals = items.reduce(
       (acc, item) => {
         const { subtotal, total, iva } = calculateTotals(
@@ -165,17 +169,20 @@ export default function OrderSummaryScreen() {
 
     return {
       fact_num,
-      contrib: isFacturable,
+      contrib: true,
       comentario: comment,
+      nombre: "",
+      rif: selectedClient?.rif,
       dir_ent: direction,
       co_cli: selectedClient?.co_cli,
-      nombre: selectedClient?.cli_des,
-      forma_pag: selected,
+      forma_pag:
+        parsedOptions.find((opt) => opt.cond_des === selected)?.co_cond ?? "",
       tot_bruto: totals.tot_bruto,
       iva: totals.tot_iva,
       tot_neto: totals.tot_neto,
       fec_emis: new Date().toISOString(),
-      fec_venc: new Date().toISOString(),
+      fec_venc: fecVenc,
+      status: " ",
       moneda: "USD",
       tasa: exchangeRate?.tasa_v,
       reng_ped: items.map((item, index) => {
@@ -196,8 +203,14 @@ export default function OrderSummaryScreen() {
           imp_prod: iva,
           cant_prod: item.quantity,
           prec_vta: finalUnitPrice,
+          prec_vta2: item.price2,
           unidad: "0001",
           pendiente: item.quantity,
+          cos_pro_un: item.cos_pro_un,
+          ult_cos_un: item.ult_cos_un,
+          ult_cos_om: item.ult_cos_om,
+          cos_pro_om: item.cos_pro_om,
+          porc_desc: item.discount,
         };
       }),
     };
@@ -217,6 +230,13 @@ export default function OrderSummaryScreen() {
       Alert.alert("Cliente requerido", "Por favor selecciona un cliente.");
       return;
     }
+    if (!selected) {
+      Alert.alert(
+        "Condición de pago requerida",
+        "Por favor selecciona una condición de pago.",
+      );
+      return;
+    }
 
     Alert.alert("Confirmar pedido", "¿Estás seguro de confirmar el pedido?", [
       { text: "Cancelar", style: "cancel" },
@@ -225,7 +245,8 @@ export default function OrderSummaryScreen() {
         onPress: async () => {
           setLoadingOrder(true);
           try {
-            const result = await createOrderData.createOrder();
+            //const result = await createOrderData.createOrder();
+            console.log(pedido);
             Alert.alert("Éxito", "Pedido creado correctamente.");
             resetForm();
             router.push("/(main)/(tabs)/(createOrder)/create-order");

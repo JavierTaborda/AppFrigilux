@@ -40,7 +40,7 @@ const useCreateOrder = (searchText: string) => {
   //     setLoading(false);
   //   }
   // }, []);
-  
+
   const loadedRef = useRef(false);
 
   const loadItems = useCallback(async () => {
@@ -67,17 +67,19 @@ const useCreateOrder = (searchText: string) => {
     }
   }, []);
 
+
   useFocusEffect(
     useCallback(() => {
       loadItems();
     }, [loadItems])
   );
 
+
   const createOrder = useCallback(async () => {
     setLoading(true);
     try {
       await new Promise((res) => setTimeout(res, 1000));
-   
+
       return { success: true };
     } catch (err) {
       console.error("createOrder error:", err);
@@ -108,9 +110,9 @@ const useCreateOrder = (searchText: string) => {
     setLoadSummary(true);
     try {
       const [clientsResult, conditionsPay] = await Promise.all([getClients(), getConditionsPay()]);
-       setClients(clientsResult);
+      setClients(clientsResult);
       setCondtionsPay(conditionsPay);
-      
+
 
       router.push({
         pathname: "/(main)/(tabs)/(createOrder)/order-summary",

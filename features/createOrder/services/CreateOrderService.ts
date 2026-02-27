@@ -10,6 +10,7 @@ export const getItemsByGoals = async (): Promise<OrderItem[]> => {
     params.codven = "00002";
 
     const response = await api.get("create-orders", { params });
+
     return response.data;
 
   } catch (error) {
