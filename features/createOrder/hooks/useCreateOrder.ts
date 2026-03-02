@@ -4,6 +4,7 @@ import { ClientData } from "@/types/clients";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
+import { PedidoDTO } from "../interfaces/pedidoDTO";
 import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA } from "../services/CreateOrderService";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { Conditions } from "../types/conditions";
@@ -56,7 +57,7 @@ const useCreateOrder = (searchText: string) => {
         getExchangeRate(),
         getIVA(),
       ]);
-
+  
       setAllProductsItems(result);
       useCreateOrderStore.getState().syncWithProducts(result, exchange, iva);
     } catch (err) {
@@ -75,10 +76,11 @@ const useCreateOrder = (searchText: string) => {
   );
 
 
-  const createOrder = useCallback(async () => {
+  const createOrder = useCallback(async (pedido:PedidoDTO) => {
     setLoading(true);
     try {
-      await new Promise((res) => setTimeout(res, 1000));
+      console.log("Creating order with DTO:", pedido);
+      await new Promise((res) => setTimeout(res, 5000));
 
       return { success: true };
     } catch (err) {

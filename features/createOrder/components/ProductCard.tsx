@@ -56,6 +56,7 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
   };
 
   const Price = totalVenezuela(item.price * (1 + IVA));
+
   return (
     <>
       <Pressable
@@ -88,11 +89,8 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
         </Text>
         {quantity > 0 || true ? (
           <QuantitySelector
-            codart={item.codart}
+            item={item}
             quantity={quantity}
-            available={item.available}
-            artdes={item.artdes}
-            price={item.price}
             img={img}
             fullView={false}
           />

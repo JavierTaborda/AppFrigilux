@@ -139,6 +139,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
       Alert.alert("Error", "No hay item seleccionado para agregar.");
       return;
     }
+
     addItem({ ...cartItem, discount: discountPercent }, 0);
     onClose(false);
   }, [cartItem, discountPercent, addItem, onClose]);
@@ -209,11 +210,8 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
       <View className="bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl">
         <View className="w-full items-center mb-5">
           <QuantitySelector
-            codart={item.codart}
+            item={item}
             quantity={quantity}
-            available={item.available}
-            artdes={item.artdes}
-            price={item.price}
             img={img}
             fullView={true}
           />

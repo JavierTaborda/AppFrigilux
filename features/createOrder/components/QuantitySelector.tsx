@@ -6,13 +6,11 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { useQuantityHandlers } from "../hooks/useQuantityHandler";
+import { OrderItem } from "../types/orderItem";
 
 type QuantitySelectorProps = {
-  codart: string;
+  item: OrderItem;
   quantity: number;
-  available: number;
-  artdes: string;
-  price: number;
   img: string;
   height?: number;
   size?: number;
@@ -20,10 +18,7 @@ type QuantitySelectorProps = {
 };
 export default function QuantitySelector({
   quantity,
-  available,
-  codart,
-  artdes,
-  price,
+  item,
   img,
   height = 30,
   size = 32,
@@ -41,11 +36,9 @@ export default function QuantitySelector({
     handleMaxIncrease,
     handleIncreaseQty,
   } = useQuantityHandlers({
-    codart,
+    item,
     quantity,
-    available,
-    artdes,
-    price,
+
     img,
   });
 
@@ -56,13 +49,13 @@ export default function QuantitySelector({
     const qty = numeric === "" ? 0 : parseInt(numeric);
     if (qty <= 0) {
       setInputQuantity(0);
-     
+
       return;
     }
 
-    if (qty > available) {
-      setInputQuantity(available);
-      handleIncreaseQty(available, quantity);
+    if (qty > item.available) {
+      setInputQuantity(item.available);
+      handleIncreaseQty(item.available, quantity);
       return;
     }
 
@@ -100,7 +93,7 @@ export default function QuantitySelector({
             onPress={handleDecrease}
             onLongPress={() => {
               pressedLong.current = true;
-              handleRemove(codart);
+              handleRemove(item.codart);
             }}
             onPressOut={() => (pressedLong.current = false)}
             delayLongPress={300}
@@ -135,7 +128,7 @@ export default function QuantitySelector({
             onPress={handleIncrease}
             onLongPress={() => {
               pressedLong.current = true;
-              handleMaxIncrease(codart);
+              handleMaxIncrease(item.codart);
             }}
             onPressOut={() => (pressedLong.current = false)}
             delayLongPress={300}

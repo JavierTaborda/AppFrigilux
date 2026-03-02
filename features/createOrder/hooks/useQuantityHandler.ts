@@ -3,25 +3,25 @@ import { safeHaptic } from "@/utils/safeHaptics";
 import { useRef } from "react";
 import { useSharedValue, withTiming } from "react-native-reanimated";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
+import { OrderItem } from "../types/orderItem";
 
 type Props = {
-    codart: string;
-    artdes: string;
-    price: number;
+    item:OrderItem;
+
     img: string;
     quantity: number;
-    available: number;
+
 };
 
 
 export const useQuantityHandlers = ({
+
+    item,
     quantity,
-    available,
-    codart,
-    artdes,
-    price,
+  
     img,
-    
+
+
 }: Props) => {
     const pressedLong = useRef(false);
     const addItem = useCreateOrderStore((s) => s.addItem);
@@ -39,7 +39,7 @@ export const useQuantityHandlers = ({
             pressedLong.current = false;
             return;
         }
-        increase(codart);
+        increase(item.codart);
 
         safeHaptic("selection");
         btnScale.value = withTiming(
@@ -68,13 +68,13 @@ export const useQuantityHandlers = ({
 
 
         const finalQty =
-            available !== undefined ? Math.min(newQty, available) : newQty;
+            item.available !== undefined ? Math.min(newQty, item.available) : newQty;
 
-     
+
         const diff = finalQty - quantity;
 
         if (diff !== 0) {
-            increase(codart, diff);   
+            increase(item.codart, diff);
         }
 
         safeHaptic("selection");
@@ -98,7 +98,7 @@ export const useQuantityHandlers = ({
             pressedLong.current = false;
             return;
         }
-        decrease(codart);
+        decrease(item.codart);
         safeHaptic("selection");
         btnScale.value = withTiming(
             0.9,
@@ -112,8 +112,10 @@ export const useQuantityHandlers = ({
             pressedLong.current = false;
             return;
         }
-
-        addItem({ codart, artdes, price, img, available, quantity: 1, discount:""});
+    
+        addItem({
+            ...item,img, quantity: 1, discount: ""
+        });
         safeHaptic("selection");
         addScale.value = withTiming(
             1.1,
@@ -128,8 +130,8 @@ export const useQuantityHandlers = ({
     };
     const handleMaxIncrease = (codart: string) => {
         pressedLong.current = true;
-        if (available && available > quantity) {
-            increase(codart, available - quantity);
+        if (item.available && item.available > quantity) {
+            increase(codart, item.available - quantity);
             safeHaptic("success");
             qtyScale.value = withTiming(
                 1.1,
@@ -150,6 +152,6 @@ export const useQuantityHandlers = ({
         handleRemove,
         handleMaxIncrease,
         handleIncreaseQty,
-        
+
     };
 };

@@ -101,9 +101,9 @@ export default function OrderSummaryScreen() {
 
   const router = useRouter();
   const { isDark } = useThemeStore();
-  const { items, exchangeRate, IVA } = useCreateOrderStore();
+  const { items, exchangeRate, IVA, clearOrder } = useCreateOrderStore();
+  const { createOrder } = useCreateOrder("");
   const { total, TotalIVA, totalWithIVA } = useOrderTotals(items);
-  const createOrderData = useCreateOrder("");
 
   const [isFacturable, setIsFacturable] = useState(false);
   const [direction, setDirection] = useState("");
@@ -144,13 +144,18 @@ export default function OrderSummaryScreen() {
     });
   }, []);
 
-  const pedido = useMemo((): PedidoDTO => {
+  const buildPedido = (): PedidoDTO => {
     const fact_num = 0;
-    const vencimientoDays =
-      parsedOptions.find((opt) => opt.cond_des === selected)?.dias_cred ?? 0;
+
+    const condicion = parsedOptions.find((opt) => opt.cond_des === selected);
+
+    const vencimientoDays = condicion?.dias_cred ?? 0;
+
     const fecVenc = new Date(
       Date.now() + vencimientoDays * 24 * 60 * 60 * 1000,
     ).toISOString();
+
+    // Totals
     const totals = items.reduce(
       (acc, item) => {
         const { subtotal, total, iva } = calculateTotals(
@@ -159,9 +164,11 @@ export default function OrderSummaryScreen() {
           item.discount ?? "",
           IVA,
         );
+
         acc.tot_bruto += subtotal;
         acc.tot_iva += iva;
         acc.tot_neto += total;
+
         return acc;
       },
       { tot_bruto: 0, tot_iva: 0, tot_neto: 0 },
@@ -172,19 +179,24 @@ export default function OrderSummaryScreen() {
       contrib: true,
       comentario: comment,
       nombre: "",
-      rif: selectedClient?.rif,
+      rif: selectedClient?.rif ?? "",
       dir_ent: direction,
-      co_cli: selectedClient?.co_cli,
-      forma_pag:
-        parsedOptions.find((opt) => opt.cond_des === selected)?.co_cond ?? "",
+      co_cli: selectedClient?.co_cli ?? "",
+      forma_pag: condicion?.co_cond ?? "",
+
       tot_bruto: totals.tot_bruto,
       iva: totals.tot_iva,
       tot_neto: totals.tot_neto,
+
       fec_emis: new Date().toISOString(),
       fec_venc: fecVenc,
+
       status: " ",
       moneda: "USD",
-      tasa: exchangeRate?.tasa_v,
+      tasa: exchangeRate?.tasa_v ?? 1,
+      tasag: parseFloat((IVA * 100).toFixed(5)),
+      telefono: selectedClient?.telefonos?.trim().slice(0, 11) ?? "",
+
       reng_ped: items.map((item, index) => {
         const { subtotal, total, iva, finalUnitPrice } = calculateTotals(
           item.price,
@@ -192,76 +204,67 @@ export default function OrderSummaryScreen() {
           item.discount ?? "",
           IVA,
         );
+
         return {
           fact_num,
           reng_num: index + 1,
+
           co_art: item.codart,
           des_art: item.artdes,
+
+          cant_prod: item.quantity ?? 1,
+          pendiente: item.quantity ?? 1,
+
           stotal_art: subtotal,
           total_art: total,
           reng_neto: total,
           imp_prod: iva,
-          cant_prod: item.quantity,
+
           prec_vta: finalUnitPrice,
-          prec_vta2: item.price2,
+          prec_vta2: item.price2 ?? 0,
+
           unidad: "0001",
-          pendiente: item.quantity,
-          cos_pro_un: item.cos_pro_un,
-          ult_cos_un: item.ult_cos_un,
-          ult_cos_om: item.ult_cos_om,
-          cos_pro_om: item.cos_pro_om,
-          porc_desc: item.discount,
+
+          cos_pro_un: item.cos_pro_un ?? 0,
+          ult_cos_un: item.ult_cos_un ?? 0,
+          ult_cos_om: item.ult_cos_om ?? 0,
+          cos_pro_om: item.cos_pro_om ?? 0,
+
+          porc_desc: item.discount ?? "",
+          tipo_imp: item.tip_imp ?? "",
         };
       }),
     };
-  }, [
-    items,
-    isFacturable,
-    comment,
-    direction,
-    selectedClient,
-    selected,
-    exchangeRate,
-    IVA,
-  ]);
+  };
 
   const handleCreateOrder = useCallback(async () => {
-    if (!selectedClient) {
-      Alert.alert("Cliente requerido", "Por favor selecciona un cliente.");
-      return;
-    }
-    if (!selected) {
-      Alert.alert(
-        "Condición de pago requerida",
-        "Por favor selecciona una condición de pago.",
-      );
+    if (!selectedClient || !selected) {
+      Alert.alert("Error", "Faltan datos requeridos.");
       return;
     }
 
-    Alert.alert("Confirmar pedido", "¿Estás seguro de confirmar el pedido?", [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Confirmar",
-        onPress: async () => {
-          setLoadingOrder(true);
-          try {
-            //const result = await createOrderData.createOrder();
-            console.log(pedido);
-            Alert.alert("Éxito", "Pedido creado correctamente.");
-            resetForm();
-            router.push("/(main)/(tabs)/(createOrder)/create-order");
-          } catch (err) {
-            Alert.alert(
-              "Error",
-              "No se pudo crear el pedido. Intenta nuevamente.",
-            );
-          } finally {
-            setLoadingOrder(false);
-          }
-        },
-      },
-    ]);
-  }, [pedido, selectedClient, router]);
+    setLoadingOrder(true);
+
+    try {
+      const pedido = buildPedido();
+      const result = await createOrder(pedido);
+
+      if (!result.success) {
+        Alert.alert("Error", "No se pudo crear el pedido. Intenta nuevamente.");
+        return;
+      }
+
+      clearOrder();
+
+      resetForm();
+      Alert.alert("Éxito", "Pedido creado correctamente.");
+      router.push("/(main)/(tabs)/(createOrder)/create-order");
+    } catch (err) {
+      Alert.alert("Error", "No se pudo crear el pedido. Intenta nuevamente.");
+    } finally {
+      setLoadingOrder(false);
+    }
+  }, [items, selectedClient, selected, comment, direction, exchangeRate]);
 
   const handleConditionPress = useCallback((cond_des: string) => {
     safeHaptic("light");

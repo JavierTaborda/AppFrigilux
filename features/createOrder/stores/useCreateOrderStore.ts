@@ -33,6 +33,7 @@ const useCreateOrderStore = create<CreateOrderState>()(
       IVA:0,
       syncWithProducts: (products: OrderItem[], exchange: ExchangeRate, iva?: number) => {
         set({
+          
           items: get().items
             .map((cartItem) => {
               const product = products.find((p) => p.codart === cartItem.codart);
@@ -42,6 +43,7 @@ const useCreateOrderStore = create<CreateOrderState>()(
               }
 
               const available = product.available ?? 0;
+              
               return {
                 ...cartItem,
                 price: product.price,
@@ -56,6 +58,7 @@ const useCreateOrderStore = create<CreateOrderState>()(
           exchangeRate: exchange, 
           IVA:iva,
         });
+   
       }
       ,
       addItem: (product, qty = 1) => {
@@ -81,6 +84,7 @@ const useCreateOrderStore = create<CreateOrderState>()(
             ),
           });
         } else {
+          
           set({
             items: [
               ...get().items,
