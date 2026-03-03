@@ -15,7 +15,7 @@ import Animated, {
   FadeOutDown,
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
+  withTiming
 } from "react-native-reanimated";
 
 import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
@@ -24,6 +24,7 @@ import CustomFlatList from "@/components/ui/CustomFlatList";
 import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import { Ionicons } from "@expo/vector-icons";
+import ExchangeRateBadgeSmall from "../components/ExchangeRateBadgeSmall";
 import FastFilters from "../components/FastFilters";
 import ItemModal from "../components/ItemModal";
 import OrderModal from "../components/OrderModal";
@@ -59,7 +60,8 @@ export default function CreateOrderScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
-  const { items, IVA } = useCreateOrderStore();
+  const { items, IVA, exchangeRate } = useCreateOrderStore();
+  const [isVisible, setIsVisible] = useState(true);
 
   const haveOrder = items?.length > 0;
 
@@ -245,6 +247,7 @@ export default function CreateOrderScreen() {
           </BottomModal>
         </>
       )}
+      <ExchangeRateBadgeSmall exchangeRate={exchangeRate} />
 
       {loadSummary && FullScreenLoaderOverlay}
     </ScreenSearchLayout>

@@ -1,55 +1,50 @@
 import { ExchangeRate } from "@/types/exchangerate";
 import { formatDatedd_dot_MMM_yyyy } from "@/utils/datesFormat";
-import { currencyDollar } from "@/utils/moneyFormat";
+import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import CustomTextInput from "./CustomTextInput";
 
 type ExchangeInputProps = {
-  exchangeRate: ExchangeRate; 
-
+  exchangeRate: ExchangeRate;
 };
 
-const ExchangeInput: React.FC<ExchangeInputProps> = ({
-  exchangeRate,
-
-}) => {
+const ExchangeInput: React.FC<ExchangeInputProps> = ({ exchangeRate }) => {
   const [usdValue, setUsdValue] = useState("");
   const [bsValue, setBsValue] = useState("");
-
 
   const handleUsdChange = (value: string) => {
     setUsdValue(value);
     const numericUsd = parseFloat(value);
     if (!isNaN(numericUsd)) {
-      setBsValue((numericUsd * exchangeRate.tasa_v).toString());
+      setBsValue(totalVenezuela(numericUsd * exchangeRate.tasa_v));
     } else {
       setBsValue("");
     }
   };
 
-
   const handleBsChange = (value: string) => {
     setBsValue(value);
     const numericBs = parseFloat(value);
     if (!isNaN(numericBs)) {
-      setUsdValue((numericBs / exchangeRate.tasa_v).toString());
+      setUsdValue((numericBs / exchangeRate.tasa_v).toFixed(2));
     } else {
       setUsdValue("");
     }
   };
-  
 
   const date = formatDatedd_dot_MMM_yyyy(exchangeRate.fecha.toString());
-
 
   return (
     <View className="">
       <Text className="text-center font-bold text-xl text-foreground dark:text-dark-foreground m-1">
         Tasa de Cambio
       </Text>
-      <Text className="text-center font-semibold text-md text-primary dark:text-dark-primary mb-6">
+      <Text className="text-center font-extrabold text-xl text-primary dark:text-dark-primary ">
+        {exchangeRate.tasa_v} Bs / {currencyDollar}
+      </Text>
+      <Text className="text-center font-semibold text-md text-gray-500 dark:text-gray-400 mb-6">
         {date}
       </Text>
 

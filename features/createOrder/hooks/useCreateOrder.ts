@@ -59,6 +59,8 @@ const useCreateOrder = (searchText: string) => {
       ]);
   
       setAllProductsItems(result);
+  
+      //refresh the store with the latest products,prices, exchange rate, and IVA
       useCreateOrderStore.getState().syncWithProducts(result, exchange, iva);
     } catch (err) {
       setError("Error cargando productos");

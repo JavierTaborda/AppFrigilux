@@ -217,17 +217,21 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
           />
         </View>
 
-        <ScrollView horizontal className="flex-row py-2 rounded-xl mb-1">
-          {discountButtons}
-        </ScrollView>
+        {quantity > 0 && (
+          <>
+            <ScrollView horizontal className="flex-row py-2 rounded-xl mb-1">
+              {discountButtons}
+            </ScrollView>
 
-        <View className="p-2 mb-5">
-          <CustomTextInput
-            placeholder="Descuento (ej: 5+10+2)"
-            value={discountPercent}
-            onChangeText={handleChangeDiscount}
-          />
-        </View>
+            <View className="p-2 mb-5">
+              <CustomTextInput
+                placeholder="Descuento (ej: 5+10+2)"
+                value={discountPercent}
+                onChangeText={handleChangeDiscount}
+              />
+            </View>
+          </>
+        )}
 
         <View className="gap-y-1 px-2">
           <Row label="Total bruto:" value={totalGross} />

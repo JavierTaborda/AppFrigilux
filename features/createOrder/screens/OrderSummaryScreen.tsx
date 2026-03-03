@@ -2,6 +2,7 @@ import ClientModal from "@/components/inputs/ClientModal";
 import CustomTextInput from "@/components/inputs/CustomTextInput";
 import ExchangeInput from "@/components/inputs/ExchangeInput";
 import BottomModal from "@/components/ui/BottomModal";
+import { useOverlayStore } from "@/stores/useSuccessOverlayStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { ClientData } from "@/types/clients";
 import { appTheme } from "@/utils/appTheme";
@@ -114,7 +115,7 @@ export default function OrderSummaryScreen() {
   const [showClientModal, setShowClientModal] = useState(false);
   const [showExchangeModal, setShowExchangeModal] = useState(false);
   const [loadingOrder, setLoadingOrder] = useState(false);
-
+  const overlay = useOverlayStore();
   const isEmpty = items.length === 0;
 
   const resetForm = useCallback(() => {
@@ -191,7 +192,7 @@ export default function OrderSummaryScreen() {
       fec_emis: new Date().toISOString(),
       fec_venc: fecVenc,
 
-      status: " ",
+      status: "0",
       moneda: "USD",
       tasa: exchangeRate?.tasa_v ?? 1,
       tasag: parseFloat((IVA * 100).toFixed(5)),
@@ -250,14 +251,21 @@ export default function OrderSummaryScreen() {
       const result = await createOrder(pedido);
 
       if (!result.success) {
-        Alert.alert("Error", "No se pudo crear el pedido. Intenta nuevamente.");
+        overlay.show("error", {
+          title: "Error",
+          subtitle: "No se pudo crear el pedido. Intenta nuevamente.",
+        });
         return;
       }
 
       clearOrder();
-
       resetForm();
-      Alert.alert("Éxito", "Pedido creado correctamente.");
+
+      overlay.show("success", {
+        title: `Pedido creado`,
+        subtitle: "Se ha creado el pedido exitosamente.",
+      });
+
       router.push("/(main)/(tabs)/(createOrder)/create-order");
     } catch (err) {
       Alert.alert("Error", "No se pudo crear el pedido. Intenta nuevamente.");
