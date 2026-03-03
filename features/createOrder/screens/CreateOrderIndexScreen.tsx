@@ -15,7 +15,7 @@ import Animated, {
   FadeOutDown,
   useAnimatedStyle,
   useSharedValue,
-  withTiming
+  withTiming,
 } from "react-native-reanimated";
 
 import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
@@ -107,7 +107,7 @@ export default function CreateOrderScreen() {
         </View>
       );
     },
-    [handleSetModalItemVisible],
+    [handleSetModalItemVisible, IVA],
   );
 
   const bottomButtons = (
@@ -193,11 +193,7 @@ export default function CreateOrderScreen() {
   );
   const { width } = useWindowDimensions();
 
-  const numColumns = useMemo(() => {
-    if (width >= 900) return 4;
-    if (width >= 600) return 3;
-    return 2;
-  }, [width]);
+  const numColumns = width >= 900 ? 4 : width >= 600 ? 3 : 2;
   if (error) return <ErrorView error={error} getData={handleRefresh} />;
 
   return (

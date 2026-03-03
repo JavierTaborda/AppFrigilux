@@ -3,15 +3,8 @@ import { appTheme } from "@/utils/appTheme";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList, FlashListProps, FlashListRef } from "@shopify/flash-list";
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef } from "react";
 import {
-  ActivityIndicator,
   Platform,
   RefreshControl,
   StyleSheet,
@@ -59,12 +52,12 @@ function CustomFlatList<T>({
   const flashListRef = useRef<FlashListRef<T>>(null);
   const { handleScroll, showScrollTop, headerVisible } = useScrollHeader();
 
-  const [page, setPage] = useState(1);
+  //const [page, setPage] = useState(1);
 
-  const paginatedData = useMemo(
-    () => data.slice(0, page * pageSize),
-    [data, page, pageSize],
-  );
+  // const paginatedData = useMemo(
+  //   () => data.slice(0, page * pageSize),
+  //   [data, page, pageSize],
+  // );
 
   useEffect(() => {
     if (onHeaderVisibleChange) {
@@ -82,16 +75,12 @@ function CustomFlatList<T>({
   };
 
   // const loadMore = useCallback(() => {
-  //   if (paginatedData.length < data.length) {
-  //     setPage((prev) => prev + 1);
-  //   }
-  // }, [paginatedData, data]);
-  const loadMore = useCallback(() => {
-    setPage((prev) => {
-      if (prev * pageSize < data.length) return prev + 1;
-      return prev;
-    });
-  }, [data.length, pageSize]);
+  //   setPage((prev) => {
+  //     if (prev * pageSize < data.length) return prev + 1;
+  //     return prev;
+  //   });
+  // }, [data.length, pageSize]);
+
   return (
     <>
       {!canRefresh && cooldown ? (
@@ -124,7 +113,7 @@ function CustomFlatList<T>({
       {/* List */}
       <FlashList
         ref={flashListRef}
-        data={paginatedData}
+        data={data}
         keyExtractor={keyExtractor}
         masonry
         renderItem={renderItem}
@@ -165,17 +154,17 @@ function CustomFlatList<T>({
             </View>
           )
         }
-        ListFooterComponent={
-          paginatedData.length < data.length ? (
-            <View style={{ paddingVertical: 20 }}>
-              <ActivityIndicator
-                size="small"
-                color={appTheme.primary.DEFAULT}
-              />
-            </View>
-          ) : null
-        }
-        onEndReached={loadMore}
+        // ListFooterComponent={
+        //   paginatedData.length < data.length ? (
+        //     <View style={{ paddingVertical: 20 }}>
+        //       <ActivityIndicator
+        //         size="small"
+        //         color={appTheme.primary.DEFAULT}
+        //       />
+        //     </View>
+        //   ) : null
+        // }
+        //onEndReached={loadMore}
         onEndReachedThreshold={0.5}
       />
     </>

@@ -1,12 +1,11 @@
 import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
-import { BlurView } from "expo-blur";
 
 import { safeHaptic } from "@/utils/safeHaptics";
 import { memo, useCallback, useState } from "react";
-import { Modal, Pressable, Text, View } from "react-native";
-import Animated, {
+import { Pressable, Text, View } from "react-native";
+import {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -24,20 +23,26 @@ type ProductCardProps = {
 
 function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
   // const cartItem = useCreateOrderStore((s) =>
-  //   s.items.find((i) => i.codart === codart),
+  //   s.items.find((i) => i.codart === item.codart),
   // );
-  const cartItem = useCreateOrderStore(
-    useCallback(
-      (s) => s.items.find((i) => i.codart === item.codart),
-      [item.codart],
-    ),
-  );
+  // const cartItem = useCreateOrderStore(
+  //   useCallback(
+  //     (s) => s.items.find((i) => i.codart === item.codart),
+  //     [item.codart],
+  //   ),
+  // );
 
   const removeItem = useCreateOrderStore((s) => s.removeItem);
   const [showMenu, setShowMenu] = useState(false);
 
   const img = `${imageURL}${item.codart?.trim()}.jpg`;
-  const quantity = cartItem?.quantity ?? 0;
+  const quantity = useCreateOrderStore(
+    useCallback(
+      (s: { items: OrderItem[] }) =>
+        s.items.find((i) => i.codart === item.codart)?.quantity ?? 0,
+      [item.codart],
+    ),
+  );
 
   const scale = useSharedValue(1);
 
@@ -62,7 +67,7 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
       <Pressable
         className="bg-componentbg dark:bg-dark-componentbg rounded-xl p-3 mb-4   shadow shadow-gray-200 dark:shadow-black/20"
         onPress={() => setModalItemVisible(item)}
-        onLongPress={handleLongPress}
+        //onLongPress={handleLongPress}
       >
         <View className="flex-1 items-center justify-center pb-1">
           <View className="h-28 w-2/3 rounded-xl overflow-hidden pb-1 bg-bgimages">
@@ -97,7 +102,8 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
         ) : null}
       </Pressable>
 
-      <Modal
+      {/* TODO: move to main screen */}
+      {/* <Modal
         visible={showMenu}
         transparent
         animationType="fade"
@@ -151,7 +157,7 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
             </Pressable>
           </Animated.View>
         </BlurView>
-      </Modal>
+      </Modal> */}
     </>
   );
 }
