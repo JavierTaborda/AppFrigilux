@@ -154,9 +154,6 @@ export default function OrderSummaryScreen() {
       Date.now() + vencimientoDays * 24 * 60 * 60 * 1000,
     ).toISOString();
 
-    let tot_bruto = 0;
-    let tot_iva = 0;
-    let tot_neto = 0;
     let tot_bruto_usd = 0;
     let iva_USD = 0;
 
@@ -169,9 +166,6 @@ export default function OrderSummaryScreen() {
         IVA,
       );
 
-      tot_bruto += r.reng_neto;
-      tot_iva += r.reng_iva;
-      tot_neto += r.reng_total;
       tot_bruto_usd += r.unitUsd * item.quantity;
       iva_USD += r.unitUsd * IVA * item.quantity;
 
@@ -194,20 +188,10 @@ export default function OrderSummaryScreen() {
       };
     });
 
-    // console.log(
-    //   "Renglones del pedido Neto, IVA, Total/Saldo, Bruto USD:",
-    //   tot_bruto,
-    //   tot_iva,
-    //   tot_neto,
-    //   Math.round(tot_bruto_usd * 100) / 100,
-    // );
-
     const totalBruto =
       (Math.round(tot_bruto_usd * 100) / 100) * exchangeRate.tasa_v;
 
-    const totalIVA = (Math.round(iva_USD * 100) / 100) * exchangeRate.tasa_v; //Math.round(totalBruto * IVA * 100) / 100;
-
-    //console.log(totalIVA);
+    const totalIVA = (Math.round(iva_USD * 100) / 100) * exchangeRate.tasa_v;
 
     const pedido: PedidoDTO = {
       fact_num,

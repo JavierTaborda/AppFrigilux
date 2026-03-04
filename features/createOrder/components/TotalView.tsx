@@ -47,7 +47,7 @@ export default function TotalView({
 
   const formatValue = (value: number) => {
     return showInBs
-      ? `${totalVenezuela((value * exchangeRate.tasa_v).toFixed(2))} Bs`
+      ? `${totalVenezuela((Math.round(value * 100) / 100) * exchangeRate.tasa_v)} Bs`
       : `${totalVenezuela(value)} $`;
   };
 
