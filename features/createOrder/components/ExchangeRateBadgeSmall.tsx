@@ -4,10 +4,10 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
-    FadeInRight,
-    FadeOutRight,
-    SlideInRight,
-    SlideOutRight,
+  FadeInRight,
+  FadeOutRight,
+  SlideInRight,
+  SlideOutRight,
 } from "react-native-reanimated";
 
 type ExchangeRateBadgeSmallProps = {
@@ -22,7 +22,7 @@ export default function ExchangeRateBadgeSmall({
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 3000);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 

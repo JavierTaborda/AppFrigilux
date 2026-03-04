@@ -1,13 +1,14 @@
 import api from "@/lib/axios";
 import { ClientData } from "@/types/clients";
 import { ExchangeRate } from "../../../types/exchangerate";
+import { PedidoDTO } from "../interfaces/pedidoDTO";
 import { Conditions } from "../types/conditions";
 import { OrderItem } from "../types/orderItem";
 
 export const getItemsByGoals = async (): Promise<OrderItem[]> => {
   try {
     const params: any = {};
-    params.codven = "00002";
+    params.codven = "00006";
 
     const response = await api.get("create-orders", { params });
 
@@ -48,7 +49,7 @@ export const getClients = async (): Promise<ClientData[]> => {
 export const getExchangeRate = async (): Promise<ExchangeRate> => {
   try {
     const response = await api.get("create-orders/exchangerate");
-    const result: ExchangeRate= response.data
+    const result: ExchangeRate = response.data
 
     return result;
   } catch (error) {
@@ -67,6 +68,15 @@ export const getIVA = async (): Promise<number> => {
 export const getConditionsPay = async (): Promise<Conditions[]> => {
   try {
     const response = await api.get("create-orders/conditions");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const insertOrder = async (pedido: PedidoDTO): Promise<any> => {
+  try {
+    const response = await api.post("create-orders", pedido);
+    console.log("Response from createOrder API:", response);
     return response.data;
   } catch (error) {
     throw error;

@@ -149,33 +149,67 @@ export default function OrderSummaryScreen() {
     const fact_num = 0;
 
     const condicion = parsedOptions.find((opt) => opt.cond_des === selected);
-
     const vencimientoDays = condicion?.dias_cred ?? 0;
-
     const fecVenc = new Date(
       Date.now() + vencimientoDays * 24 * 60 * 60 * 1000,
     ).toISOString();
 
-    // Totals
-    const totals = items.reduce(
-      (acc, item) => {
-        const { subtotal, total, iva } = calculateTotals(
-          item.price,
-          item.quantity ?? 1,
-          item.discount ?? "",
-          IVA,
-        );
+    let tot_bruto = 0;
+    let tot_iva = 0;
+    let tot_neto = 0;
+    let tot_bruto_usd = 0;
+    let iva_USD = 0;
 
-        acc.tot_bruto += subtotal;
-        acc.tot_iva += iva;
-        acc.tot_neto += total;
+    const renglonPedidos = items.map((item, index) => {
+      const r = calculateTotals(
+        item.price,
+        item.quantity ?? 1,
+        item.discount ?? "",
+        exchangeRate.tasa_v,
+        IVA,
+      );
 
-        return acc;
-      },
-      { tot_bruto: 0, tot_iva: 0, tot_neto: 0 },
-    );
+      tot_bruto += r.reng_neto;
+      tot_iva += r.reng_iva;
+      tot_neto += r.reng_total;
+      tot_bruto_usd += r.unitUsd * item.quantity;
+      iva_USD += r.unitUsd * IVA * item.quantity;
 
-    return {
+      return {
+        fact_num,
+        reng_num: index + 1,
+        co_art: item.codart,
+        total_art: item.quantity,
+        pendiente: item.quantity,
+        reng_neto: r.reng_neto,
+        prec_vta: Number((item.price * exchangeRate.tasa_v).toFixed(5)),
+        prec_vta2: item.price,
+        unidad: "0001",
+        cos_pro_un: item.cos_pro_un ?? 0,
+        ult_cos_un: item.ult_cos_un ?? 0,
+        ult_cos_om: item.ult_cos_om ?? 0,
+        cos_pro_om: item.cos_pro_om ?? 0,
+        porc_desc: item.discount ?? "",
+        tipo_imp: item.tip_imp ?? "",
+      };
+    });
+
+    // console.log(
+    //   "Renglones del pedido Neto, IVA, Total/Saldo, Bruto USD:",
+    //   tot_bruto,
+    //   tot_iva,
+    //   tot_neto,
+    //   Math.round(tot_bruto_usd * 100) / 100,
+    // );
+
+    const totalBruto =
+      (Math.round(tot_bruto_usd * 100) / 100) * exchangeRate.tasa_v;
+
+    const totalIVA = (Math.round(iva_USD * 100) / 100) * exchangeRate.tasa_v; //Math.round(totalBruto * IVA * 100) / 100;
+
+    //console.log(totalIVA);
+
+    const pedido: PedidoDTO = {
       fact_num,
       contrib: true,
       comentario: comment,
@@ -185,59 +219,24 @@ export default function OrderSummaryScreen() {
       co_cli: selectedClient?.co_cli ?? "",
       forma_pag: condicion?.co_cond ?? "",
 
-      tot_bruto: totals.tot_bruto,
-      iva: totals.tot_iva,
-      tot_neto: totals.tot_neto,
+      tot_bruto: Number(totalBruto.toFixed(2)),
+      iva: Number(totalIVA.toFixed(2)),
+      tot_neto: Number((totalBruto + totalIVA).toFixed(2)),
 
       fec_emis: new Date().toISOString(),
       fec_venc: fecVenc,
-
+      saldo: Number((totalBruto + totalIVA).toFixed(2)),
       status: "0",
       moneda: "USD",
       tasa: exchangeRate?.tasa_v ?? 1,
-      tasag: parseFloat((IVA * 100).toFixed(5)),
+      tasag: IVA * 100,
       telefono: selectedClient?.telefonos?.trim().slice(0, 11) ?? "",
-
-      reng_ped: items.map((item, index) => {
-        const { subtotal, total, iva, finalUnitPrice } = calculateTotals(
-          item.price,
-          item.quantity ?? 1,
-          item.discount ?? "",
-          IVA,
-        );
-
-        return {
-          fact_num,
-          reng_num: index + 1,
-
-          co_art: item.codart,
-          des_art: item.artdes,
-
-          cant_prod: item.quantity ?? 1,
-          pendiente: item.quantity ?? 1,
-
-          stotal_art: subtotal,
-          total_art: total,
-          reng_neto: total,
-          imp_prod: iva,
-
-          prec_vta: finalUnitPrice,
-          prec_vta2: item.price2 ?? 0,
-
-          unidad: "0001",
-
-          cos_pro_un: item.cos_pro_un ?? 0,
-          ult_cos_un: item.ult_cos_un ?? 0,
-          ult_cos_om: item.ult_cos_om ?? 0,
-          cos_pro_om: item.cos_pro_om ?? 0,
-
-          porc_desc: item.discount ?? "",
-          tipo_imp: item.tip_imp ?? "",
-        };
-      }),
+      reng_ped: renglonPedidos,
     };
-  };
 
+    console.log("Pedido construido:", pedido);
+    return pedido;
+  };
   const handleCreateOrder = useCallback(async () => {
     if (!selectedClient || !selected) {
       Alert.alert("Error", "Faltan datos requeridos.");

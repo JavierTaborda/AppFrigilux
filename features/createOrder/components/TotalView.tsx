@@ -23,9 +23,8 @@ export default function TotalView({
   totalWithIVA,
   exchangeRate,
 }: TotalsProps) {
-  const { setTotalsVES,totalsVES,IVA} = useCreateOrderStore();
+  const { setTotalsVES, totalsVES, IVA } = useCreateOrderStore();
   const [showInBs, setShowInBs] = useState(totalsVES);
-  
 
   const anim = useSharedValue(1);
 
@@ -39,7 +38,6 @@ export default function TotalView({
   const toggleCurrency = () => {
     anim.value = 0.5;
     setTimeout(() => {
-      
       safeHaptic("success");
       setShowInBs(!showInBs);
       setTotalsVES(!showInBs);
@@ -49,7 +47,7 @@ export default function TotalView({
 
   const formatValue = (value: number) => {
     return showInBs
-      ? `${totalVenezuela(value * exchangeRate.tasa_v)} Bs`
+      ? `${totalVenezuela((value * exchangeRate.tasa_v).toFixed(2))} Bs`
       : `${totalVenezuela(value)} $`;
   };
 
@@ -72,7 +70,7 @@ export default function TotalView({
 
         <View className="flex-row justify-between">
           <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
-            IVA ({IVA*100}%)
+            IVA ({IVA * 100}%)
           </Text>
           <Pressable onPress={toggleCurrency}>
             <Animated.Text

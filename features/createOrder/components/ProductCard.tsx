@@ -2,14 +2,8 @@ import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 
-import { safeHaptic } from "@/utils/safeHaptics";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback } from "react";
 import { Pressable, Text, View } from "react-native";
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
 import QuantitySelector from "./QuantitySelector";
@@ -32,10 +26,10 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
   //   ),
   // );
 
-  const removeItem = useCreateOrderStore((s) => s.removeItem);
-  const [showMenu, setShowMenu] = useState(false);
+  //const removeItem = useCreateOrderStore((s) => s.removeItem);
+  //const [showMenu, setShowMenu] = useState(false);
 
-  const img = `${imageURL}${item.codart?.trim()}.jpg`;
+  const img = `${imageURL}${item.codart.trim()}.jpg`;
   const quantity = useCreateOrderStore(
     useCallback(
       (s: { items: OrderItem[] }) =>
@@ -44,21 +38,21 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
     ),
   );
 
-  const scale = useSharedValue(1);
+  //const scale = useSharedValue(1);
 
-  const cardStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-  const handleLongPress = () => {
-    safeHaptic("medium");
-    scale.value = withTiming(1.05, { duration: 150 });
-    setShowMenu(true);
-  };
+  // const cardStyle = useAnimatedStyle(() => ({
+  //   transform: [{ scale: scale.value }],
+  // }));
+  // const handleLongPress = () => {
+  //   safeHaptic("medium");
+  //   scale.value = withTiming(1.05, { duration: 150 });
+  //   setShowMenu(true);
+  // };
 
-  const handleCloseMenu = () => {
-    scale.value = withTiming(1, { duration: 150 });
-    setShowMenu(false);
-  };
+  // const handleCloseMenu = () => {
+  //   scale.value = withTiming(1, { duration: 150 });
+  //   setShowMenu(false);
+  // };
 
   const Price = totalVenezuela(item.price * (1 + IVA));
 

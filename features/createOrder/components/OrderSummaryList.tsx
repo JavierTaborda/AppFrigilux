@@ -39,27 +39,34 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         {items.map((item) => {
-          const { subtotal, total, finalUnitPrice } = calculateTotals(
-            item.price,
-            item.quantity ?? 1,
-            item.discount ?? "",
-            IVA,
-          );
+          const { unitUsd, unitBs, reng_neto, reng_iva, reng_total } =
+            calculateTotals(
+              item.price,
+              item.quantity ?? 1,
+              item.discount ?? "",
+              exchangeRate.tasa_v,
+              IVA,
+            );
 
           const basePrice = item.price;
           const priceWithIVA = basePrice * (1 + IVA);
+
           const itemPrice = totalVenezuela(
             totalsVES ? priceWithIVA * exchangeRate.tasa_v : priceWithIVA,
           );
-          const unitpriceWithIVA = finalUnitPrice * (1 + IVA);
+
+          const unitPriceWithIVA = unitUsd * (1 + IVA);
+
           const finalPrice = totalVenezuela(
             totalsVES
-              ? unitpriceWithIVA * exchangeRate.tasa_v
-              : unitpriceWithIVA,
+              ? unitPriceWithIVA * exchangeRate.tasa_v
+              : unitPriceWithIVA,
           );
+
           const totalPrice = totalVenezuela(
-            totalsVES ? total * exchangeRate.tasa_v : total,
+            totalsVES ? reng_total : reng_total / exchangeRate.tasa_v,
           );
+
           const currency = totalsVES ? currencyVES : currencyDollar;
           return (
             <Animated.View
