@@ -44,6 +44,7 @@ export type ProfitRenglonResult = {
     reng_neto: number;
     reng_iva: number;
     reng_total: number;
+    reng_neto_usd:number;
 };
 
 
@@ -64,15 +65,16 @@ export const calculateTotals = (
     
     discounts.forEach(percent => {
         unitUsd = unitUsd - (unitUsd * percent / 100);
-    });
+    }); 
 
     
-    const prec_vta_bs = Number((unitUsd * tasa).toFixed(5));
+    const prec_vta_bs = Number((unitUsd * tasa));
 
-    const reng_neto = Number((prec_vta_bs * quantity).toFixed(2));
+    const reng_neto_usd = Number((unitUsd * quantity));
+    const reng_neto = Number((prec_vta_bs * quantity));
 
-    const reng_iva = Math.round(reng_neto * ivaRate*100)/100;
-    const reng_total = Number((reng_neto + reng_iva).toFixed(2));
+    const reng_iva = Number((reng_neto * ivaRate));
+    const reng_total = Number((reng_neto + reng_iva))
 
-    return { unitUsd, unitBs: prec_vta_bs, reng_neto, reng_iva, reng_total };
+    return { unitUsd, unitBs: prec_vta_bs, reng_neto, reng_iva, reng_total, reng_neto_usd };
 };

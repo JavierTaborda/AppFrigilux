@@ -195,6 +195,7 @@ export default function OrderSummaryScreen() {
 
     let tot_bruto_usd = 0;
     let iva_USD = 0;
+    let tot_bruto_bs = 0;
 
     const renglonPedidos = items.map((item, index) => {
       const r = calculateTotals(
@@ -205,8 +206,9 @@ export default function OrderSummaryScreen() {
         IVA,
       );
 
-      tot_bruto_usd += r.unitUsd * item.quantity;
-      iva_USD += r.unitUsd * IVA * item.quantity;
+      tot_bruto_usd += r.reng_neto_usd;
+      iva_USD += r.reng_iva;
+      tot_bruto_bs += r.reng_neto;
 
       return {
         fact_num,
@@ -227,14 +229,15 @@ export default function OrderSummaryScreen() {
       };
     });
 
-    const totalBruto =
-      (Math.round(tot_bruto_usd * 100) / 100) * exchangeRate.tasa_v;
-    // const totalBruto =
-    //   Math.floor(
-    //     (Math.floor(tot_bruto_usd * 100) / 100) * exchangeRate.tasa_v * 100,
-    //   ) / 100;
+    const totalBruto = Number(tot_bruto_usd.toFixed(2));
+    const totalIVA = Number((totalBruto * IVA).toFixed(2));
+    const totalNeto = Number((totalBruto + totalIVA).toFixed(2));
 
-    const totalIVA = (Math.round(iva_USD * 100) / 100) * exchangeRate.tasa_v;
+    const bsBruto = Number((totalBruto * exchangeRate.tasa_v).toFixed(2));
+    const ivaBS = Number((totalIVA * exchangeRate.tasa_v).toFixed(2));
+
+    const totalNetoBS = Number((bsBruto + ivaBS).toFixed(2));
+    //console.log("totalBruto", bsBruto, "iva", ivaBS, "saldo ", totalNetoBS);
 
     const pedido: PedidoDTO = {
       fact_num,
