@@ -145,7 +145,46 @@ export default function OrderSummaryScreen() {
     });
   }, []);
 
-  const buildPedido = (): PedidoDTO => {
+  const handleCreateOrder = useCallback(async () => {
+    if (!selectedClient || !selected) {
+      Alert.alert("Error", "Faltan datos requeridos.");
+      return;
+    }
+
+    setLoadingOrder(true);
+
+    try {
+      const pedido = buildPedido();
+      const result = await createOrder(pedido);
+
+      if (!result.success) {
+        overlay.show("error", {
+          title: "Error",
+          subtitle: "No se pudo crear el pedido. Intenta nuevamente.",
+        });
+        return;
+      } else {
+        //clearOrder();
+        //resetForm();
+
+        overlay.show("success", {
+          title: `Pedido creado`,
+          subtitle: "Se ha creado el pedido exitosamente.",
+        });
+
+        //router.push("/(main)/(tabs)/(createOrder)/create-order");
+      }
+    } catch (err) {
+      overlay.show("error", {
+        title: "No se pudo crear el pedido",
+        subtitle: "Detalles: " + err,
+      });
+    } finally {
+      setLoadingOrder(false);
+    }
+  }, [items, selectedClient, selected, comment, direction, exchangeRate]);
+
+  const buildPedido = useCallback((): PedidoDTO => {
     const fact_num = 0;
 
     const condicion = parsedOptions.find((opt) => opt.cond_des === selected);
@@ -177,12 +216,12 @@ export default function OrderSummaryScreen() {
         pendiente: item.quantity,
         reng_neto: r.reng_neto,
         prec_vta: Number((item.price * exchangeRate.tasa_v).toFixed(5)),
-        prec_vta2: item.price,
-        unidad: "0001",
-        cos_pro_un: item.cos_pro_un ?? 0,
-        ult_cos_un: item.ult_cos_un ?? 0,
-        ult_cos_om: item.ult_cos_om ?? 0,
-        cos_pro_om: item.cos_pro_om ?? 0,
+        prec_vta2: Number(item.price),
+        uni_venta: "0001  ",
+        cos_pro_un: Number(Number(item.cos_pro_un || 0).toFixed(5)),
+        ult_cos_un: Number(Number(item.ult_cos_un || 0).toFixed(5)),
+        ult_cos_om: Number(Number(item.ult_cos_om || 0).toFixed(5)),
+        cos_pro_om: Number(Number(item.cos_pro_om || 0).toFixed(5)),
         porc_desc: item.discount ?? "",
         tipo_imp: item.tip_imp ?? "",
       };
@@ -190,6 +229,10 @@ export default function OrderSummaryScreen() {
 
     const totalBruto =
       (Math.round(tot_bruto_usd * 100) / 100) * exchangeRate.tasa_v;
+    // const totalBruto =
+    //   Math.floor(
+    //     (Math.floor(tot_bruto_usd * 100) / 100) * exchangeRate.tasa_v * 100,
+    //   ) / 100;
 
     const totalIVA = (Math.round(iva_USD * 100) / 100) * exchangeRate.tasa_v;
 
@@ -218,44 +261,8 @@ export default function OrderSummaryScreen() {
       reng_ped: renglonPedidos,
     };
 
-    console.log("Pedido construido:", pedido);
     return pedido;
-  };
-  const handleCreateOrder = useCallback(async () => {
-    if (!selectedClient || !selected) {
-      Alert.alert("Error", "Faltan datos requeridos.");
-      return;
-    }
-
-    setLoadingOrder(true);
-
-    try {
-      const pedido = buildPedido();
-      const result = await createOrder(pedido);
-
-      if (!result.success) {
-        overlay.show("error", {
-          title: "Error",
-          subtitle: "No se pudo crear el pedido. Intenta nuevamente.",
-        });
-        return;
-      }
-
-      clearOrder();
-      resetForm();
-
-      overlay.show("success", {
-        title: `Pedido creado`,
-        subtitle: "Se ha creado el pedido exitosamente.",
-      });
-
-      router.push("/(main)/(tabs)/(createOrder)/create-order");
-    } catch (err) {
-      Alert.alert("Error", "No se pudo crear el pedido. Intenta nuevamente.");
-    } finally {
-      setLoadingOrder(false);
-    }
-  }, [items, selectedClient, selected, comment, direction, exchangeRate]);
+  }, [handleCreateOrder]);
 
   const handleConditionPress = useCallback((cond_des: string) => {
     safeHaptic("light");

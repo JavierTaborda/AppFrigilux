@@ -5,7 +5,7 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { PedidoDTO } from "../interfaces/pedidoDTO";
-import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA, insertOrder } from "../services/CreateOrderService";
+import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA } from "../services/CreateOrderService";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { Conditions } from "../types/conditions";
 import { OrderItem } from "../types/orderItem";
@@ -83,7 +83,10 @@ const useCreateOrder = (searchText: string) => {
     try {
       
       //await new Promise((res) => setTimeout(res, 5000));
-      const response = await insertOrder(pedido);
+      
+      //const response = await insertOrder(pedido);
+      console.log(pedido)
+   
 
       return { success: true };
     } catch (err) {
