@@ -31,6 +31,7 @@ import { PedidoDTO } from "../interfaces/pedidoDTO";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { Conditions } from "../types/conditions";
 import { calculateTotals } from "../utils/calculateTotals";
+import { calculateTotalsPedido } from "../utils/calculateTotalsPedido";
 
 type ConditionsProps = {
   option: Conditions;
@@ -105,6 +106,24 @@ export default function OrderSummaryScreen() {
   const { items, exchangeRate, IVA, clearOrder } = useCreateOrderStore();
   const { createOrder } = useCreateOrder("");
   const { total, TotalIVA, totalWithIVA } = useOrderTotals(items);
+
+  // Calculate totals for TotalView
+  const { totalBruto, totalIVA, totalNeto, bsBruto, ivaBS, totalNetoBS } =
+    useMemo(() => {
+      // Calculate totalBruto in USD
+      let tot_bruto_usd = 0;
+      items.forEach((item) => {
+        const r = calculateTotals(
+          item.price,
+          item.quantity ?? 1,
+          item.discount ?? "",
+          exchangeRate.tasa_v,
+          IVA,
+        );
+        tot_bruto_usd += r.reng_neto_usd;
+      });
+      return calculateTotalsPedido(tot_bruto_usd, IVA, exchangeRate.tasa_v);
+    }, [items, IVA, exchangeRate]);
 
   const [isFacturable, setIsFacturable] = useState(false);
   const [direction, setDirection] = useState("");
@@ -193,9 +212,7 @@ export default function OrderSummaryScreen() {
       Date.now() + vencimientoDays * 24 * 60 * 60 * 1000,
     ).toISOString();
 
-    let tot_bruto_usd = 0;
-    let iva_USD = 0;
-    let tot_bruto_bs = 0;
+    //let tot_bruto_usd = 0;
 
     const renglonPedidos = items.map((item, index) => {
       const r = calculateTotals(
@@ -206,9 +223,7 @@ export default function OrderSummaryScreen() {
         IVA,
       );
 
-      tot_bruto_usd += r.reng_neto_usd;
-      iva_USD += r.reng_iva;
-      tot_bruto_bs += r.reng_neto;
+      //tot_bruto_usd += r.reng_neto_usd;
 
       return {
         fact_num,
@@ -229,14 +244,8 @@ export default function OrderSummaryScreen() {
       };
     });
 
-    const totalBruto = Number(tot_bruto_usd.toFixed(2));
-    const totalIVA = Number((totalBruto * IVA).toFixed(2));
-    const totalNeto = Number((totalBruto + totalIVA).toFixed(2));
-
-    const bsBruto = Number((totalBruto * exchangeRate.tasa_v).toFixed(2));
-    const ivaBS = Number((totalIVA * exchangeRate.tasa_v).toFixed(2));
-
-    const totalNetoBS = Number((bsBruto + ivaBS).toFixed(2));
+    // const { totalBruto, totalIVA, totalNeto, bsBruto, ivaBS, totalNetoBS } =
+    //   calculateTotalsPedido(tot_bruto_usd, IVA, exchangeRate.tasa_v);
     //console.log("totalBruto", bsBruto, "iva", ivaBS, "saldo ", totalNetoBS);
 
     const pedido: PedidoDTO = {
@@ -248,14 +257,12 @@ export default function OrderSummaryScreen() {
       dir_ent: direction,
       co_cli: selectedClient?.co_cli ?? "",
       forma_pag: condicion?.co_cond ?? "",
-
-      tot_bruto: Number(totalBruto.toFixed(2)),
-      iva: Number(totalIVA.toFixed(2)),
-      tot_neto: Number((totalBruto + totalIVA).toFixed(2)),
-
+      tot_bruto: bsBruto,
+      iva: ivaBS,
+      tot_neto: totalNetoBS,
       fec_emis: new Date().toISOString(),
       fec_venc: fecVenc,
-      saldo: Number((totalBruto + totalIVA).toFixed(2)),
+      saldo: totalNetoBS,
       status: "0",
       moneda: "USD",
       tasa: exchangeRate?.tasa_v ?? 1,
@@ -412,10 +419,12 @@ export default function OrderSummaryScreen() {
           </View>
 
           <TotalView
-            total={total}
-            totalWithIVA={totalWithIVA}
-            TotalIVA={TotalIVA}
-            exchangeRate={exchangeRate}
+            totalBruto={totalBruto}
+            TotalIVA={totalIVA}
+            totalNeto={totalNeto}
+            bsBruto={bsBruto}
+            ivaBS={ivaBS}
+            totalNetoBS={totalNetoBS}
           />
         </ScrollView>
 

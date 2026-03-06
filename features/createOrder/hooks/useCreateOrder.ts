@@ -81,11 +81,8 @@ const useCreateOrder = (searchText: string) => {
   const createOrder = useCallback(async (pedido:PedidoDTO) => {
     setLoading(true);
     try {
-      
-      //await new Promise((res) => setTimeout(res, 5000));
-      
       //const response = await insertOrder(pedido);
-      //console.log(pedido)
+      console.log(pedido)
    
 
       return { success: true };

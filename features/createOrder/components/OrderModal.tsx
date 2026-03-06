@@ -13,6 +13,7 @@ import { useThemeStore } from "@/stores/useThemeStore";
 import { safeHaptic } from "@/utils/safeHaptics";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { calculateTotals } from "../utils/calculateTotals";
+import { calculateTotalsPedido } from "../utils/calculateTotalsPedido";
 import ExchangeRateBadge from "./ExchangeRateBadge";
 import OrderSummaryList from "./OrderSummaryList";
 import TotalView from "./TotalView";
@@ -49,10 +50,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
     iva_USD += r.unitUsd * IVA * item.quantity;
   });
 
+  const { totalBruto, totalIVA, totalNeto, bsBruto, ivaBS, totalNetoBS } =
+    calculateTotalsPedido(tot_bruto_usd, IVA, exchangeRate.tasa_v);
   const isEmpty = items.length === 0;
-  const totalBruto = Math.round(tot_bruto_usd * 100) / 100;
 
-  const totalIVA = Math.round(iva_USD * 100) / 100;
   // Reanimated setup
   const translateY = useSharedValue(height);
 
@@ -150,10 +151,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
               <View className="mt-2 pt-2 border-t border-gray-300/30 dark:border-white/10">
                 <View className="space-y-1 mb-2">
                   <TotalView
-                    total={totalBruto}
-                    totalWithIVA={totalBruto + totalIVA}
+                    totalBruto={totalBruto}
                     TotalIVA={totalIVA}
-                    exchangeRate={exchangeRate}
+                    totalNeto={totalNeto}
+                    bsBruto={bsBruto}
+                    ivaBS={ivaBS}
+                    totalNetoBS={totalNetoBS}
                   />
                 </View>
 

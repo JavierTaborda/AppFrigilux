@@ -7,21 +7,24 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { ExchangeRate } from "../../../types/exchangerate";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 
 type TotalsProps = {
-  total: number;
+  totalBruto: number;
   TotalIVA: number;
-  totalWithIVA: number;
-  exchangeRate: ExchangeRate;
+  totalNeto: number;
+  bsBruto: number;
+  ivaBS: number;
+  totalNetoBS: number;
 };
 
 export default function TotalView({
-  total,
+  totalBruto,
   TotalIVA,
-  totalWithIVA,
-  exchangeRate,
+  totalNeto,
+  bsBruto,
+  ivaBS,
+  totalNetoBS,
 }: TotalsProps) {
   const { setTotalsVES, totalsVES, IVA } = useCreateOrderStore();
   const [showInBs, setShowInBs] = useState(totalsVES);
@@ -47,7 +50,7 @@ export default function TotalView({
 
   const formatValue = (value: number) => {
     return showInBs
-      ? `${totalVenezuela((Math.round(value * 100) / 100) * exchangeRate.tasa_v)} Bs`
+      ? `${totalVenezuela(value)} Bs`
       : `${totalVenezuela(value)} $`;
   };
 
@@ -63,7 +66,7 @@ export default function TotalView({
               style={animatedStyle}
               className="text-base text-foreground dark:text-dark-foreground"
             >
-              {formatValue(total)}
+              {showInBs ? formatValue(bsBruto) : formatValue(totalBruto)}
             </Animated.Text>
           </Pressable>
         </View>
@@ -77,7 +80,7 @@ export default function TotalView({
               style={animatedStyle}
               className="text-base text-foreground dark:text-dark-foreground"
             >
-              {formatValue(TotalIVA)}
+              {showInBs ? formatValue(ivaBS) : formatValue(TotalIVA)}
             </Animated.Text>
           </Pressable>
         </View>
@@ -92,7 +95,7 @@ export default function TotalView({
             style={animatedStyle}
             className="text-xl font-bold text-primary dark:text-dark-primary"
           >
-            {formatValue(totalWithIVA)}
+            {showInBs ? formatValue(totalNetoBS) : formatValue(totalNeto)}
           </Animated.Text>
         </Pressable>
       </View>
