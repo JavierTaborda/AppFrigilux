@@ -116,6 +116,7 @@ function CustomFlatList<T>({
         data={data}
         keyExtractor={keyExtractor}
         masonry
+        //removeClippedSubviews={true}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         onScroll={handleScroll}

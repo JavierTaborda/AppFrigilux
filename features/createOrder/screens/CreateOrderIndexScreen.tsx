@@ -98,7 +98,7 @@ export default function CreateOrderScreen() {
   const renderProductItem = useCallback(
     ({ item }: { item: OrderItem }) => {
       return (
-        <View className="flex-1 m-1 ">
+        <View style={{ flex: 1, margin: 4 }}>
           <ProductCard
             item={item}
             setModalItemVisible={handleSetModalItemVisible}
@@ -202,7 +202,7 @@ export default function CreateOrderScreen() {
       setSearchText={setSearchText}
       placeholder="Código o descripción..."
       onFilterPress={() => setFilterModalVisible(true)}
-      headerVisible={headerVisible}
+      headerVisible={true}
       extrafilter={true}
       extraFiltersComponent={extraFilters}
     >
