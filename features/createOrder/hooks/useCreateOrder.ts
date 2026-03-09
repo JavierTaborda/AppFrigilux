@@ -5,7 +5,7 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { PedidoDTO } from "../interfaces/pedidoDTO";
-import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA } from "../services/CreateOrderService";
+import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA, insertOrder } from "../services/CreateOrderService";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { Conditions } from "../types/conditions";
 import { OrderItem } from "../types/orderItem";
@@ -46,7 +46,7 @@ const useCreateOrder = (searchText: string) => {
 
   const loadItems = useCallback(async () => {
     if (loadedRef.current) return;
-
+   
     loadedRef.current = true;
     setLoading(true);
     setError(null);
@@ -77,26 +77,32 @@ const useCreateOrder = (searchText: string) => {
     }, [loadItems])
   );
 
-
-  const createOrder = useCallback(async (pedido:PedidoDTO) => {
+  const createOrder = useCallback(async (pedido: PedidoDTO) => {
     setLoading(true);
-    try {
-      //const response = await insertOrder(pedido);
-      console.log(pedido)
-   
 
-      return { success: true };
+    try {
+      const response = await insertOrder(pedido);
+
+      const factNumber: string = response?.factNumber || "N/A";
+
+      return { success: true, factNumber };
+
     } catch (err) {
-      console.error("createOrder error:", err);
+      //console.error("createOrder error:", err);
       return { success: false, error: "No se pudo crear el pedido." };
+
     } finally {
       setLoading(false);
+
+      loadedRef.current = false; 
+
+      router.push("/(main)/(tabs)/(createOrder)/create-order");
     }
-  }, []);
+  }, [loadItems]);
 
   const handleRefresh = useCallback(async () => {
     if (!canRefresh) return;
-
+    loadedRef.current = true;
     setRefreshing(true);
     setCanRefresh(false);
 

@@ -75,9 +75,9 @@ export const getConditionsPay = async (): Promise<Conditions[]> => {
 };
 export const insertOrder = async (pedido: PedidoDTO): Promise<any> => {
   try {
-    const response = await api.post("create-orders", pedido);
-    console.log("Response from createOrder API:", response);
-    return response.data;
+    //const response = await api.post("create-orders", pedido);
+    console.log(pedido)
+    //return response.data;
   } catch (error) {
     throw error;
   }

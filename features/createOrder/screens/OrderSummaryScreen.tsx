@@ -175,6 +175,7 @@ export default function OrderSummaryScreen() {
     try {
       const pedido = buildPedido();
       const result = await createOrder(pedido);
+      console.log(result);
 
       if (!result.success) {
         overlay.show("error", {
@@ -188,10 +189,8 @@ export default function OrderSummaryScreen() {
 
         overlay.show("success", {
           title: `Pedido creado`,
-          subtitle: "Se ha creado el pedido exitosamente.",
+          subtitle: `Se ha creado el pedido ${result.factNumber} exitosamente`,
         });
-
-        //router.push("/(main)/(tabs)/(createOrder)/create-order");
       }
     } catch (err) {
       overlay.show("error", {
@@ -212,8 +211,6 @@ export default function OrderSummaryScreen() {
       Date.now() + vencimientoDays * 24 * 60 * 60 * 1000,
     ).toISOString();
 
-    //let tot_bruto_usd = 0;
-
     const renglonPedidos = items.map((item, index) => {
       const r = calculateTotals(
         item.price,
@@ -222,8 +219,6 @@ export default function OrderSummaryScreen() {
         exchangeRate.tasa_v,
         IVA,
       );
-
-      //tot_bruto_usd += r.reng_neto_usd;
 
       return {
         fact_num,
@@ -243,10 +238,6 @@ export default function OrderSummaryScreen() {
         tipo_imp: item.tip_imp ?? "",
       };
     });
-
-    // const { totalBruto, totalIVA, totalNeto, bsBruto, ivaBS, totalNetoBS } =
-    //   calculateTotalsPedido(tot_bruto_usd, IVA, exchangeRate.tasa_v);
-    //console.log("totalBruto", bsBruto, "iva", ivaBS, "saldo ", totalNetoBS);
 
     const pedido: PedidoDTO = {
       fact_num,

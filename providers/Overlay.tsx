@@ -148,7 +148,7 @@ export default function Overlay() {
           {/* CONFETTI  only in success */}
           {config.confetti && (
             <ConfettiCannon
-              count={60}
+              count={80}
               origin={{ x: width / 2, y: height / 2 }}
               fadeOut={true}
               autoStart={true}
