@@ -24,6 +24,7 @@ import CustomFlatList from "@/components/ui/CustomFlatList";
 import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import { Ionicons } from "@expo/vector-icons";
+import CreateOrderFilterModal from "../components/CreateOrderFilterModal";
 import ExchangeRateBadgeSmall from "../components/ExchangeRateBadgeSmall";
 import FastFilters from "../components/FastFilters";
 import ItemModal from "../components/ItemModal";
@@ -44,6 +45,7 @@ export default function CreateOrderScreen() {
     filteredProducts,
     handleRefresh,
     refreshing,
+    cooldown,
     canRefresh,
     notUsed,
     setNotUsed,
@@ -53,16 +55,18 @@ export default function CreateOrderScreen() {
     setSortByAssigned,
     handleSummary,
     loadSummary,
+    categories,
+    selectedCategory,
+    setSelectedCategory,
   } = useCreateOrder(searchText);
 
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
   const { items, IVA, exchangeRate } = useCreateOrderStore();
   const [isVisible, setIsVisible] = useState(true);
-
+  const [filterVisible, setFilterVisible] = useState(false);
   const haveOrder = items?.length > 0;
 
   // Animation shared values
@@ -201,10 +205,10 @@ export default function CreateOrderScreen() {
       searchText={searchText}
       setSearchText={setSearchText}
       placeholder="Código o descripción..."
-      onFilterPress={() => setFilterModalVisible(true)}
       headerVisible={true}
       extrafilter={true}
       extraFiltersComponent={extraFilters}
+      onFilterPress={() => setFilterVisible(true)}
     >
       {loading ? (
         <Loader />
@@ -216,6 +220,7 @@ export default function CreateOrderScreen() {
             keyExtractor={(item) => item.codart}
             refreshing={refreshing}
             canRefresh={canRefresh}
+            cooldown={cooldown}
             handleRefresh={handleRefresh}
             onHeaderVisibleChange={setHeaderVisible}
             showtitle={true}
@@ -246,6 +251,18 @@ export default function CreateOrderScreen() {
       <ExchangeRateBadgeSmall exchangeRate={exchangeRate} />
 
       {loadSummary && FullScreenLoaderOverlay}
+      {filterVisible && (
+        <CreateOrderFilterModal
+          visible={filterVisible}
+          onClose={() => setFilterVisible(false)}
+          onApply={(selectedCat) => {
+            setSelectedCategory(selectedCat);
+            setFilterVisible(false);
+          }}
+          category={categories}
+          selectedCategory={selectedCategory}
+        />
+      )}
     </ScreenSearchLayout>
   );
 }

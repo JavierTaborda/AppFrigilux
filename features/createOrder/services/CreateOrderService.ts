@@ -23,19 +23,6 @@ export const getItemsByGoals = async (): Promise<OrderItem[]> => {
 export const getClients = async (): Promise<ClientData[]> => {
   try {
     const response = await api.get("customers");
-
-    // const clients: ClientData[] = response.data.map((c: any) => ({
-    //   co_cli: c.co_cli?.trim(),
-    //   cli_des: c.cli_des?.split("\r\n")[0]?.trim(),
-    //   co_zon: c.co_zon?.trim(),
-    //   dir_ent2: c.dir_ent2?.trim(),
-    //   direc1: c.direc1?.trim(),
-    //   direc2: c.direc2?.trim(),
-    //   telefonos: c.telefonos,
-    //   email: c.email,
-    //   rif: c.rif
-    // }));
-
     const clients: ClientData[] = response.data;
 
 
@@ -75,9 +62,9 @@ export const getConditionsPay = async (): Promise<Conditions[]> => {
 };
 export const insertOrder = async (pedido: PedidoDTO): Promise<any> => {
   try {
-    //const response = await api.post("create-orders", pedido);
-    console.log(pedido)
-    //return response.data;
+    const response = await api.post("create-orders", pedido);
+    console.log("response",response.data)
+    return response.data;
   } catch (error) {
     throw error;
   }

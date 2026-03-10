@@ -1,9 +1,11 @@
 
 
 import { ClientData } from "@/types/clients";
+import { useRefreshControl } from "@/utils/userRefreshControl";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
+import { CategoryArt } from "../interfaces/CategoryArt";
 import { PedidoDTO } from "../interfaces/pedidoDTO";
 import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA, insertOrder } from "../services/CreateOrderService";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
@@ -13,43 +15,26 @@ import { OrderItem } from "../types/orderItem";
 const useCreateOrder = (searchText: string) => {
   const [loading, setLoading] = useState(false);
   const [loadSummary, setLoadSummary] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [allproductItems, setAllProductsItems] = useState<OrderItem[]>([]);
   const [notUsed, setNotUsed] = useState<boolean>(false);
   const [selectedUsedValue, setSelectedUsedValue] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
   const [sortByUsed, setSortByUsed] = useState<boolean>(false);
   const [sortByAvailable, setSortByAvailable] = useState<boolean>(false);
   const [sortByAssigned, setSortByAssigned] = useState<boolean>(false);
   const [clients, setClients] = useState<ClientData[]>([]);
   const [conditionsPay, setCondtionsPay] = useState<Conditions[]>([]);
-  //const { items } = useCreateOrderStore();
 
-  // Load items from backend
-  // const loadItems = useCallback(async () => {
-  //   setLoading(true);
-  //   setError(null);
-  //   try {
-  //     const [result, exchange, iva] = await Promise.all([getItemsByGoals(), getExchangeRate(), getIVA()]);
-  //     setAllProductsItems(result);
-  //     useCreateOrderStore.getState().syncWithProducts(result, exchange, iva);
-  //   } catch (err) {
-  //     console.error("loadItems error:", err);
-  //     setError("Error cargando productos");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, []);
 
+  const { refreshing, canRefresh, cooldown, wrapRefresh, cleanup } = useRefreshControl(10);
   const loadedRef = useRef(false);
+
 
   const loadItems = useCallback(async () => {
     if (loadedRef.current) return;
-   
     loadedRef.current = true;
     setLoading(true);
-    setError(null);
 
     try {
       const [result, exchange, iva] = await Promise.all([
@@ -57,19 +42,42 @@ const useCreateOrder = (searchText: string) => {
         getExchangeRate(),
         getIVA(),
       ]);
-  
+
       setAllProductsItems(result);
-  
-      //refresh the store with the latest products,prices, exchange rate, and IVA
       useCreateOrderStore.getState().syncWithProducts(result, exchange, iva);
     } catch (err) {
       setError("Error cargando productos");
-      loadedRef.current = false;
     } finally {
       setLoading(false);
+      loadedRef.current = false;
     }
   }, []);
 
+  const categories:CategoryArt[] = useMemo(() => {
+
+    const uniqueCats = new Map<string, string>();
+
+    allproductItems.forEach(item => {
+      const code = item.co_cat?.trim();
+      const name = item.cat_art?.cat_des?.trim();
+      if (code && name && !uniqueCats.has(code)) {
+        uniqueCats.set(code, name);
+      }
+    });
+
+    const list: CategoryArt[] = [
+      { co_cat: "TODOS", cat_des: "TODOS" }
+    ];
+
+    const sortedCategories = Array.from(uniqueCats.entries())
+      .map(([co_cat, cat_des]) => ({
+        co_cat,
+        cat_des
+      }))
+      .sort((a, b) => a.cat_des.localeCompare(b.cat_des));
+
+    return list.concat(sortedCategories);
+  }, [allproductItems]);
 
   useFocusEffect(
     useCallback(() => {
@@ -82,40 +90,48 @@ const useCreateOrder = (searchText: string) => {
 
     try {
       const response = await insertOrder(pedido);
-
       const factNumber: string = response?.factNumber || "N/A";
-
       return { success: true, factNumber };
 
     } catch (err) {
       //console.error("createOrder error:", err);
       return { success: false, error: "No se pudo crear el pedido." };
-
     } finally {
       setLoading(false);
-
-      loadedRef.current = false; 
-
+      loadedRef.current = false;
       router.push("/(main)/(tabs)/(createOrder)/create-order");
     }
   }, [loadItems]);
 
-  const handleRefresh = useCallback(async () => {
-    if (!canRefresh) return;
-    loadedRef.current = true;
-    setRefreshing(true);
-    setCanRefresh(false);
+  // const handleRefresh = useCallback(async () => {
+  //   if (canRefresh) return;
+  //   loadedRef.current = true;
+  //   setRefreshing(true);
+  //   setCanRefresh(false);
 
-    try {
-      await loadItems();
-    } finally {
-      setRefreshing(false);
-      setCanRefresh(true);
-    }
-  }, [loadItems]);
+  //   try {
+  //     await loadItems();
+  //   } finally {
+  //     setRefreshing(false);
+  //     setCanRefresh(true);
+  //     loadedRef.current = false;
+  //   }
+  // }, [loadItems]);
 
-  // local canRefresh state (kept as before)
-  const [canRefresh, setCanRefresh] = useState(true);
+  const handleRefresh = useCallback(() => {
+    wrapRefresh(async () => {
+      if (!canRefresh) return;
+      loadedRef.current = true;
+
+      try {
+        await loadItems();
+      } finally {
+        loadedRef.current = false;
+      }
+    });
+  }, [wrapRefresh, canRefresh, loadItems]);
+
+
 
   const handleSummary = useCallback(async () => {
     setLoadSummary(true);
@@ -162,7 +178,7 @@ const useCreateOrder = (searchText: string) => {
 
     if (selectedCategory && selectedCategory !== "TODOS") {
       filtered = filtered.filter((g) =>
-        (g.artdes ?? "").startsWith(selectedCategory)
+        (g.co_cat ?? "").startsWith(selectedCategory)
       );
     }
 
@@ -174,7 +190,7 @@ const useCreateOrder = (searchText: string) => {
       filtered.sort((a, b) => (b.asignado ?? 0) - (a.asignado ?? 0));
     }
 
-    // If asking for only available items, filter here (keeps backward compatibility)
+
     if (sortByAvailable) {
       filtered = filtered.filter((p) => p.available);
     }
@@ -182,15 +198,20 @@ const useCreateOrder = (searchText: string) => {
     return filtered;
   }, [allproductItems, searchText, notUsed, selectedUsedValue, selectedCategory, sortByUsed, sortByAssigned, sortByAvailable]);
 
+
+
+
+
   return {
     loading,
     error,
     canRefresh,
+    cooldown,
     createOrder,
     handleRefresh,
     refreshing,
     productItems: filteredProducts,
-    filteredProducts, // exposed for backwards compat
+    filteredProducts,
     notUsed,
     setNotUsed,
     selectedUsedValue,
@@ -206,6 +227,7 @@ const useCreateOrder = (searchText: string) => {
     handleSummary,
     clients,
     loadSummary,
+    categories
   };
 };
 

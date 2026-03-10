@@ -15,5 +15,9 @@ export type OrderItem = {
   ult_cos_om?: number;
   cos_pro_om?: number;
   tip_imp?: string;
+  co_cat?:string;
+  cat_art?:{
+    cat_des?:string;
+  }
   
 }

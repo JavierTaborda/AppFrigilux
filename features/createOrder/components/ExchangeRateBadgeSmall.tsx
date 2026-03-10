@@ -1,5 +1,6 @@
 import { ExchangeRate } from "@/types/exchangerate";
 import { currencyDollar } from "@/utils/moneyFormat";
+import { safeHaptic } from "@/utils/safeHaptics";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -22,7 +23,7 @@ export default function ExchangeRateBadgeSmall({
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 2000);
+    }, 1700);
     return () => clearTimeout(timer);
   }, []);
 
@@ -45,7 +46,10 @@ export default function ExchangeRateBadgeSmall({
           </View>
 
           <Pressable
-            onPress={() => setIsVisible(false)}
+            onPress={() => {
+              setIsVisible(false);
+              safeHaptic("soft");
+            }}
             className="bg-gray-200/50 dark:bg-gray-700/50 rounded-full p-1"
           >
             <MaterialCommunityIcons
@@ -64,7 +68,10 @@ export default function ExchangeRateBadgeSmall({
           exiting={FadeOutRight.duration(300)}
         >
           <Pressable
-            onPress={() => setIsVisible(true)}
+            onPress={() => {
+              setIsVisible(true);
+              safeHaptic("light");
+            }}
             className="bg-primary/80 dark:bg-dark-primary rounded-l-3xl pl-3 pr-1 py-3 shadow-lg"
           >
             <MaterialCommunityIcons

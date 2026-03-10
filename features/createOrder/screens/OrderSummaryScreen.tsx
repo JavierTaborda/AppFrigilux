@@ -26,7 +26,6 @@ import ExchangeRateBadge from "../components/ExchangeRateBadge";
 import OrderSummaryList from "../components/OrderSummaryList";
 import TotalView from "../components/TotalView";
 import useCreateOrder from "../hooks/useCreateOrder";
-import { useOrderTotals } from "../hooks/useOrderTotals";
 import { PedidoDTO } from "../interfaces/pedidoDTO";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { Conditions } from "../types/conditions";
@@ -105,7 +104,6 @@ export default function OrderSummaryScreen() {
   const { isDark } = useThemeStore();
   const { items, exchangeRate, IVA, clearOrder } = useCreateOrderStore();
   const { createOrder } = useCreateOrder("");
-  const { total, TotalIVA, totalWithIVA } = useOrderTotals(items);
 
   // Calculate totals for TotalView
   const { totalBruto, totalIVA, totalNeto, bsBruto, ivaBS, totalNetoBS } =
@@ -175,7 +173,6 @@ export default function OrderSummaryScreen() {
     try {
       const pedido = buildPedido();
       const result = await createOrder(pedido);
-      console.log(result);
 
       if (!result.success) {
         overlay.show("error", {

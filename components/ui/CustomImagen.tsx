@@ -2,7 +2,6 @@ import { Image } from "expo-image";
 import { memo } from "react";
 import { View } from "react-native";
 
-// Blurhash genérico gris claro — puedes personalizarlo
 const PLACEHOLDER_BLURHASH = "IsL}BEof~q";
 
 type Props = {
