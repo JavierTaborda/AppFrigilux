@@ -1,7 +1,12 @@
 import { useScrollHeader } from "@/hooks/useScrollHeader";
 import { appTheme } from "@/utils/appTheme";
 import { Ionicons } from "@expo/vector-icons";
-import { FlashList, FlashListProps, FlashListRef } from "@shopify/flash-list";
+import {
+  FlashList,
+  FlashListProps,
+  FlashListRef,
+  ViewToken,
+} from "@shopify/flash-list";
 
 import React, { useEffect, useRef } from "react";
 import {
@@ -30,6 +35,7 @@ type Props<T> = {
   numColumns?: number;
   showScrollTopButton?: boolean;
   pageSize?: number;
+  onViewableItemsChanged?: (info: { viewableItems: ViewToken<T>[] }) => void;
 };
 
 function CustomFlatList<T>({
@@ -48,6 +54,7 @@ function CustomFlatList<T>({
   numColumns = 1,
   showScrollTopButton = true,
   pageSize = 20,
+  onViewableItemsChanged,
 }: Props<T>) {
   const flashListRef = useRef<FlashListRef<T>>(null);
   const { handleScroll, showScrollTop, headerVisible } = useScrollHeader();
@@ -115,13 +122,15 @@ function CustomFlatList<T>({
         ref={flashListRef}
         data={data}
         keyExtractor={keyExtractor}
-        masonry
+        //masonry
         //removeClippedSubviews={true}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         onScroll={handleScroll}
-        scrollEventThrottle={32}
+        scrollEventThrottle={16}
+        drawDistance={200}
         numColumns={numColumns}
+        viewabilityConfig={{ itemVisiblePercentThreshold: 20 }}
         refreshControl={
           <RefreshControl
             refreshing={canRefresh ? refreshing : false}

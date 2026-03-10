@@ -1,4 +1,4 @@
-import CustomImage from "@/components/ui/CustomImagen";
+import CustomImagen from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { memo, useCallback } from "react";
@@ -11,13 +11,19 @@ type ProductCardProps = {
   item: OrderItem;
   IVA: number;
   setModalItemVisible: (it: OrderItem) => void;
+  //showImage: boolean;
 };
 
 const createQuantitySelector =
   (codart: string) => (s: { items: OrderItem[] }) =>
     s.items.find((i) => i.codart === codart)?.quantity ?? 0;
 
-function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
+function ProductCard({
+  item,
+  setModalItemVisible,
+  IVA,
+  //showImage,
+}: ProductCardProps) {
   const img = `${imageURL}${item.codart.trim()}.jpg`;
 
   const quantity = useCreateOrderStore(
@@ -33,8 +39,8 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
       onPress={() => setModalItemVisible(item)}
     >
       <View className="flex-1 items-center justify-center pb-1">
-        <View className="h-28 w-2/3 rounded-xl overflow-hidden pb-1 bg-bgimages">
-          <CustomImage img={img} />
+        <View className="h-28 w-2/3 rounded-xl bg-bgimages">
+          <CustomImagen img={img} recyclingKey={item.codart} />
         </View>
       </View>
 
@@ -65,4 +71,12 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
   );
 }
 
-export default memo(ProductCard);
+export default memo(ProductCard, (prev, next) => {
+  return (
+    //prev.showImage === next.showImage &&
+    prev.item.codart === next.item.codart &&
+    prev.item.asignado === next.item.asignado &&
+    prev.item.utilizado === next.item.utilizado &&
+    prev.IVA === next.IVA
+  );
+});

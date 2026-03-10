@@ -65,7 +65,7 @@ export default function CreateOrderScreen() {
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
   const { items, IVA, exchangeRate } = useCreateOrderStore();
-  const [isVisible, setIsVisible] = useState(true);
+
   const [filterVisible, setFilterVisible] = useState(false);
   const haveOrder = items?.length > 0;
 
@@ -198,6 +198,7 @@ export default function CreateOrderScreen() {
   const { width } = useWindowDimensions();
 
   const numColumns = width >= 900 ? 4 : width >= 600 ? 3 : 2;
+
   if (error) return <ErrorView error={error} getData={handleRefresh} />;
 
   return (

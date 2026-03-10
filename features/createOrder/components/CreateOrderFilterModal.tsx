@@ -1,6 +1,6 @@
 import FilterModal from "@/components/ui/FilterModal";
 import { safeHaptic } from "@/utils/safeHaptics";
-import { useEffect, useState } from "react"; // Añadido useEffect
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { CategoryArt } from "../interfaces/CategoryArt";
 
