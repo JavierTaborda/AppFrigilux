@@ -11,19 +11,13 @@ type ProductCardProps = {
   item: OrderItem;
   IVA: number;
   setModalItemVisible: (it: OrderItem) => void;
-  //showImage: boolean;
 };
 
 const createQuantitySelector =
   (codart: string) => (s: { items: OrderItem[] }) =>
     s.items.find((i) => i.codart === codart)?.quantity ?? 0;
 
-function ProductCard({
-  item,
-  setModalItemVisible,
-  IVA,
-  //showImage,
-}: ProductCardProps) {
+function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
   const img = `${imageURL}${item.codart.trim()}.jpg`;
 
   const quantity = useCreateOrderStore(
@@ -73,7 +67,6 @@ function ProductCard({
 
 export default memo(ProductCard, (prev, next) => {
   return (
-    //prev.showImage === next.showImage &&
     prev.item.codart === next.item.codart &&
     prev.item.asignado === next.item.asignado &&
     prev.item.utilizado === next.item.utilizado &&

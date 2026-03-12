@@ -53,7 +53,7 @@ const useCreateOrder = (searchText: string) => {
     }
   }, []);
 
-  const categories:CategoryArt[] = useMemo(() => {
+  const categories: CategoryArt[] = useMemo(() => {
 
     const uniqueCats = new Map<string, string>();
 
@@ -90,33 +90,25 @@ const useCreateOrder = (searchText: string) => {
 
     try {
       const response = await insertOrder(pedido);
-      const factNumber: string = response?.factNumber || "N/A";
+      const factNumber: string = response?.factNumber || "N/A";  
+      router.push("/(main)/(tabs)/(createOrder)/create-order");
       return { success: true, factNumber };
+    
 
-    } catch (err) {
-      //console.error("createOrder error:", err);
-      return { success: false, error: "No se pudo crear el pedido." };
+    } catch (err: any) {
+
+      const errorMessage = err.response?.data?.message || "Error inesperado en el servidor";
+
+      return {
+        success: false,
+        error: errorMessage
+      };
     } finally {
       setLoading(false);
       loadedRef.current = false;
-      router.push("/(main)/(tabs)/(createOrder)/create-order");
     }
   }, [loadItems]);
 
-  // const handleRefresh = useCallback(async () => {
-  //   if (canRefresh) return;
-  //   loadedRef.current = true;
-  //   setRefreshing(true);
-  //   setCanRefresh(false);
-
-  //   try {
-  //     await loadItems();
-  //   } finally {
-  //     setRefreshing(false);
-  //     setCanRefresh(true);
-  //     loadedRef.current = false;
-  //   }
-  // }, [loadItems]);
 
   const handleRefresh = useCallback(() => {
     wrapRefresh(async () => {

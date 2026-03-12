@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Alert, Dimensions, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   Easing,
@@ -34,24 +34,58 @@ const OrderModal: React.FC<OrderModalProps> = ({
   const { items, clearOrder, exchangeRate, IVA } = useCreateOrderStore();
   const { isDark } = useThemeStore();
 
-  let tot_bruto_usd = 0;
-  let iva_USD = 0;
+  // let tot_bruto_usd = 0;
+  // let tot_bruto_bs = 0;
+  // let iva_USD = 0;
 
-  const calculate = items.map((item, index) => {
-    const r = calculateTotals(
-      item.price,
-      item.quantity ?? 1,
-      item.discount ?? "",
-      exchangeRate.tasa_v,
-      IVA,
-    );
+  // const calculate = items.map((item, index) => {
+  //   const r = calculateTotals(
+  //     item.price,
+  //     item.quantity ?? 1,
+  //     item.discount ?? "",
+  //     exchangeRate.tasa_v,
+  //     IVA,
+  //   );
 
-    tot_bruto_usd += r.unitUsd * item.quantity;
-    iva_USD += r.unitUsd * IVA * item.quantity;
-  });
+  //   tot_bruto_usd += r.unitUsd * item.quantity;
+  //   tot_bruto_bs += r.reng_neto;
+  //   iva_USD += r.unitUsd * IVA * item.quantity;
+  // });
 
-  const { totalBruto, totalIVA, totalNeto, bsBruto, ivaBS, totalNetoBS } =
-    calculateTotalsPedido(tot_bruto_usd, IVA, exchangeRate.tasa_v);
+  // const { totalBruto, totalIVA, totalNeto, usdBruto, usdIva, totalNetoUsd } =
+  //   calculateTotalsPedido(
+  //     tot_bruto_usd,
+  //     tot_bruto_bs,
+  //     IVA,
+  //     exchangeRate.tasa_v,
+  //   );
+
+  // Calculate totals for TotalView
+  const { totalBruto, totalIVA, totalNeto, usdBruto, usdIva, totalNetoUsd } =
+    useMemo(() => {
+      // Calculate totalBruto in USD
+      let tot_bruto_usd = 0;
+      let tot_bruto_bs = 0;
+      items.forEach((item) => {
+        const r = calculateTotals(
+          item.price,
+          item.quantity ?? 1,
+          item.discount ?? "",
+          exchangeRate.tasa_v,
+          IVA,
+        );
+        tot_bruto_usd += r.reng_neto_usd;
+        tot_bruto_bs += r.reng_neto;
+      });
+
+      return calculateTotalsPedido(
+        tot_bruto_usd,
+        tot_bruto_bs,
+        IVA,
+        exchangeRate.tasa_v,
+      );
+    }, [items, IVA, exchangeRate]);
+
   const isEmpty = items.length === 0;
 
   // Reanimated setup
@@ -154,9 +188,9 @@ const OrderModal: React.FC<OrderModalProps> = ({
                     totalBruto={totalBruto}
                     TotalIVA={totalIVA}
                     totalNeto={totalNeto}
-                    bsBruto={bsBruto}
-                    ivaBS={ivaBS}
-                    totalNetoBS={totalNetoBS}
+                    usdBruto={usdBruto}
+                    usdIva={usdIva}
+                    totalNetoUsd={totalNetoUsd}
                   />
                 </View>
 

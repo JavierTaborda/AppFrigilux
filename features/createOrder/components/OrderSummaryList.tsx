@@ -64,7 +64,9 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
           );
 
           const totalPrice = totalVenezuela(
-            totalsVES ? reng_total : reng_total / exchangeRate.tasa_v,
+            totalsVES
+              ? reng_neto * (1 + IVA)
+              : (reng_neto * (1 + IVA)) / exchangeRate.tasa_v,
           );
 
           const currency = totalsVES ? currencyVES : currencyDollar;

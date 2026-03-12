@@ -6,12 +6,16 @@ import { Conditions } from "../types/conditions";
 import { OrderItem } from "../types/orderItem";
 
 export const getItemsByGoals = async (): Promise<OrderItem[]> => {
+
   try {
+  
+
     const params: any = {};
     params.codven = "00006";
 
-    const response = await api.get("create-orders", { params });
+    const response = await api.get("create-orders", { params });  
 
+    //const response = await api.get("create-orders");
     return response.data;
 
   } catch (error) {
@@ -63,7 +67,7 @@ export const getConditionsPay = async (): Promise<Conditions[]> => {
 export const insertOrder = async (pedido: PedidoDTO): Promise<any> => {
   try {
     const response = await api.post("create-orders", pedido);
-    console.log("response",response.data)
+
     return response.data;
   } catch (error) {
     throw error;

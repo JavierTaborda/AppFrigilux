@@ -106,10 +106,11 @@ export default function OrderSummaryScreen() {
   const { createOrder } = useCreateOrder("");
 
   // Calculate totals for TotalView
-  const { totalBruto, totalIVA, totalNeto, bsBruto, ivaBS, totalNetoBS } =
+  const { totalBruto, totalIVA, totalNeto, usdBruto, usdIva, totalNetoUsd } =
     useMemo(() => {
       // Calculate totalBruto in USD
       let tot_bruto_usd = 0;
+      let tot_bruto_bs = 0;
       items.forEach((item) => {
         const r = calculateTotals(
           item.price,
@@ -119,8 +120,15 @@ export default function OrderSummaryScreen() {
           IVA,
         );
         tot_bruto_usd += r.reng_neto_usd;
+        tot_bruto_bs += r.reng_neto;
       });
-      return calculateTotalsPedido(tot_bruto_usd, IVA, exchangeRate.tasa_v);
+
+      return calculateTotalsPedido(
+        tot_bruto_usd,
+        tot_bruto_bs,
+        IVA,
+        exchangeRate.tasa_v,
+      );
     }, [items, IVA, exchangeRate]);
 
   const [isFacturable, setIsFacturable] = useState(false);
@@ -177,12 +185,12 @@ export default function OrderSummaryScreen() {
       if (!result.success) {
         overlay.show("error", {
           title: "Error",
-          subtitle: "No se pudo crear el pedido. Intenta nuevamente.",
+          subtitle: result.error,
         });
         return;
       } else {
-        //clearOrder();
-        //resetForm();
+        clearOrder();
+        resetForm();
 
         overlay.show("success", {
           title: `Pedido creado`,
@@ -245,12 +253,12 @@ export default function OrderSummaryScreen() {
       dir_ent: direction,
       co_cli: selectedClient?.co_cli ?? "",
       forma_pag: condicion?.co_cond ?? "",
-      tot_bruto: bsBruto,
-      iva: ivaBS,
-      tot_neto: totalNetoBS,
+      tot_bruto: totalBruto,
+      iva: totalIVA,
+      tot_neto: totalNeto,
       fec_emis: new Date().toISOString(),
       fec_venc: fecVenc,
-      saldo: totalNetoBS,
+      saldo: totalNeto,
       status: "0",
       moneda: "USD",
       tasa: exchangeRate?.tasa_v ?? 1,
@@ -269,6 +277,7 @@ export default function OrderSummaryScreen() {
   useEffect(() => {
     resetForm();
   }, [isEmpty]);
+
   if (isEmpty) return <EmptyOrder />;
 
   return (
@@ -398,7 +407,6 @@ export default function OrderSummaryScreen() {
             </View>
           </View>
 
-          {/* Artículos */}
           <View className="mb-4 bg-componentbg dark:bg-dark-componentbg px-4 py-2 rounded-xl">
             <Text className="text-md font-medium text-foreground dark:text-dark-foreground mb-2">
               Artículos
@@ -410,9 +418,9 @@ export default function OrderSummaryScreen() {
             totalBruto={totalBruto}
             TotalIVA={totalIVA}
             totalNeto={totalNeto}
-            bsBruto={bsBruto}
-            ivaBS={ivaBS}
-            totalNetoBS={totalNetoBS}
+            usdBruto={usdBruto}
+            usdIva={usdIva}
+            totalNetoUsd={totalNetoUsd}
           />
         </ScrollView>
 

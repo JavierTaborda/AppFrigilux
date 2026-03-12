@@ -10,7 +10,7 @@ export const getGoals = async  (cod_ven?:string[]): Promise<Goals[]> => {
       params.cod_ven = cod_ven.join(',');
     }
 
-    const response = await api.get("goals",{params});
+    const response = await api.get ("goals",{params});
     return response.data;
 
   } catch (error) {

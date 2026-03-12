@@ -13,18 +13,18 @@ type TotalsProps = {
   totalBruto: number;
   TotalIVA: number;
   totalNeto: number;
-  bsBruto: number;
-  ivaBS: number;
-  totalNetoBS: number;
+  usdBruto: number;
+  usdIva: number;
+  totalNetoUsd: number;
 };
 
 export default function TotalView({
   totalBruto,
   TotalIVA,
   totalNeto,
-  bsBruto,
-  ivaBS,
-  totalNetoBS,
+  usdBruto,
+  usdIva,
+  totalNetoUsd,
 }: TotalsProps) {
   const { setTotalsVES, totalsVES, IVA } = useCreateOrderStore();
   const [showInBs, setShowInBs] = useState(totalsVES);
@@ -66,7 +66,7 @@ export default function TotalView({
               style={animatedStyle}
               className="text-base text-foreground dark:text-dark-foreground"
             >
-              {showInBs ? formatValue(bsBruto) : formatValue(totalBruto)}
+              {showInBs ? formatValue(totalBruto) : formatValue(usdBruto)}
             </Animated.Text>
           </Pressable>
         </View>
@@ -80,7 +80,7 @@ export default function TotalView({
               style={animatedStyle}
               className="text-base text-foreground dark:text-dark-foreground"
             >
-              {showInBs ? formatValue(ivaBS) : formatValue(TotalIVA)}
+              {showInBs ? formatValue(TotalIVA) : formatValue(usdIva)}
             </Animated.Text>
           </Pressable>
         </View>
@@ -95,7 +95,7 @@ export default function TotalView({
             style={animatedStyle}
             className="text-xl font-bold text-primary dark:text-dark-primary"
           >
-            {showInBs ? formatValue(totalNetoBS) : formatValue(totalNeto)}
+            {showInBs ? formatValue(totalNeto) : formatValue(totalNetoUsd)}
           </Animated.Text>
         </Pressable>
       </View>
