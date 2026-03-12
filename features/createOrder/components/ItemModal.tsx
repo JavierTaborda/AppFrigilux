@@ -15,7 +15,7 @@ type ItemModalProps = {
   item?: OrderItem;
 };
 
-const PRESET_DISCOUNTS = [5, 10, 15, 20, 25, 30, 35, 40];
+const PRESET_DISCOUNTS = [5, 10, 20, 25, 30, 35, 40];
 
 type DiscountButtonProps = {
   percent: number;
@@ -48,7 +48,9 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
     s.items.find((i) => i.codart === item?.codart),
   );
 
-  const { addItem, IVA } = useCreateOrderStore();
+  // Mantenemos tus constantes del store, añadiendo 'tasa'
+  const { addItem, IVA, totalsVES, setTotalsVES, exchangeRate } =
+    useCreateOrderStore();
 
   if (!item) return null;
 
@@ -56,6 +58,14 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
   const quantity = cartItem?.quantity ?? 0;
   const available = item.available ?? 0;
   const img = `${imageURL}${item.codart.trim()}.jpg`;
+
+  // Función interna para formatear segun totalsVES sin cambiar tus estilos
+  const formatCurrency = (value: number) => {
+    if (totalsVES) {
+      return `${totalVenezuela(value * exchangeRate.tasa_v)} Bs`;
+    }
+    return `${totalVenezuela(value)} ${currencyDollar}`;
+  };
 
   useEffect(() => {
     if (cartItem?.discount !== undefined) {
@@ -85,17 +95,14 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
   );
 
   const totalGross = useMemo(() => price * quantity, [price, quantity]);
-
   const totalDiscount = useMemo(
     () => discountPerUnit * quantity,
     [discountPerUnit, quantity],
   );
-
   const subtotal = useMemo(
     () => finalUnitPrice * quantity,
     [finalUnitPrice, quantity],
   );
-
   const iva = useMemo(() => subtotal * IVA, [subtotal, IVA]);
   const total = useMemo(() => subtotal + iva, [subtotal, iva]);
 
@@ -105,7 +112,6 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
         .split("+")
         .filter((d) => d.trim() !== "")
         .map((d) => Number(d));
-
       if (!current.includes(percent) && current.length < 3) {
         setDiscountPercent([...current, percent].join("+"));
       } else if (current.includes(percent)) {
@@ -121,10 +127,8 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 
   const handleChangeDiscount = useCallback((text: string) => {
     if (!/^[0-9+]*$/.test(text)) return;
-
     const cleaned = text.replace(/\+\+/g, "+");
     const discounts = cleaned.split("+").filter(Boolean).map(Number);
-
     if (discounts.length > 3) {
       Alert.alert("No se pueden aplicar más de 3 descuentos", "", [
         { text: "Aceptar" },
@@ -139,7 +143,6 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
       Alert.alert("Error", "No hay item seleccionado para agregar.");
       return;
     }
-
     addItem({ ...cartItem, discount: discountPercent }, 0);
     onClose(false);
   }, [cartItem, discountPercent, addItem, onClose]);
@@ -157,15 +160,10 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
     [discountsArray, handleDiscountToggle],
   );
 
-  const showPrice = totalVenezuela(finalUnitPrice * (1 + IVA));
-
   return (
     <View className="flex-1 gap-3 py-2">
       <View className="flex-row bg-componentbg dark:bg-dark-componentbg rounded-2xl p-2 gap-2">
-        <View
-          className="w-32 h-32 my-2 rounded-xl overflow-hidden bg-bgimages mr-3
-            items-center justify-center"
-        >
+        <View className="w-32 h-32 my-2 rounded-xl overflow-hidden bg-bgimages mr-3 items-center justify-center">
           <CustomImage img={img} />
         </View>
 
@@ -191,7 +189,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
             {discountsArray.length > 0 && (
               <>
                 <Text className="text-md line-through text-gray-500 dark:text-gray-300 mx-1">
-                  {totalVenezuela(price * (1 + IVA))} {currencyDollar}
+                  {formatCurrency(price * (1 + IVA))}
                 </Text>
                 <View className="bg-red-500/10 dark:bg-red-900 px-1 rounded-full border border-red-500">
                   <Text className="text-xs font-bold text-red-500 dark:text-red-400">
@@ -201,7 +199,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
               </>
             )}
             <Text className="text-md font-bold text-primary dark:text-dark-primary">
-              {showPrice} {currencyDollar}
+              {formatCurrency(finalUnitPrice * (1 + IVA))}
             </Text>
           </View>
         </View>
@@ -234,22 +232,38 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
         )}
 
         <View className="gap-y-1 px-2">
-          <Row label="Total bruto:" value={totalGross} />
-          <Row label="Descuento:" value={-totalDiscount} red />
-          <Row label="Subtotal:" value={subtotal} />
-          <Row label={`IVA (${IVA * 100}%):`} value={iva} />
+          <Row
+            label="Total bruto:"
+            value={totalGross}
+            formatFn={formatCurrency}
+          />
+          <Row
+            label="Descuento:"
+            value={-totalDiscount}
+            red
+            formatFn={formatCurrency}
+          />
+          <Row label="Subtotal:" value={subtotal} formatFn={formatCurrency} />
+          <Row
+            label={`IVA (${IVA * 100}%):`}
+            value={iva}
+            formatFn={formatCurrency}
+          />
         </View>
 
         <View className="h-[1px] bg-gray-300 dark:bg-gray-700 my-3" />
 
-        <View className="flex-row justify-between items-center">
+        <Pressable
+          onPress={() => setTotalsVES(!totalsVES)}
+          className="flex-row justify-between items-center"
+        >
           <Text className="text-lg font-bold text-primary dark:text-dark-primary">
-            Total
+            Total {totalsVES ? "(Bs)" : "($)"}
           </Text>
           <Text className="text-lg font-bold text-primary dark:text-dark-primary">
-            {totalVenezuela(total)} {currencyDollar}
+            {formatCurrency(total)}
           </Text>
-        </View>
+        </Pressable>
       </View>
 
       <View className="flex-col mt-6 gap-3">
@@ -276,17 +290,23 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
 };
 
 const Row = React.memo(
-  ({ label, value, red }: { label: string; value: number; red?: boolean }) => (
+  ({
+    label,
+    value,
+    red,
+    formatFn,
+  }: {
+    label: string;
+    value: number;
+    red?: boolean;
+    formatFn: (v: number) => string;
+  }) => (
     <View className="flex-row justify-between">
       <Text className="text-md text-gray-500 dark:text-gray-400">{label}</Text>
       <Text
-        className={`text-md ${
-          red
-            ? "text-red-500 font-semibold"
-            : "text-gray-700 dark:text-gray-300"
-        }`}
+        className={`text-md ${red ? "text-red-500 font-semibold" : "text-gray-700 dark:text-gray-300"}`}
       >
-        {totalVenezuela(value)} {currencyDollar}
+        {formatFn(value)}
       </Text>
     </View>
   ),
