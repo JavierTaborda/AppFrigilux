@@ -25,7 +25,7 @@ export default function Overlay() {
   const { visible, type, title, subtitle, hide } = useOverlayStore();
   const { width, height } = Dimensions.get("window");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const autoHideTime = type === "error" ? 4500 : 1700;
   const progress = useSharedValue(0);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function Overlay() {
 
     timerRef.current = setTimeout(() => {
       hide();
-    }, 1700);
+    }, autoHideTime);
   };
 
   const stopAutoHide = () => {
