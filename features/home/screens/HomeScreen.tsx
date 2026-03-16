@@ -123,6 +123,17 @@ export default function HomeScreen() {
               bgColor="bg-green-500 dark:bg-green-400"
             />
           </View>
+          <View className="w-[49%] mb-4">
+            <ModuleButton
+              //icon={emojis.list}
+              //icon={emojis.approved}
+              label="Crear Pedido"
+              onPress={() =>
+                router.push("/(main)/(tabs)/(createOrder)/create-order")
+              }
+              bgColor="bg-green-400 dark:bg-green-300"
+            />
+          </View>
           {/* <View className="w-[49%] mb-4">
             <ModuleButton
               //icon={emojis.list}
