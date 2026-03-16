@@ -191,7 +191,7 @@ export default function OrderSummaryScreen() {
       } else {
         clearOrder();
         resetForm();
-
+        router.push("/(main)/(tabs)/(createOrder)/create-order");
         overlay.show("success", {
           title: `Pedido creado`,
           subtitle: `Se ha creado el pedido ${result.factNumber} exitosamente`,

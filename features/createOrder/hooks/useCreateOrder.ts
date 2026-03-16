@@ -91,7 +91,7 @@ const useCreateOrder = (searchText: string) => {
     try {
       const response = await insertOrder(pedido);
       const factNumber: string = response?.factNumber || "N/A";  
-      router.push("/(main)/(tabs)/(createOrder)/create-order");
+    
       return { success: true, factNumber };
     
 
