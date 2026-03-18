@@ -7,20 +7,28 @@ type Props = {
   img: string;
   content?: "cover" | "contain" | "fill" | "none" | "scale-down";
   recyclingKey?: string;
+  priority?: "low" | "normal" | "high";
 };
 
-const CustomImage = ({ img, content = "contain", recyclingKey }: Props) => {
+const CustomImage = ({
+  img,
+  content = "contain",
+  recyclingKey,
+  priority = "normal",
+}: Props) => {
   return (
     <Image
       source={{ uri: img }}
       contentFit={content}
-      transition={150}
-      cachePolicy="memory-disk"
+      transition={0}
+      cachePolicy="disk"
+      allowDownscaling={true}
       //placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
       placeholder={require("@/assets/images/image-outline.png")}
       placeholderContentFit="cover"
       recyclingKey={recyclingKey}
-      style={{ width: "100%", height: "100%", borderRadius: 12 }}
+      priority={priority}
+      style={{ width: "100%", height: "100%" }}
     />
   );
 };

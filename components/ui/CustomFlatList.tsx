@@ -123,12 +123,12 @@ function CustomFlatList<T>({
         data={data}
         keyExtractor={keyExtractor}
         //masonry
-        //removeClippedSubviews={true}
+        removeClippedSubviews={true}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        drawDistance={200}
+        drawDistance={100}
         numColumns={numColumns}
         viewabilityConfig={{ itemVisiblePercentThreshold: 20 }}
         refreshControl={
