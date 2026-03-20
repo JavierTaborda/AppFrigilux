@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -85,7 +85,7 @@ export default function QuantitySelector({
       >
         {/* DECREASE */}
         <Animated.View style={animatedDecrease}>
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
               handleDecrease();
               scaleDecrease.value = 1.2;
@@ -100,15 +100,15 @@ export default function QuantitySelector({
             style={{ width: size, height: size }}
             className="rounded-full bg-gray-200 dark:bg-gray-700 items-center justify-center"
           >
-            <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+            <Text className="text-xl font-bold text-foreground dark:text-dark-foreground">
               -
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </Animated.View>
 
         {/* QUANTITY */}
         {!fullView ? (
-          <Text className="mx-4 font-semibold text-lg text-center text-foreground dark:text-dark-foreground">
+          <Text className="mx-4 font-semibold text-xl text-center text-foreground dark:text-dark-foreground">
             {quantity}
           </Text>
         ) : (
@@ -122,7 +122,7 @@ export default function QuantitySelector({
 
         {/* INCREASE */}
         <Animated.View style={animatedIncrease}>
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
               handleIncrease();
               scaleIncrease.value = 1.2;
@@ -138,7 +138,7 @@ export default function QuantitySelector({
             className="rounded-full bg-primary dark:bg-dark-primary items-center justify-center"
           >
             <Text className="text-white text-md font-bold">+</Text>
-          </TouchableOpacity>
+          </Pressable>
         </Animated.View>
       </View>
     );
@@ -147,7 +147,7 @@ export default function QuantitySelector({
   // Cuando la cantidad es 0 -> botón agregar
   return (
     <Animated.View style={[{ height }, animatedAdd]} className="w-full">
-      <TouchableOpacity
+      <Pressable
         onPress={() => {
           handleAdd();
           scaleAdd.value = 1.2;
@@ -155,10 +155,10 @@ export default function QuantitySelector({
         }}
         onLongPress={() => (pressedLong.current = true)}
         onPressOut={() => (pressedLong.current = false)}
-        className="flex-1 rounded-2xl items-center justify-center bg-primary dark:bg-dark-primary"
+        className="flex-1 rounded-xl items-center justify-center bg-primary dark:bg-dark-primary"
       >
         <Text className="text-white font-bold">Agregar</Text>
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 }

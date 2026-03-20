@@ -1,3 +1,8 @@
+import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
+import BottomModal from "@/components/ui/BottomModal";
+import CustomFlatList from "@/components/ui/CustomFlatList";
+import ErrorView from "@/components/ui/ErrorView";
+import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -8,21 +13,13 @@ import {
   View,
 } from "react-native";
 import Animated, {
-  BounceIn,
   Easing,
   FadeIn,
   FadeOut,
-  FadeOutDown,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-
-import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
-import BottomModal from "@/components/ui/BottomModal";
-import CustomFlatList from "@/components/ui/CustomFlatList";
-import ErrorView from "@/components/ui/ErrorView";
-import { Ionicons } from "@expo/vector-icons";
 import CreateOrderFilterModal from "../components/CreateOrderFilterModal";
 import CreateOrderSkeleton from "../components/CreateOrderSkeleton";
 import ExchangeRateBadgeSmall from "../components/ExchangeRateBadgeSmall";
@@ -76,11 +73,11 @@ export default function CreateOrderScreen() {
 
   useEffect(() => {
     translateY.value = withTiming(haveOrder ? 0 : height, {
-      duration: 500,
+      duration: 300,
       easing: haveOrder ? Easing.out(Easing.exp) : Easing.in(Easing.exp),
     });
     opacity.value = withTiming(haveOrder ? 1 : 0, {
-      duration: 300,
+      duration: 500,
       easing: Easing.out(Easing.exp),
     });
   }, [haveOrder, height]);
@@ -133,6 +130,14 @@ export default function CreateOrderScreen() {
       <ActivityIndicator size="large" color="#fff" />
     </Animated.View>
   );
+  // useEffect(() => {
+  //   if (!filteredProducts.length) return;
+
+  //   const toPreload = filteredProducts
+  //     .slice(0, 60)
+  //     .map((p) => `${imageURL}${p.codart.trim()}.webp`);
+  //   Image.prefetch(toPreload);
+  // }, [filteredProducts]);
 
   if (error) return <ErrorView error={error} getData={handleRefresh} />;
 
@@ -146,7 +151,11 @@ export default function CreateOrderScreen() {
       extraFiltersComponent={
         loading ? (
           <>
-            <ActivityIndicator color="white" />
+            <View className="flex-row gap-3 items-center w-full ">
+              <View className=" bg-componentbg dark:bg-dark-componentbg items-center px-14 py-5 rounded-full  animate-pulse "></View>
+              <View className=" bg-componentbg dark:bg-dark-componentbg items-center px-14 py-5 rounded-full  animate-pulse "></View>
+              <View className=" bg-componentbg dark:bg-dark-componentbg items-center px-14 py-5 rounded-full  animate-pulse "></View>
+            </View>
           </>
         ) : (
           extraFilters
@@ -162,27 +171,31 @@ export default function CreateOrderScreen() {
             data={filteredProducts}
             renderItem={renderProductItem}
             keyExtractor={(item) => item.codart}
+            numColumns={numColumns}
+            removeClippedSubviews={false}
+            drawDistance={1500}
+            showScrollTopButton={true}
             refreshing={refreshing}
             canRefresh={canRefresh}
             cooldown={cooldown}
             handleRefresh={handleRefresh}
-            onHeaderVisibleChange={setHeaderVisible}
-            showtitle={true}
-            numColumns={numColumns}
-            showScrollTopButton={false}
+            contentContainerStyle={{
+              paddingBottom: 160,
+              paddingHorizontal: 6,
+              paddingTop: 4,
+            }}
           />
-
-          {/* Botones de acción inferiores */}
+          {/* Bottom Buttons*/}
           <Animated.View
             style={[
               {
                 position: "absolute",
                 zIndex: 50,
-                bottom: 120,
-                paddingHorizontal: 24,
-                width: "100%",
+                bottom: 115,
+                paddingHorizontal: 25,
+                width: "85%",
                 flexDirection: "row",
-                gap: 12,
+                gap: 15,
               },
               animatedStyle,
             ]}
@@ -211,19 +224,14 @@ export default function CreateOrderScreen() {
             >
               <Ionicons name="bag" size={24} color="white" />
               {items.length > 0 && (
-                <Animated.View
-                  entering={BounceIn.delay(100)}
-                  exiting={FadeOutDown}
-                  className="absolute right-1 top-0 bg-tertiary dark:bg-dark-tertiary rounded-full px-1 min-w-[25px] items-center justify-center"
-                >
+                <View className="absolute right-1 top-0 bg-tertiary dark:bg-dark-tertiary rounded-full px-1 min-w-[25px] items-center justify-center">
                   <Text className="text-white font-bold text-xs">
                     {items.length}
                   </Text>
-                </Animated.View>
+                </View>
               )}
             </Pressable>
           </Animated.View>
-
           <OrderModal
             visible={modalVisible}
             onClose={() => setModalVisible(false)}
@@ -232,7 +240,6 @@ export default function CreateOrderScreen() {
               handleSummary();
             }}
           />
-
           <BottomModal
             visible={modalItemVisible}
             onClose={() => setModalItemVisible(false)}

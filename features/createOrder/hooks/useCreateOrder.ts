@@ -113,7 +113,7 @@ const useCreateOrder = (searchText: string) => {
   const handleRefresh = useCallback(() => {
     wrapRefresh(async () => {
       if (!canRefresh) return;
-      loadedRef.current = true;
+      loadedRef.current = false;
 
       try {
         await loadItems();

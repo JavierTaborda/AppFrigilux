@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.6] - 2026-02-DD
+## [1.0.6] - 2026-03-DD
 
 ### Added
 
@@ -13,11 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- N/A
+- Change images url in extension file from .jpg to .webp
+- Improve performance in CustyomFlatList and Custom Image
 
 ### Fixed
 
-- N/A
+- The UI thread in the custom flat list was dropping to 30 fps
 
 ### Removed
 

@@ -178,7 +178,7 @@ function computeGoalUI(item: Goals) {
 }
 
 function GoalItemCard({ item, hasPermission }: Props) {
-  const img = `${imageURL}${item.codart?.trim()}.jpg`;
+  const img = `${imageURL}${item.codart?.trim()}.webp`;
 
   const {
     usadosText,

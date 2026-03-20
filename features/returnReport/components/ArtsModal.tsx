@@ -22,7 +22,7 @@ const ArtItem = React.memo(
       className="flex-row items-center gap-3 p-3 mb-3 rounded-xl bg-componentbg dark:bg-dark-componentbg"
     >
       <View className="w-14 h-14 rounded-lg bg-bgimages overflow-hidden">
-        <CustomImage img={`${imageURL}${item.co_art?.trim()}.jpg`} />
+        <CustomImage img={`${imageURL}${item.co_art?.trim()}.webp`} />
       </View>
 
       <View className="flex-1">
@@ -94,7 +94,7 @@ const ArtsModal: React.FC<ArtsModalProps> = React.memo(
               canRefresh={false}
               handleRefresh={() => {}}
               title={`${filteredArts.length} artículos`}
-              pageSize={20}
+              //pageSize={20}
             />
           </View>
         )}

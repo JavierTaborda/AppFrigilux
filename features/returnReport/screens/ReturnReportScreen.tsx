@@ -9,21 +9,21 @@ import { safeHaptic } from "@/utils/safeHaptics";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Pressable,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    useWindowDimensions,
-    View,
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
 } from "react-native";
 import Animated, {
-    Easing,
-    interpolate,
-    useAnimatedStyle,
-    useSharedValue,
-    withDelay,
-    withTiming,
+  Easing,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
 } from "react-native-reanimated";
 import ClientModal from "../../../components/inputs/ClientModal";
 import ArtsModal from "../components/ArtsModal";
@@ -351,7 +351,7 @@ export default function ProductDefectScreen() {
           >
             {codeArt && (
               <View className="w-12 h-12 rounded-lg bg-bgimages overflow-hidden">
-                <CustomImage img={`${imageURL}${codeArt.trim()}.jpg`} />
+                <CustomImage img={`${imageURL}${codeArt.trim()}.webp`} />
               </View>
             )}
             <Text className="text-foreground dark:text-dark-foreground flex-1 ml-3">
@@ -377,7 +377,7 @@ export default function ProductDefectScreen() {
           >
             {codeArt ? (
               <View className="w-20 h-20 rounded-lg bg-bgimages overflow-hidden">
-                <CustomImage img={`${imageURL}${codeArt.trim()}.jpg`} />
+                <CustomImage img={`${imageURL}${codeArt.trim()}.webp`} />
               </View>
             ) : (
               <View className="w-20 h-20 rounded-lg bg-bgimages items-center justify-center">

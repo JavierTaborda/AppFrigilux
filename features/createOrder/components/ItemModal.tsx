@@ -57,7 +57,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
   const price = Number(item.price ?? 0);
   const quantity = cartItem?.quantity ?? 0;
   const available = item.available ?? 0;
-  const img = `${imageURL}${item.codart.trim()}.jpg`;
+  const img = `${imageURL}${item.codart.trim()}.webp`;
 
   // Función interna para formatear segun totalsVES sin cambiar tus estilos
   const formatCurrency = (value: number) => {

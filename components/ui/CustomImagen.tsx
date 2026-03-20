@@ -20,8 +20,8 @@ const CustomImage = ({
     <Image
       source={{ uri: img }}
       contentFit={content}
-      transition={0}
-      cachePolicy="disk"
+      transition={150}
+      cachePolicy="memory-disk"
       allowDownscaling={true}
       //placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
       placeholder={require("@/assets/images/image-outline.png")}

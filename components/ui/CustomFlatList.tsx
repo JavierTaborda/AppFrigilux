@@ -1,190 +1,216 @@
-import { useScrollHeader } from "@/hooks/useScrollHeader";
-import { appTheme } from "@/utils/appTheme";
-import { Ionicons } from "@expo/vector-icons";
 import {
   FlashList,
   FlashListProps,
   FlashListRef,
   ViewToken,
 } from "@shopify/flash-list";
+import React, { useEffect, useMemo, useRef } from "react";
 
-import React, { useEffect, useRef } from "react";
 import {
   Platform,
+  Pressable,
   RefreshControl,
   StyleSheet,
   Text,
   ToastAndroid,
-  TouchableOpacity,
   View,
 } from "react-native";
+
+import { useScrollHeader } from "@/hooks/useScrollHeader";
+import { appTheme } from "@/utils/appTheme";
+import { Ionicons } from "@expo/vector-icons";
 import TitleText from "./TitleText";
+
 type Props<T> = {
   data: T[];
   renderItem: FlashListProps<T>["renderItem"];
   keyExtractor: FlashListProps<T>["keyExtractor"];
+
   refreshing: boolean;
   canRefresh: boolean;
   handleRefresh: () => void;
+
   cooldown?: number;
-  ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
+  estimatedItemSize?: number;
+  drawDistance?: number;
+  ListEmptyComponent?: React.ReactElement | React.ComponentType<any>;
   onHeaderVisibleChange?: (visible: boolean) => void;
   showtitle?: boolean;
   title?: string;
   subtitle?: string;
+
   numColumns?: number;
+
   showScrollTopButton?: boolean;
-  pageSize?: number;
+
   onViewableItemsChanged?: (info: { viewableItems: ViewToken<T>[] }) => void;
+
+  contentContainerStyle?: any;
+
+  onEndReached?: () => void;
+  onEndReachedThreshold?: number;
+  removeClippedSubviews?: boolean;
 };
 
-function CustomFlatList<T>({
+function CustomFlashList<T>({
   data,
   renderItem,
   keyExtractor,
+
   refreshing,
   canRefresh,
   handleRefresh,
+
   cooldown,
+
+  estimatedItemSize = 250,
+  drawDistance = 250,
+
   ListEmptyComponent,
+
   onHeaderVisibleChange,
+
   showtitle = true,
   title,
   subtitle,
+
   numColumns = 1,
+
   showScrollTopButton = true,
-  pageSize = 20,
+
   onViewableItemsChanged,
+
+  contentContainerStyle,
+
+  onEndReached,
+  onEndReachedThreshold = 0.5,
+  removeClippedSubviews = true,
 }: Props<T>) {
-  const flashListRef = useRef<FlashListRef<T>>(null);
+  const listRef = useRef<FlashListRef<T>>(null);
+
   const { handleScroll, showScrollTop, headerVisible } = useScrollHeader();
 
-  //const [page, setPage] = useState(1);
-
-  // const paginatedData = useMemo(
-  //   () => data.slice(0, page * pageSize),
-  //   [data, page, pageSize],
-  // );
-
+  // header visibility sync
   useEffect(() => {
-    if (onHeaderVisibleChange) {
-      onHeaderVisibleChange(headerVisible);
-    }
-  }, [headerVisible]);
+    onHeaderVisibleChange?.(headerVisible);
+  }, [headerVisible, onHeaderVisibleChange]);
 
-  const onCooldownPress = () => {
-    const msg = `Espera ${cooldown} segundos antes de refrescar nuevamente`;
+  //  toast cooldown
+  const showToast = (msg: string) => {
     if (Platform.OS === "android") {
-      ToastAndroid.show(msg, ToastAndroid.SHORT);
+      ToastAndroid.showWithGravity(
+        msg,
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
     } else {
       alert(msg);
     }
   };
 
-  // const loadMore = useCallback(() => {
-  //   setPage((prev) => {
-  //     if (prev * pageSize < data.length) return prev + 1;
-  //     return prev;
-  //   });
-  // }, [data.length, pageSize]);
+  const onCooldownPress = () => {
+    if (cooldown) {
+      showToast(`Espera ${cooldown}s antes de refrescar`);
+    }
+  };
+
+  //  refresh control memoizado
+  const refreshControl = useMemo(
+    () => (
+      <RefreshControl
+        refreshing={canRefresh ? refreshing : false}
+        onRefresh={canRefresh ? handleRefresh : undefined}
+        enabled={canRefresh}
+        {...(Platform.OS === "android" && {
+          progressViewOffset: 100,
+          colors: [
+            appTheme.primary.DEFAULT,
+            appTheme.primary.light,
+            appTheme.secondary.DEFAULT,
+          ],
+        })}
+        tintColor={appTheme.primary.DEFAULT}
+      />
+    ),
+    [refreshing, canRefresh, handleRefresh],
+  );
+
+  // header memo
+  const ListHeader = useMemo(() => {
+    if (!showtitle) return null;
+
+    return (
+      <View style={{ paddingBottom: 6 }}>
+        <TitleText title={title} subtitle={subtitle} />
+      </View>
+    );
+  }, [showtitle, title, subtitle]);
+
+  // empty memo
+  const EmptyComponent = useMemo(() => {
+    if (ListEmptyComponent) return ListEmptyComponent;
+
+    return (
+      <View style={styles.empty}>
+        <Text style={styles.emptyText}>No se encontraron datos</Text>
+      </View>
+    );
+  }, [ListEmptyComponent]);
 
   return (
     <>
+      {/* cooldown badge */}
       {!canRefresh && cooldown ? (
-        <TouchableOpacity
-          onPress={onCooldownPress}
-          activeOpacity={0.8}
-          style={styles.cooldownBadge}
-        >
+        <Pressable onPress={onCooldownPress} style={styles.cooldown}>
           <Text style={styles.cooldownText}>
             Espera {cooldown}s para refrescar
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       ) : null}
 
-      {/*  scroll top */}
-      {showScrollTop && showScrollTopButton && (
-        <TouchableOpacity
+      {/*scroll top */}
+      {showScrollTopButton && showScrollTop && (
+        <Pressable
           onPress={() =>
-            flashListRef.current?.scrollToOffset({ offset: 0, animated: true })
+            listRef.current?.scrollToOffset({
+              offset: 0,
+              animated: true,
+            })
           }
-          style={styles.scrollTopButton}
+          style={styles.scrollTop}
           className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg"
-          accessibilityLabel="Subir al inicio"
-          accessibilityRole="button"
         >
-          <Ionicons name="arrow-up" size={24} color="white" />
-        </TouchableOpacity>
+          <Ionicons name="arrow-up" size={22} color="white" />
+        </Pressable>
       )}
 
-      {/* List */}
+      {/* LIST */}
       <FlashList
-        ref={flashListRef}
+        ref={listRef}
         data={data}
-        keyExtractor={keyExtractor}
-        //masonry
-        removeClippedSubviews={true}
         renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
+        keyExtractor={keyExtractor}
+        drawDistance={drawDistance}
+        numColumns={numColumns}
+        removeClippedSubviews={removeClippedSubviews}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        drawDistance={100}
-        numColumns={numColumns}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 20 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={canRefresh ? refreshing : false}
-            onRefresh={canRefresh ? handleRefresh : undefined}
-            enabled={canRefresh}
-            {...(Platform.OS === "android" && {
-              enabled: canRefresh,
-              progressViewOffset: 100,
-              colors: [
-                appTheme.primary.DEFAULT,
-                appTheme.primary.light,
-                appTheme.secondary.DEFAULT,
-              ],
-            })}
-            tintColor={appTheme.primary.DEFAULT}
-            title="Recargando..."
-            titleColor={appTheme.primary.DEFAULT}
-          />
-        }
-        ListHeaderComponent={
-          showtitle ? (
-            <View className="pb-1">
-              <TitleText title={title} subtitle={subtitle} />
-            </View>
-          ) : undefined
-        }
-        ListEmptyComponent={
-          ListEmptyComponent ?? (
-            <View style={styles.emptyWrapper}>
-              <Text style={styles.emptyText}>No se encontraron datos...</Text>
-            </View>
-          )
-        }
-        // ListFooterComponent={
-        //   paginatedData.length < data.length ? (
-        //     <View style={{ paddingVertical: 20 }}>
-        //       <ActivityIndicator
-        //         size="small"
-        //         color={appTheme.primary.DEFAULT}
-        //       />
-        //     </View>
-        //   ) : null
-        // }
-        //onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={onEndReachedThreshold}
+        onViewableItemsChanged={onViewableItemsChanged}
+        refreshControl={refreshControl}
+        ListHeaderComponent={ListHeader}
+        ListEmptyComponent={EmptyComponent}
+        contentContainerStyle={[
+          { paddingHorizontal: 12, paddingBottom: 200 },
+          contentContainerStyle,
+        ]}
       />
     </>
   );
 }
-
-export default React.memo(CustomFlatList) as typeof CustomFlatList;
-
 const styles = StyleSheet.create({
-  cooldownBadge: {
+  cooldown: {
     position: "absolute",
     top: 0,
     right: 16,
@@ -194,29 +220,28 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     zIndex: 10,
   },
+
   cooldownText: {
     color: "#fff",
     fontSize: 12,
   },
-  scrollTopButton: {
+
+  scrollTop: {
     position: "absolute",
-    bottom: 100,
+    bottom: 115,
     right: 20,
     zIndex: 50,
-    elevation: 10,
+    padding: 14,
+    borderRadius: 30,
   },
-  listContent: {
-    paddingBottom: 210,
-    paddingHorizontal: 16,
-  },
-  emptyWrapper: {
-    flex: 1,
+
+  empty: {
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 40,
+    padding: 40,
   },
+
   emptyText: {
-    textAlign: "center",
     color: "#888",
   },
 });
+export default React.memo(CustomFlashList) as typeof CustomFlashList;

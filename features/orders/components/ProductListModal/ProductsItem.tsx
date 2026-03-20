@@ -15,7 +15,6 @@ type Props = {
   onToggleExpand: () => void;
 };
 
-
 export default React.memo(function ProductListItem({
   item,
   index,
@@ -24,7 +23,7 @@ export default React.memo(function ProductListItem({
   onToggleExpand,
 }: Props) {
   const discount = item.porc_desc?.trim();
-  const img = `${imageURL}${item.co_art?.trim()}.jpg`;
+  const img = `${imageURL}${item.co_art?.trim()}.webp`;
   const hasDiscount = discount !== "0" && discount?.trim().length > 0;
 
   const handleLongPress = useCallback(() => {
