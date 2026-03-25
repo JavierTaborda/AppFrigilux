@@ -152,9 +152,9 @@ export default function CreateOrderScreen() {
         loading ? (
           <>
             <View className="flex-row gap-3 items-center w-full ">
-              <View className=" bg-componentbg dark:bg-dark-componentbg items-center px-14 py-5 rounded-full  animate-pulse "></View>
-              <View className=" bg-componentbg dark:bg-dark-componentbg items-center px-14 py-5 rounded-full  animate-pulse "></View>
-              <View className=" bg-componentbg dark:bg-dark-componentbg items-center px-14 py-5 rounded-full  animate-pulse "></View>
+              <View className=" bg-gray-300 dark:bg-gray-700  items-center px-14 py-5 rounded-full  animate-pulse "></View>
+              <View className=" bg-gray-300 dark:bg-gray-700  items-center px-14 py-5 rounded-full  animate-pulse "></View>
+              <View className=" bg-gray-300 dark:bg-gray-700  items-center px-14 py-5 rounded-full  animate-pulse "></View>
             </View>
           </>
         ) : (

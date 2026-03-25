@@ -73,7 +73,9 @@ export interface PedidoDTO {
     origen_d?: string;
     sta_prod?: string;
     telefono?: string;
-
+    condicion?:string;
+    email?:string;
+    update_email?:boolean;//in case to update mail
     // relaciones
     reng_ped: RenglonPedidoDTO[];
 }

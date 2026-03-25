@@ -229,6 +229,7 @@ export default function OrderSummaryScreen() {
         fact_num,
         reng_num: index + 1,
         co_art: item.codart,
+        des_art: item.artdes,
         total_art: item.quantity,
         pendiente: item.quantity,
         reng_neto: r.reng_neto,
@@ -248,7 +249,7 @@ export default function OrderSummaryScreen() {
       fact_num,
       contrib: true,
       comentario: comment,
-      nombre: "",
+      nombre: selectedClient?.cli_des,
       rif: selectedClient?.rif ?? "",
       dir_ent: direction,
       co_cli: selectedClient?.co_cli ?? "",
@@ -264,7 +265,10 @@ export default function OrderSummaryScreen() {
       tasa: exchangeRate?.tasa_v ?? 1,
       tasag: IVA * 100,
       telefono: selectedClient?.telefonos?.trim().slice(0, 11) ?? "",
+      condicion: condicion?.cond_des,
       reng_ped: renglonPedidos,
+      email: email,
+      update_email: email.trim() != selectedClient?.email.trim(),
     };
 
     return pedido;
