@@ -176,6 +176,14 @@ export default function OrderSummaryScreen() {
       return;
     }
 
+    if (email) {
+      const emailRegex = /^\S+@\S+\.\S+$/;
+      if (!emailRegex.test(email.trim())) {
+        Alert.alert("Error", "Por favor ingresa un correo electrónico válido.");
+        return;
+      }
+    }
+
     setLoadingOrder(true);
 
     try {
@@ -189,9 +197,9 @@ export default function OrderSummaryScreen() {
         });
         return;
       } else {
-        clearOrder();
-        resetForm();
-        router.push("/(main)/(tabs)/(createOrder)/create-order");
+        // clearOrder();
+        // resetForm();
+        // router.push("/(main)/(tabs)/(createOrder)/create-order");
         overlay.show("success", {
           title: `Pedido creado`,
           subtitle: `Se ha creado el pedido ${result.factNumber} exitosamente`,
@@ -205,7 +213,15 @@ export default function OrderSummaryScreen() {
     } finally {
       setLoadingOrder(false);
     }
-  }, [items, selectedClient, selected, comment, direction, exchangeRate]);
+  }, [
+    items,
+    selectedClient,
+    selected,
+    comment,
+    direction,
+    exchangeRate,
+    email,
+  ]);
 
   const buildPedido = useCallback((): PedidoDTO => {
     const fact_num = 0;
