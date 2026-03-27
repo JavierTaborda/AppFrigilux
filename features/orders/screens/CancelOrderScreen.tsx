@@ -9,16 +9,17 @@ import { useOrderApproval } from "@/features/orders/hooks/useOrdersApproval";
 import { cancelOrder } from "@/features/orders/services/OrderService";
 import { OrderApproval } from "@/features/orders/types/OrderApproval";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useOverlayStore } from "@/stores/useSuccessOverlayStore";
 import { totalVenezuela } from "@/utils/moneyFormat";
 import { useCallback, useState } from "react";
-import { Alert, Platform, Text, ToastAndroid, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
 export default function CancelOrderScreen() {
   const { role } = useAuthStore();
   const [searchText, setSearchText] = useState("");
   const [filterVisible, setFilterVisible] = useState(false);
   const [saving, setSaving] = useState(false);
-
+  const overlay = useOverlayStore();
   const hasPermission = role === "1" || role === "2";
 
   const {
@@ -42,7 +43,7 @@ export default function CancelOrderScreen() {
     activeFiltersCount,
     error,
     fetchOrders,
-  } = useOrderApproval(searchText);
+  } = useOrderApproval(searchText, "0");
 
   const handleCancel = async (order: OrderApproval) => {
     if (!hasPermission) return;
@@ -59,15 +60,19 @@ export default function CancelOrderScreen() {
             try {
               const result = await cancelOrder(order.fact_num);
               if (result.success) {
-                Platform.OS === "android"
-                  ? ToastAndroid.show(
-                      `Pedido ${order.fact_num} anulado`,
-                      ToastAndroid.SHORT,
-                    )
-                  : Alert.alert(
-                      "Pedido anulado",
-                      `Pedido ${order.fact_num} anulado con éxito`,
-                    );
+                // Platform.OS === "android"
+                //   ? ToastAndroid.show(
+                //       `Pedido ${order.fact_num} anulado`,
+                //       ToastAndroid.SHORT,
+                //     )
+                //   : Alert.alert(
+                //       "Pedido anulado",
+                //       `Pedido ${order.fact_num} anulado con éxito`,
+                //     );
+                overlay.show("success", {
+                  title: `Pedido anulado`,
+                  subtitle: `Pedido ${order.fact_num} anulado con éxito`,
+                });
 
                 await handleRefresh();
               } else {

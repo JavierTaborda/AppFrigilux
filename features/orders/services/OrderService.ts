@@ -66,9 +66,7 @@ export const changeRevisado = async (fact_num: number, status: string) => {
 
 export const cancelOrder = async (fact_num: number) => {
   try {
-    const response = await api.patch(`/orders/${fact_num}`, {
-      anulada: true,
-    });
+    const response = await api.patch(`/orders/cancel/${fact_num}`);
     return {
       success: true,
       data: response.data,

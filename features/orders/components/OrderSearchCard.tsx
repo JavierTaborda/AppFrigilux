@@ -10,12 +10,10 @@ import {
   Pressable,
   Switch,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 
 import { useThemeStore } from "@/stores/useThemeStore";
-
 import { safeHaptic } from "@/utils/safeHaptics";
 import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
 import { OrderApproval } from "../types/OrderApproval";
@@ -41,29 +39,31 @@ function OrderSearchCard({
   hasPermission,
   markComment,
 }: Props) {
+  const { isDark } = useThemeStore();
+
   const isAnulada = item.anulada === true;
-  const isSwitchable = item.estatus !== "2";
+  const isCancelMode = !!onCancel;
+
+  const showSwitch = !isCancelMode && !isAnulada;
+
   const formattedDate = useMemo(
     () => formatDatedd_dot_MMM_yyyy(item.fec_emis),
     [item.fec_emis],
   );
 
-  const handlePressInfoModal = () => {
-    onPress?.();
-  };
-
-  const handlePressDetailsModal = () => {
-    detailModal?.();
-  };
   const [isFacturable, setIsFacturable] = useState(
-    item.comentario.startsWith("**") === true,
+    item.comentario.startsWith("**"),
   );
-  const [switchLoad, setSwitchLoad] = useState<boolean>(false);
-  const { isDark } = useThemeStore();
+
+  const [switchLoad, setSwitchLoad] = useState(false);
+
+  const handlePressInfoModal = () => onPress?.();
+  const handlePressDetailsModal = () => detailModal?.();
 
   const handleswitch = async (value: boolean) => {
     try {
       setSwitchLoad(true);
+
       let newComment = item.comentario;
 
       if (value && !item.comentario.startsWith("**")) {
@@ -75,14 +75,9 @@ function OrderSearchCard({
         return;
       }
 
-      const result = await markComment(
-        item.fact_num,
-        newComment,
-        item?.ven_des,
-      );
+      const result = await markComment(item.fact_num, newComment, item.ven_des);
 
       if (result) {
-        item.comentario = newComment;
         setIsFacturable(value);
       }
     } catch (error) {
@@ -98,16 +93,15 @@ function OrderSearchCard({
       exiting={FadeOut.duration(100)}
       className={`rounded-xl py-2 px-3 mb-2 border shadow-sm shadow-black/10 ${
         isAnulada
-          ? "bg-red-50 dark:bg-dark-error/20 border-red-300 dark:border-red-300"
+          ? "bg-red-50 dark:bg-dark-error/20 border-red-300"
           : "bg-componentbg dark:bg-dark-componentbg border-gray-200 dark:border-gray-700"
       }`}
     >
       <Pressable className="flex-row gap-2" style={{ minHeight: 110 }}>
-        {/* Band Anulado */}
         {isAnulada && (
           <Animated.View
             entering={FadeIn.duration(300)}
-            className="absolute top-1 right-2 bg-red-500/80 dark:bg-red-600/50 rounded-full px-2 z-10"
+            className="absolute top-1 right-2 bg-red-500/80 rounded-full px-2 z-10"
           >
             <Text className="text-xs text-white font-bold">Anulado</Text>
           </Animated.View>
@@ -117,37 +111,32 @@ function OrderSearchCard({
           className="flex-1 gap-1 w-4/6"
           onPress={handlePressInfoModal}
         >
-          <View className="flex-row items-center gap-2">
-            <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
-              Pedido #{item.fact_num}
-            </Text>
-          </View>
+          <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+            Pedido #{item.fact_num}
+          </Text>
 
-          <View className="flex-row items-center gap-2">
-            <Text className="text-sm text-gray-500 dark:text-gray-400">
-              {formattedDate}
-            </Text>
-          </View>
+          <Text className="text-sm text-gray-500 dark:text-gray-400">
+            {formattedDate}
+          </Text>
 
           <View className="flex-row items-center gap-2">
             <Ionicons name="person-outline" size={14} color="gray" />
             <Text
               className="text-base text-foreground dark:text-dark-foreground flex-shrink"
               numberOfLines={2}
-              ellipsizeMode="tail"
             >
               {item.co_cli.trim()} - {item.cli_des}
             </Text>
           </View>
 
-          <View className="flex-row items-center justify-normal gap-2">
+          <View className="flex-row items-center gap-2">
             <Text className="text-sm pt-1 text-gray-500 dark:text-gray-400">
               Total
             </Text>
             <Text
               className={`text-xl font-bold ${
                 isAnulada
-                  ? "line-through text-error dark:text-dark-error"
+                  ? "line-through text-error"
                   : "text-primary dark:text-dark-primary"
               }`}
             >
@@ -155,43 +144,37 @@ function OrderSearchCard({
             </Text>
           </View>
 
-          {hasPermission ? (
-            <View className="flex-row items-center gap-2">
-              <Text className="text-xs font-normal text-gray-500 dark:text-gray-400">
-                {item.zon_des.trim()} - {item.ven_des.trim()}
-              </Text>
-            </View>
-          ) : null}
+          {hasPermission && (
+            <Text className="text-xs text-gray-500 dark:text-gray-400">
+              {item.zon_des.trim()} - {item.ven_des.trim()}
+            </Text>
+          )}
         </Pressable>
 
-        {/* Botón Ver Detalles */}
-        <View className="flex-col  justify-center w-2/6">
-          {/* Botón de detalles */}
-          <TouchableOpacity
+        {/* 🔹 Acciones */}
+        <View className="flex-col justify-center w-2/6">
+          {/* Ver detalles */}
+          <Pressable
             onPress={handlePressDetailsModal}
-            className="flex-row items-center justify-center px-4 py-2 rounded-full bg-primary dark:bg-dark-primary active:scale-95"
-            style={{ minWidth: 100 }}
+            className="flex-row items-center justify-center px-4 py-2 rounded-full bg-primary active:scale-95"
           >
             <Text className="text-sm font-semibold text-white">
               Ver detalles
             </Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          {/* Botón de anular (solo si onCancel está definido) */}
           {onCancel && !isAnulada && (
             <Pressable
               onPress={onCancel}
-              className="flex-row items-center justify-center px-4 py-2 rounded-full bg-error dark:bg-dark-error mt-2 active:scale-95"
-              style={{ minWidth: 100 }}
+              className="flex-row items-center justify-center px-4 py-2 rounded-full bg-error mt-2 active:scale-95"
             >
               <Text className="text-sm font-semibold text-white">Anular</Text>
             </Pressable>
           )}
 
-          {/* Switch */}
-          {isSwitchable && (
-            <View className="items-center  mt-5 gap-0">
-              <View className="w-[50] h-[35]  justify-center">
+          {showSwitch && (
+            <View className="items-center mt-5">
+              <View className="w-[50] h-[35] justify-center">
                 {switchLoad ? (
                   <ActivityIndicator
                     size="small"
@@ -206,7 +189,7 @@ function OrderSearchCard({
                     value={isFacturable}
                     onValueChange={(val) => {
                       handleswitch(val);
-                      Platform.OS === "android" ? safeHaptic("soft") : null;
+                      Platform.OS === "android" && safeHaptic("soft");
                     }}
                     {...(Platform.OS === "android"
                       ? {
@@ -238,13 +221,13 @@ function OrderSearchCard({
               </View>
 
               <Text
-                className={`text-sm mt-0 ${
+                className={`text-sm ${
                   isFacturable
                     ? "font-semibold text-tertiary dark:text-dark-tertiary"
-                    : "font-normal text-gray-400   dark:text-gray-500"
+                    : "text-gray-400 dark:text-gray-500"
                 }`}
               >
-                {isFacturable ? "Facturar" : "Facturar"}
+                {isFacturable ? "Facturable" : "No facturable"}
               </Text>
             </View>
           )}
