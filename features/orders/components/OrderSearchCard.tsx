@@ -4,14 +4,14 @@ import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Platform,
-    Pressable,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Pressable,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import { useThemeStore } from "@/stores/useThemeStore";
@@ -24,6 +24,7 @@ interface Props {
   item: OrderApproval;
   onPress?: () => void;
   detailModal?: () => void;
+  onCancel?: () => void;
   hasPermission: boolean;
   markComment: (
     fact_num: number,
@@ -36,6 +37,7 @@ function OrderSearchCard({
   item,
   onPress,
   detailModal,
+  onCancel,
   hasPermission,
   markComment,
 }: Props) {
@@ -174,6 +176,17 @@ function OrderSearchCard({
               Ver detalles
             </Text>
           </TouchableOpacity>
+
+          {/* Botón de anular (solo si onCancel está definido) */}
+          {onCancel && !isAnulada && (
+            <Pressable
+              onPress={onCancel}
+              className="flex-row items-center justify-center px-4 py-2 rounded-full bg-error dark:bg-dark-error mt-2 active:scale-95"
+              style={{ minWidth: 100 }}
+            >
+              <Text className="text-sm font-semibold text-white">Anular</Text>
+            </Pressable>
+          )}
 
           {/* Switch */}
           {isSwitchable && (

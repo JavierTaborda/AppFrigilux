@@ -64,6 +64,20 @@ export const changeRevisado = async (fact_num: number, status: string) => {
   }
 };
 
+export const cancelOrder = async (fact_num: number) => {
+  try {
+    const response = await api.patch(`/orders/${fact_num}`, {
+      anulada: true,
+    });
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
 export const UpdateComment = async (fact_num: number, newcomment: string) => {
   try {
     

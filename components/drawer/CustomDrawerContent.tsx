@@ -68,6 +68,11 @@ export default function CustomDrawerContent(props: any) {
           href="/(main)/(tabs)/(createOrder)/create-order"
           currentPath={currentPath}
         />
+        <DrawerItem
+          label="Anular Pedidos"
+          href="/(main)/(tabs)/(createOrder)/order-cancel"
+          currentPath={currentPath}
+        />
         {/* 
         {role === "1" && (
         <DrawerItem

@@ -175,6 +175,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="(createOrder)/order-cancel"
+        options={{
+          href: null,
+          headerShown: true,
+          title: "Anular Pedidos",
+        }}
+      />
+      <Tabs.Screen
         name="(createOrder)/order-summary"
         options={{
           href: null,
