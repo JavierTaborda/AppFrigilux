@@ -3,16 +3,18 @@ import CustomFlatList from "@/components/ui/CustomFlatList";
 import ErrorView from "@/components/ui/ErrorView";
 import Loader from "@/components/ui/Loader";
 import OrderApprovalInfoModal from "@/features/orders/components/OrderAprovalInfoModal";
+import OrderFilterModal from "@/features/orders/components/OrderFilterModal";
 import OrderSearchCard from "@/features/orders/components/OrderSearchCard";
 import ProductListModal from "@/features/orders/components/ProductListModal/ProductListModal";
-import { useOrderApproval } from "@/features/orders/hooks/useOrdersApproval";
 import { cancelOrder } from "@/features/orders/services/OrderService";
 import { OrderApproval } from "@/features/orders/types/OrderApproval";
+import { OrderFilters } from "@/features/orders/types/OrderFilters";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useOverlayStore } from "@/stores/useSuccessOverlayStore";
 import { totalVenezuela } from "@/utils/moneyFormat";
 import { useCallback, useState } from "react";
 import { Alert, Text, View } from "react-native";
+import { useOrderSearch } from "../hooks/useOrdersSearch";
 
 export default function CancelOrderScreen() {
   const { role } = useAuthStore();
@@ -23,7 +25,7 @@ export default function CancelOrderScreen() {
   const hasPermission = role === "1" || role === "2";
 
   const {
-    filteredOrders,
+    orders,
     loading,
     refreshing,
     totalOrders,
@@ -31,6 +33,12 @@ export default function CancelOrderScreen() {
     handleRefresh,
     canRefresh,
     cooldown,
+    filters,
+    setFilters,
+    sellers,
+    zones,
+    statusList,
+    procesadoslist,
     handleOpenInfoModal,
     handleOpenProductsModal,
     setModalInfoVisible,
@@ -43,7 +51,7 @@ export default function CancelOrderScreen() {
     activeFiltersCount,
     error,
     fetchOrders,
-  } = useOrderApproval(searchText, "0");
+  } = useOrderSearch(searchText, "0");
 
   const handleCancel = async (order: OrderApproval) => {
     if (!hasPermission) return;
@@ -60,29 +68,20 @@ export default function CancelOrderScreen() {
             try {
               const result = await cancelOrder(order.fact_num);
               if (result.success) {
-                // Platform.OS === "android"
-                //   ? ToastAndroid.show(
-                //       `Pedido ${order.fact_num} anulado`,
-                //       ToastAndroid.SHORT,
-                //     )
-                //   : Alert.alert(
-                //       "Pedido anulado",
-                //       `Pedido ${order.fact_num} anulado con éxito`,
-                //     );
                 overlay.show("success", {
                   title: `Pedido anulado`,
                   subtitle: `Pedido ${order.fact_num} anulado con éxito`,
                 });
 
-                await handleRefresh();
+                await handleRefresh;
               } else {
                 throw result.error;
               }
             } catch (err) {
-              Alert.alert(
-                "Error",
-                "No se pudo anular el pedido. Intenta de nuevo.",
-              );
+              overlay.show("error", {
+                title: `Error al anular pedido`,
+                subtitle: `No se pudo anular el pedido ${order.fact_num}, itente nuvamente.`,
+              });
             } finally {
               setSaving(false);
             }
@@ -91,6 +90,11 @@ export default function CancelOrderScreen() {
       ],
       { cancelable: true },
     );
+  };
+
+  const handleApplyFilters = (newFilters: OrderFilters) => {
+    setFilters(newFilters);
+    setFilterVisible(false);
   };
 
   const renderOrderItem = useCallback(
@@ -125,12 +129,12 @@ export default function CancelOrderScreen() {
         headerVisible={false}
       >
         <CustomFlatList
-          data={filteredOrders}
+          data={orders}
           renderItem={renderOrderItem}
           keyExtractor={(item, index) => `${item.fact_num}-${index}`}
           refreshing={refreshing}
           canRefresh={canRefresh}
-          handleRefresh={handleRefresh}
+          handleRefresh={() => handleRefresh(filters)}
           cooldown={cooldown}
           showtitle={true}
           title={`${totalOrders} ${totalOrders > 1 ? "pedidos" : "pedido"}`}
@@ -160,6 +164,23 @@ export default function CancelOrderScreen() {
           products={selectedProducts}
           loading={loadingProducts}
           total={selectedOrder && parseFloat(selectedOrder?.tot_neto)}
+        />
+      )}
+
+      {filterVisible && (
+        <OrderFilterModal
+          visible={filterVisible}
+          onClose={() => setFilterVisible(false)}
+          filters={filters}
+          dataFilters={{
+            zones,
+            sellers,
+            statusList,
+            procesadoslist,
+          }}
+          onApply={handleApplyFilters}
+          hasPermission={hasPermission}
+          isCancelScreen={true}
         />
       )}
     </>

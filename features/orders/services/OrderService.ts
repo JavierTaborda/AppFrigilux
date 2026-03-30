@@ -43,6 +43,35 @@ export const getPedidosFiltrados = async (filters: OrderFilters) => {
     throw error;
   }
 };
+export const getPedidosFiltradotoCancel = async (filters: OrderFilters) => {
+
+  try {
+    const adaptedFilters = {
+      dateIni: filters.startDate
+        ? filters.startDate.toISOString().split("T")[0]
+        : undefined,
+      dateEnd: filters.endDate
+        ? filters.endDate.toISOString().split("T")[0]
+        : undefined,
+      revisado: filters.status,
+      procesado: filters.procesado,
+      vendor: filters.seller,
+      cancelled: filters.cancelled, 
+      zone:filters.zone
+    };
+
+
+    const response = await api.get("orders/filters/cancel", {
+      params: adaptedFilters, 
+    });
+
+    return response.data;
+  
+  } catch (error) {
+    console.error("Error obteniendo pedidos filtrados:", error);
+    throw error;
+  }
+};
 
 export const getOrderProducts = async (fact_num: number) => {
   const response = await api.get(`/orders/rengpedidos/${fact_num}`);

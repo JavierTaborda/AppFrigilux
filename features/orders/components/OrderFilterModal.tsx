@@ -4,20 +4,20 @@ import ScrollSelect from "@/components/ui/ScrollSelect";
 import { appTheme } from "@/utils/appTheme";
 import React, { useState } from "react";
 import {
-    Platform,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { Switch } from "react-native-gesture-handler";
 import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
 import {
-    OrderFilters,
-    OrderProcesado,
-    OrderStatus,
-    procesadosOptions,
-    statusOptions,
+  OrderFilters,
+  OrderProcesado,
+  OrderStatus,
+  procesadosOptions,
+  statusOptions,
 } from "../types/OrderFilters";
 
 interface OrderFilterModalProps {
@@ -32,6 +32,7 @@ interface OrderFilterModalProps {
   filters: OrderFilters;
   onApply: (newFilters: OrderFilters) => void;
   hasPermission: boolean;
+  isCancelScreen?: boolean;
 }
 
 export default function OrderFilterModal({
@@ -41,6 +42,7 @@ export default function OrderFilterModal({
   filters,
   dataFilters,
   hasPermission,
+  isCancelScreen,
 }: OrderFilterModalProps) {
   const [startDate, setStartDate] = useState<Date | undefined>(
     filters.startDate,
@@ -165,51 +167,56 @@ export default function OrderFilterModal({
             ))}
           </View>
 
-          <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
-            Procesado
-          </Text>
-          {/* TODO: make a component*/}
-          <View className="flex-row flex-wrap gap-2 mb-3">
-            {dataFilters.procesadoslist.map((opt) => (
-              <TouchableOpacity
-                key={opt.value}
-                className={`px-4 py-2 rounded-full border ${
-                  procesado === opt.value
-                    ? "bg-primary border-primary"
-                    : "bg-transparent border-muted"
-                }`}
-                onPress={() => setProcesado(opt.value)}
-              >
-                <Text
-                  className={`text-sm ${
-                    procesado === opt.value
-                      ? "text-white"
-                      : "text-foreground dark:text-dark-foreground"
-                  }`}
-                >
-                  {opt.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          {!isCancelScreen && (
+            <>
+              <View className="h-[1px] bg-muted dark:bg-dark-muted mb-3" />
+              <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
+                Procesado
+              </Text>
+              {/* TODO: make a component*/}
+              <View className="flex-row flex-wrap gap-2 mb-3">
+                {dataFilters.procesadoslist.map((opt) => (
+                  <TouchableOpacity
+                    key={opt.value}
+                    className={`px-4 py-2 rounded-full border ${
+                      procesado === opt.value
+                        ? "bg-primary border-primary"
+                        : "bg-transparent border-muted"
+                    }`}
+                    onPress={() => setProcesado(opt.value)}
+                  >
+                    <Text
+                      className={`text-sm ${
+                        procesado === opt.value
+                          ? "text-white"
+                          : "text-foreground dark:text-dark-foreground"
+                      }`}
+                    >
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
-          <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
-            Anulado
-          </Text>
-          <View className="flex-row flex-wrap gap-2 mb-2">
-            <Switch
-              value={anulado === true}
-              onValueChange={() => setAnulado(anulado ? undefined : true)}
-              thumbColor={
-                anulado
-                  ? Platform.select({ android: appTheme.error })
-                  : Platform.select({ android: appTheme.muted })
-              }
-              trackColor={{
-                true: appTheme.error,
-              }}
-            />
-          </View>
+              <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
+                Anulado
+              </Text>
+              <View className="flex-row flex-wrap gap-2 mb-2">
+                <Switch
+                  value={anulado === true}
+                  onValueChange={() => setAnulado(anulado ? undefined : true)}
+                  thumbColor={
+                    anulado
+                      ? Platform.select({ android: appTheme.error })
+                      : Platform.select({ android: appTheme.muted })
+                  }
+                  trackColor={{
+                    true: appTheme.error,
+                  }}
+                />
+              </View>
+            </>
+          )}
 
           {hasPermission && (
             <>

@@ -13,7 +13,7 @@ import { applyOrderFilters } from "../utils/applyOrderFilters";
 import { useOrderFilters } from "./useOrderFilters";
 import { useOrderModals } from "./useOrderModals";
 
-export function useOrderApproval(searchText: string, statusFilter?: string) {
+export function useOrderApproval(searchText: string) {
   /* -------------------------------------------------------------------------- */
   /*                                  ESTADOS                                  */
   /* -------------------------------------------------------------------------- */
@@ -191,9 +191,6 @@ export function useOrderApproval(searchText: string, statusFilter?: string) {
   const { filteredOrders, totalOrders, totalUSD } = useMemo(() => {
     let filtered = applyOrderFilters(ordersAproval, filters, searchText);
 
-    if (statusFilter) {
-      filtered = filtered.filter((o) => o.estatus === statusFilter);
-    }
 
     if (showStatus) {
       filtered = filtered.filter((order) => order.revisado === " ");
@@ -225,7 +222,7 @@ export function useOrderApproval(searchText: string, statusFilter?: string) {
       .reduce((acc, order) => acc + (parseFloat(order.tot_neto as string) || 0), 0);
 
     return { filteredOrders: filtered, totalOrders: filtered.length, totalUSD };
-  }, [ordersAproval, searchText, filters, sortDate, sortMount, showStatus, mountRange, statusFilter]);
+  }, [ordersAproval, searchText, filters, sortDate, sortMount, showStatus, mountRange,]);
 
   const activeFiltersCount =
     Object.values(filters).filter((value) => value !== undefined && value !== "").length ?? 0;

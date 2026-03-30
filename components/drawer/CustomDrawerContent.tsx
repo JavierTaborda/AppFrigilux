@@ -46,26 +46,8 @@ export default function CustomDrawerContent(props: any) {
           currentPath={currentPath}
         />
         <DrawerItem
-          //emoji={emojis.list}
-          //emoji={emojis.approved}
-          // icon="bag-check"
           label="Consultar Pedidos"
           href="/(main)/(tabs)/(orders)/orderSearch"
-          currentPath={currentPath}
-        />
-        <DrawerItem
-          //emoji={emojis.list}
-          //emoji={emojis.approved}
-          // icon="bag-check"
-          label="Resumen Metas Ventas"
-          href="/(main)/(tabs)/(goals)/goalsResumen"
-          currentPath={currentPath}
-        />
-        <DrawerItem
-          // emoji={emojis.bags}
-          //emoji={emojis.approved}
-          label="Registrar Pedido"
-          href="/(main)/(tabs)/(createOrder)/create-order"
           currentPath={currentPath}
         />
         <DrawerItem
@@ -73,6 +55,17 @@ export default function CustomDrawerContent(props: any) {
           href="/(main)/(tabs)/(createOrder)/order-cancel"
           currentPath={currentPath}
         />
+        <DrawerItem
+          label="Resumen Metas Ventas"
+          href="/(main)/(tabs)/(goals)/goalsResumen"
+          currentPath={currentPath}
+        />
+        <DrawerItem
+          label="Registrar Pedido"
+          href="/(main)/(tabs)/(createOrder)/create-order"
+          currentPath={currentPath}
+        />
+
         {/* 
         {role === "1" && (
         <DrawerItem

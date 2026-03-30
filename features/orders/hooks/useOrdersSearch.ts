@@ -3,14 +3,14 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import {
-    getPedidosFiltrados, UpdateComment
+    getPedidosFiltrados, getPedidosFiltradotoCancel, UpdateComment
 } from "../services/OrderService";
 import { OrderApproval } from "../types/OrderApproval";
 import { OrderFilters } from "../types/OrderFilters";
 import { useOrderFilters } from "./useOrderFilters";
 import { useOrderModals } from "./useOrderModals";
 
-export function useOrderSearch(searchText: string) {
+export function useOrderSearch(searchText: string, statusFilter?: string) {
     /* -------------------------------------------------------------------------- */
     /*                                  STATES                                  */
     /* -------------------------------------------------------------------------- */
@@ -35,7 +35,7 @@ export function useOrderSearch(searchText: string) {
     useEffect(() => cleanup, []);//destroy second plane of the cooldown
     const modalsData = useOrderModals();
 
-   
+
 
     /* -------------------------------------------------------------------------- */
     /*                            DATA FETCHING FUNCTIONS                         */
@@ -44,17 +44,32 @@ export function useOrderSearch(searchText: string) {
     const fetchOrders = useCallback(() => {
         setLoading(true);
         setError(null);
-        getPedidosFiltrados(filters)
-            .then((data) => {
-                setOrders(data);
-                loadFilters();
-            })
-            .catch(() =>
-                setError(
-                    "No logramos acceder a los pedidos... Intenta de nuevo en un momento"
+        if (statusFilter !== undefined) {
+            getPedidosFiltradotoCancel(filters)
+                .then((data) => {
+                    setOrders(data);
+                    loadFilters();
+                })
+                .catch(() =>
+                    setError(
+                        "No logramos acceder a los pedidos... Intenta de nuevo en un momento"
+                    )
                 )
-            )
-            .finally(() => setLoading(false));
+                .finally(() => setLoading(false));
+        }
+        else {
+            getPedidosFiltrados(filters)
+                .then((data) => {
+                    setOrders(data);
+                    loadFilters();
+                })
+                .catch(() =>
+                    setError(
+                        "No logramos acceder a los pedidos... Intenta de nuevo en un momento"
+                    )
+                )
+                .finally(() => setLoading(false));
+        }
     }, [filters, loadFilters]);
 
     /* -------------------------------------------------------------------------- */
@@ -106,10 +121,15 @@ export function useOrderSearch(searchText: string) {
     /*                                   MEMOS                                    */
     /* -------------------------------------------------------------------------- */
     const filteredOrders = useMemo(() => {
+        let filtered = orders;
 
-        if (!searchText || searchText.length < 4) return orders;
+        // if (statusFilter) {
+        //     filtered = filtered.filter((order: OrderApproval) => order.estatus === statusFilter);
+        // }
 
-        return orders.filter((order) => {
+        if (!searchText || searchText.length < 4) return filtered;
+
+        return filtered.filter((order) => {
             const cliente = order.co_cli?.toLowerCase() || "";
             const nombre = order.cli_des?.toLowerCase() || "";
             const numero = order.fact_num?.toString().toLowerCase() || "";
@@ -120,8 +140,7 @@ export function useOrderSearch(searchText: string) {
                 numero.includes(searchText.toLowerCase())
             );
         });
-        
-    }, [orders, searchText]);
+    }, [orders, searchText, statusFilter]);
 
     const { totalOrders, totalUSD } = useMemo(() => {
         const totalUSD = filteredOrders
@@ -143,17 +162,17 @@ export function useOrderSearch(searchText: string) {
     /*                                  RETURN                                    */
     /* -------------------------------------------------------------------------- */
     return {
-        orders: filteredOrders, 
+        orders: filteredOrders,
         totalOrders,
         totalUSD,
         loading,
- 
+
         error,
         markComment,
 
         // refresh
-        handleRefresh,     
-          refreshing,
+        handleRefresh,
+        refreshing,
         canRefresh,
         cooldown,
         fetchOrders,
