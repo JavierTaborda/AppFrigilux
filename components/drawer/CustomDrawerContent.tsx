@@ -66,17 +66,16 @@ export default function CustomDrawerContent(props: any) {
           currentPath={currentPath}
         />
 
-        {/* 
         {role === "1" && (
-        <DrawerItem
-          //emoji={emojis.list}
-          //emoji={emojis.approved}
-          // icon="bag-check"
-          label="Reportar Devolución"
-          href="/(main)/(tabs)/(returnReport)"
-          currentPath={currentPath}
-        />  
-        )} */}
+          <DrawerItem
+            //emoji={emojis.list}
+            //emoji={emojis.approved}
+            // icon="bag-check"
+            label="Reportar Devolución"
+            href="/(main)/(tabs)/(returnReport)"
+            currentPath={currentPath}
+          />
+        )}
       </View>
     </DrawerContentScrollView>
   );

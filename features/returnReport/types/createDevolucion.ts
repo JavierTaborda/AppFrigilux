@@ -1,19 +1,24 @@
+import { dtdevolucion } from "./dtdevolucion";
+
 export interface CreateDevolucion {
-    fecemis: string;             // Emission date (ISO: YYYY-MM-DDTHH:mm:ss)
-    estatus: string;             // Status  (1 )
-    anulada: string;             // Canceled flag (0)
-    cerrada: string;             // Closed flag (0)
-    codcli: string;              // Customer code
-    clides: string;              // Customer description/name
-    codven: string;              // Salesperson code
-    vendes: string;              // Salesperson description/name
-    codart: string;              // Product code
-    codbarra: string;           // Barcode 
-    artdes: string;              // Product description
-    serial1: string;             // Product serial number
-    motivo: string;             // Return reason 
-    obsvendedor?: string;        // Seller comment 
-    registradopor: string;       // Registered by (user identifier)
-    fecharegistro: string;       // Registration date (ISO)
-    imgart?: string;             // Product image URL or path (optional)
+
+    motivo: string;              
+    estatus: string;            
+    anulada: string;             
+    cerrada: string;             
+    codcli: string;              
+    clides: string;              
+    codart: string;              
+    artdes: string;              
+    codbarra?: string;           
+    serial1: string;             
+    registradopor: string;       
+    fecharegistro: string;       
+    obsregistro?: string;        
+    factnum: number;             // Default 0  DB
+    owneruser: number;           // Default 1  DB
+    linkproforma?: string;      // VarChar(60)
+
+    dtdevolucion: dtdevolucion; 
+
 }

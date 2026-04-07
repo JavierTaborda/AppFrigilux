@@ -13,7 +13,6 @@ import {
   Pressable,
   ScrollView,
   Text,
-  TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -58,7 +57,7 @@ export default function ProductDefectScreen() {
     setReason,
     comment,
     setComment,
-    image,
+    images,
     showScanner,
     setShowScanner,
     clients,
@@ -87,6 +86,7 @@ export default function ProductDefectScreen() {
     showArtModal,
     setShowArtModal,
     motives,
+    setImages,
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
@@ -150,7 +150,7 @@ export default function ProductDefectScreen() {
 
   // Image animation
   useEffect(() => {
-    if (image) {
+    if (images) {
       imageOpacity.value = withTiming(1, { duration: 350 });
       imageScale.value = withTiming(1, {
         duration: 350,
@@ -160,7 +160,7 @@ export default function ProductDefectScreen() {
       imageOpacity.value = withTiming(0, { duration: 200 });
       imageScale.value = withTiming(0.9, { duration: 200 });
     }
-  }, [image]);
+  }, [images]);
 
   // Animated styles
   const animatedStyle = useAnimatedStyle(() => ({
@@ -461,47 +461,117 @@ export default function ProductDefectScreen() {
       </View>
     </Animated.View>
   );
-
   const renderImageSection = () => (
-    <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
-      <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-        Cargar imagen
-      </Text>
-      <View className="flex-row gap-3 mb-3">
-        <TouchableOpacity
-          onPress={pickImage}
-          className="flex-1 border border-primary dark:border-dark-primary py-3 rounded-xl"
-        >
-          <View className="flex-row items-center justify-center">
-            <Ionicons name="images-outline" size={22} color={isDarkPrimary} />
-            <Text className="text-secondary dark:text-dark-secondary font-bold ml-2">
-              Galería
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handlePickFromCamera}
-          className="flex-1 border border-secondary dark:border-dark-secondary py-3 rounded-xl"
-        >
-          <View className="flex-row items-center justify-center">
-            <Ionicons name="camera" size={22} color={isDarkPrimary} />
-            <Text className="text-secondary dark:text-dark-secondary font-bold ml-2">
-              Cámara
-            </Text>
-          </View>
-        </TouchableOpacity>
+    <View className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+      <View className="flex-row items-center justify-between mb-1">
+        <Text className="text-lg font-semibold text-foreground dark:text-dark-foreground">
+          Imágenes
+        </Text>
+
+        {images.length > 0 && (
+          <Text className="text-sm text-mutedForeground">
+            {images.length}/5 imágenes
+          </Text>
+        )}
       </View>
 
-      {image && (
-        <Animated.View
-          style={imageAnimatedStyle}
-          className="h-48 rounded-2xl overflow-hidden border border-dotted border-gray-300 dark:border-gray-600"
+      {/* BOTONES */}
+      <View className="flex-row gap-3 mb-2">
+        <Pressable
+          onPress={pickImage}
+          className="flex-1 border border-primary py-3 rounded-xl"
         >
-          <CustomImage img={image} />
-        </Animated.View>
+          <View className="flex-row items-center justify-center">
+            <Ionicons name="images-outline" size={20} />
+            <Text className="ml-2 font-semibold">Galería</Text>
+          </View>
+        </Pressable>
+
+        <Pressable
+          onPress={handlePickFromCamera}
+          className="flex-1 border border-secondary py-3 rounded-xl"
+        >
+          <View className="flex-row items-center justify-center">
+            <Ionicons name="camera" size={20} />
+            <Text className="ml-2 font-semibold">Cámara</Text>
+          </View>
+        </Pressable>
+      </View>
+
+      {images.length > 0 && (
+        <View className="flex-row flex-wrap gap-2">
+          {images.map((img, index) => (
+            <Animated.View
+              key={index}
+              style={imageAnimatedStyle}
+              className="w-[31%] aspect-square rounded-xl overflow-hidden"
+            >
+              <CustomImage img={img} />
+
+              <Pressable
+                onPress={() =>
+                  setImages((prev) => prev.filter((_, i) => i !== index))
+                }
+                className="absolute top-1 right-1 bg-black/60 rounded-full p-1"
+              >
+                <Ionicons name="close" size={14} color="#fff" />
+              </Pressable>
+            </Animated.View>
+          ))}
+        </View>
+      )}
+
+      {/* EMPTY STATE */}
+      {images.length === 0 && (
+        <View className="h-32 border-2 border-dashed border-gray-300 rounded-xl items-center justify-center">
+          <Ionicons name="image-outline" size={28} color="#999" />
+          <Text className="text-mutedForeground mt-1">
+            No hay imágenes seleccionadas
+          </Text>
+        </View>
       )}
     </View>
   );
+  // const renderImageSection = () => (
+  //   <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+  //     <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
+  //       Cargar imagen
+  //     </Text>
+  //     <View className="flex-row gap-3 mb-3">
+  //       <Pressable
+  //         onPress={pickImage}
+  //         className="flex-1 border border-primary dark:border-dark-primary py-3 rounded-xl"
+  //       >
+  //         <View className="flex-row items-center justify-center">
+  //           <Ionicons name="images-outline" size={22} color={isDarkPrimary} />
+  //           <Text className="text-secondary dark:text-dark-secondary font-bold ml-2">
+  //             Galería
+  //           </Text>
+  //         </View>
+  //       </Pressable>
+  //       <Pressable
+  //         onPress={handlePickFromCamera}
+  //         className="flex-1 border border-secondary dark:border-dark-secondary py-3 rounded-xl"
+  //       >
+  //         <View className="flex-row items-center justify-center">
+  //           <Ionicons name="camera" size={22} color={isDarkPrimary} />
+  //           <Text className="text-secondary dark:text-dark-secondary font-bold ml-2">
+  //             Cámara
+  //           </Text>
+  //         </View>
+  //       </Pressable>
+  //     </View>
+
+  //     {images && (
+  //       <Animated.View
+  //         style={imageAnimatedStyle}
+  //         className="h-48 rounded-2xl overflow-hidden border border-dotted border-gray-300 dark:border-gray-600"
+  //       >
+  //         <CustomImage img={image} />
+  //       </Animated.View>
+  //     )}
+  //   </View>
+  // );
 
   const renderSaveButton = () => (
     <View className="mt-6 mb-4">
@@ -574,14 +644,14 @@ export default function ProductDefectScreen() {
   const renderFloatingButtons = () => (
     <>
       {isData && (
-        <TouchableOpacity
+        <Pressable
           onPress={handleClearPress}
           className="bg-error dark:bg-dark-error p-4 rounded-full shadow-lg absolute bottom-32 left-4 z-50 elevation-xl"
           accessibilityLabel="Cancelar"
           accessibilityRole="button"
         >
           <Ionicons name="close" size={24} color="white" />
-        </TouchableOpacity>
+        </Pressable>
       )}
 
       {!isData && (
@@ -589,14 +659,14 @@ export default function ProductDefectScreen() {
           style={animatedStyleAddManual}
           className="absolute bottom-32 right-4 z-99"
         >
-          <TouchableOpacity
+          <Pressable
             onPress={handleManualPress}
             className="bg-primary dark:bg-dark-primary p-4 rounded-full shadow-lg elevation-xl"
             accessibilityLabel="Agregar manualmente"
             accessibilityRole="button"
           >
             <Ionicons name="add-circle-outline" size={24} color="white" />
-          </TouchableOpacity>
+          </Pressable>
         </Animated.View>
       )}
     </>

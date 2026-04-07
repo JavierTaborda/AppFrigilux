@@ -7,19 +7,27 @@ export async function pickAndUploadImage(fileUri: string, userId?: string, seria
         const response = await fetch(fileUri);
         const arrayBuffer = await response.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
+        console.log("Archivo seleccionado:", fileUri, "para usuario:", userId, "con serial:", serial);
 
+       
         const name = serial ? `${serial}` : `${userId}${Date.now()}`;
         const filePath = `${userId || "anon"}/${name}.jpg`;
 
-        //const filePath = `${userId || "anon"}/${Date.now()}.jpg`;
-
-        const { error } = await supabase.storage
+    
+        //const response = await fetch(fileUri);
+        const { data: uploadData, error } = await supabase.storage
             .from("return-reports")
             .upload(filePath, uint8Array, {
                 cacheControl: "3600",
                 upsert: true,
                 contentType: "image/jpeg",
             });
+ 
+
+        if (error) {
+            console.error("Error real de Supabase:", error);
+            throw error;
+        }
 
         const { data } = supabase.storage
             .from("return-reports")
@@ -27,8 +35,9 @@ export async function pickAndUploadImage(fileUri: string, userId?: string, seria
 
         return { publicUrl: data.publicUrl, filePath };
     } catch (error) {
-        console.error("Error subiendo imagen:", error);
-        return null;
+    
+           // console.error("Error subiendo imagen:", error);
+            throw error; 
     }
 }
 
@@ -42,7 +51,7 @@ export async function pickImage(): Promise<string> {
 
     const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
-        allowsEditing: true,
+        //allowsEditing: true,
         quality: 0.5,
     });
 
@@ -65,3 +74,26 @@ export async function deleteImage(filePath: string) {
         return false;
     }
 }
+export async function uploadMultipleImages(
+    images: string[],
+    userId?: string,
+    serial?: string
+) {
+    const uploadedUrls: string[] = [];
+    const uploadedPaths: string[] = [];
+
+    let index = 0;
+    for (const img of images) {
+
+       // console.log("Subiendo imagen:", img, "para usuario:", userId, "con serial:", serial);
+        const currentSerial = serial ? `${serial}_${index}` : undefined;
+        const result = await pickAndUploadImage(img, userId, currentSerial);
+
+        if (result) {
+            uploadedUrls.push(result.publicUrl);
+            uploadedPaths.push(result.filePath);
+        }
+        index++;
+    }
+
+    return { uploadedUrls, uploadedPaths };}
