@@ -30,6 +30,7 @@ export function useReturnReport() {
     const [artDes, setArtDes] = useState("");
     const [artList, setArtList] = useState<Articulo[]>([]);
     const [motives, setMotives] = useState<Motive[]>([]);
+    const [factNum, setFactNum] = useState<string | null>(null);
 
 
     // Customer Data
@@ -168,6 +169,7 @@ export function useReturnReport() {
 
                 return;
             }
+            console.log("Datos obtenidos por serial:", data);
 
             setBarcode(data.codbarra || "");
             setCodeArt(data.codart || "");
@@ -229,6 +231,8 @@ export function useReturnReport() {
             setIsData(true);
         } catch (error) {
 
+            throw error;
+
         } finally {
             setLoadingData(false);
         }
@@ -262,7 +266,7 @@ export function useReturnReport() {
                 cerrada: "0",
                 codcli: selectedClient?.co_cli.trim() || "",
                 clides: selectedClient?.cli_des || "",
-                registradopor: venDes,
+                registradopor: venDes?.trim() || '',
                 codart: codeArt,
                 codbarra: barcode,
                 artdes: artDes,
@@ -344,66 +348,7 @@ export function useReturnReport() {
             setLoading(false);
         }
 
-        // let publicUrl: string | undefined;
-        // let filePath: string | undefined;
 
-        // try {
-        //     setLoading(true);
-
-        //     if (image != null && image !== "") {
-        //         const uploadResult = await pickAndUploadImage(image, userId, serial);
-
-        //         if (!uploadResult) {
-        //             Alert.alert("Error", "Ocurrió un error al subir la imagen. Por favor, inténtelo de nuevo.");
-        //             return false;
-        //         }
-
-        //         publicUrl = uploadResult.publicUrl;
-        //         filePath = uploadResult.filePath; 
-        //         console.log("Imagen subida en:", filePath);
-        //     }
-
-        //     const devolucion: CreateDevolucion = {
-        //         fecharegistro: new Date().toISOString(),
-        //         estatus: "1",
-        //         anulada: "0",
-        //         cerrada: "0",
-        //         codcli: selectedClient?.co_cli.trim() || "",
-        //         clides: selectedClient?.cli_des || "",
-        //         //codven: codeVen.trim() || "",
-        //         registradopor: venDes,
-        //         codart: codeArt,
-        //         codbarra: barcode,
-        //         artdes: artDes,
-        //         serial1: serial,
-        //         motivo: reason,
-        //         obsregistro: comment,
-        //         factnum: Number(factNumber) || 0,
-        //         owneruser: 1, 
-
-        //        // imgart: publicUrl,
-        //     };
-
-        //     const success = await createDevolucion(devolucion);
-
-        //     if (success) {
-        //         Alert.alert("Success", "La devolución fue registrada exitosamente.");
-        //         clearForm();
-        //         return true;
-        //     } else {
-        //         if (filePath && !filePath.startsWith("http")) {
-        //             const result = await deleteImage(filePath);
-        //             console.log("Resultado borrado imagen:", result);
-        //         }
-        //         Alert.alert("Error", "No se pudo registrar la devolución, por favor inténtelo de nuevo.");
-        //         return false;
-        //     }
-        // } catch (err: any) {
-        //     Alert.alert("Error", `No se pudo registrar la devolución: ${err.message}`);
-        //     return false;
-        // } finally {
-        //     setLoading(false);
-        // }
     };
 
     return {

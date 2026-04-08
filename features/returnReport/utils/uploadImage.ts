@@ -1,28 +1,42 @@
 import { supabase } from "@/lib/supabase";
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
 
 export async function pickAndUploadImage(fileUri: string, userId?: string, serial?: string) {
     try {
-        const response = await fetch(fileUri);
-        const arrayBuffer = await response.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
-        console.log("Archivo seleccionado:", fileUri, "para usuario:", userId, "con serial:", serial);
+        // WebP
+        const manipResult = await ImageManipulator.manipulateAsync(
+            fileUri,
+            [
+                // Redimensionar si es muy grande (opcional)
+                { resize: { width: 1920, height: 1920 } }
+            ],
+            {
+                compress: 0.8, // 0.1 - 1.0 (0.8 es buen balance)
+                format: ImageManipulator.SaveFormat.WEBP, // Convertir a WebP
+            }
+        )
 
        
-        const name = serial ? `${serial}` : `${userId}${Date.now()}`;
-        const filePath = `${userId || "anon"}/${name}.jpg`;
 
-    
-        //const response = await fetch(fileUri);
+        // Obtener el archivo
+        const response = await fetch(manipResult.uri);
+        const arrayBuffer = await response.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        console.log("Archivo seleccionado:", fileUri, "para usuario:", userId, "con serial:", serial);
+
+        const name = serial ? `${serial}` : `${userId}${Date.now()}`;
+        const filePath = `${userId || "anon"}/${name}.webp`;
+
         const { data: uploadData, error } = await supabase.storage
             .from("return-reports")
             .upload(filePath, uint8Array, {
                 cacheControl: "3600",
                 upsert: true,
-                contentType: "image/jpeg",
+                contentType: "image/webp",
             });
- 
 
         if (error) {
             console.error("Error real de Supabase:", error);
@@ -35,11 +49,11 @@ export async function pickAndUploadImage(fileUri: string, userId?: string, seria
 
         return { publicUrl: data.publicUrl, filePath };
     } catch (error) {
-    
-           // console.error("Error subiendo imagen:", error);
-            throw error; 
+        console.error("Error subiendo imagen:", error);
+        throw error;
     }
 }
+
 
 
 export async function pickImage(): Promise<string> {
