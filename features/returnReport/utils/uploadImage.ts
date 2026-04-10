@@ -5,22 +5,20 @@ import { Alert } from "react-native";
 
 export async function pickAndUploadImage(fileUri: string, userId?: string, serial?: string) {
     try {
-        // WebP
+        
         const manipResult = await ImageManipulator.manipulateAsync(
             fileUri,
             [
-                // Redimensionar si es muy grande (opcional)
-                { resize: { width: 1920, height: 1920 } }
+            
+                { resize: { width: 1920} }
             ],
             {
-                compress: 0.8, // 0.1 - 1.0 (0.8 es buen balance)
-                format: ImageManipulator.SaveFormat.WEBP, // Convertir a WebP
+                compress: 0.5              , 
+                format: ImageManipulator.SaveFormat.WEBP, 
+                base64: true,
             }
-        )
+        );
 
-       
-
-        // Obtener el archivo
         const response = await fetch(manipResult.uri);
         const arrayBuffer = await response.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
@@ -30,7 +28,7 @@ export async function pickAndUploadImage(fileUri: string, userId?: string, seria
         const name = serial ? `${serial}` : `${userId}${Date.now()}`;
         const filePath = `${userId || "anon"}/${name}.webp`;
 
-        const { data: uploadData, error } = await supabase.storage
+        const { error } = await supabase.storage
             .from("return-reports")
             .upload(filePath, uint8Array, {
                 cacheControl: "3600",
@@ -46,8 +44,10 @@ export async function pickAndUploadImage(fileUri: string, userId?: string, seria
         const { data } = supabase.storage
             .from("return-reports")
             .getPublicUrl(filePath);
+        
+            //console.log("URL pública obtenida:", manipResult.base64);
 
-        return { publicUrl: data.publicUrl, filePath };
+        return { publicUrl: data.publicUrl, filePath, base64: manipResult.base64 };
     } catch (error) {
         console.error("Error subiendo imagen:", error);
         throw error;

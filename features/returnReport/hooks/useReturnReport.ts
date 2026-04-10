@@ -217,10 +217,13 @@ export function useReturnReport() {
 
             const [clients, arts, motives] = await Promise.all([getClients(), getArts(), getMotives()]);
 
-            setClients(clients);
-            setArtList(arts)
-            setMotives(motives)
+            if (!clients || !arts || !motives) {
+                throw new Error("No se pudieron cargar los datos necesarios");
+            }
 
+            setClients(clients);
+            setArtList(arts);
+            setMotives(motives);
 
             setBarcodeList(arts.map((item: Articulo) => ({
                 co_art: item.co_art,
@@ -230,9 +233,12 @@ export function useReturnReport() {
             setIsManual(true);
             setIsData(true);
         } catch (error) {
-
-            throw error;
-
+            // Asegura que clearForm siempre se ejecute en caso de error
+            clearForm();
+            overlay.show("warning", {
+                title: `Error al cargar datos`,
+                subtitle: `No se pudieron cargar los datos necesarios para el registro manual, por favor inténtelo de nuevo.`,
+            });
         } finally {
             setLoadingData(false);
         }
@@ -266,13 +272,13 @@ export function useReturnReport() {
                 cerrada: "0",
                 codcli: selectedClient?.co_cli.trim() || "",
                 clides: selectedClient?.cli_des || "",
-                registradopor: venDes?.trim() || '',
+                registradopor: name?.trim() || '',
                 codart: codeArt,
                 codbarra: barcode,
                 artdes: artDes,
                 serial1: serial,
                 motivo: reason,
-                obsregistro: comment,
+                obsregistro: comment,     
                 factnum: Number(factNumber) || 0,
                 owneruser: 1,
 

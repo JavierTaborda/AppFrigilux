@@ -52,8 +52,8 @@ export const getClients = async (): Promise<ClientData[]> => {
     }));
     return clients;
   } catch (error) {
-    console.error("Error fetching clients:", error);
-    return [];
+    //console.error("Error fetching clients:", error);
+    throw error;
   }
 };
 export const getArts = async (): Promise<Articulo[]> => {
@@ -62,8 +62,8 @@ export const getArts = async (): Promise<Articulo[]> => {
     const arts: Articulo[] = response.data
     return arts;
   } catch (error) {
-    console.error("Error fetching clients:", error);
-    return [];
+    //console.error("Error fetching arts:", error);
+    throw error;
   }
 };
 export const getMotives = async (): Promise<Motive[]> => {
@@ -72,7 +72,8 @@ export const getMotives = async (): Promise<Motive[]> => {
     const motives: Motive[] = response.data
     return motives;
   } catch (error) {
+    //console.error("Error fetching motives:", error);
+    throw error;
 
-    return [];
   }
 };
