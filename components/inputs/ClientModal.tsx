@@ -73,7 +73,7 @@ const ClientModal: React.FC<ClientModalProps> = React.memo(
               handleRefresh={() => {}}
               title={`${filteredClients.length}`}
               subtitle="Clientes disponibles"
-              pageSize={20}
+              //pageSize={20}
             />
           </View>
         )}

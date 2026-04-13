@@ -20,5 +20,8 @@ export interface CreateDevolucion {
     linkproforma?: string;      // VarChar(60)
 
     dtdevolucion: dtdevolucion; 
+    rif?: string;                
+    telefono?: string;          
+    dirretiro?: string;              
 
 }

@@ -23,7 +23,7 @@ export async function pickAndUploadImage(fileUri: string, userId?: string, seria
         const arrayBuffer = await response.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
 
-        console.log("Archivo seleccionado:", fileUri, "para usuario:", userId, "con serial:", serial);
+        //console.log("Archivo seleccionado:", fileUri, "para usuario:", userId, "con serial:", serial);
 
         const name = serial ? `${serial}` : `${userId}${Date.now()}`;
         const filePath = `${userId || "anon"}/${name}.webp`;

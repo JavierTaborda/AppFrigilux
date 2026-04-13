@@ -182,6 +182,7 @@ export function useReturnReport() {
                 cli_des: data.clides,
                 rif: data.rif || "",
                 telefonos: data.telefonos || "",
+                dir_ent2: data.dir_ent2 || "",
                 email: data.email || ""
             });
 
@@ -281,6 +282,9 @@ export function useReturnReport() {
                 obsregistro: comment,     
                 factnum: Number(factNumber) || 0,
                 owneruser: 1,
+                rif: selectedClient?.rif || '',
+                telefono: selectedClient?.telefonos || '',
+                dirretiro: selectedClient?.dir_ent2 || '',
 
                 dtdevolucion: {
                     devonum: 0,
@@ -356,6 +360,7 @@ export function useReturnReport() {
 
 
     };
+    
 
     return {
         // functions
