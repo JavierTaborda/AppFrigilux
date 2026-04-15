@@ -35,7 +35,13 @@ export const createDevolucion = async (dev: CreateDevolucion): Promise<boolean> 
     const response = await api.post("returns", dev);
     return response.status >= 200 && response.status < 300;
   } catch (error) {
-    return false;
+    // const errorDetail = isAxiosError(error)
+    //   ? error.response?.data || error.message
+    //   : error instanceof Error
+    //     ? error.message
+    //     : String(error);
+    //console.error("Error creando devolución", errorDetail);
+    throw error;
   }
 };
 export const getClients = async (): Promise<ClientData[]> => {

@@ -2,8 +2,9 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useOverlayStore } from "@/stores/useSuccessOverlayStore";
 import { ClientData } from "@/types/clients";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { Alert } from "react-native";
+import { ReturnBySerialDto } from "../interfaces/returnbyserialDTO";
 import { createDevolucion, getArts, getBySerial, getClients, getMotives, getOrderByFactNumber } from "../services/ReturnReportService";
 import { Articulo } from "../types/Articulo";
 import { CreateDevolucion } from "../types/createDevolucion";
@@ -11,49 +12,201 @@ import { BarcodeItem } from "../types/Items";
 import { Motive } from "../types/motives";
 import { deleteImage, uploadMultipleImages } from "../utils/uploadImage";
 
+function getErrorMessage(err: unknown): string {
+    if (!err) return 'Unknown error';
+    if (err instanceof Error) return err.message;
+    if (typeof err === 'string') return err;
+    try { return JSON.stringify(err); } catch { return String(err); }
+}
+
 const MAX_IMAGES = 5;
 export function useReturnReport() {
 
 
     const { userId, name } = useAuthStore();
-    const [loading, setLoading] = useState(false);
-    const [loadingData, setLoadingData] = useState(false);
+    // Group related state using reducers to avoid many useState calls
+    type ProductState = {
+        factNumber: string;
+        barcode: string;
+        barcodeList: BarcodeItem[];
+        serial: string;
+        codeArt: string;
+        artDes: string;
+        zondes: string;
+        codzon: string;
+        artList: Articulo[];
+        motives: Motive[];
+        factNum: string | null;
+        prednum: number | null;
+        pednum: number | null;
+        fedespacho: string | null;
+        codeVen: string;
+        venDes: string;
+    };
 
+    const initialProductState: ProductState = {
+        factNumber: "",
+        barcode: "",
+        barcodeList: [],
+        serial: "",
+        codeArt: "",
+        artDes: "",
+        zondes: "",
+        codzon: "",
+        artList: [],
+        motives: [],
+        factNum: null,
+        prednum: null,
+        pednum: null,
+        fedespacho: null,
+        codeVen: "",
+        venDes: "",
+    };
 
-    // Product data
+    function productReducer(state: ProductState, action: { type: string; payload?: any }): ProductState {
+        switch (action.type) {
+            case 'SET_FACTNUMBER': return { ...state, factNumber: action.payload };
+            case 'SET_BARCODE': return { ...state, barcode: action.payload };
+            case 'SET_BARCODE_LIST': return { ...state, barcodeList: action.payload };
+            case 'SET_SERIAL': return { ...state, serial: action.payload };
+            case 'SET_CODE_ART': return { ...state, codeArt: action.payload };
+            case 'SET_ART_DES': return { ...state, artDes: action.payload };
+            case 'SET_ZONDES': return { ...state, zondes: action.payload };
+            case 'SET_ART_LIST': return { ...state, artList: action.payload };
+            case 'SET_MOTIVES': return { ...state, motives: action.payload };
+            case 'SET_FACTNUM': return { ...state, factNum: action.payload };
+            case 'SET_PREDNUM': return { ...state, prednum: action.payload };
+            case 'SET_PEDNUM': return { ...state, pednum: action.payload };
+            case 'SET_FEDESPACHO': return { ...state, fedespacho: action.payload };
+            case 'SET_CODEVEN': return { ...state, codeVen: action.payload };
+            case 'SET_VENDES': return { ...state, venDes: action.payload };
+            case 'SET_CODZON': return { ...state, codzon: action.payload };
+            case 'RESET_PRODUCT': return initialProductState;
+            default: return state;
+        }
+    }
 
-    const [factNumber, setFactNumber] = useState("");
-    const [barcode, setBarcode] = useState("");
-    const [barcodeList, setBarcodeList] = useState<BarcodeItem[]>([]);
-    const [serial, setSerial] = useState("");
-    const [codeArt, setCodeArt] = useState("");
-    const [artDes, setArtDes] = useState("");
-    const [artList, setArtList] = useState<Articulo[]>([]);
-    const [motives, setMotives] = useState<Motive[]>([]);
-    const [factNum, setFactNum] = useState<string | null>(null);
+    type CustomerState = { clients: ClientData[]; selectedClient: ClientData | null };
+    const initialCustomerState: CustomerState = { clients: [], selectedClient: null };
+    function customerReducer(state: CustomerState, action: { type: string; payload?: any }): CustomerState {
+        switch (action.type) {
+            case 'SET_CLIENTS': return { ...state, clients: action.payload };
+            case 'SET_SELECTED_CLIENT': return { ...state, selectedClient: action.payload };
+            case 'RESET_CUSTOMER': return initialCustomerState;
+            default: return state;
+        }
+    }
 
+    type FormState = { reason: string; comment: string; images: string[] };
+    const initialFormState: FormState = { reason: '', comment: '', images: [] };
+    function formReducer(state: FormState, action: { type: string; payload?: any }): FormState {
+        switch (action.type) {
+            case 'SET_REASON': return { ...state, reason: action.payload };
+            case 'SET_COMMENT': return { ...state, comment: action.payload };
+            case 'SET_IMAGES': return { ...state, images: action.payload };
+            case 'RESET_FORM': return initialFormState;
+            default: return state;
+        }
+    }
 
-    // Customer Data
-    const [clients, setClients] = useState<ClientData[]>([]);
-    const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
+    type UIState = {
+        loading: boolean;
+        loadingData: boolean;
+        showScanner: boolean;
+        showClientModal: boolean;
+        showArtModal: boolean;
+        showMotiveModal: boolean;
+        isData: boolean;
+        isManual: boolean;
+    };
+    const initialUiState: UIState = {
+        loading: false,
+        loadingData: false,
+        showScanner: false,
+        showClientModal: false,
+        showArtModal: false,
+        showMotiveModal: false,
+        isData: false,
+        isManual: false,
+    };
+    function uiReducer(state: UIState, action: { type: string; payload?: any }): UIState {
+        switch (action.type) {
+            case 'SET_LOADING': return { ...state, loading: action.payload };
+            case 'SET_LOADING_DATA': return { ...state, loadingData: action.payload };
+            case 'SET_SHOW_SCANNER': return { ...state, showScanner: action.payload };
+            case 'SET_SHOW_CLIENT_MODAL': return { ...state, showClientModal: action.payload };
+            case 'SET_SHOW_ART_MODAL': return { ...state, showArtModal: action.payload };
+            case 'SET_SHOW_MOTIVE_MODAL': return { ...state, showMotiveModal: action.payload };
+            case 'SET_IS_DATA': return { ...state, isData: action.payload };
+            case 'SET_IS_MANUAL': return { ...state, isManual: action.payload };
+            case 'RESET_UI': return initialUiState;
+            default: return state;
+        }
+    }
 
+    const [productState, dispatchProduct] = useReducer(productReducer, initialProductState);
+    const [customerState, dispatchCustomer] = useReducer(customerReducer, initialCustomerState);
+    const [formState, dispatchForm] = useReducer(formReducer, initialFormState);
+    const [uiState, dispatchUi] = useReducer(uiReducer, initialUiState);
 
+    // setter wrappers to keep existing hook API (so callers don't need changes)
+    const setLoading = (v: boolean) => dispatchUi({ type: 'SET_LOADING', payload: v });
+    const setLoadingData = (v: boolean) => dispatchUi({ type: 'SET_LOADING_DATA', payload: v });
 
-    // DSeller data
-    const [codeVen, setCodeVen] = useState("");
-    const [venDes, setVenDes] = useState("");
+    const setFactNumber = (v: string) => dispatchProduct({ type: 'SET_FACTNUMBER', payload: v });
+    const setBarcode = (v: string) => dispatchProduct({ type: 'SET_BARCODE', payload: v });
+    const setBarcodeList = (v: BarcodeItem[]) => dispatchProduct({ type: 'SET_BARCODE_LIST', payload: v });
+    const setSerial = (v: string) => dispatchProduct({ type: 'SET_SERIAL', payload: v });
+    const setCodeArt = (v: string) => dispatchProduct({ type: 'SET_CODE_ART', payload: v });
+    const setArtDes = (v: string) => dispatchProduct({ type: 'SET_ART_DES', payload: v });
+    const setZondes = (v: string) => dispatchProduct({ type: 'SET_ZONDES', payload: v });
+    const setCodzon = (v: string) => dispatchProduct({ type: 'SET_CODZON', payload: v });
+    const setArtList = (v: Articulo[]) => dispatchProduct({ type: 'SET_ART_LIST', payload: v });
+    const setMotives = (v: Motive[]) => dispatchProduct({ type: 'SET_MOTIVES', payload: v });
+    const setFactNum = (v: string | null) => dispatchProduct({ type: 'SET_FACTNUM', payload: v });
+    const setPrednum = (v: number | null) => dispatchProduct({ type: 'SET_PREDNUM', payload: v });
+    const setPednum = (v: number | null) => dispatchProduct({ type: 'SET_PEDNUM', payload: v });
+    const setFedespacho = (v: string | null) => dispatchProduct({ type: 'SET_FEDESPACHO', payload: v });
+    const setCodeVen = (v: string) => dispatchProduct({ type: 'SET_CODEVEN', payload: v });
+    const setVenDes = (v: string) => dispatchProduct({ type: 'SET_VENDES', payload: v });
 
-    // Form Data
-    const [reason, setReason] = useState("");
-    const [comment, setComment] = useState("");
-    const [images, setImages] = useState<string[]>([]);
-    // UI
-    const [showScanner, setShowScanner] = useState(false);
-    const [showClientModal, setShowClientModal] = useState(false);
-    const [showArtModal, setShowArtModal] = useState(false);
-    const [showMotiveModal, setShowMotiveModal] = useState(false);
-    const [isData, setIsData] = useState(false);
-    const [isManual, setIsManual] = useState(false);
+    const setClients = (v: ClientData[]) => dispatchCustomer({ type: 'SET_CLIENTS', payload: v });
+    const setSelectedClient = (v: ClientData | null) => dispatchCustomer({ type: 'SET_SELECTED_CLIENT', payload: v });
+
+    const setReason = (v: string) => dispatchForm({ type: 'SET_REASON', payload: v });
+    const setComment = (v: string) => dispatchForm({ type: 'SET_COMMENT', payload: v });
+    const setImages = (v: string[]) => dispatchForm({ type: 'SET_IMAGES', payload: v });
+
+    const setShowScanner = (v: boolean) => dispatchUi({ type: 'SET_SHOW_SCANNER', payload: v });
+    const setShowClientModal = (v: boolean) => dispatchUi({ type: 'SET_SHOW_CLIENT_MODAL', payload: v });
+    const setShowArtModal = (v: boolean) => dispatchUi({ type: 'SET_SHOW_ART_MODAL', payload: v });
+    const setShowMotiveModal = (v: boolean) => dispatchUi({ type: 'SET_SHOW_MOTIVE_MODAL', payload: v });
+    const setIsData = (v: boolean) => dispatchUi({ type: 'SET_IS_DATA', payload: v });
+    const setIsManual = (v: boolean) => dispatchUi({ type: 'SET_IS_MANUAL', payload: v });
+
+    // destructure for easy use in logic
+    const {
+        factNumber,
+        barcode,
+        barcodeList,
+        serial,
+        codeArt,
+        artDes,
+        zondes,
+        codzon,
+        artList,
+        motives,
+        factNum,
+        prednum,
+        pednum,
+        fedespacho,
+        codeVen,
+        venDes,
+    } = productState;
+
+    const { reason, comment, images } = formState;
+    const { clients, selectedClient } = customerState;
+    const { loading, loadingData, showScanner, showClientModal, showArtModal, showMotiveModal, isData, isManual } = uiState;
     const isFormComplete = () => (
         reason && selectedClient && codeArt && artDes
     );
@@ -66,17 +219,14 @@ export function useReturnReport() {
         const result = await pickFromGallery();
         if (!result) return;
 
-        setImages((prev) => {
-            const newImages = Array.isArray(result) ? result : [result];
+        const newImages = Array.isArray(result) ? result : [result];
+        const combined = [...images, ...newImages];
 
-            const combined = [...prev, ...newImages];
+        if (combined.length > MAX_IMAGES) {
+            Alert.alert(`Máximo ${MAX_IMAGES} imágenes`);
+        }
 
-            if (combined.length > MAX_IMAGES) {
-                Alert.alert(`Máximo ${MAX_IMAGES} imágenes`);
-            }
-
-            return combined.slice(0, MAX_IMAGES);
-        });
+        setImages(combined.slice(0, MAX_IMAGES));
     };
 
     const handlePickFromCamera = async () => {
@@ -88,7 +238,7 @@ export function useReturnReport() {
         const result = await pickFromCamera();
         if (!result) return;
 
-        setImages((prev) => [...prev, result]);
+        setImages([...images, result].slice(0, MAX_IMAGES));
     };
 
     const handleSearchFactNum = async () => {
@@ -100,43 +250,65 @@ export function useReturnReport() {
         try {
             setLoadingData(true);
 
-
-            const [data, motives] = await Promise.all([getOrderByFactNumber(Number(factNumber)), getMotives()]);
+            const [rawData, motives] = await Promise.all([getOrderByFactNumber(Number(factNumber)), getMotives()]);
             setMotives(motives)
 
-            if (!data) {
+            if (!rawData) {
                 Alert.alert("Sin resultados", "No se encontró datos  con el número de factura.");
                 setIsData(false);
-
                 return;
             }
 
-            setBarcode(data.codbarra || "");
+            const raw: any = rawData;
+            const artArray: Articulo[] = raw.art || [];
 
-            setCodeVen(data.codven || "");
-            setVenDes(data.vendes || "");
-            setSerial(data.serial || "");
+            const dto: ReturnBySerialDto = {
+                fact_num: raw.fact_num ?? 0,
+                fecemis: raw.fec_emis ?? raw.fecemis ?? null,
+                
+                codcli: raw.codcli ?? '',
+                clides: raw.clides ?? '',
+                codven: raw.codven ?? '',
+                vendes: raw.vendes ?? '',
+                codart: artArray[0]?.co_art ?? '',
+                artdes: artArray[0]?.art_des ?? '',
+                codbarra: raw.codbarra ?? '',
+                serial: raw.serial ?? '',
+                rif: raw.rif ?? '',
+                telefonos: raw.telefonos ?? '',
+                email: raw.email ?? '',
+                dir_ent2: raw.dir_ent2 ?? '',
+                prednum: raw.prednum ?? null,
+                pednum: raw.pednum ?? null,
+                zondes: raw.zondes ?? raw.zon_des ?? raw.zone?.zondes ?? raw.zone?.zon_des ?? '',
+                fecdesp: raw.fecdesp ?? null,
+                codzon: raw.codzon ?? '',
+            };
+
+            setBarcode(dto.codbarra);
+            setCodeVen(dto.codven);
+            setVenDes(dto.vendes);
+            setSerial(dto.serial);
+            setZondes(dto.zondes);
+            setCodzon(dto.codzon || '');
 
             setSelectedClient({
-                co_cli: data.codcli,
-                cli_des: data.clides,
-                rif: data.rif || "",
-                telefonos: data.telefonos || "",
-                email: data.email || ""
+                co_cli: dto.codcli,
+                cli_des: dto.clides,
+                rif: dto.rif || "",
+                telefonos: dto.telefonos || "",
+                email: dto.email || ""
             });
 
-            setBarcodeList(data.art.map((item: Articulo) => ({
-                co_art: item.co_art,
-                codbarra: item.codbarra
-            })));
-
-            const formattedArtList = (data.art as Articulo[]);
-            setArtList(formattedArtList);
+            setBarcodeList(artArray.map((item: Articulo) => ({ co_art: item.co_art, codbarra: item.codbarra })));
+            setArtList(artArray);
             setIsData(true)
 
 
-        } catch (error) {
-            Alert.alert("Error", "Ocurrió un error al obtener los datos.");
+        } catch (error: unknown) {
+            const message = getErrorMessage(error);
+            console.error("Error obteniendo datos por número de factura:", message, error);
+            Alert.alert("Error", `Ocurrió un error al obtener los datos: ${message}`);
         } finally {
             setLoadingData(false);
         }
@@ -159,37 +331,67 @@ export function useReturnReport() {
         try {
             setLoadingData(true);
 
-            const [data, motives] = await Promise.all([getBySerial(serial), getMotives()]);
+            const [rawData, motives] = await Promise.all([getBySerial(serial), getMotives()]);
             setMotives(motives)
 
-            if (!data) {
+            if (!rawData) {
                 Alert.alert("Sin resultados", "No se encontró el producto con ese serial.");
                 clearForm();
-
-
                 return;
             }
-            console.log("Datos obtenidos por serial:", data);
+           
 
-            setBarcode(data.codbarra || "");
-            setCodeArt(data.codart || "");
-            setCodeVen(data.codven || "");
-            setVenDes(data.vendes || "");
-            setArtDes(data.artdes || "");
-            setSerial(data.serial || "");
+            const raw: any = rawData;
+
+            const dto: ReturnBySerialDto = {
+                fact_num: raw.fact_num ?? 0,
+                fecemis: raw.fecemis ?? null,
+                codcli: raw.codcli ?? '',
+                clides: raw.clides ?? '',
+                codven: raw.codven ?? '',
+                vendes: raw.vendes ?? '',
+                codart: raw.codart ?? raw.cod_art ?? '',
+                artdes: raw.artdes ?? raw.art_des ?? '',
+                codbarra: raw.codbarra ?? '',
+                serial: raw.serial ?? '',
+                rif: raw.rif ?? '',
+                telefonos: raw.telefonos ?? '',
+                email: raw.email ?? '',
+                dir_ent2: raw.dir_ent2 ?? '',
+                prednum: raw.prednum ?? null,
+                pednum: raw.pednum ?? null,
+                zondes: raw.zondes ?? '',
+                fecdesp: raw.fecdesp ?? null,
+                codzon: raw.codzon ?? ''
+            };
+
+            setBarcode(dto.codbarra);
+            setCodeArt(dto.codart);
+            setCodeVen(dto.codven);
+            setVenDes(dto.vendes);
+            setArtDes(dto.artdes);
+            setSerial(dto.serial);
+            setPednum( Number(dto.pednum) || null);
+            setPrednum( Number(dto.prednum) || null);
+            setFedespacho(dto.fecdesp ? String(dto.fecdesp) : null);
+            setZondes(dto.zondes);
+            setCodzon(dto.codzon || '');
+
             setSelectedClient({
-                co_cli: data.codcli,
-                cli_des: data.clides,
-                rif: data.rif || "",
-                telefonos: data.telefonos || "",
-                dir_ent2: data.dir_ent2 || "",
-                email: data.email || ""
+                co_cli: dto.codcli,
+                cli_des: dto.clides,
+                rif: dto.rif || "",
+                telefonos: dto.telefonos || "",
+                dir_ent2: dto.dir_ent2 || "",
+                email: dto.email || ""
             });
 
             setIsData(true)
 
-        } catch (error) {
-            Alert.alert("Error", "Ocurrió un error al obtener los datos.");
+        } catch (error: unknown) {
+            const message = getErrorMessage(error);
+            console.error("Error obteniendo datos por serial:", message, error);
+            Alert.alert("Error", `Ocurrió un error al obtener los datos: ${message}`);
         } finally {
             setLoadingData(false);
         }
@@ -197,19 +399,11 @@ export function useReturnReport() {
 
 
     const clearForm = () => {
-        setBarcode("");
-        setSerial("");
-        setCodeArt("");
-        setArtDes("");
-        setReason("");
-        setComment("");
-        setImages([]);
-        setArtList([]);
-        setBarcodeList([]);
-        setSelectedClient(null);
-        setFactNumber("");
-        setIsData(false)
-        setIsManual(false);
+        // Reset all grouped state to their initial values so the hook is ready for new data
+        dispatchProduct({ type: 'RESET_PRODUCT' });
+        dispatchCustomer({ type: 'RESET_CUSTOMER' });
+        dispatchForm({ type: 'RESET_FORM' });
+        dispatchUi({ type: 'RESET_UI' });
     };
     const handleManual = async () => {
         try {
@@ -280,7 +474,7 @@ export function useReturnReport() {
                 serial1: serial,
                 motivo: reason,
                 obsregistro: comment,     
-                factnum: Number(factNumber) || 0,
+                factnum: Number(factNumber) || Number(prednum) || 0,
                 owneruser: 1,
                 rif: selectedClient?.rif || '',
                 telefono: selectedClient?.telefonos || '',
@@ -288,14 +482,17 @@ export function useReturnReport() {
 
                 dtdevolucion: {
                     devonum: 0,
-                    prednum: 0,
+                    prednum: prednum || 0,
                     codven: codeVen.trim() || '',
                     vendes: venDes,
+                    codzon: codzon.trim() || '',
                     enviorevision: "0",
                     enviotecnico: "0",
                     envioalmacen: "0",
-                    fechadespacho: null,
-                    pednum: 0,
+                    fechadespacho:fedespacho ,
+                    pednum: pednum || 0, 
+                    zondes: zondes.trim() || '',
+                    
                     ftdevolucion: {
                         devonum: '',
                         namefoto1: uploadedUrls[0] || '',
@@ -316,7 +513,7 @@ export function useReturnReport() {
                     },
                 }
             };
-
+            
             const success = await createDevolucion(devolucion);
 
             if (success) {
@@ -326,6 +523,7 @@ export function useReturnReport() {
                 });
 
                 clearForm();
+                
                 return true;
             } else {
               
@@ -341,16 +539,15 @@ export function useReturnReport() {
                 return false;
             }
         } catch (err: any) {
-         
+           
+            const errorMessage = err.response?.data?.message || "Error inesperado en el servidor";
             overlay.show("error", {
                 title: `Error al registrar`,
-                subtitle: `No se pudo registrar la devolución: ${err.message}`,
+                subtitle: `No se pudo registrar la devolución: ${errorMessage}`,
             });
 
-
-
             for (const path of uploadedPaths) {
-                await deleteImage(path);
+                try { await deleteImage(path); } catch (e) { console.error('Error deleting image', e); }
             }
 
             return false;
@@ -378,6 +575,7 @@ export function useReturnReport() {
         serial, setSerial,
         codeArt, setCodeArt,
         artDes, setArtDes,
+        codzon, setCodzon,
         reason, setReason,
         comment, setComment,
         images, setImages,
