@@ -1,22 +1,24 @@
 import React, { forwardRef, useEffect } from "react";
 import {
-    Dimensions,
-    Modal,
-    Platform,
-    StatusBar,
-    TouchableOpacity,
-    View,
-    ViewProps,
+  Dimensions,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ViewProps,
 } from "react-native";
 import {
-    Gesture,
-    GestureDetector,
-    GestureHandlerRootView,
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 
 import { scheduleOnRN } from "react-native-worklets";
@@ -33,11 +35,17 @@ type BottomModalProps = {
   children: React.ReactNode;
 };
 
-// SDK 54
 const AnimatedView = forwardRef<View, ViewProps>((props, ref) => (
   <Animated.View ref={ref} {...props} />
 ));
-
+const ANIMATION_CONFIG = {
+  damping: 20,
+  stiffness: 230,
+  mass: 1,
+  overshootClamping: true,
+  restDisplacementThreshold: 0.01,
+  restSpeedThreshold: 0.01,
+};
 export default function BottomModal({
   visible,
   onClose,
@@ -48,18 +56,15 @@ export default function BottomModal({
   const windowHeight = Dimensions.get("window").height;
   const statusBarHeight =
     Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
-  const modalHeight =
-    (windowHeight - statusBarHeight) * heightPercentage + insets.bottom;
+
+  // Content height is a percentage of the usable screen; bottom inset is added
+  // so the sheet extends behind the navigation bar on Android/iOS.
+  const sheetContentHeight =
+    (windowHeight - statusBarHeight) * heightPercentage;
+  const modalHeight = sheetContentHeight + insets.bottom;
+
   const { isDark } = useThemeStore();
   const translateY = useSharedValue(modalHeight);
-  const ANIMATION_CONFIG = {
-    damping: 20,
-    stiffness: 230,
-    mass: 1,
-    overshootClamping: true,
-    restDisplacementThreshold: 0.01,
-    restSpeedThreshold: 0.01,
-  };
 
   useEffect(() => {
     translateY.value = withSpring(visible ? 0 : modalHeight, ANIMATION_CONFIG);
@@ -81,10 +86,13 @@ export default function BottomModal({
 
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
   }));
+
+  const bgColor = isDark ? appTheme.dark.background : appTheme.background;
 
   return (
     <Modal
@@ -92,49 +100,84 @@ export default function BottomModal({
       transparent
       animationType="fade"
       onRequestClose={onClose}
+      statusBarTranslucent
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <View className="flex-1 justify-end">
-          <BlurView
-            intensity={40}
-            tint="dark"
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-            }}
-          >
-            <TouchableOpacity
-              className="flex-1"
-              activeOpacity={1}
-              onPress={onClose}
-            />
-          </BlurView>
-          <AnimatedView
-            style={[
-              sheetStyle,
-              {
-                height: modalHeight,
-                paddingBottom: insets.bottom,
-                paddingHorizontal: 20,
-                backgroundColor: isDark
-                  ? appTheme.dark.background
-                  : appTheme.background,
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-              },
-            ]}
-          >
-            <GestureDetector gesture={dragGesture}>
-              <View>
-                <View className="w-20 h-1.5 bg-neutral-400 self-center rounded-full mt-3 mb-3" />
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={{ flex: 1 }}>
+            {/* Backdrop */}
+            <BlurView
+              intensity={40}
+              tint="dark"
+              style={StyleSheet.absoluteFillObject}
+            >
+              <TouchableOpacity
+                style={{ flex: 1 }}
+                activeOpacity={1}
+                onPress={onClose}
+              />
+            </BlurView>
+
+            {/* Bottom sheet */}
+            <AnimatedView
+              style={[
+                sheetStyle,
+                {
+                  height: modalHeight,
+                  backgroundColor: bgColor,
+                  borderTopLeftRadius: 28,
+                  borderTopRightRadius: 28,
+                  // iOS shadow
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: -4 },
+                  shadowOpacity: isDark ? 0.35 : 0.12,
+                  shadowRadius: 16,
+                  // Android elevation
+                  elevation: 24,
+                },
+              ]}
+            >
+              {/* Drag-handle hit area */}
+              <GestureDetector gesture={dragGesture}>
+                <View
+                  style={{
+                    alignItems: "center",
+                    paddingTop: 12,
+                    paddingBottom: 10,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 40,
+                      height: 4,
+                      borderRadius: 2,
+                      backgroundColor: isDark
+                        ? "rgba(255,255,255,0.22)"
+                        : "rgba(0,0,0,0.18)",
+                    }}
+                  />
+                </View>
+              </GestureDetector>
+
+              {/* Content – fills remaining space and stays above nav bar */}
+              <View
+                style={{
+                  flex: 1,
+                  paddingHorizontal: 20,
+                  // Ensure content never sits behind the Android nav bar or
+                  // the iOS home indicator.
+                  paddingBottom: Math.max(insets.bottom, 16),
+                  overflow: "hidden",
+                }}
+              >
+                {children}
               </View>
-            </GestureDetector>
-            {children}
-          </AnimatedView>
-        </View>
+            </AnimatedView>
+          </View>
+        </KeyboardAvoidingView>
       </GestureHandlerRootView>
     </Modal>
   );
