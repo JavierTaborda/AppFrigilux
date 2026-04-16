@@ -2,7 +2,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useOverlayStore } from "@/stores/useSuccessOverlayStore";
 import { ClientData } from "@/types/clients";
 import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, type SetStateAction } from "react";
 import { Alert } from "react-native";
 import { ReturnBySerialDto } from "../interfaces/returnbyserialDTO";
 import { createDevolucion, getArts, getBySerial, getClients, getMotives, getOrderByFactNumber } from "../services/ReturnReportService";
@@ -175,7 +175,15 @@ export function useReturnReport() {
 
     const setReason = (v: string) => dispatchForm({ type: 'SET_REASON', payload: v });
     const setComment = (v: string) => dispatchForm({ type: 'SET_COMMENT', payload: v });
-    const setImages = (v: string[]) => dispatchForm({ type: 'SET_IMAGES', payload: v });
+    // Accept either an array or an updater callback like React's setState
+    const setImages = (v: SetStateAction<string[]>) => {
+        if (typeof v === 'function') {
+            const updater = v as (prev: string[]) => string[];
+            dispatchForm({ type: 'SET_IMAGES', payload: updater(formState.images) });
+        } else {
+            dispatchForm({ type: 'SET_IMAGES', payload: v });
+        }
+    };
 
     const setShowScanner = (v: boolean) => dispatchUi({ type: 'SET_SHOW_SCANNER', payload: v });
     const setShowClientModal = (v: boolean) => dispatchUi({ type: 'SET_SHOW_CLIENT_MODAL', payload: v });
