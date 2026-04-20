@@ -5,7 +5,7 @@ import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
 import { useEffect, useReducer, type SetStateAction } from "react";
 import { Alert } from "react-native";
 import { ReturnBySerialDto } from "../interfaces/returnbyserialDTO";
-import { createDevolucion, getArts, getBySerial, getClients, getMotives, getOrderByFactNumber } from "../services/ReturnReportService";
+import { getArts, getBySerial, getClients, getMotives, getOrderByFactNumber } from "../services/ReturnReportService";
 import { Articulo } from "../types/Articulo";
 import { CreateDevolucion } from "../types/createDevolucion";
 import { BarcodeItem } from "../types/Items";
@@ -163,7 +163,7 @@ export function useReturnReport() {
     const setCodzon = (v: string) => dispatchProduct({ type: 'SET_CODZON', payload: v });
     const setArtList = (v: Articulo[]) => dispatchProduct({ type: 'SET_ART_LIST', payload: v });
     const setMotives = (v: Motive[]) => dispatchProduct({ type: 'SET_MOTIVES', payload: v });
-    const setFactNum = (v: string | null) => dispatchProduct({ type: 'SET_FACTNUM', payload: v });
+    const setFactNum = (v: number | null) => dispatchProduct({ type: 'SET_FACTNUM', payload: v });
     const setPrednum = (v: number | null) => dispatchProduct({ type: 'SET_PREDNUM', payload: v });
     const setPednum = (v: number | null) => dispatchProduct({ type: 'SET_PEDNUM', payload: v });
     const setFedespacho = (v: string | null) => dispatchProduct({ type: 'SET_FEDESPACHO', payload: v });
@@ -352,7 +352,7 @@ export function useReturnReport() {
             const raw: any = rawData;
 
             const dto: ReturnBySerialDto = {
-                fact_num: raw.fact_num ?? 0,
+                fact_num: raw.fact_num ,
                 fecemis: raw.fecemis ?? null,
                 codcli: raw.codcli ?? '',
                 clides: raw.clides ?? '',
@@ -372,6 +372,7 @@ export function useReturnReport() {
                 fecdesp: raw.fecdesp ?? null,
                 codzon: raw.codzon ?? ''
             };
+         
 
             setBarcode(dto.codbarra);
             setCodeArt(dto.codart);
@@ -381,6 +382,7 @@ export function useReturnReport() {
             setSerial(dto.serial);
             setPednum( Number(dto.pednum) || null);
             setPrednum( Number(dto.prednum) || null);
+            setFactNum( Number(dto.fact_num));
             setFedespacho(dto.fecdesp ? String(dto.fecdesp) : null);
             setZondes(dto.zondes);
             setCodzon(dto.codzon || '');
@@ -482,7 +484,7 @@ export function useReturnReport() {
                 serial1: serial,
                 motivo: reason,
                 obsregistro: comment,     
-                factnum: Number(factNumber) || Number(prednum) || 0,
+                factnum: Number(factNumber) || 0,
                 owneruser: 1,
                 rif: selectedClient?.rif || '',
                 telefono: selectedClient?.telefonos || '',
@@ -522,7 +524,8 @@ export function useReturnReport() {
                 }
             };
             
-            const success = await createDevolucion(devolucion);
+            const success = true//await createDevolucion(devolucion);
+            console.log("Devolución a registrar:", devolucion);
 
             if (success) {
                 overlay.show("success", {
