@@ -2,7 +2,7 @@
   "expo": {
     "name": "Frigilux App SGE",
     "slug": "frigiluxapp",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "owner": "cyberluxexpo",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

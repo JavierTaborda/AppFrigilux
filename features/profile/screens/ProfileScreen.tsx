@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { getBiometricEnabled } from "@/utils/biometricFlag";
 import { FontAwesome6 } from "@expo/vector-icons";
+import Constants from "expo-constants";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -14,6 +15,7 @@ import {
   Text,
   View,
 } from "react-native";
+import pkg from "../../../package.json";
 import BiometricToggle from "../components/BiometricView";
 
 const TERMS_URL = `${process.env.EXPO_PUBLIC_WEB_URL}/privacy`;
@@ -21,6 +23,9 @@ const TERMS_URL = `${process.env.EXPO_PUBLIC_WEB_URL}/privacy`;
 export default function ProfileScreen() {
   const { session, name, userId, signOut, signOutSoft, initializeAuth } =
     useAuthStore();
+  const expoVersion =
+    Constants.expoConfig?.version ?? (Constants.expoVersion as any)?.version;
+  const appVersion = expoVersion ?? pkg.version ?? "";
   const [isLoading, setIsLoading] = useState(false);
   const { isDark } = useThemeStore();
   const { deleteAccount } = useAppStatusStore();
@@ -143,6 +148,11 @@ export default function ProfileScreen() {
             </>
           )}
         </Pressable>
+        <View className="items-center px-4 py-3 rounded-xl w-[80%] bg-componentbg dark:bg-dark-componentbg">
+          <Text className="text-sm text-foreground dark:text-dark-foreground">
+            Versión: {appVersion}
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
