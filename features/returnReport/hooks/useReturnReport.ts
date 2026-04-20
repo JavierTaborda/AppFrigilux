@@ -402,11 +402,17 @@ export function useReturnReport() {
 
             setIsData(true)
 
-        } catch (error: unknown) {
-            const message = getErrorMessage(error);
-            console.error("Error obteniendo datos por serial:", message, error);
-            Alert.alert("Error", `Ocurrió un error al obtener los datos: ${message}`);
-        } finally {
+        } catch (err: any) {
+
+            const errorMessage = err.response?.data?.message || "Error inesperado en el servidor";
+            overlay.show("warning", {
+                title: `Error al buscar por serial`,
+                subtitle: ` ${errorMessage}`,
+            });
+
+
+        }
+         finally {
             setLoadingData(false);
         }
     };
