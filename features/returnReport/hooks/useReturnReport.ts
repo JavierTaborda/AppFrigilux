@@ -5,7 +5,7 @@ import { pickFromCamera, pickFromGallery } from "@/utils/pickImage";
 import { useEffect, useReducer, type SetStateAction } from "react";
 import { Alert } from "react-native";
 import { ReturnBySerialDto } from "../interfaces/returnbyserialDTO";
-import { getArts, getBySerial, getClients, getMotives, getOrderByFactNumber } from "../services/ReturnReportService";
+import { createDevolucion, getArts, getBySerial, getClients, getMotives, getOrderByFactNumber } from "../services/ReturnReportService";
 import { Articulo } from "../types/Articulo";
 import { CreateDevolucion } from "../types/createDevolucion";
 import { BarcodeItem } from "../types/Items";
@@ -310,6 +310,9 @@ export function useReturnReport() {
 
             setBarcodeList(artArray.map((item: Articulo) => ({ co_art: item.co_art, codbarra: item.codbarra })));
             setArtList(artArray);
+            // Ensure numeric and string factura values are available to consumers
+            setFactNum(Number(dto.fact_num) || null);
+            setFactNumber(dto.fact_num ? String(dto.fact_num) : "");
             setIsData(true)
 
 
@@ -380,9 +383,10 @@ export function useReturnReport() {
             setVenDes(dto.vendes);
             setArtDes(dto.artdes);
             setSerial(dto.serial);
-            setPednum( Number(dto.pednum) || null);
-            setPrednum( Number(dto.prednum) || null);
-            setFactNum( Number(dto.fact_num));
+            setPednum(Number(dto.pednum) || null);
+            setPrednum(Number(dto.prednum) || null);
+            setFactNum(Number(dto.fact_num) || null);
+            setFactNumber(dto.fact_num ? String(dto.fact_num) : "");
             setFedespacho(dto.fecdesp ? String(dto.fecdesp) : null);
             setZondes(dto.zondes);
             setCodzon(dto.codzon || '');
@@ -524,7 +528,7 @@ export function useReturnReport() {
                 }
             };
             
-            const success = true//await createDevolucion(devolucion);
+            const success = await createDevolucion(devolucion);
             console.log("Devolución a registrar:", devolucion);
 
             if (success) {
