@@ -37,7 +37,7 @@ export default function HomeScreen() {
       keyboardShouldPersistTaps="handled"
       className="bg-background dark:bg-dark-background px-4 pt-2"
     >
-      {role === "8" ? (
+      {role != "8" ? (
         <HomePrincipalScreen
           name={name}
           totalPedidos={totalPedidos}
