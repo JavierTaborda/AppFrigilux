@@ -78,9 +78,15 @@ export function useOrderSearch(searchText: string, statusFilter?: string) {
 
 
 
-    const handleRefresh = useCallback((filtersrefresh: OrderFilters) => {
+    const handleRefresh = useCallback((filtersrefresh: OrderFilters, isCancel?: boolean) => {
         wrapRefresh(
-            () => getPedidosFiltrados(filtersrefresh).then((data) => setOrders(data)),
+            () => {
+                if (isCancel) {
+                    return getPedidosFiltradotoCancel(filtersrefresh).then((data) => setOrders(data));
+                } else {
+                    return getPedidosFiltrados(filtersrefresh).then((data) => setOrders(data));
+                }
+            },
             () => setError("Ocurrió un error al cargar los datos...")
         );
     }, [wrapRefresh]);

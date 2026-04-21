@@ -73,14 +73,14 @@ export default function CancelOrderScreen() {
                   subtitle: `Pedido ${order.fact_num} anulado con éxito`,
                 });
 
-                await handleRefresh;
+                await handleRefresh(filters, true);
               } else {
                 throw result.error;
               }
             } catch (err) {
               overlay.show("error", {
                 title: `Error al anular pedido`,
-                subtitle: `No se pudo anular el pedido ${order.fact_num}, itente nuvamente.`,
+                subtitle: `No se pudo anular el pedido ${order.fact_num}, intente nuevamente.`,
               });
             } finally {
               setSaving(false);
@@ -114,7 +114,7 @@ export default function CancelOrderScreen() {
   if (loading) return <Loader />;
 
   if (error) {
-    return <ErrorView error={error} getData={fetchOrders} />;
+    return <ErrorView error={error} getData={() => fetchOrders()} />;
   }
 
   return (
@@ -134,7 +134,7 @@ export default function CancelOrderScreen() {
           keyExtractor={(item, index) => `${item.fact_num}-${index}`}
           refreshing={refreshing}
           canRefresh={canRefresh}
-          handleRefresh={() => handleRefresh(filters)}
+          handleRefresh={() => handleRefresh(filters, true)}
           cooldown={cooldown}
           showtitle={true}
           title={`${totalOrders} ${totalOrders > 1 ? "pedidos" : "pedido"}`}

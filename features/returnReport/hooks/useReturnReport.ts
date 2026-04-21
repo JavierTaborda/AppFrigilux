@@ -515,27 +515,27 @@ export function useReturnReport() {
                     
                     ftdevolucion: {
                         devonum: '',
-                        namefoto1: uploadedUrls[0] || '',
-                        namefoto2: uploadedUrls[1] || '',
-                        namefoto3: uploadedUrls[2] || '',
-                        namefoto4: uploadedUrls[3] || '',
-                        namefoto5: uploadedUrls[4] || '',
-                        namefoto6: uploadedUrls[5] || '',
-                        namefoto7: uploadedUrls[6] || '',
-                        namefoto8: uploadedUrls[7] || '',
-                        namefoto9: uploadedUrls[8] || '',
-                        namefoto10: uploadedUrls[9] || '',
-                        namefoto11: uploadedUrls[10] || '',
-                        namefoto12: uploadedUrls[11] || '',
-                        namefoto13: uploadedUrls[12] || '',
-                        namefoto14: uploadedUrls[13] || '',
-                        namefoto15: uploadedUrls[14] || '',
+                        namefoto1: uploadedUrls[0] || null,
+                        namefoto2: uploadedUrls[1] || null,
+                        namefoto3: uploadedUrls[2] || null,
+                        namefoto4: uploadedUrls[3] || null,
+                        namefoto5: uploadedUrls[4] || null,
+                        namefoto6: uploadedUrls[5] || null,
+                        namefoto7: uploadedUrls[6] || null,
+                        namefoto8: uploadedUrls[7] || null,
+                        namefoto9: uploadedUrls[8] || null,
+                        namefoto10: uploadedUrls[9] || null,
+                        namefoto11: uploadedUrls[10] || null,
+                        namefoto12: uploadedUrls[11] || null,
+                        namefoto13: uploadedUrls[12] || null,
+                        namefoto14: uploadedUrls[13] || null,
+                        namefoto15: uploadedUrls[14] || null    ,
                     },
                 }
             };
             
             const success = await createDevolucion(devolucion);
-            console.log("Devolución a registrar:", devolucion);
+            
 
             if (success) {
                 overlay.show("success", {

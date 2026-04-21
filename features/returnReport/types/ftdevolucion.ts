@@ -1,18 +1,18 @@
 export interface ftdevolucion    {
     devonum: string;
-    namefoto1:string;
-    namefoto2:string;
-    namefoto3:string;
-    namefoto4:string;
-    namefoto5:string;
-    namefoto6:string;
-    namefoto7:string;
-    namefoto8:string;
-    namefoto9:string;
-    namefoto10:string;
-    namefoto11:string;
-    namefoto12:string;
-    namefoto13:string;
-    namefoto14:string;
-    namefoto15:string;  
+    namefoto1:string | null;
+    namefoto2:string | null;
+    namefoto3:string | null;
+    namefoto4:string | null;
+    namefoto5:string | null;
+    namefoto6:string | null;
+    namefoto7:string | null;
+    namefoto8:string | null;
+    namefoto9:string | null;
+    namefoto10:string | null;
+    namefoto11:string | null;
+    namefoto12:string | null;
+    namefoto13:string | null;
+    namefoto14:string | null;
+    namefoto15:string | null;  
 }
