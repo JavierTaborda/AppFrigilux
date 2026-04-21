@@ -36,37 +36,40 @@ export default function CustomDrawerContent(props: any) {
         <Text className="text-sm font-semibold  justify-center text-center text-foreground dark:text-dark-foreground mt-1 mb-1">
           plataforma SGE
         </Text>
-
-        <DrawerItem
-          //emoji={emojis.package}
-          //emoji={emojis.approved}
-          // icon="bag-check"
-          label="Aprobación Pedidos"
-          href="/(main)/(tabs)/(orders)/orderApproval"
-          currentPath={currentPath}
-        />
-        <DrawerItem
-          label="Consultar Pedidos"
-          href="/(main)/(tabs)/(orders)/orderSearch"
-          currentPath={currentPath}
-        />
-        <DrawerItem
-          label="Anular Pedidos"
-          href="/(main)/(tabs)/(createOrder)/order-cancel"
-          currentPath={currentPath}
-        />
-        <DrawerItem
-          label="Resumen Metas Ventas"
-          href="/(main)/(tabs)/(goals)/goalsResumen"
-          currentPath={currentPath}
-        />
-        <DrawerItem
-          label="Registrar Pedido"
-          href="/(main)/(tabs)/(createOrder)/create-order"
-          currentPath={currentPath}
-        />
-
-        {role === "1" && (
+        {role != "8" ? (
+          <>
+            <DrawerItem
+              label="Aprobación Pedidos"
+              href="/(main)/(tabs)/(orders)/orderApproval"
+              currentPath={currentPath}
+            />
+            <DrawerItem
+              label="Consultar Pedidos"
+              href="/(main)/(tabs)/(orders)/orderSearch"
+              currentPath={currentPath}
+            />
+            <DrawerItem
+              label="Anular Pedidos"
+              href="/(main)/(tabs)/(createOrder)/order-cancel"
+              currentPath={currentPath}
+            />
+            <DrawerItem
+              label="Resumen Metas Ventas"
+              href="/(main)/(tabs)/(goals)/goalsResumen"
+              currentPath={currentPath}
+            />
+            <DrawerItem
+              label="Registrar Pedido"
+              href="/(main)/(tabs)/(createOrder)/create-order"
+              currentPath={currentPath}
+            />
+            <DrawerItem
+              label="Reportar Devolución"
+              href="/(main)/(tabs)/(returnReport)"
+              currentPath={currentPath}
+            />
+          </>
+        ) : (
           <DrawerItem
             //emoji={emojis.list}
             //emoji={emojis.approved}
