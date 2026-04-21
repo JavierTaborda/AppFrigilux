@@ -134,15 +134,15 @@ export default function HomeScreen() {
               bgColor="bg-green-400 dark:bg-green-300"
             />
           </View>
-          {/* <View className="w-[49%] mb-4">
+          <View className="w-[49%] mb-4">
             <ModuleButton
               //icon={emojis.list}
               //icon={emojis.approved}
               label="Reportar Devolución "
               onPress={() => router.push("/(main)/(tabs)/(returnReport)")}
-              bgColor="bg-green-600 dark:bg-green-300"
+              bgColor="bg-green-600 dark:bg-green-600"
             />
-          </View> */}
+          </View>
           {/* <View className="w-[49%] mb-4">
             <ModuleButton
               //icon={emojis.bags}
