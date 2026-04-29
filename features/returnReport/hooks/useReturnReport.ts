@@ -220,9 +220,6 @@ export function useReturnReport() {
     );
     const overlay = useOverlayStore();
 
-
-
-
     const pickImage = async () => {
         const result = await pickFromGallery();
         if (!result) return;
@@ -247,10 +244,21 @@ export function useReturnReport() {
         if (!result) return;
 
         setImages([...images, result].slice(0, MAX_IMAGES));
-    };
+    };   
+    
+    useEffect(() => {
+        if (!codeArt) return;
+        if (artList.length < 1) return
+
+        setArtDes(artList.find(c => c.co_art === codeArt)?.art_des ?? '');
+        setBarcode(barcodeList.find(b => b.co_art === codeArt)?.codbarra ?? '');
+    }, [codeArt]);
+
 
     const handleSearchFactNum = async () => {
-        if (factNumber.length < 1) {
+        const normalizedFactNumber = Number(factNumber.trim());
+
+        if (!normalizedFactNumber || Number.isNaN(Number(normalizedFactNumber))) {
             Alert.alert("Error", "Ingrese un número de factura válido.");
             return;
         }
@@ -258,29 +266,35 @@ export function useReturnReport() {
         try {
             setLoadingData(true);
 
-            const [rawData, motives] = await Promise.all([getOrderByFactNumber(Number(factNumber)), getMotives()]);
-            setMotives(motives)
+            const [rawData, motives] = await Promise.all([
+                getOrderByFactNumber(Number(normalizedFactNumber)),
+                getMotives(),
+            ]);
+            setMotives(motives);
 
             if (!rawData) {
-                Alert.alert("Sin resultados", "No se encontró datos  con el número de factura.");
+                Alert.alert("Sin resultados", "No se encontró datos con el número de factura.");
                 setIsData(false);
                 return;
             }
 
-            const raw: any = rawData;
-            const artArray: Articulo[] = raw.art || [];
+            const raw: any = Array.isArray(rawData) ? rawData[0] : rawData;
+            const artArray: Articulo[] = Array.isArray(raw.art)
+                ? raw.art
+                : Array.isArray(raw.arts)
+                    ? raw.arts
+                    : [];
 
             const dto: ReturnBySerialDto = {
-                fact_num: raw.fact_num ?? 0,
+                fact_num: normalizedFactNumber,
                 fecemis: raw.fec_emis ?? raw.fecemis ?? null,
-                
                 codcli: raw.codcli ?? '',
                 clides: raw.clides ?? '',
                 codven: raw.codven ?? '',
                 vendes: raw.vendes ?? '',
-                codart: artArray[0]?.co_art ?? '',
-                artdes: artArray[0]?.art_des ?? '',
-                codbarra: raw.codbarra ?? '',
+                codart: artArray[0]?.co_art ?? raw.codart ?? raw.cod_art ?? '',
+                artdes: artArray[0]?.art_des ?? raw.artdes ?? raw.art_des ?? '',
+                codbarra: raw.codbarra ?? artArray[0]?.codbarra ?? '',
                 serial: raw.serial ?? '',
                 rif: raw.rif ?? '',
                 telefonos: raw.telefonos ?? '',
@@ -288,15 +302,20 @@ export function useReturnReport() {
                 dir_ent2: raw.dir_ent2 ?? '',
                 prednum: raw.prednum ?? null,
                 pednum: raw.pednum ?? null,
-                zondes: raw.zondes ?? raw.zon_des ?? raw.zone?.zondes ?? raw.zone?.zon_des ?? '',
+                zondes: raw.zondes ?? '',
                 fecdesp: raw.fecdesp ?? null,
                 codzon: raw.codzon ?? '',
             };
 
             setBarcode(dto.codbarra);
+            setCodeArt(dto.codart);
+            setArtDes(dto.artdes);
             setCodeVen(dto.codven);
             setVenDes(dto.vendes);
             setSerial(dto.serial);
+            setPrednum(Number(dto.prednum) || null);
+            setPednum(Number(dto.pednum) || null);
+            setFedespacho(dto.fecdesp ? String(dto.fecdesp) : null);
             setZondes(dto.zondes);
             setCodzon(dto.codzon || '');
 
@@ -305,17 +324,19 @@ export function useReturnReport() {
                 cli_des: dto.clides,
                 rif: dto.rif || "",
                 telefonos: dto.telefonos || "",
-                email: dto.email || ""
+                dir_ent2: dto.dir_ent2 || "",
+                email: dto.email || "",
             });
 
-            setBarcodeList(artArray.map((item: Articulo) => ({ co_art: item.co_art, codbarra: item.codbarra })));
+            setBarcodeList(artArray.map((item: Articulo) => ({
+                co_art: item.co_art,
+                codbarra: item.codbarra,
+            })));
             setArtList(artArray);
-            // Ensure numeric and string factura values are available to consumers
             setFactNum(Number(dto.fact_num) || null);
             setFactNumber(dto.fact_num ? String(dto.fact_num) : "");
-            setIsData(true)
-
-
+            setIsManual(false);
+            setIsData(true);
         } catch (error: unknown) {
             const message = getErrorMessage(error);
             console.error("Error obteniendo datos por número de factura:", message, error);
@@ -325,13 +346,6 @@ export function useReturnReport() {
         }
     };
 
-    useEffect(() => {
-        if (!codeArt) return;
-        if (artList.length < 1) return
-
-        setArtDes(artList.find(c => c.co_art === codeArt)?.art_des ?? '');
-        setBarcode(barcodeList.find(b => b.co_art === codeArt)?.codbarra ?? '');
-    }, [codeArt]);
 
     const handleSearchSerial = async () => {
         if (serial.length <= 3) {
@@ -533,7 +547,7 @@ export function useReturnReport() {
                     },
                 }
             };
-            
+           
             const success = await createDevolucion(devolucion);
             
 
@@ -602,6 +616,7 @@ export function useReturnReport() {
         images, setImages,
         showScanner, setShowScanner,
         factNumber, setFactNumber,
+        prednum, setPrednum,
         loadingData,
         isData,
         artList,

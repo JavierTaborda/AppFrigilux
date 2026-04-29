@@ -12,7 +12,7 @@ export const getOrderByFactNumber = async (factNumber: number) => {
 
     return response.data;
   }
-  catch (error) {
+  catch (error) {  
     console.error("Error obteniendo pedidos", error);
     throw error;
   }

@@ -8,7 +8,6 @@ type ToggleSelectorProps = {
   setStartMethod: (m: "serial" | "fact") => void;
   animatedStyle: any;
   animatedStyleToggle: any;
-  emojis: any;
 };
 
 const ToggleSelector = memo(
@@ -17,7 +16,6 @@ const ToggleSelector = memo(
     setStartMethod,
     animatedStyle,
     animatedStyleToggle,
-    emojis,
   }: ToggleSelectorProps) => (
     <Animated.View
       style={animatedStyleToggle}

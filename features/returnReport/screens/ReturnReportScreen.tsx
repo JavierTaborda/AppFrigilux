@@ -28,6 +28,7 @@ import ClientModal from "../../../components/inputs/ClientModal";
 import ArtsModal from "../components/ArtsModal";
 import MotiveModal from "../components/MotiveModal";
 import SerialInput from "../components/SerialInput";
+import ToggleSelector from "../components/ToggleSelector";
 import { useReturnReport } from "../hooks/useReturnReport";
 
 // Constants for better maintainability
@@ -75,6 +76,8 @@ export default function ProductDefectScreen() {
     setVenDes,
     factNumber,
     setFactNumber,
+    prednum,
+    setPrednum,
     handleSearchFactNum,
     handleSearchSerial,
     clearForm,
@@ -237,6 +240,21 @@ export default function ProductDefectScreen() {
     setShowMotiveModal(true);
   }, []);
 
+  const handleManualFactNumberChange = useCallback(
+    (value: string) => {
+      setFactNumber(value.replace(/\D/g, ""));
+    },
+    [setFactNumber],
+  );
+
+  const handleManualPrednumChange = useCallback(
+    (value: string) => {
+      const numericValue = value.replace(/\D/g, "");
+      setPrednum(numericValue ? Number(numericValue) : null);
+    },
+    [setPrednum],
+  );
+
   // Render helpers
   const renderHeader = () => (
     <View>
@@ -252,14 +270,13 @@ export default function ProductDefectScreen() {
     !isData &&
     !isManual && (
       <>
-        {/* <ToggleSelector
+        <ToggleSelector
           startMethod={startMethod}
           setStartMethod={setStartMethod}
           animatedStyle={animatedStyle}
           animatedStyleToggle={animatedStyleToggle}
-          emojis={emojis}
         />
-        <View className="" /> */}
+        <View className="" />
       </>
     );
 
@@ -300,15 +317,20 @@ export default function ProductDefectScreen() {
                 placeholder="Número de factura"
                 keyboardType="numeric"
                 value={factNumber}
-                onChangeText={setFactNumber}
+                onChangeText={handleManualFactNumberChange}
               />
             </View>
             <Animated.View style={btnAnimatedStyle}>
               <Pressable
                 onPress={handleSearchFactNum}
+                disabled={loadingData || !factNumber.trim()}
                 className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl"
               >
-                <Text className="text-white font-semibold">Buscar</Text>
+                {loadingData ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-white font-semibold">Buscar</Text>
+                )}
               </Pressable>
             </Animated.View>
           </View>
@@ -328,10 +350,6 @@ export default function ProductDefectScreen() {
 
   const renderProductInfo = () => (
     <Animated.View className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
-      <Text className="text-lg font-semibold mb-1 text-foreground dark:text-dark-foreground">
-        Información general
-      </Text>
-
       {startMethod === "fact" || isManual ? (
         <View className="gap-2">
           <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
@@ -401,21 +419,42 @@ export default function ProductDefectScreen() {
         Cliente
       </Text>
       {isManual ? (
-        <Pressable
-          onPress={handleClientSelectPress}
-          className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl"
-        >
-          <Text className="text-foreground dark:text-dark-foreground">
-            {selectedClient
-              ? `${selectedClient.co_cli.trim()} - ${selectedClient.cli_des.trim()}`
-              : "Seleccionar cliente..."}
+        <>
+          <Pressable
+            onPress={handleClientSelectPress}
+            className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl"
+          >
+            <Text className="text-foreground dark:text-dark-foreground">
+              {selectedClient
+                ? `${selectedClient.co_cli.trim()} - ${selectedClient.cli_des.trim()}`
+                : "Seleccionar cliente..."}
+            </Text>
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color={isDark ? "#fff" : "#333"}
+            />
+          </Pressable>
+          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+            Número de factura
           </Text>
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color={isDark ? "#fff" : "#333"}
+          <CustomTextInput
+            placeholder="Ingrese el número de factura"
+            keyboardType="numeric"
+            value={factNumber}
+            onChangeText={handleManualFactNumberChange}
           />
-        </Pressable>
+
+          <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+            Número de predespacho
+          </Text>
+          <CustomTextInput
+            placeholder="Ingrese el número de predespacho"
+            keyboardType="numeric"
+            value={prednum?.toString() ?? ""}
+            onChangeText={handleManualPrednumChange}
+          />
+        </>
       ) : (
         <Text className="text-foreground dark:text-dark-foreground flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl">
           {selectedClient
@@ -532,46 +571,6 @@ export default function ProductDefectScreen() {
       )}
     </View>
   );
-  // const renderImageSection = () => (
-  //   <View className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
-  //     <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
-  //       Cargar imagen
-  //     </Text>
-  //     <View className="flex-row gap-3 mb-3">
-  //       <Pressable
-  //         onPress={pickImage}
-  //         className="flex-1 border border-primary dark:border-dark-primary py-3 rounded-xl"
-  //       >
-  //         <View className="flex-row items-center justify-center">
-  //           <Ionicons name="images-outline" size={22} color={isDarkPrimary} />
-  //           <Text className="text-secondary dark:text-dark-secondary font-bold ml-2">
-  //             Galería
-  //           </Text>
-  //         </View>
-  //       </Pressable>
-  //       <Pressable
-  //         onPress={handlePickFromCamera}
-  //         className="flex-1 border border-secondary dark:border-dark-secondary py-3 rounded-xl"
-  //       >
-  //         <View className="flex-row items-center justify-center">
-  //           <Ionicons name="camera" size={22} color={isDarkPrimary} />
-  //           <Text className="text-secondary dark:text-dark-secondary font-bold ml-2">
-  //             Cámara
-  //           </Text>
-  //         </View>
-  //       </Pressable>
-  //     </View>
-
-  //     {images && (
-  //       <Animated.View
-  //         style={imageAnimatedStyle}
-  //         className="h-48 rounded-2xl overflow-hidden border border-dotted border-gray-300 dark:border-gray-600"
-  //       >
-  //         <CustomImage img={image} />
-  //       </Animated.View>
-  //     )}
-  //   </View>
-  // );
 
   const renderSaveButton = () => (
     <View className="mt-6 mb-4">
@@ -676,7 +675,7 @@ export default function ProductDefectScreen() {
     <View className="flex-1 bg-primary dark:bg-dark-primary">
       <View className="flex-1 bg-background dark:bg-dark-background rounded-t-3xl">
         <ScrollView
-          contentContainerClassName="py-4 px-5 pb-44 gap-2"
+          contentContainerClassName="py-4 px-5 pb-44 gap-1"
           keyboardShouldPersistTaps="handled"
         >
           {renderHeader()}
