@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Overlay whith `react-native-confetti-cannon`
 - Add `expo-image-manipulator` to compress the image
 - Add support for roles in home screen and drawer
+- Update to expo 55
 
 ### Changed
 

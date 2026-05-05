@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect } from "react";
+import React, { forwardRef, useEffect, useRef } from "react";
 import {
   Dimensions,
   KeyboardAvoidingView,
@@ -25,7 +25,7 @@ import { scheduleOnRN } from "react-native-worklets";
 
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appTheme } from "@/utils/appTheme";
-import { BlurView } from "expo-blur";
+import { BlurTargetView, BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type BottomModalProps = {
@@ -65,7 +65,7 @@ export default function BottomModal({
 
   const { isDark } = useThemeStore();
   const translateY = useSharedValue(modalHeight);
-
+  const targetRef = useRef<View | null>(null);
   useEffect(() => {
     translateY.value = withSpring(visible ? 0 : modalHeight, ANIMATION_CONFIG);
   }, [visible, modalHeight]);
@@ -109,9 +109,12 @@ export default function BottomModal({
         >
           <View style={{ flex: 1 }}>
             {/* Backdrop */}
+            <BlurTargetView ref={targetRef} />
             <BlurView
               intensity={40}
               tint="dark"
+              blurTarget={targetRef}
+              blurMethod="dimezisBlurView"
               style={StyleSheet.absoluteFillObject}
             >
               <TouchableOpacity
