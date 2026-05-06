@@ -94,6 +94,7 @@ export default function BottomModal({
 
   const bgColor = isDark ? appTheme.dark.background : appTheme.background;
 
+  
   return (
     <Modal
       visible={visible}
