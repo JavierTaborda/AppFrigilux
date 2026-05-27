@@ -6,7 +6,7 @@ import { useThemeStore } from "@/stores/useThemeStore";
 import { appTheme } from "@/utils/appTheme";
 import { imageURL } from "@/utils/imageURL";
 import { safeHaptic } from "@/utils/safeHaptics";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,

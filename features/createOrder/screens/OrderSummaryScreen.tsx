@@ -7,7 +7,7 @@ import { useThemeStore } from "@/stores/useThemeStore";
 import { ClientData } from "@/types/clients";
 import { appTheme } from "@/utils/appTheme";
 import { safeHaptic } from "@/utils/safeHaptics";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {

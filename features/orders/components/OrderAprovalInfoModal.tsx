@@ -1,7 +1,7 @@
 import BottomModal from "@/components/ui/BottomModal";
 import { formatDateMMM_dot_dd_yyyy } from "@/utils/datesFormat";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { OrderApproval } from "../types/OrderApproval";
 

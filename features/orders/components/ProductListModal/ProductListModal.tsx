@@ -3,7 +3,7 @@ import ProductSkeleton from "./ProductSkeleton";
 import ProductItem from "./ProductsItem";
 
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { OrderApprovalProduct } from "../../types/OrderApproval";

@@ -2,7 +2,7 @@ import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
 import BottomModal from "@/components/ui/BottomModal";
 import CustomFlatList from "@/components/ui/CustomFlatList";
 import ErrorView from "@/components/ui/ErrorView";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,

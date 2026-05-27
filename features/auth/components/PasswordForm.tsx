@@ -1,7 +1,7 @@
 import EmailInput from "@/components/inputs/EmailImput";
 import PasswordInput from "@/components/inputs/PasswordInput";
 import { getBiometricEnabled } from "@/utils/biometricFlag";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { useEffect, useState } from "react";
 import { Image, Platform, Text, TouchableOpacity } from "react-native";
 

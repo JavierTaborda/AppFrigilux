@@ -1,6 +1,6 @@
 import { BlockedScreen } from "@/components/ui/BlockedScreen";
 import { useAppStatusStore } from "@/stores/useAppStatus";
-import { FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 

@@ -3,7 +3,7 @@ import { useAppStatusStore } from "@/stores/useAppStatus";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { getBiometricEnabled } from "@/utils/biometricFlag";
-import { FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import Constants from "expo-constants";
 import { useState } from "react";
 import {
@@ -125,6 +125,7 @@ export default function ProfileScreen() {
         >
           <FontAwesome6
             name="file-contract"
+            iconStyle="solid"
             size={24}
             color={isDark ? "#fff" : "#000"}
           />
@@ -141,7 +142,12 @@ export default function ProfileScreen() {
             <ActivityIndicator color="#fff" />
           ) : (
             <>
-              <FontAwesome6 name="user-slash" size={24} color={"white"} />
+              <FontAwesome6
+                name="user-slash"
+                iconStyle="solid"
+                size={24}
+                color={"white"}
+              />
               <Text className="text-white font-medium">
                 Solicitar eliminación de cuenta
               </Text>

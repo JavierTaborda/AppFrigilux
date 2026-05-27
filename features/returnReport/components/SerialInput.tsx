@@ -1,5 +1,5 @@
 import CustomTextInput from "@/components/inputs/CustomTextInput";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { TouchableOpacity, View } from "react-native";
 
 type Props = {

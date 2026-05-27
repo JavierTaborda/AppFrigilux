@@ -4,7 +4,7 @@ import {
   currencyVES,
   totalVenezuela,
 } from "@/utils/moneyFormat";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import Animated, {

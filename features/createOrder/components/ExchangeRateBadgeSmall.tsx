@@ -1,7 +1,7 @@
 import { ExchangeRate } from "@/types/exchangerate";
 import { currencyDollar } from "@/utils/moneyFormat";
 import { safeHaptic } from "@/utils/safeHaptics";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {

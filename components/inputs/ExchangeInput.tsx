@@ -1,7 +1,7 @@
 import { ExchangeRate } from "@/types/exchangerate";
 import { formatDatedd_dot_MMM_yyyy } from "@/utils/datesFormat";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import CustomTextInput from "./CustomTextInput";

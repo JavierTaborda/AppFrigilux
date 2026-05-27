@@ -133,7 +133,7 @@
 import ProgressBar from "@/components/charts/ProgressBar";
 import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { memo } from "react";
 import { Text, View } from "react-native";
 import { Goals } from "../types/Goals";

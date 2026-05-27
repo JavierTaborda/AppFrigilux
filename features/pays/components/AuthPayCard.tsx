@@ -1,7 +1,8 @@
 import { useThemeStore } from '@/stores/useThemeStore';
 import { dateMonthText } from '@/utils/datesFormat';
 import { totalVenezuela } from '@/utils/moneyFormat';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { useState } from 'react';
 import { LayoutAnimation, Platform, Pressable, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';

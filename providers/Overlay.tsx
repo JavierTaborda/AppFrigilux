@@ -1,6 +1,6 @@
 import { useOverlayStore } from "@/stores/useSuccessOverlayStore";
 import { safeHaptic } from "@/utils/safeHaptics";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
 import { useEffect, useRef } from "react";
 import {
   Dimensions,

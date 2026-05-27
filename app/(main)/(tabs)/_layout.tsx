@@ -1,15 +1,16 @@
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appTheme } from "@/utils/appTheme";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { Tabs } from "expo-router";
 import { DrawerToggleButton } from "expo-router/build/react-navigation/drawer";
+import type { ComponentProps } from "react";
 import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function getTabIcon(
   routeName: string,
   focused: boolean,
-): keyof typeof Ionicons.glyphMap {
+): ComponentProps<typeof Ionicons>["name"] {
   switch (routeName) {
     case "(home)/index":
       return focused ? "home" : "home-outline";

@@ -1,7 +1,14 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { BlurView } from "expo-blur";
 import React, { useEffect, useMemo } from "react";
-import { Alert, Dimensions, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -120,7 +127,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
   return (
     <View className="absolute inset-0 z-50">
-      <BlurView intensity={50} tint="dark" className="absolute inset-0">
+      <BlurView intensity={80} tint="default" style={StyleSheet.absoluteFill}>
+        {/* <View className="absolute inset-0 bg-black/25 dark:bg-black/35" /> */}
         <TouchableOpacity
           className="flex-1"
           activeOpacity={1}

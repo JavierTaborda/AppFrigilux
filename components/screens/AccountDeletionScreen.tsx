@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/stores/useAuthStore";
-import { FontAwesome5 } from "@expo/vector-icons";
+import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
 import { Pressable, Text, View } from "react-native";
 
 export default function AccountDeletionScreen({

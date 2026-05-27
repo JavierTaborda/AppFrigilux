@@ -18,7 +18,7 @@ import {
 
 import { useScrollHeader } from "@/hooks/useScrollHeader";
 import { appTheme } from "@/utils/appTheme";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import TitleText from "./TitleText";
 
 type Props<T> = {

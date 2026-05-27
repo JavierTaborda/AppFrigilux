@@ -1,6 +1,6 @@
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appTheme } from "@/utils/appTheme";
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import {

@@ -1,6 +1,6 @@
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appTheme } from "@/utils/appTheme";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { BlurView } from "expo-blur";
 import { useEffect } from "react";
 import { Modal, Text, TouchableOpacity, View } from "react-native";

@@ -1,5 +1,5 @@
 import { useThemeStore } from "@/stores/useThemeStore";
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { useEffect, useRef } from "react";
 import { Animated, Platform, Switch, Text, View } from "react-native";
 

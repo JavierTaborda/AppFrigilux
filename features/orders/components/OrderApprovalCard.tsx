@@ -2,7 +2,7 @@ import { formatDatedd_dot_MMM_yyyy } from '@/utils/datesFormat';
 import { emojis } from '@/utils/emojis';
 import { currencyDollar, totalVenezuela } from '@/utils/moneyFormat';
 import { safeHaptic } from '@/utils/safeHaptics';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from "@react-native-vector-icons/ionicons";
 import React, { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut } from 'react-native-reanimated';
