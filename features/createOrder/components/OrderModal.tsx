@@ -127,10 +127,19 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
   return (
     <View className="absolute inset-0 z-50">
-      <BlurView intensity={80} tint="default" style={StyleSheet.absoluteFill}>
-        {/* <View className="absolute inset-0 bg-black/25 dark:bg-black/35" /> */}
+      <BlurView intensity={40} tint="default" style={StyleSheet.absoluteFill}>
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              backgroundColor: isDark
+                ? "rgba(0, 0, 0, 0.32)"
+                : "rgba(255, 255, 255, 0.22)",
+            },
+          ]}
+        />
         <TouchableOpacity
-          className="flex-1"
+          style={StyleSheet.absoluteFill}
           activeOpacity={1}
           onPress={onClose}
         />
