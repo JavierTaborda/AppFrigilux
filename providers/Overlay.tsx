@@ -101,12 +101,12 @@ export default function Overlay() {
     <>
       <StatusBar translucent backgroundColor="transparent" />
 
-      <View pointerEvents="auto" style={StyleSheet.absoluteFillObject}>
+      <View pointerEvents="auto" style={StyleSheet.absoluteFill}>
         {/* BACKDROP */}
         <Animated.View
           entering={FadeIn.duration(200)}
           exiting={FadeOut.duration(250)}
-          style={[StyleSheet.absoluteFillObject]}
+          style={[StyleSheet.absoluteFill]}
           className="bg-black/70"
         />
 

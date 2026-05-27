@@ -1,6 +1,6 @@
 import { useAuthStore } from "@/stores/useAuthStore";
-import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { useSegments } from "expo-router";
+import { DrawerContentScrollView } from "expo-router/build/react-navigation/drawer";
 import { Image, Text, View } from "react-native";
 import { DrawerItem } from "./DrawerItem";
 

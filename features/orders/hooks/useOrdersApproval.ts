@@ -1,6 +1,6 @@
 import { emojis } from "@/utils/emojis";
 import { useRefreshControl } from "@/utils/userRefreshControl";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Platform, ToastAndroid } from "react-native";
 import {

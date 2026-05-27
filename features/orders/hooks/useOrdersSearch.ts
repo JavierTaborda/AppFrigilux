@@ -1,5 +1,5 @@
 import { useRefreshControl } from "@/utils/userRefreshControl";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import {
