@@ -13,6 +13,7 @@ import {
   Pressable,
   ScrollView,
   Text,
+  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -58,6 +59,8 @@ export default function ProductDefectScreen() {
     setReason,
     comment,
     setComment,
+    quantity,
+    setQuantity,
     images,
     showScanner,
     setShowScanner,
@@ -93,6 +96,7 @@ export default function ProductDefectScreen() {
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
+  const [useQuantity, setUseQuantity] = useState(false);
   const isFormValid = useMemo(() => isFormComplete(), [isFormComplete]);
 
   // Memoized values
@@ -164,6 +168,10 @@ export default function ProductDefectScreen() {
       imageScale.value = withTiming(0.9, { duration: 200 });
     }
   }, [images]);
+
+  useEffect(() => {
+    setUseQuantity(quantity !== null);
+  }, [quantity]);
 
   // Animated styles
   const animatedStyle = useAnimatedStyle(() => ({
@@ -255,13 +263,83 @@ export default function ProductDefectScreen() {
     [setPrednum],
   );
 
+  const handleQuantityChange = useCallback(
+    (value: string) => {
+      const numericValue = value.replace(/\D/g, "");
+
+      if (!numericValue) {
+        setQuantity(null);
+        return;
+      }
+
+      const parsedValue = Number(numericValue);
+      setQuantity(parsedValue > 0 ? parsedValue : 1);
+    },
+    [setQuantity],
+  );
+
+  const handleQuantityBlur = useCallback(() => {
+    if (!useQuantity) return;
+    if (!quantity || quantity < 1) {
+      setQuantity(1);
+    }
+  }, [quantity, setQuantity, useQuantity]);
+
+  const handleQuantityDecrease = useCallback(() => {
+    safeHaptic("light");
+    setQuantity(Math.max(1, (quantity ?? 1) - 1));
+  }, [quantity, setQuantity]);
+
+  const handleQuantityIncrease = useCallback(() => {
+    safeHaptic("light");
+    setQuantity((quantity ?? 0) + 1);
+  }, [quantity, setQuantity]);
+
+  const handleToggleQuantity = useCallback(() => {
+    safeHaptic("light");
+
+    if (useQuantity) {
+      setUseQuantity(false);
+      setQuantity(null);
+      return;
+    }
+
+    setUseQuantity(true);
+    setQuantity(1);
+  }, [setQuantity, useQuantity]);
+
+  const handleQuantityIncreaseByFive = useCallback(() => {
+    safeHaptic("light");
+    setQuantity((quantity ?? 0) + 5);
+  }, [quantity, setQuantity]);
+
+  const handleQuantityDecreaseByFive = useCallback(() => {
+    safeHaptic("light");
+    setQuantity(Math.max(1, (quantity ?? 1) - 5));
+  }, [quantity, setQuantity]);
+
+  const handleQuantityClear = useCallback(() => {
+    safeHaptic("light");
+    setUseQuantity(false);
+    setQuantity(null);
+  }, [setQuantity]);
+
   // Render helpers
   const renderHeader = () => (
-    <View>
-      <View className="flex-row items-center gap-2">
-        <Text className="text-2xl font-extrabold text-foreground dark:text-dark-foreground">
-          Registrar devolución
-        </Text>
+    <View className="mb-2 rounded-2xl bg-componentbg dark:bg-dark-componentbg p-4 border border-gray-200 dark:border-gray-700">
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center gap-2">
+          <View className="w-9 h-9 rounded-full bg-primary/15 dark:bg-dark-primary/20 items-center justify-center">
+            <Ionicons
+              name="bag-handle-outline"
+              size={18}
+              color={isDark ? "#fff" : appTheme.primary.DEFAULT}
+            />
+          </View>
+          <Text className="text-2xl font-extrabold text-foreground dark:text-dark-foreground">
+            Registrar devolución
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -284,10 +362,13 @@ export default function ProductDefectScreen() {
     !isManual && (
       <Animated.View
         style={sectionAnimatedStyleSearch}
-        className="gap-y-1 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs mb-2"
+        className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs mb-2 border border-gray-200/70 dark:border-gray-700"
       >
         {startMethod === "serial" ? (
           <>
+            <Text className="text-xs uppercase tracking-wide text-mutedForeground dark:text-dark-mutedForeground font-semibold">
+              Buscar por serial
+            </Text>
             <SerialInput
               serial={serial}
               setSerial={setSerial}
@@ -300,9 +381,10 @@ export default function ProductDefectScreen() {
                   <Pressable
                     onPress={handleSearchPress}
                     android_ripple={{ color: "rgba(0,0,0,0.05)" }}
-                    className="flex-row items-center justify-center py-3 px-5 rounded-xl border border-primary dark:border-dark-primary bg-transparent"
+                    className="flex-row items-center justify-center py-3 px-5 rounded-full bg-primary dark:bg-dark-primary"
                   >
-                    <Text className="text-primary dark:text-dark-primary font-semibold text-base">
+                    <Ionicons name="search" size={16} color="#fff" />
+                    <Text className="text-white font-semibold text-base ml-2">
                       Buscar serial despachado
                     </Text>
                   </Pressable>
@@ -311,29 +393,39 @@ export default function ProductDefectScreen() {
             )}
           </>
         ) : (
-          <View className="flex-row gap-2 items-center">
-            <View className="flex-1">
-              <CustomTextInput
-                placeholder="Número de factura"
-                keyboardType="numeric"
-                value={factNumber}
-                onChangeText={handleManualFactNumberChange}
-              />
+          <>
+            <Text className="text-xs uppercase tracking-wide text-mutedForeground dark:text-dark-mutedForeground font-semibold">
+              Buscar por factura
+            </Text>
+            <View className="flex-row gap-2 items-center">
+              <View className="flex-1">
+                <CustomTextInput
+                  placeholder="Número de factura"
+                  keyboardType="numeric"
+                  value={factNumber}
+                  onChangeText={handleManualFactNumberChange}
+                />
+              </View>
+              <Animated.View style={btnAnimatedStyle}>
+                <Pressable
+                  onPress={handleSearchFactNum}
+                  disabled={loadingData || !factNumber.trim()}
+                  className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-full flex-row items-center"
+                >
+                  {loadingData ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <>
+                      <Ionicons name="search" size={16} color="#fff" />
+                      <Text className="text-white font-semibold ml-1">
+                        Buscar
+                      </Text>
+                    </>
+                  )}
+                </Pressable>
+              </Animated.View>
             </View>
-            <Animated.View style={btnAnimatedStyle}>
-              <Pressable
-                onPress={handleSearchFactNum}
-                disabled={loadingData || !factNumber.trim()}
-                className="bg-primary dark:bg-dark-primary py-3 px-5 rounded-xl"
-              >
-                {loadingData ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text className="text-white font-semibold">Buscar</Text>
-                )}
-              </Pressable>
-            </Animated.View>
-          </View>
+          </>
         )}
       </Animated.View>
     );
@@ -349,7 +441,10 @@ export default function ProductDefectScreen() {
     );
 
   const renderProductInfo = () => (
-    <Animated.View className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+    <Animated.View className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs border border-gray-200/70 dark:border-gray-700">
+      <Text className="text-xs uppercase tracking-wide text-mutedForeground dark:text-dark-mutedForeground font-semibold">
+        Producto y cliente
+      </Text>
       {startMethod === "fact" || isManual ? (
         <View className="gap-2">
           <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
@@ -391,7 +486,7 @@ export default function ProductDefectScreen() {
           </Text>
           <View
             className="flex-row items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 
-                 bg-white dark:bg-dark-componentbg"
+               bg-transparent dark:bg-dark-componentbg"
           >
             {codeArt ? (
               <View className="w-20 h-20 rounded-lg bg-bgimages overflow-hidden">
@@ -414,6 +509,103 @@ export default function ProductDefectScreen() {
           </View>
         </>
       )}
+      <View>
+        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+          Cantidad (opcional)
+        </Text>
+      </View>
+      <View className="gap-2 pt-1.5 rounded-xl border border-gray-300 dark:border-gray-600 p-3">
+        <View className="flex-row items-center justify-between">
+          {useQuantity && (
+            <Pressable
+              onPress={handleQuantityClear}
+              className="px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-600"
+              accessibilityLabel="Quitar cantidad"
+              accessibilityRole="button"
+            >
+              <Text className="text-xs font-semibold text-mutedForeground dark:text-dark-mutedForeground">
+                Quitar
+              </Text>
+            </Pressable>
+          )}
+        </View>
+
+        {!useQuantity ? (
+          <Pressable
+            onPress={handleToggleQuantity}
+            className="mt-2 rounded-xl bg-primary dark:bg-dark-primary py-3 px-4 flex-row items-center justify-center"
+            accessibilityLabel="Agregar cantidad"
+            accessibilityRole="button"
+          >
+            <Ionicons name="add-circle-outline" size={18} color="#fff" />
+            <Text className="text-white font-semibold ml-2">
+              Agregar cantidad
+            </Text>
+          </Pressable>
+        ) : (
+          <>
+            <View className="mt-2 rounded-2xl bg-background dark:bg-dark-background border border-gray-300 dark:border-gray-600 px-2 py-2 flex-row items-center">
+              <Pressable
+                onPress={handleQuantityDecrease}
+                className="w-12 h-12 rounded-xl bg-componentbg dark:bg-dark-componentbg items-center justify-center"
+                accessibilityLabel="Disminuir cantidad"
+                accessibilityRole="button"
+              >
+                <Ionicons
+                  name="remove"
+                  size={22}
+                  color={
+                    (quantity ?? 1) <= 1 ? "#999" : isDark ? "#fff" : "#333"
+                  }
+                />
+              </Pressable>
+
+              <View className="flex-1 items-center justify-center">
+                <Text className="text-xs text-mutedForeground dark:text-dark-mutedForeground uppercase tracking-wide">
+                  Cantidad
+                </Text>
+                <TextInput
+                  value={quantity ? String(quantity) : ""}
+                  onChangeText={handleQuantityChange}
+                  onBlur={handleQuantityBlur}
+                  keyboardType="numeric"
+                  placeholder="1"
+                  placeholderTextColor={appTheme.placeholdercolor}
+                  className="text-3xl font-extrabold text-foreground dark:text-dark-foreground min-w-[84px] text-center"
+                />
+              </View>
+
+              <Pressable
+                onPress={handleQuantityIncrease}
+                className="w-12 h-12 rounded-xl bg-primary dark:bg-dark-primary items-center justify-center"
+                accessibilityLabel="Aumentar cantidad"
+                accessibilityRole="button"
+              >
+                <Ionicons name="add" size={22} color="#fff" />
+              </Pressable>
+            </View>
+
+            <View className="flex-row gap-2 mt-2">
+              <Pressable
+                onPress={handleQuantityDecreaseByFive}
+                className="flex-1 py-2.5 rounded-full border border-gray-300 dark:border-gray-600 items-center"
+              >
+                <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
+                  -5
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={handleQuantityIncreaseByFive}
+                className="flex-1 py-2.5 rounded-full border border-primary dark:border-dark-primary items-center bg-primary/10 dark:bg-dark-primary/10"
+              >
+                <Text className="text-sm font-semibold text-primary dark:text-dark-primary">
+                  +5
+                </Text>
+              </Pressable>
+            </View>
+          </>
+        )}
+      </View>
 
       <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
         Cliente
@@ -468,15 +660,18 @@ export default function ProductDefectScreen() {
   const renderReturnDetails = () => (
     <Animated.View
       style={sectionAnimatedStyle}
-      className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs"
+      className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs border border-gray-200/70 dark:border-gray-700"
     >
       <View className="gap-2">
+        <Text className="text-xs uppercase tracking-wide text-mutedForeground dark:text-dark-mutedForeground font-semibold">
+          Detalles de la devolución
+        </Text>
         <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
           Motivo
         </Text>
         <Pressable
           onPress={handleMotiveSelectPress}
-          className="flex-row items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-xl"
+          className="flex-row items-center justify-between px-4 py-3.5   border rounded-xl bg-transparent dark:bg-dark-componentbg border-gray-300 dark:border-gray-600"
         >
           <Text className="text-foreground dark:text-dark-foreground">
             {reason ? `${reason}` : "Seleccionar motivo..."}
@@ -501,7 +696,7 @@ export default function ProductDefectScreen() {
     </Animated.View>
   );
   const renderImageSection = () => (
-    <View className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs">
+    <View className="gap-y-2 bg-componentbg dark:bg-dark-componentbg p-4 rounded-2xl shadow-xs border border-gray-200/70 dark:border-gray-700">
       <View className="flex-row items-center justify-between mb-1">
         <Text className="text-lg font-semibold text-foreground dark:text-dark-foreground">
           Imágenes
@@ -518,21 +713,27 @@ export default function ProductDefectScreen() {
       <View className="flex-row gap-3 mb-2">
         <Pressable
           onPress={pickImage}
-          className="flex-1 border border-primary py-3 rounded-xl"
+          className="flex-1 border border-primary py-3 rounded-full bg-primary/10 dark:bg-dark-primary/10"
         >
           <View className="flex-row items-center justify-center">
-            <Ionicons name="images-outline" size={20} />
-            <Text className="ml-2 font-semibold">Galería</Text>
+            <Ionicons
+              name="images-outline"
+              size={20}
+              color={isDark ? "#fff" : appTheme.primary.DEFAULT}
+            />
+            <Text className="ml-2 font-semibold text-primary dark:text-dark-primary">
+              Galería
+            </Text>
           </View>
         </Pressable>
 
         <Pressable
           onPress={handlePickFromCamera}
-          className="flex-1 border border-secondary py-3 rounded-xl"
+          className="flex-1 border border-primary py-3 rounded-full bg-primary dark:bg-dark-primary"
         >
           <View className="flex-row items-center justify-center">
-            <Ionicons name="camera" size={20} />
-            <Text className="ml-2 font-semibold">Cámara</Text>
+            <Ionicons name="camera" size={20} color="#fff" />
+            <Text className="ml-2 font-semibold text-white">Cámara</Text>
           </View>
         </Pressable>
       </View>
@@ -581,12 +782,21 @@ export default function ProductDefectScreen() {
           style={{
             backgroundColor: isFormValid ? isDarkPrimary : "#ccc",
           }}
-          className="py-4 rounded-xl items-center justify-center"
+          className="py-4 rounded-full items-center justify-center flex-row"
         >
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text className="text-white font-semibold text-lg">Registrar</Text>
+            <>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={20}
+                color="#fff"
+              />
+              <Text className="text-white font-semibold text-lg ml-2">
+                Registrar devolución
+              </Text>
+            </>
           )}
         </Pressable>
       </Animated.View>

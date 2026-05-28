@@ -97,13 +97,14 @@ export function useReturnReport() {
         }
     }
 
-    type FormState = { reason: string; comment: string; images: string[] };
-    const initialFormState: FormState = { reason: '', comment: '', images: [] };
+    type FormState = { reason: string; comment: string; images: string[]; quantity: number | null };
+    const initialFormState: FormState = { reason: '', comment: '', images: [], quantity: null };
     function formReducer(state: FormState, action: { type: string; payload?: any }): FormState {
         switch (action.type) {
             case 'SET_REASON': return { ...state, reason: action.payload };
             case 'SET_COMMENT': return { ...state, comment: action.payload };
             case 'SET_IMAGES': return { ...state, images: action.payload };
+            case 'SET_QUANTITY': return { ...state, quantity: action.payload };
             case 'RESET_FORM': return initialFormState;
             default: return state;
         }
@@ -175,6 +176,7 @@ export function useReturnReport() {
 
     const setReason = (v: string) => dispatchForm({ type: 'SET_REASON', payload: v });
     const setComment = (v: string) => dispatchForm({ type: 'SET_COMMENT', payload: v });
+    const setQuantity = (v: number | null) => dispatchForm({ type: 'SET_QUANTITY', payload: v });
     // Accept either an array or an updater callback like React's setState
     const setImages = (v: SetStateAction<string[]>) => {
         if (typeof v === 'function') {
@@ -212,11 +214,11 @@ export function useReturnReport() {
         venDes,
     } = productState;
 
-    const { reason, comment, images } = formState;
+    const { reason, comment, images, quantity } = formState;
     const { clients, selectedClient } = customerState;
     const { loading, loadingData, showScanner, showClientModal, showArtModal, showMotiveModal, isData, isManual } = uiState;
     const isFormComplete = () => (
-        reason && selectedClient && codeArt && artDes
+        Boolean(reason && selectedClient && codeArt && artDes)
     );
     const overlay = useOverlayStore();
 
@@ -510,6 +512,7 @@ export function useReturnReport() {
                 obsregistro: comment,     
                 factnum: Number(factNumber) || 0,
                 owneruser: 1,
+                cantidad: quantity ?? undefined,
                 rif: selectedClient?.rif || '',
                 telefono: selectedClient?.telefonos || '',
                 dirretiro: selectedClient?.dir_ent2 || '',
@@ -613,6 +616,7 @@ export function useReturnReport() {
         codzon, setCodzon,
         reason, setReason,
         comment, setComment,
+        quantity, setQuantity,
         images, setImages,
         showScanner, setShowScanner,
         factNumber, setFactNumber,

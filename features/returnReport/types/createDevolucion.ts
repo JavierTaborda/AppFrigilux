@@ -17,6 +17,7 @@ export interface CreateDevolucion {
     obsregistro?: string;        
     factnum: number;             // Default 0  DB
     owneruser: number;           // Default 1  DB
+    cantidad?: number;
     linkproforma?: string;      // VarChar(60)
 
     dtdevolucion: dtdevolucion; 
