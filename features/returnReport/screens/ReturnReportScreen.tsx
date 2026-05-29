@@ -479,8 +479,8 @@ export default function ProductDefectScreen() {
           Cantidad
         </Text>
       </View>
-      <View className="gap-2 py-1 w-[70%] rounded-xl  ">
-        <View className="mt-1 rounded-2xl bg-background/30 dark:bg-dark-background border border-gray-300 dark:border-gray-600 px-2 py-2 flex-row items-center">
+      <View className="gap-2 py-1 w-full rounded-xl  ">
+        <View className="mt-1 rounded-2xl bg-background/30 dark:bg-dark-background border border-gray-300 dark:border-gray-600 px-2 py-1.5 flex-row items-center">
           <Pressable
             onPress={handleQuantityDecrease}
             className="w-12 h-12 rounded-xl bg-white dark:bg-dark-componentbg items-center justify-center"
@@ -501,7 +501,7 @@ export default function ProductDefectScreen() {
               onBlur={handleQuantityBlur}
               keyboardType="numeric"
               placeholder="1"
-              className="text-2xl font-black text-foreground dark:text-dark-foreground min-w-[80px] text-center"
+              className="text-2xl font-semibold  text-foreground dark:text-dark-foreground min-w-[80px] text-center"
             />
           </View>
 
