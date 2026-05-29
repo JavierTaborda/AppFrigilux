@@ -96,7 +96,6 @@ export default function ProductDefectScreen() {
   } = useReturnReport();
 
   const [startMethod, setStartMethod] = useState<"serial" | "fact">("serial");
-  const [useQuantity, setUseQuantity] = useState(false);
   const isFormValid = useMemo(() => isFormComplete(), [isFormComplete]);
 
   // Memoized values
@@ -168,10 +167,6 @@ export default function ProductDefectScreen() {
       imageScale.value = withTiming(0.9, { duration: 200 });
     }
   }, [images]);
-
-  useEffect(() => {
-    setUseQuantity(quantity !== null);
-  }, [quantity]);
 
   // Animated styles
   const animatedStyle = useAnimatedStyle(() => ({
@@ -268,7 +263,7 @@ export default function ProductDefectScreen() {
       const numericValue = value.replace(/\D/g, "");
 
       if (!numericValue) {
-        setQuantity(null);
+        setQuantity(1);
         return;
       }
 
@@ -279,11 +274,10 @@ export default function ProductDefectScreen() {
   );
 
   const handleQuantityBlur = useCallback(() => {
-    if (!useQuantity) return;
     if (!quantity || quantity < 1) {
       setQuantity(1);
     }
-  }, [quantity, setQuantity, useQuantity]);
+  }, [quantity, setQuantity]);
 
   const handleQuantityDecrease = useCallback(() => {
     safeHaptic("light");
@@ -294,35 +288,6 @@ export default function ProductDefectScreen() {
     safeHaptic("light");
     setQuantity((quantity ?? 0) + 1);
   }, [quantity, setQuantity]);
-
-  const handleToggleQuantity = useCallback(() => {
-    safeHaptic("light");
-
-    if (useQuantity) {
-      setUseQuantity(false);
-      setQuantity(null);
-      return;
-    }
-
-    setUseQuantity(true);
-    setQuantity(1);
-  }, [setQuantity, useQuantity]);
-
-  const handleQuantityIncreaseByFive = useCallback(() => {
-    safeHaptic("light");
-    setQuantity((quantity ?? 0) + 5);
-  }, [quantity, setQuantity]);
-
-  const handleQuantityDecreaseByFive = useCallback(() => {
-    safeHaptic("light");
-    setQuantity(Math.max(1, (quantity ?? 1) - 5));
-  }, [quantity, setQuantity]);
-
-  const handleQuantityClear = useCallback(() => {
-    safeHaptic("light");
-    setUseQuantity(false);
-    setQuantity(null);
-  }, [setQuantity]);
 
   // Render helpers
   const renderHeader = () => (
@@ -511,100 +476,44 @@ export default function ProductDefectScreen() {
       )}
       <View>
         <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
-          Cantidad (opcional)
+          Cantidad
         </Text>
       </View>
-      <View className="gap-2 pt-1.5 rounded-xl border border-gray-300 dark:border-gray-600 p-3">
-        <View className="flex-row items-center justify-between">
-          {useQuantity && (
-            <Pressable
-              onPress={handleQuantityClear}
-              className="px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-600"
-              accessibilityLabel="Quitar cantidad"
-              accessibilityRole="button"
-            >
-              <Text className="text-xs font-semibold text-mutedForeground dark:text-dark-mutedForeground">
-                Quitar
-              </Text>
-            </Pressable>
-          )}
-        </View>
-
-        {!useQuantity ? (
+      <View className="gap-2 py-1 w-[70%] rounded-xl  ">
+        <View className="mt-1 rounded-2xl bg-background/30 dark:bg-dark-background border border-gray-300 dark:border-gray-600 px-2 py-2 flex-row items-center">
           <Pressable
-            onPress={handleToggleQuantity}
-            className="mt-2 rounded-xl bg-primary dark:bg-dark-primary py-3 px-4 flex-row items-center justify-center"
-            accessibilityLabel="Agregar cantidad"
+            onPress={handleQuantityDecrease}
+            className="w-12 h-12 rounded-xl bg-white dark:bg-dark-componentbg items-center justify-center"
+            accessibilityLabel="Disminuir cantidad"
             accessibilityRole="button"
           >
-            <Ionicons name="add-circle-outline" size={18} color="#fff" />
-            <Text className="text-white font-semibold ml-2">
-              Agregar cantidad
-            </Text>
+            <Ionicons
+              name="remove"
+              size={22}
+              color={(quantity ?? 1) <= 1 ? "#999" : isDark ? "#fff" : "#333"}
+            />
           </Pressable>
-        ) : (
-          <>
-            <View className="mt-2 rounded-2xl bg-background dark:bg-dark-background border border-gray-300 dark:border-gray-600 px-2 py-2 flex-row items-center">
-              <Pressable
-                onPress={handleQuantityDecrease}
-                className="w-12 h-12 rounded-xl bg-componentbg dark:bg-dark-componentbg items-center justify-center"
-                accessibilityLabel="Disminuir cantidad"
-                accessibilityRole="button"
-              >
-                <Ionicons
-                  name="remove"
-                  size={22}
-                  color={
-                    (quantity ?? 1) <= 1 ? "#999" : isDark ? "#fff" : "#333"
-                  }
-                />
-              </Pressable>
 
-              <View className="flex-1 items-center justify-center">
-                <Text className="text-xs text-mutedForeground dark:text-dark-mutedForeground uppercase tracking-wide">
-                  Cantidad
-                </Text>
-                <TextInput
-                  value={quantity ? String(quantity) : ""}
-                  onChangeText={handleQuantityChange}
-                  onBlur={handleQuantityBlur}
-                  keyboardType="numeric"
-                  placeholder="1"
-                  placeholderTextColor={appTheme.placeholdercolor}
-                  className="text-3xl font-extrabold text-foreground dark:text-dark-foreground min-w-[84px] text-center"
-                />
-              </View>
+          <View className="flex-1 items-center justify-center">
+            <TextInput
+              value={String(Math.max(1, quantity ?? 1))}
+              onChangeText={handleQuantityChange}
+              onBlur={handleQuantityBlur}
+              keyboardType="numeric"
+              placeholder="1"
+              className="text-2xl font-black text-foreground dark:text-dark-foreground min-w-[80px] text-center"
+            />
+          </View>
 
-              <Pressable
-                onPress={handleQuantityIncrease}
-                className="w-12 h-12 rounded-xl bg-primary dark:bg-dark-primary items-center justify-center"
-                accessibilityLabel="Aumentar cantidad"
-                accessibilityRole="button"
-              >
-                <Ionicons name="add" size={22} color="#fff" />
-              </Pressable>
-            </View>
-
-            <View className="flex-row gap-2 mt-2">
-              <Pressable
-                onPress={handleQuantityDecreaseByFive}
-                className="flex-1 py-2.5 rounded-full border border-gray-300 dark:border-gray-600 items-center"
-              >
-                <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
-                  -5
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={handleQuantityIncreaseByFive}
-                className="flex-1 py-2.5 rounded-full border border-primary dark:border-dark-primary items-center bg-primary/10 dark:bg-dark-primary/10"
-              >
-                <Text className="text-sm font-semibold text-primary dark:text-dark-primary">
-                  +5
-                </Text>
-              </Pressable>
-            </View>
-          </>
-        )}
+          <Pressable
+            onPress={handleQuantityIncrease}
+            className="w-12 h-12 rounded-xl bg-primary dark:bg-dark-primary items-center justify-center"
+            accessibilityLabel="Aumentar cantidad"
+            accessibilityRole="button"
+          >
+            <Ionicons name="add" size={22} color="#fff" />
+          </Pressable>
+        </View>
       </View>
 
       <Text className="text-md font-medium text-foreground dark:text-dark-foreground">

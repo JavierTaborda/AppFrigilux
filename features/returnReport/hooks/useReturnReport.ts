@@ -512,7 +512,7 @@ export function useReturnReport() {
                 obsregistro: comment,     
                 factnum: Number(factNumber) || 0,
                 owneruser: 1,
-                cantidad: quantity ?? undefined,
+                cantidad: quantity ?? 1,
                 rif: selectedClient?.rif || '',
                 telefono: selectedClient?.telefonos || '',
                 dirretiro: selectedClient?.dir_ent2 || '',

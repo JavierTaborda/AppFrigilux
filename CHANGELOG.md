@@ -5,23 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.7] - 2026-MM-DD
+## [1.1.0] - 2026-05-29
 
 ### Added
 
-- N/A
+- Quantity management in Return Report form and related types.
+- Missing @react-native-vector-icons packages required by the Expo 56 migration.
 
 ### Changed
 
-- N/A
+- Migrated project dependencies to Expo SDK 56 and updated related packages.
+- Updated dependency set and scripts to align with Expo 56.
+- Refactored icon usage: replaced `@expo/vector-icons` with `@react-native-vector-icons/*`.
 
 ### Fixed
 
-- N/A
+- Adjusted `BlurView` intensity and background color in `OrderModal` for better visibility.
 
 ### Removed
 
-- N/A
+- Removed `@expo/vector-icons` dependency.
+- Removed legacy React Navigation packages no longer needed after dependency updates.
 
 ## [1.0.6] - 2026-05-11
 
