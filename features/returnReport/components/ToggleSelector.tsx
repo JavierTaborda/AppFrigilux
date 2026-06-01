@@ -19,7 +19,7 @@ const ToggleSelector = memo(
   }: ToggleSelectorProps) => (
     <Animated.View
       style={animatedStyleToggle}
-      className="relative flex-row bg-muted dark:bg-dark-muted rounded-full p-1 mb-1 overflow-hidden"
+      className="relative flex-row bg-muted dark:bg-dark-muted rounded-full p-1 mb-0 overflow-hidden"
     >
       <Animated.View
         style={[animatedStyle]}
@@ -52,7 +52,7 @@ const ToggleSelector = memo(
         );
       })}
     </Animated.View>
-  )
+  ),
 );
 
 export default ToggleSelector;

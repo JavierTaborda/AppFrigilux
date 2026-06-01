@@ -291,7 +291,7 @@ export default function ProductDefectScreen() {
 
   // Render helpers
   const renderHeader = () => (
-    <View className="mb-2 rounded-2xl bg-componentbg dark:bg-dark-componentbg p-4 border border-gray-200 dark:border-gray-700">
+    <View className="mb-1.5 rounded-2xl bg-componentbg dark:bg-dark-componentbg p-4 border border-gray-200 dark:border-gray-700">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <View className="w-9 h-9 rounded-full bg-primary/15 dark:bg-dark-primary/20 items-center justify-center">
@@ -319,7 +319,6 @@ export default function ProductDefectScreen() {
           animatedStyle={animatedStyle}
           animatedStyleToggle={animatedStyleToggle}
         />
-        <View className="" />
       </>
     );
 
