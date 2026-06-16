@@ -41,7 +41,7 @@ const DiscountButton = React.memo<DiscountButtonProps>(
   ),
 );
 
-const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
+const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
   const [discountPercent, setDiscountPercent] = useState<string>("");
 
   const cartItem = useCreateOrderStore((s) =>
@@ -49,8 +49,14 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
   );
 
   // Mantenemos tus constantes del store, añadiendo 'tasa'
-  const { addItem, IVA, totalsVES, setTotalsVES, exchangeRate } =
-    useCreateOrderStore();
+  const {
+    addItem,
+    setItemQuantity,
+    IVA,
+    totalsVES,
+    setTotalsVES,
+    exchangeRate,
+  } = useCreateOrderStore();
 
   if (!item) return null;
 
@@ -72,6 +78,14 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
       setDiscountPercent(cartItem.discount.toString());
     }
   }, [cartItem?.discount]);
+
+  useEffect(() => {
+    if (!item || visible === false) return;
+
+    if (quantity === 0) {
+      setItemQuantity(item, 1);
+    }
+  }, [visible, item, setItemQuantity]);
 
   const discountsArray = useMemo(() => {
     if (!discountPercent.trim()) return [];
@@ -272,7 +286,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item }) => {
           className="rounded-2xl bg-primary dark:bg-dark-primary py-4 items-center"
         >
           <Text className="text-white font-bold text-base">
-            Agregar al pedido
+            Guardar cambios
           </Text>
         </Pressable>
 

@@ -5,7 +5,6 @@ import { memo, useCallback, useMemo } from "react";
 import { Pressable, Text, View } from "react-native";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { OrderItem } from "../types/orderItem";
-import QuantitySelector from "./QuantitySelector";
 type ProductCardProps = {
   item: OrderItem;
   IVA: number;
@@ -41,69 +40,79 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
 
   const isOut = stock === 0;
   const isLow = stock > 0 && stock < 5;
-  const badge = (
-    <View
-      className={`absolute top-2 right-2 rounded-full px-3 py-1 border
-      ${
-        isOut
-          ? "bg-error/70 dark:bg-dark-error border-red-600 dark:border-red-500"
-          : isLow
-            ? "bg-warning/30 dark:bg-dark-warning border-yellow-500"
-            : "bg-componentbg dark:bg-dark-componentbg border-black/10"
-      }
-    `}
-    >
-      <Text
-        className={`
-        text-xs font-semibold
-        ${isOut ? "text-white" : "text-foreground dark:text-dark-foreground"}
-      `}
-      >
-        {isOut ? "Sin unidades" : `${stock} disp.`}
-      </Text>
-    </View>
-  );
+
+  const availabilityChipClass = isOut
+    ? "bg-red-500/10 dark:bg-red-900/40"
+    : isLow
+      ? "bg-warning/20 dark:bg-dark-warning/30"
+      : "bg-primary/15 dark:bg-primary/25";
+
+  const availabilityTextClass = isOut
+    ? "text-red-600 dark:text-red-400"
+    : isLow
+      ? "text-yellow-700 dark:text-yellow-300"
+      : "text-primary dark:text-dark-primary";
   return (
     <Pressable
-      className={`
-    bg-componentbg dark:bg-dark-componentbg  overflow-hidden mb-3 rounded-2xl border
-    ${quantity > 0 ? "border-primary dark:border-dark-primary" : "border-black/10"}`}
+      className={`bg-componentbg dark:bg-dark-componentbg overflow-hidden mb-1 rounded-2xl border p-2
+      ${quantity > 0 ? "border-primary dark:border-dark-primary" : "border-black/10"}`}
       style={{ borderWidth: 0.7 }}
       onPress={handlePress}
     >
-      <View className="h-[120] w-full bg-bgimages relative">
-        <CustomImagen img={img} />
-        {badge}
-      </View>
-
-      <View className="px-3 pb-3 pt-0.5">
-        <Text className="text-sm text-gray-900 dark:text-dark-foreground tracking-wide font-bold ">
-          {item.codart}
-        </Text>
-        <Text
-          numberOfLines={2}
-          className=" text-mutedForeground dark:text-dark-mutedForeground text-sm pb-0.5 tracking-tight"
-        >
-          {item.artdes}
-        </Text>
-
-        <View className="flex-row items-baseline mb-0.5">
-          <Text className="text-foreground dark:text-dark-foreground text-lg font-bold">
-            {Price}
-          </Text>
-
-          <Text className="text-mutedForeground dark:text-dark-mutedForeground ml-1 text-md">
-            {currencyDollar}
-          </Text>
+      <View className="flex-row gap-2">
+        <View className="w-32 h-32 my-1 rounded-xl overflow-hidden bg-bgimages items-center justify-center">
+          <CustomImagen img={img} />
         </View>
 
+        <View className="flex-1 justify-between gap-y-1 py-1">
+          <Text className="text-lg font-semibold text-foreground dark:text-dark-foreground">
+            {item.codart}
+          </Text>
+
+          <Text
+            numberOfLines={3}
+            className="text-sm text-foreground dark:text-dark-foreground leading-snug"
+          >
+            {item.artdes}
+          </Text>
+
+          <View
+            className={`px-2 py-1 rounded-full self-start ${availabilityChipClass}`}
+          >
+            <Text className={`font-semibold text-sm ${availabilityTextClass}`}>
+              {isOut ? "Sin unidades" : `${stock} disponibles`}
+            </Text>
+          </View>
+
+          <View className="flex-row items-baseline">
+            <Text className="text-md font-bold text-primary dark:text-dark-primary">
+              {Price}
+            </Text>
+            <Text className="text-sm text-primary dark:text-dark-primary ml-1 font-semibold">
+              {currencyDollar}
+            </Text>
+          </View>
+        </View>
+
+        {quantity > 0 && (
+          <View className="justify-start pt-1">
+            <View className="px-2 py-1 rounded-lg bg-primary dark:bg-dark-primary self-start">
+              <Text className="text-white font-semibold text-sm">
+                {quantity}
+              </Text>
+            </View>
+          </View>
+        )}
+      </View>
+
+      {/* <View className="pt-2 px-1">
         <QuantitySelector
           item={item}
           quantity={quantity}
           img={img}
           fullView={false}
         />
-      </View>
+      </View> */}
     </Pressable>
   );
   // return (

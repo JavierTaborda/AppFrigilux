@@ -65,7 +65,8 @@ export default function CreateOrderScreen() {
   const [filterVisible, setFilterVisible] = useState(false);
 
   const haveOrder = items?.length > 0;
-  const numColumns = width >= 900 ? 4 : width >= 600 ? 3 : 2;
+  //const numColumns = width >= 900 ? 4 : width >= 600 ? 3 : 2;
+  const numColumns = 1;
 
   // --- ANIMACIONES (SIN WARNINGS) ---
   const translateY = useSharedValue(height);
@@ -191,7 +192,7 @@ export default function CreateOrderScreen() {
               {
                 position: "absolute",
                 zIndex: 50,
-                right: 0,
+                right: 55,
                 bottom: 115,
                 paddingHorizontal: 25,
                 width: "25%",

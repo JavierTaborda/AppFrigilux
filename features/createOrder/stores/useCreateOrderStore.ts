@@ -10,6 +10,7 @@ type CreateOrderState = {
   totalsVES: boolean;
   IVA:number;
   addItem: (product: OrderItem, qty?: number) => void;
+  setItemQuantity: (product: OrderItem, qty: number) => void;
   increase: (codart: string, by?: number) => void;
   decrease: (codart: string, by?: number) => void;
   removeItem: (codart: string) => void;
@@ -92,6 +93,36 @@ const useCreateOrderStore = create<CreateOrderState>()(
             ],
           });
         }
+      },
+
+      setItemQuantity: (product, qty) => {
+        const nextQty = Math.max(0, Math.min(qty, product.available ?? qty));
+        const exists = get().items.find((i) => i.codart === product.codart);
+
+        if (nextQty === 0) {
+          set({ items: get().items.filter((i) => i.codart !== product.codart) });
+          return;
+        }
+
+        if (exists) {
+          set({
+            items: get().items.map((i) =>
+              i.codart === product.codart
+                ? {
+                    ...i,
+                    quantity: nextQty,
+                    price: product.price,
+                    available: product.available,
+                  }
+                : i,
+            ),
+          });
+          return;
+        }
+
+        set({
+          items: [...get().items, { ...product, quantity: nextQty }],
+        });
       },
 
       increase: (codart, by = 1) => {
