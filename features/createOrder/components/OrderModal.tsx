@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from "react";
 import {
   Alert,
   Dimensions,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -127,14 +128,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
   return (
     <View className="absolute inset-0 z-50">
-      <BlurView intensity={40} tint="default" style={StyleSheet.absoluteFill}>
+      <BlurView intensity={60} tint="default" style={StyleSheet.absoluteFill}>
         <View
           style={[
             StyleSheet.absoluteFill,
             {
-              backgroundColor: isDark
-                ? "rgba(0, 0, 0, 0.32)"
-                : "rgba(255, 255, 255, 0.22)",
+              backgroundColor: "rgba(0, 0, 0, 0.32)",
             },
           ]}
         />
@@ -212,7 +211,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 </View>
 
                 <View className="flex-row items-center space-x-3  gap-1 ">
-                  <TouchableOpacity
+                  <Pressable
                     disabled={isEmpty}
                     onPress={onConfirm}
                     className={`flex-1 py-4 rounded-full items-center ${
@@ -224,16 +223,16 @@ const OrderModal: React.FC<OrderModalProps> = ({
                     <View className="flex-row">
                       <Ionicons
                         name="checkmark-sharp"
-                        size={24}
+                        size={18}
                         color="white"
                       />
-                      <Text className="text-lg font-semibold text-white">
-                        Confirmar
+                      <Text className="text-md font-semibold text-white">
+                        Confirmar cliente
                       </Text>
                     </View>
-                  </TouchableOpacity>
+                  </Pressable>
 
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => {
                       handleRemove();
                     }}
@@ -244,20 +243,21 @@ const OrderModal: React.FC<OrderModalProps> = ({
                         : "bg-red-500 dark:bg-red-600"
                     }`}
                   >
-                    <Ionicons name="trash" size={22} color="#fff" />
-                  </TouchableOpacity>
+                    <Text className="text-md font-semibold text-white">
+                      Descartar pedido
+                    </Text>
+                  </Pressable>
                 </View>
               </View>
             </>
           )}
-          <TouchableOpacity
+          <Pressable
             onPress={onClose}
-            activeOpacity={0.7}
             className="p-1 bg-componentbg dark:bg-dark-componentbg rounded-full
              absolute right-2 top-2"
           >
             <Ionicons name="close" size={20} color="#555" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </Animated.View>
     </View>

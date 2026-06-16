@@ -191,16 +191,17 @@ export default function CreateOrderScreen() {
               {
                 position: "absolute",
                 zIndex: 50,
+                right: 0,
                 bottom: 115,
                 paddingHorizontal: 25,
-                width: "85%",
-                flexDirection: "row",
+                width: "25%",
+                //flexDirection: "row",
                 gap: 15,
               },
               animatedStyle,
             ]}
           >
-            <Pressable
+            {/* <Pressable
               disabled={!haveOrder}
               className="p-4 flex-1 items-center justify-center rounded-full shadow-lg bg-primary dark:bg-dark-primary"
               onPress={handleSummary}
@@ -215,17 +216,17 @@ export default function CreateOrderScreen() {
                   </Text>
                 </View>
               )}
-            </Pressable>
+            </Pressable> */}
 
             <Pressable
               disabled={!haveOrder}
               onPress={() => setModalVisible(true)}
-              className="p-4 rounded-full shadow-lg bg-primary dark:bg-dark-primary"
+              className="p-4 rounded-full shadow-lg  bg-tertiary dark:bg-dark-tertiary "
             >
               <Ionicons name="bag" size={24} color="white" />
               {items.length > 0 && (
-                <View className="absolute right-1 top-0 bg-tertiary dark:bg-dark-tertiary rounded-full px-1 min-w-[25px] items-center justify-center">
-                  <Text className="text-white font-bold text-xs">
+                <View className="absolute right-1 top-0 bg-componentbg dark:bg-dark-componentbg rounded-full px-1 min-w-[25px] items-center justify-center">
+                  <Text className="text-black dark:text-white font-bold text-xs">
                     {items.length}
                   </Text>
                 </View>

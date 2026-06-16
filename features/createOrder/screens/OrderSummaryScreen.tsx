@@ -457,7 +457,7 @@ export default function OrderSummaryScreen() {
                 <>
                   <Ionicons name="checkmark-sharp" size={24} color="white" />
                   <Text className="text-lg font-semibold text-white">
-                    Confirmar
+                    Crear pedido
                   </Text>
                 </>
               )}
