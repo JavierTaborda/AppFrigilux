@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from "react-native-reanimated";
 import { useQuantityHandlers } from "../hooks/useQuantityHandler";
 import { OrderItem } from "../types/orderItem";
@@ -15,6 +15,7 @@ type QuantitySelectorProps = {
   height?: number;
   size?: number;
   fullView?: boolean;
+  onChangeQuantity?: (nextQuantity: number) => void;
 };
 
 export default function QuantitySelector({
@@ -24,6 +25,7 @@ export default function QuantitySelector({
   height = 30,
   size = 32,
   fullView = false,
+  onChangeQuantity,
 }: QuantitySelectorProps) {
   const {
     pressedLong,
@@ -74,7 +76,40 @@ export default function QuantitySelector({
     }
 
     setInputQuantity(qty);
+
+    if (onChangeQuantity) {
+      onChangeQuantity(qty);
+      return;
+    }
+
     handleIncreaseQty(qty, quantity);
+  };
+
+  const maxAvailable = item.available ?? Number.MAX_SAFE_INTEGER;
+
+  const handleControlledAdd = () => {
+    if (!onChangeQuantity) return;
+    onChangeQuantity(Math.min(1, maxAvailable));
+  };
+
+  const handleControlledIncrease = () => {
+    if (!onChangeQuantity) return;
+    onChangeQuantity(Math.min(quantity + 1, maxAvailable));
+  };
+
+  const handleControlledDecrease = () => {
+    if (!onChangeQuantity) return;
+    onChangeQuantity(Math.max(quantity - 1, 0));
+  };
+
+  const handleControlledMaxIncrease = () => {
+    if (!onChangeQuantity) return;
+    onChangeQuantity(maxAvailable);
+  };
+
+  const handleControlledRemove = () => {
+    if (!onChangeQuantity) return;
+    onChangeQuantity(0);
   };
 
   if (quantity > 0) {
@@ -87,13 +122,21 @@ export default function QuantitySelector({
         <Animated.View style={animatedDecrease}>
           <Pressable
             onPress={() => {
-              handleDecrease();
+              if (onChangeQuantity) {
+                handleControlledDecrease();
+              } else {
+                handleDecrease();
+              }
               scaleDecrease.value = 1.2;
               scaleDecrease.value = withSpring(1);
             }}
             onLongPress={() => {
               pressedLong.current = true;
-              handleRemove(item.codart);
+              if (onChangeQuantity) {
+                handleControlledRemove();
+              } else {
+                handleRemove(item.codart);
+              }
             }}
             onPressOut={() => (pressedLong.current = false)}
             delayLongPress={300}
@@ -124,13 +167,21 @@ export default function QuantitySelector({
         <Animated.View style={animatedIncrease}>
           <Pressable
             onPress={() => {
-              handleIncrease();
+              if (onChangeQuantity) {
+                handleControlledIncrease();
+              } else {
+                handleIncrease();
+              }
               scaleIncrease.value = 1.2;
               scaleIncrease.value = withSpring(1);
             }}
             onLongPress={() => {
               pressedLong.current = true;
-              handleMaxIncrease(item.codart);
+              if (onChangeQuantity) {
+                handleControlledMaxIncrease();
+              } else {
+                handleMaxIncrease(item.codart);
+              }
             }}
             onPressOut={() => (pressedLong.current = false)}
             delayLongPress={300}
@@ -149,7 +200,11 @@ export default function QuantitySelector({
     <Animated.View style={[{ height }, animatedAdd]} className="w-full">
       <Pressable
         onPress={() => {
-          handleAdd();
+          if (onChangeQuantity) {
+            handleControlledAdd();
+          } else {
+            handleAdd();
+          }
           scaleAdd.value = 1.2;
           scaleAdd.value = withSpring(1);
         }}

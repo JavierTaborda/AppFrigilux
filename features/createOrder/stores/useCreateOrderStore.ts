@@ -98,6 +98,7 @@ const useCreateOrderStore = create<CreateOrderState>()(
       setItemQuantity: (product, qty) => {
         const nextQty = Math.max(0, Math.min(qty, product.available ?? qty));
         const exists = get().items.find((i) => i.codart === product.codart);
+       
 
         if (nextQty === 0) {
           set({ items: get().items.filter((i) => i.codart !== product.codart) });

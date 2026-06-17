@@ -43,6 +43,7 @@ const DiscountButton = React.memo<DiscountButtonProps>(
 
 const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
   const [discountPercent, setDiscountPercent] = useState<string>("");
+  const [draftQuantity, setDraftQuantity] = useState<number>(1);
 
   const cartItem = useCreateOrderStore((s) =>
     s.items.find((i) => i.codart === item?.codart),
@@ -52,6 +53,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
   const {
     addItem,
     setItemQuantity,
+    removeItem,
     IVA,
     totalsVES,
     setTotalsVES,
@@ -61,9 +63,10 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
   if (!item) return null;
 
   const price = Number(item.price ?? 0);
-  const quantity = cartItem?.quantity ?? 0;
+  const quantity = draftQuantity;
   const available = item.available ?? 0;
-  const img = `${imageURL}${item.codart.trim()}.webp`;
+  const baseImageURL = imageURL.endsWith("/") ? imageURL : `${imageURL}/`;
+  const img = `${baseImageURL}${encodeURIComponent(item.codart.trim())}.webp`;
 
   // Función interna para formatear segun totalsVES sin cambiar tus estilos
   const formatCurrency = (value: number) => {
@@ -74,18 +77,10 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
   };
 
   useEffect(() => {
-    if (cartItem?.discount !== undefined) {
-      setDiscountPercent(cartItem.discount.toString());
-    }
-  }, [cartItem?.discount]);
-
-  useEffect(() => {
     if (!item || visible === false) return;
-
-    if (quantity === 0) {
-      setItemQuantity(item, 1);
-    }
-  }, [visible, item, setItemQuantity]);
+    setDraftQuantity(Math.max(cartItem?.quantity ?? 1, 1));
+    setDiscountPercent(cartItem?.discount ?? "");
+  }, [visible, item, cartItem?.quantity, cartItem?.discount]);
 
   const discountsArray = useMemo(() => {
     if (!discountPercent.trim()) return [];
@@ -153,13 +148,31 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
   }, []);
 
   const handleAddItem = useCallback(() => {
-    if (!cartItem) {
-      Alert.alert("Error", "No hay item seleccionado para agregar.");
+    if (!item) {
       return;
     }
-    addItem({ ...cartItem, discount: discountPercent }, 0);
+
+    if (draftQuantity <= 0) {
+      removeItem(item.codart);
+      onClose(false);
+      return;
+    }
+
+    setItemQuantity({ ...item, img }, draftQuantity);
+    addItem(
+      { ...item, img, quantity: draftQuantity, discount: discountPercent },
+      0,
+    );
     onClose(false);
-  }, [cartItem, discountPercent, addItem, onClose]);
+  }, [
+    item,
+    draftQuantity,
+    discountPercent,
+    removeItem,
+    setItemQuantity,
+    addItem,
+    onClose,
+  ]);
 
   const discountButtons = useMemo(
     () =>
@@ -226,6 +239,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
             quantity={quantity}
             img={img}
             fullView={true}
+            onChangeQuantity={setDraftQuantity}
           />
         </View>
 

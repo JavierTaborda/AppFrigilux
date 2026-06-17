@@ -17,7 +17,7 @@ const CreateOrderSkeleton = ({ columns = 2 }) => {
             <View
               key={`col-${colIndex}`}
               style={{ width: `${100 / columns - 2}%` }}
-              className="h-60 bg-gray-300 dark:bg-gray-700 rounded-2xl animate-pulse"
+              className="h-40 bg-gray-300 dark:bg-gray-700 rounded-2xl animate-pulse"
             />
           ))}
         </View>

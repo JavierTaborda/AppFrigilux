@@ -222,11 +222,11 @@ export default function CreateOrderScreen() {
             <Pressable
               disabled={!haveOrder}
               onPress={() => setModalVisible(true)}
-              className="p-4 rounded-full shadow-lg  bg-tertiary dark:bg-dark-tertiary "
+              className="p-4 rounded-full shadow-lg  bg-tertiary dark:bg-dark-tertiary flex-row items-center justify-center"
             >
               <Ionicons name="bag" size={24} color="white" />
               {items.length > 0 && (
-                <View className="absolute right-1 top-0 bg-componentbg dark:bg-dark-componentbg rounded-full px-1 min-w-[25px] items-center justify-center">
+                <View className="absolute right-2 top-0 bg-componentbg dark:bg-dark-componentbg rounded-full px-1 min-w-[25px] items-center justify-center">
                   <Text className="text-black dark:text-white font-bold text-xs">
                     {items.length}
                   </Text>
