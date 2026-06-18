@@ -228,7 +228,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
   );
 
   return (
-    <View className="flex-1 gap-3 py-2">
+    <View className="flex-1 gap-3 py-2  ">
       <View className="flex-row bg-componentbg dark:bg-dark-componentbg rounded-2xl p-2 gap-2">
         <View className="w-32 h-32 my-2 rounded-xl overflow-hidden bg-bgimages mr-3 items-center justify-center">
           <CustomImage img={img} />
@@ -334,7 +334,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
         </Pressable>
       </View>
 
-      <View className="flex-col mt-6 gap-3">
+      <View className="flex-col mt-6 gap-3 mb-5">
         <Pressable
           onPress={handleCancel}
           className="rounded-2xl bg-gray-300 dark:bg-gray-700 py-4 items-center"

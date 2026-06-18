@@ -245,7 +245,7 @@ export default function CreateOrderScreen() {
           <BottomModal
             visible={modalItemVisible}
             onClose={() => setModalItemVisible(false)}
-            heightPercentage={0.85}
+            heightPercentage={0.75}
           >
             <ItemModal onClose={setModalItemVisible} item={item} />
           </BottomModal>

@@ -40,71 +40,91 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
 
   const isOut = stock === 0;
   const isLow = stock > 0 && stock < 5;
+  const isInOrder = quantity > 0;
 
-  const availabilityChipClass = isOut
-    ? "bg-red-500/10 dark:bg-red-900/40"
-    : isLow
-      ? "bg-warning/20 dark:bg-dark-warning/30"
-      : "bg-primary/15 dark:bg-primary/25";
+  const badge = (
+    <View
+      className={`absolute top-2 right-2 rounded-full px-3 py-1 border
+      ${
+        isOut
+          ? "bg-error/70 dark:bg-dark-error border-red-600 dark:border-red-500"
+          : isLow
+            ? "bg-warning/30 dark:bg-dark-warning border-yellow-500"
+            : "bg-componentbg dark:bg-dark-componentbg border-black/10"
+      }
+    `}
+    >
+      <Text
+        className={`
+        text-xs font-semibold
+        ${isOut ? "text-white" : "text-foreground dark:text-dark-foreground"}
+      `}
+      >
+        {isOut ? "Sin unid." : `${stock} disp.`}
+      </Text>
+    </View>
+  );
 
-  const availabilityTextClass = isOut
-    ? "text-red-600 dark:text-red-400"
-    : isLow
-      ? "text-yellow-700 dark:text-yellow-300"
-      : "text-primary dark:text-dark-primary";
   return (
     <Pressable
-      className={`bg-componentbg dark:bg-dark-componentbg overflow-hidden mb-1 rounded-2xl border p-2
-      ${quantity > 0 ? "border-primary dark:border-dark-primary" : "border-black/10"}`}
-      style={{ borderWidth: 0.7 }}
+      className={` ov
+        
+        erflow-hidden rounded-2xl border bg-componentbg dark:bg-dark-componentbg
+      ${isInOrder ? "border-primary dark:border-dark-primary" : "border-black/10"}`}
+      style={{ borderWidth: 0.8 }}
       onPress={handlePress}
     >
-      <View className="flex-row gap-2">
-        <View className="w-32 h-32 my-1 rounded-xl overflow-hidden bg-bgimages items-center justify-center">
-          <CustomImagen img={img} />
-        </View>
+      {({ pressed }) => (
+        <View
+          className={`p-2 ${pressed ? "opacity-90" : "opacity-100"}`}
+          style={{ transform: [{ scale: pressed ? 0.985 : 1 }] }}
+        >
+          {badge}
 
-        <View className="flex-1 justify-between gap-y-1 py-1">
-          <Text className="text-lg font-semibold text-foreground dark:text-dark-foreground">
-            {item.codart}
-          </Text>
+          <View className="flex-row gap-3">
+            <View className="h-32 w-32 my-1 items-center justify-center overflow-hidden rounded-xl bg-bgimages">
+              <CustomImagen img={img} />
+            </View>
 
-          <Text
-            numberOfLines={3}
-            className="text-sm text-foreground dark:text-dark-foreground leading-snug"
-          >
-            {item.artdes}
-          </Text>
+            <View className="flex-1 justify-normal py-2 pr-1">
+              <View className="gap-y-1.5">
+                <Text className="text-md font-semibold uppercase text-foreground dark:text-dark-foreground">
+                  {item.codart}
+                </Text>
 
-          <View
-            className={`px-2 py-1 rounded-full self-start ${availabilityChipClass}`}
-          >
-            <Text className={`font-semibold text-sm ${availabilityTextClass}`}>
-              {isOut ? "Sin unidades" : `${stock} disponibles`}
-            </Text>
-          </View>
+                <Text
+                  numberOfLines={2}
+                  className="text-sm leading-5 text-foreground/90 dark:text-dark-foreground/90"
+                >
+                  {item.artdes}
+                </Text>
+              </View>
 
-          <View className="flex-row items-baseline">
-            <Text className="text-md font-bold text-primary dark:text-dark-primary">
-              {Price}
-            </Text>
-            <Text className="text-sm text-primary dark:text-dark-primary ml-1 font-semibold">
-              {currencyDollar}
-            </Text>
-          </View>
-        </View>
-
-        {quantity > 0 && (
-          <View className="justify-start pt-1">
-            <View className="px-2 py-1 rounded-lg bg-primary dark:bg-dark-primary self-start">
-              <Text className="text-white font-semibold text-sm">
-                {quantity}
-              </Text>
+              <View className="flex-row items-center gap-3 pt-3">
+                <View className="flex-1">
+                  <View className="flex-row items-center gap-2">
+                    <View className="flex-row items-center">
+                      <Text className="text-xl font-extrabold leading-none text-foreground dark:text-dark-foreground">
+                        {Price}
+                      </Text>
+                      <Text className="ml-1 text-lg font-semibold text-foreground dark:text-dark-foreground">
+                        {currencyDollar}
+                      </Text>
+                    </View>
+                    {isInOrder && (
+                      <View className="rounded-full bg-primary px-2.5 py-1 dark:bg-dark-primary">
+                        <Text className="text-xs font-bold text-white">
+                          x{quantity}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </View>
             </View>
           </View>
-        )}
-      </View>
-
+        </View>
+      )}
       {/* <View className="pt-2 px-1">
         <QuantitySelector
           item={item}
@@ -168,6 +188,9 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
 export default memo(ProductCard, (prev, next) => {
   return (
     prev.item.codart === next.item.codart &&
+    prev.item.artdes === next.item.artdes &&
+    prev.item.price === next.item.price &&
+    prev.item.available === next.item.available &&
     prev.item.asignado === next.item.asignado &&
     prev.item.utilizado === next.item.utilizado &&
     prev.IVA === next.IVA

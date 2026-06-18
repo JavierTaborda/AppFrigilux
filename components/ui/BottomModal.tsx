@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   Keyboard,
@@ -7,7 +7,6 @@ import {
   Pressable,
   StatusBar,
   View,
-  ViewProps
 } from "react-native";
 import {
   Gesture,
@@ -35,9 +34,7 @@ type BottomModalProps = {
   children: React.ReactNode;
 };
 
-const AnimatedView = forwardRef<View, ViewProps>((props, ref) => (
-  <Animated.View ref={ref} {...props} />
-));
+const AnimatedView = Animated.createAnimatedComponent(View);
 const ANIMATION_CONFIG = {
   damping: 20,
   stiffness: 230,
