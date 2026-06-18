@@ -2,7 +2,13 @@ import CustomTextInput from "@/components/inputs/CustomTextInput";
 import CustomImage from "@/components/ui/CustomImagen";
 import { imageURL } from "@/utils/imageURL";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
@@ -44,6 +50,9 @@ const DiscountButton = React.memo<DiscountButtonProps>(
 const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
   const [discountPercent, setDiscountPercent] = useState<string>("");
   const [draftQuantity, setDraftQuantity] = useState<number>(1);
+  const initialCartItemRef = useRef<OrderItem | null>(null);
+  const initializedRef = useRef(false);
+  const currentItemRef = useRef<string | null>(null);
 
   const cartItem = useCreateOrderStore((s) =>
     s.items.find((i) => i.codart === item?.codart),
@@ -77,10 +86,49 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
   };
 
   useEffect(() => {
-    if (!item || visible === false) return;
+    if (!item || visible === false) {
+      initializedRef.current = false;
+      currentItemRef.current = null;
+      initialCartItemRef.current = null;
+      return;
+    }
+
+    if (currentItemRef.current !== item.codart) {
+      initializedRef.current = false;
+      currentItemRef.current = item.codart;
+    }
+
+    if (initializedRef.current) return;
+
+    initialCartItemRef.current = cartItem ? { ...cartItem } : null;
     setDraftQuantity(Math.max(cartItem?.quantity ?? 1, 1));
     setDiscountPercent(cartItem?.discount ?? "");
-  }, [visible, item, cartItem?.quantity, cartItem?.discount]);
+    initializedRef.current = true;
+  }, [visible, item, cartItem]);
+
+  useEffect(() => {
+    if (!item || visible === false || !initializedRef.current) return;
+
+    if (draftQuantity <= 0) {
+      removeItem(item.codart);
+      return;
+    }
+
+    setItemQuantity({ ...item, img }, draftQuantity);
+    addItem(
+      { ...item, img, quantity: draftQuantity, discount: discountPercent },
+      0,
+    );
+  }, [
+    visible,
+    item,
+    draftQuantity,
+    discountPercent,
+    img,
+    removeItem,
+    setItemQuantity,
+    addItem,
+  ]);
 
   const discountsArray = useMemo(() => {
     if (!discountPercent.trim()) return [];
@@ -147,32 +195,24 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
     setDiscountPercent(cleaned);
   }, []);
 
-  const handleAddItem = useCallback(() => {
+  const handleCancel = useCallback(() => {
     if (!item) {
+      onClose(false);
       return;
     }
 
-    if (draftQuantity <= 0) {
+    const initial = initialCartItemRef.current;
+
+    if (!initial || initial.quantity <= 0) {
       removeItem(item.codart);
       onClose(false);
       return;
     }
 
-    setItemQuantity({ ...item, img }, draftQuantity);
-    addItem(
-      { ...item, img, quantity: draftQuantity, discount: discountPercent },
-      0,
-    );
+    setItemQuantity(initial, initial.quantity);
+    addItem(initial, 0);
     onClose(false);
-  }, [
-    item,
-    draftQuantity,
-    discountPercent,
-    removeItem,
-    setItemQuantity,
-    addItem,
-    onClose,
-  ]);
+  }, [item, removeItem, setItemQuantity, addItem, onClose]);
 
   const discountButtons = useMemo(
     () =>
@@ -296,16 +336,7 @@ const ItemModal: React.FC<ItemModalProps> = ({ visible, onClose, item }) => {
 
       <View className="flex-col mt-6 gap-3">
         <Pressable
-          onPress={handleAddItem}
-          className="rounded-2xl bg-primary dark:bg-dark-primary py-4 items-center"
-        >
-          <Text className="text-white font-bold text-base">
-            Guardar cambios
-          </Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => onClose(false)}
+          onPress={handleCancel}
           className="rounded-2xl bg-gray-300 dark:bg-gray-700 py-4 items-center"
         >
           <Text className="text-black dark:text-white font-bold text-base">
