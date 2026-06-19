@@ -83,7 +83,7 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
 
           <View className="flex-row gap-3">
             <View className="h-32 w-32 my-1 items-center justify-center overflow-hidden rounded-xl bg-bgimages">
-              <CustomImagen img={img} />
+              <CustomImagen key={item.codart.trim()} img={img} />
             </View>
 
             <View className="flex-1 justify-normal py-2 pr-1">
@@ -188,9 +188,6 @@ function ProductCard({ item, setModalItemVisible, IVA }: ProductCardProps) {
 export default memo(ProductCard, (prev, next) => {
   return (
     prev.item.codart === next.item.codart &&
-    prev.item.artdes === next.item.artdes &&
-    prev.item.price === next.item.price &&
-    prev.item.available === next.item.available &&
     prev.item.asignado === next.item.asignado &&
     prev.item.utilizado === next.item.utilizado &&
     prev.IVA === next.IVA

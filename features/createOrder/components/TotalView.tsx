@@ -27,6 +27,9 @@ export default function TotalView({
   totalNetoUsd,
 }: TotalsProps) {
   const { setTotalsVES, totalsVES, IVA } = useCreateOrderStore();
+  const totalItems = useCreateOrderStore((state) =>
+    state.items.reduce((sum, item) => sum + item.quantity, 0),
+  );
   const [showInBs, setShowInBs] = useState(totalsVES);
 
   const anim = useSharedValue(1);
@@ -57,6 +60,14 @@ export default function TotalView({
   return (
     <View className="mb-2 px-4 py-3 bg-componentbg dark:bg-dark-componentbg rounded-xl">
       <View className="space-y-2 border-b border-gray-300 dark:border-gray-600 pb-1">
+        <View className="flex-row justify-between">
+          <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
+            Articulos
+          </Text>
+          <Text className="text-base font-medium text-foreground dark:text-dark-foreground">
+            {totalItems}
+          </Text>
+        </View>
         <View className="flex-row justify-between">
           <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
             Subtotal

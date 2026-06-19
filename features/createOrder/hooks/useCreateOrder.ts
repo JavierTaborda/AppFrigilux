@@ -149,11 +149,11 @@ const useCreateOrder = (searchText: string) => {
   const filteredProducts = useMemo(() => {
     let filtered: OrderItem[] = [...allproductItems];
 
-    if (searchText && searchText.length >= 3) {
+    if (searchText && searchText.length >= 0) {
       const lower = searchText.toLowerCase();
       filtered = filtered.filter(
         (order) =>
-          order.artdes?.toLowerCase().includes(lower) ||
+          // order.artdes?.toLowerCase().includes(lower) ||
           order.codart?.toLowerCase().includes(lower)
       );
     }

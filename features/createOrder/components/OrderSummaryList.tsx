@@ -1,4 +1,5 @@
 import BottomModal from "@/components/ui/BottomModal";
+import CustomImagen from "@/components/ui/CustomImagen";
 import {
   currencyDollar,
   currencyVES,
@@ -6,7 +7,7 @@ import {
 } from "@/utils/moneyFormat";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { useState } from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import Animated, {
   FadeOutLeft,
   LinearTransition,
@@ -81,11 +82,9 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
                 onPress={() => handleOpenItem(item)}
                 className="flex-row items-center py-2 px-3 rounded-xl bg-componentbg dark:bg-dark-componentbg"
               >
-                <Image
-                  source={{ uri: item.img }}
-                  className="w-20 h-20 rounded-xl bg-gray-200"
-                />
-
+                <View className="h-20 w-20 my-1 items-center justify-center overflow-hidden rounded-xl bg-bgimages">
+                  <CustomImagen key={item.codart.trim()} img={item.img!} />
+                </View>
                 <View className="flex-1 ml-2">
                   <Text
                     className="text-sm font-normal text-gray-900 dark:text-gray-100"
@@ -149,7 +148,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
       <BottomModal
         visible={modalItemVisible}
         onClose={() => setModalItemVisible(false)}
-        heightPercentage={0.85}
+        heightPercentage={0.75}
       >
         <ItemModal onClose={setModalItemVisible} item={item} />
       </BottomModal>
