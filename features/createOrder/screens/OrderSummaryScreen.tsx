@@ -434,11 +434,6 @@ export default function OrderSummaryScreen() {
             <OrderSummaryList scrollEnabled={false} />
           </View>
 
-          <View className="mb-4 bg-componentbg dark:bg-dark-componentbg px-4 py-2 rounded-xl">
-            <Text className="text-md font-medium text-foreground dark:text-dark-foreground mb-2">
-              Totales
-            </Text>
-          </View>
           <TotalView
             totalBruto={totalBruto}
             TotalIVA={totalIVA}
