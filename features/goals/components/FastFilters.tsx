@@ -12,8 +12,6 @@ interface Props {
 
   sortByAssigned: boolean;
   setSortByAssigned: (value: boolean) => void;
-
-
 }
 
 export default function FastFilters({
@@ -32,7 +30,7 @@ export default function FastFilters({
     active: boolean,
     icon: React.ComponentProps<typeof Ionicons>["name"],
     onPress: () => void,
-    rotateIcon?: boolean
+    rotateIcon?: boolean,
   ) => (
     <TouchableOpacity
       onPress={onPress}
@@ -65,23 +63,20 @@ export default function FastFilters({
 
   return (
     <View className="flex-row gap-1">
-      {renderButton(
-        "No usados",
-        notUsed,
-        notUsed ? 'eye' : 'eye-off',
-        () => setNotUsed(!notUsed)
+      {renderButton("No usados", notUsed, notUsed ? "eye" : "eye-off", () =>
+        setNotUsed(!notUsed),
       )}
       {renderButton(
-        "Usados",
+        "Menos usados",
         sortByUsed,
-        sortByUsed ? "arrow-down" : "arrow-up",
-        () => setSortByUsed(!sortByUsed)
+        sortByUsed ? "arrow-up" : "arrow-down",
+        () => setSortByUsed(!sortByUsed),
       )}
       {renderButton(
         "Asignados",
         sortByAssigned,
         sortByAssigned ? "arrow-down" : "arrow-up",
-        () => setSortByAssigned(!sortByAssigned)
+        () => setSortByAssigned(!sortByAssigned),
       )}
     </View>
   );

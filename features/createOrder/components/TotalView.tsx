@@ -62,7 +62,7 @@ export default function TotalView({
       <View className="space-y-2 border-b border-gray-300 dark:border-gray-600 pb-1">
         <View className="flex-row justify-between">
           <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
-            Articulos
+            Artículos
           </Text>
           <Text className="text-base font-medium text-foreground dark:text-dark-foreground">
             {totalItems}

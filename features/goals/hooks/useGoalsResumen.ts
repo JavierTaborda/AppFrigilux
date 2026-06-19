@@ -18,7 +18,7 @@ export function useGoalsResumen(searchText: string) {
 
   // Filters
   const [notUsed, setNotUsed] = useState<boolean>(false);
-  const [sortByUsed, setSortByUsed] = useState<boolean>(false);
+  const [sortByUsed, setSortByUsed] = useState<boolean>(true);
   const [sortByAssigned, setSortByAssigned] = useState<boolean>(false);
 
   // Filters selection
@@ -158,7 +158,16 @@ export function useGoalsResumen(searchText: string) {
     }
     // Sorting
     if (sortByUsed) {
-      filteredgoals.sort((a, b) => b.utilizado - a.utilizado);
+      filteredgoals.sort((a, b) => {
+        const ratioA = a.asignado > 0 ? a.utilizado / a.asignado : 0;
+        const ratioB = b.asignado > 0 ? b.utilizado / b.asignado : 0;
+
+        if (ratioA !== ratioB) {
+          return ratioA - ratioB;
+        }
+
+        return a.utilizado - b.utilizado;
+      });
     }
     if (sortByAssigned) {
       filteredgoals.sort((a, b) => b.asignado - a.asignado);

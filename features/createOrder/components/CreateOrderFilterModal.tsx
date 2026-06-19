@@ -1,7 +1,7 @@
 import FilterModal from "@/components/ui/FilterModal";
 import { safeHaptic } from "@/utils/safeHaptics";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { CategoryArt } from "../interfaces/CategoryArt";
 
 interface GoalsFilterModalProps {
@@ -62,11 +62,7 @@ export default function CreateOrderFilterModal({
           </Text>
         </View>
 
-        <ScrollView
-          contentContainerClassName="py-2 gap-x-2"
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        >
+        <View className="py-2 flex-row flex-wrap gap-2">
           {category?.map((opt) => {
             const isSelected = internalSelected === opt.co_cat;
             return (
@@ -92,7 +88,7 @@ export default function CreateOrderFilterModal({
               </Pressable>
             );
           })}
-        </ScrollView>
+        </View>
       </View>
     </FilterModal>
   );

@@ -35,6 +35,7 @@ const useCreateOrder = (searchText: string) => {
     if (loadedRef.current) return;
     loadedRef.current = true;
     setLoading(true);
+    setError(null);
 
     try {
       const [result, exchange, iva] = await Promise.all([
@@ -44,6 +45,7 @@ const useCreateOrder = (searchText: string) => {
       ]);
 
       setAllProductsItems(result);
+      setError(null);
       useCreateOrderStore.getState().syncWithProducts(result, exchange, iva);
     } catch (err) {
       setError("Error cargando productos");
@@ -137,11 +139,11 @@ const useCreateOrder = (searchText: string) => {
         pathname: "/(main)/(tabs)/(createOrder)/order-summary",
         params: { clients: JSON.stringify(clientsResult), options: JSON.stringify(conditionsPay) },
       });
-    } catch (err) {
-      console.error("handleSummary error:", err);
-      Alert.alert("Ocurrió un error", "Por favor, intenta nuevamente.");
-    } finally {
       setLoadSummary(false);
+    } catch (err) {
+      setLoadSummary(false);
+
+      Alert.alert("Ocurrió un error", "Por favor, intenta nuevamente.");
     }
   }, []);
 
