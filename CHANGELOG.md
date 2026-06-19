@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-06-19
+
+### Added
+
+- Additional validations in report forms to prevent incomplete submissions.
+- Feedback messages for critical actions (save and submit) to improve UX.
+
+### Changed
+
+- Minor UI adjustments in modals and data entry screens to improve readability.
+- Refined typings and data structures in order and return flows.
+
+### Fixed
+
+- Fixed state errors when updating quantities in reports.
+- Resolved visual inconsistencies in components with translucent backgrounds.
+
+### Removed
+
+- Removed unused code and obsolete references after the Expo 56 migration.
+
 ## [1.1.0] - 2026-05-29
 
 ### Added
