@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 import { useQuantityHandlers } from "../hooks/useQuantityHandler";
 import { OrderItem } from "../types/orderItem";
@@ -41,10 +41,10 @@ export default function QuantitySelector({
     img,
   });
 
-  const [inputQuantity, setInputQuantity] = useState(quantity);
+  const [inputQuantity, setInputQuantity] = useState(String(quantity));
 
   useEffect(() => {
-    setInputQuantity(quantity);
+    setInputQuantity(String(quantity));
   }, [quantity]);
 
   // Animaciones ligeras para botones
@@ -64,10 +64,16 @@ export default function QuantitySelector({
 
   const handleManualChange = (value: string) => {
     const numeric = value.replace(/[^0-9]/g, "");
-    let qty = numeric === "" ? 0 : parseInt(numeric);
+
+    if (numeric === "") {
+      setInputQuantity("");
+      return;
+    }
+
+    let qty = parseInt(numeric, 10);
 
     if (qty <= 0) {
-      setInputQuantity(0);
+      setInputQuantity(numeric);
       return;
     }
 
@@ -75,7 +81,7 @@ export default function QuantitySelector({
       qty = item.available;
     }
 
-    setInputQuantity(qty);
+    setInputQuantity(String(qty));
 
     if (onChangeQuantity) {
       onChangeQuantity(qty);
@@ -156,9 +162,10 @@ export default function QuantitySelector({
           </Text>
         ) : (
           <TextInput
-            value={String(inputQuantity)}
+            value={inputQuantity}
             onChangeText={handleManualChange}
             keyboardType="numeric"
+            style={{ minWidth: size * 1.5 }}
             className="font-semibold mx-8 p-0 text-2xl text-center text-foreground dark:text-dark-foreground"
           />
         )}
