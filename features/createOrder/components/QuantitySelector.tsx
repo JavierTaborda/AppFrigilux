@@ -1,3 +1,4 @@
+import { safeHaptic } from "@/utils/safeHaptics";
 import { useEffect, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import Animated, {
@@ -84,6 +85,7 @@ export default function QuantitySelector({
     setInputQuantity(String(qty));
 
     if (onChangeQuantity) {
+      safeHaptic("selection");
       onChangeQuantity(qty);
       return;
     }
@@ -95,26 +97,31 @@ export default function QuantitySelector({
 
   const handleControlledAdd = () => {
     if (!onChangeQuantity) return;
+    safeHaptic("selection");
     onChangeQuantity(Math.min(1, maxAvailable));
   };
 
   const handleControlledIncrease = () => {
     if (!onChangeQuantity) return;
+    safeHaptic("selection");
     onChangeQuantity(Math.min(quantity + 1, maxAvailable));
   };
 
   const handleControlledDecrease = () => {
     if (!onChangeQuantity) return;
+    safeHaptic("selection");
     onChangeQuantity(Math.max(quantity - 1, 0));
   };
 
   const handleControlledMaxIncrease = () => {
     if (!onChangeQuantity) return;
+    safeHaptic("success");
     onChangeQuantity(maxAvailable);
   };
 
   const handleControlledRemove = () => {
     if (!onChangeQuantity) return;
+    safeHaptic("warning");
     onChangeQuantity(0);
   };
 

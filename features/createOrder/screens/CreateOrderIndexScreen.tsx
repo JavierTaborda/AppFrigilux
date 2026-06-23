@@ -2,6 +2,7 @@ import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
 import BottomModal from "@/components/ui/BottomModal";
 import CustomFlatList from "@/components/ui/CustomFlatList";
 import ErrorView from "@/components/ui/ErrorView";
+import { safeHaptic } from "@/utils/safeHaptics";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -221,8 +222,11 @@ export default function CreateOrderScreen() {
 
             <Pressable
               disabled={!haveOrder}
-              onPress={() => setModalVisible(true)}
-              className="p-4 rounded-full shadow-lg  bg-tertiary dark:bg-dark-tertiary flex-row items-center justify-center"
+              onPress={() => {
+                setModalVisible(true);
+                safeHaptic("soft");
+              }}
+              className="w-14 h-14 rounded-full items-center justify-center shadow-lg bg-tertiary dark:bg-dark-tertiary"
             >
               <Ionicons name="bag" size={24} color="white" />
               {items.length > 0 && (

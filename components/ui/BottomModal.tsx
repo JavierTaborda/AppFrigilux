@@ -68,6 +68,15 @@ export default function BottomModal({
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
+  // If keyboard is open, dismiss it on outside taps; otherwise close modal
+  const handleBackdropPress = () => {
+    if (keyboardHeight > 0) {
+      Keyboard.dismiss();
+    } else {
+      onClose();
+    }
+  };
+
   // Open/close the sheet — use dynamic height that accounts for keyboard
   useEffect(() => {
     const computedVisibleArea = Math.max(
@@ -216,7 +225,7 @@ export default function BottomModal({
               </GestureDetector>
 
               {/* Content – fills remaining space and stays above nav bar */}
-              <View
+              <Pressable
                 style={{
                   flex: 1,
                   paddingHorizontal: 20,
@@ -225,9 +234,12 @@ export default function BottomModal({
                   paddingBottom: Math.max(insets.bottom, 16),
                   overflow: "hidden",
                 }}
+                onPress={() => {
+                  if (keyboardHeight > 0) Keyboard.dismiss();
+                }}
               >
                 {children}
-              </View>
+              </Pressable>
             </AnimatedView>
           </View>
         ) : (
@@ -247,7 +259,7 @@ export default function BottomModal({
               {/* fallback dim so user sees backdrop even if blur is not available */}
               <Pressable
                 style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.18)" }}
-                onPress={onClose}
+                onPress={handleBackdropPress}
               />
             </BlurView>
 
@@ -292,7 +304,7 @@ export default function BottomModal({
               </GestureDetector>
 
               {/* Content – fills remaining space and stays above nav bar */}
-              <View
+              <Pressable
                 style={{
                   flex: 1,
                   paddingHorizontal: 20,
@@ -301,9 +313,12 @@ export default function BottomModal({
                   paddingBottom: Math.max(insets.bottom, 16),
                   overflow: "hidden",
                 }}
+                onPress={() => {
+                  if (keyboardHeight > 0) Keyboard.dismiss();
+                }}
               >
                 {children}
-              </View>
+              </Pressable>
             </AnimatedView>
           </View>
         )}
