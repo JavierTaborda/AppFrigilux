@@ -82,9 +82,12 @@ const useCreateOrder = (searchText: string) => {
   }, [allproductItems]);
 
   useFocusEffect(
-    useCallback(() => {
+    useCallback(() => { 
+      // Ensure the summary loading modal is cleared when returning to this screen
+      setLoadSummary(false);
       loadItems();
-    }, [loadItems])
+     
+    }, [loadItems, setLoadSummary])
   );
 
   const createOrder = useCallback(async (pedido: PedidoDTO) => {
@@ -92,10 +95,10 @@ const useCreateOrder = (searchText: string) => {
 
     try {
       const response = await insertOrder(pedido);
-      const factNumber: string = response?.factNumber || "N/A";  
-    
+      const factNumber: string = response?.factNumber || "N/A";
+
       return { success: true, factNumber };
-    
+
 
     } catch (err: any) {
 
@@ -128,7 +131,9 @@ const useCreateOrder = (searchText: string) => {
 
 
   const handleSummary = useCallback(async () => {
+    console.log("Load summary1", loadSummary);
     setLoadSummary(true);
+    console.log("Load summary", loadSummary);
     try {
       const [clientsResult, conditionsPay] = await Promise.all([getClients(), getConditionsPay()]);
       setClients(clientsResult);
@@ -139,7 +144,7 @@ const useCreateOrder = (searchText: string) => {
         pathname: "/(main)/(tabs)/(createOrder)/order-summary",
         params: { clients: JSON.stringify(clientsResult), options: JSON.stringify(conditionsPay) },
       });
-      setLoadSummary(false);
+    
     } catch (err) {
       setLoadSummary(false);
 

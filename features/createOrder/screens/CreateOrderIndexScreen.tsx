@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  Modal,
   Pressable,
   Text,
   useWindowDimensions,
@@ -123,14 +124,21 @@ export default function CreateOrderScreen() {
   );
 
   const FullScreenLoaderOverlay = (
-    <Animated.View
-      entering={FadeIn.duration(200)}
-      exiting={FadeOut.duration(200)}
-      className="absolute top-0 left-0 right-0 bottom-0 z-[999] justify-center items-center bg-overlay dark:bg-dark-overlay"
-      pointerEvents="auto"
+    <Modal
+      visible={loadSummary}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
     >
-      <ActivityIndicator size="large" color="#fff" />
-    </Animated.View>
+      <Animated.View
+        entering={FadeIn.duration(200)}
+        exiting={FadeOut.duration(200)}
+        className="absolute top-0 left-0 right-0 bottom-0 z-[999] justify-center items-center bg-overlay dark:bg-dark-overlay"
+        pointerEvents="auto"
+      >
+        <ActivityIndicator size="large" color="#fff" />
+      </Animated.View>
+    </Modal>
   );
   // useEffect(() => {
   //   if (!filteredProducts.length) return;

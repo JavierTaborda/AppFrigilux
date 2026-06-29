@@ -185,14 +185,14 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   No tienes productos.
                 </Text>
               </View>
-              <TouchableOpacity
+              <Pressable
                 onPress={onClose}
                 className="py-4 rounded-full items-center bg-gray-300 dark:bg-gray-700"
               >
                 <Text className="text-white font-semibold text-base">
                   Cerrar
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </>
           ) : (
             <>
