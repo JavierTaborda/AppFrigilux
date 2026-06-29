@@ -9,6 +9,8 @@ type CreateOrderState = {
   exchangeRate: ExchangeRate;
   totalsVES: boolean;
   IVA:number;
+  loadSummary: boolean;
+  setLoadSummary: (value: boolean) => void;
   addItem: (product: OrderItem, qty?: number) => void;
   setItemQuantity: (product: OrderItem, qty: number) => void;
   increase: (codart: string, by?: number) => void;
@@ -24,6 +26,8 @@ type CreateOrderState = {
 const useCreateOrderStore = create<CreateOrderState>()(
   persist(
     (set, get) => ({
+      loadSummary: false,
+      setLoadSummary: (value: boolean) => set({ loadSummary: value }),
       items: [],
       exchangeRate: {
         tasa_v:0,
@@ -173,6 +177,11 @@ const useCreateOrderStore = create<CreateOrderState>()(
     {
       name: "create-order-storage",
       storage: createJSONStorage(() => AsyncStorage),
+      // don't persist transient UI flags like loadSummary
+      partialize: (state) => {
+        const { loadSummary, setLoadSummary, ...rest } = state as any;
+        return rest;
+      },
     }
   )
 );

@@ -14,7 +14,8 @@ import { OrderItem } from "../types/orderItem";
 
 const useCreateOrder = (searchText: string) => {
   const [loading, setLoading] = useState(false);
-  const [loadSummary, setLoadSummary] = useState(false);
+  const loadSummary = useCreateOrderStore((s) => s.loadSummary);
+  const setLoadSummary = useCreateOrderStore((s) => s.setLoadSummary);
   const [error, setError] = useState<string | null>(null);
   const [allproductItems, setAllProductsItems] = useState<OrderItem[]>([]);
   const [notUsed, setNotUsed] = useState<boolean>(false);
@@ -82,12 +83,9 @@ const useCreateOrder = (searchText: string) => {
   }, [allproductItems]);
 
   useFocusEffect(
-    useCallback(() => { 
-      // Ensure the summary loading modal is cleared when returning to this screen
-      setLoadSummary(false);
+    useCallback(() => {
       loadItems();
-     
-    }, [loadItems, setLoadSummary])
+    }, [loadItems])
   );
 
   const createOrder = useCallback(async (pedido: PedidoDTO) => {
@@ -131,9 +129,9 @@ const useCreateOrder = (searchText: string) => {
 
 
   const handleSummary = useCallback(async () => {
-    console.log("Load summary1", loadSummary);
+   
     setLoadSummary(true);
-    console.log("Load summary", loadSummary);
+
     try {
       const [clientsResult, conditionsPay] = await Promise.all([getClients(), getConditionsPay()]);
       setClients(clientsResult);

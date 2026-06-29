@@ -8,18 +8,18 @@ import { ClientData } from "@/types/clients";
 import { appTheme } from "@/utils/appTheme";
 import { safeHaptic } from "@/utils/safeHaptics";
 import Ionicons from "@react-native-vector-icons/ionicons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  Pressable,
-  ScrollView,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Platform,
+    Pressable,
+    ScrollView,
+    Switch,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, { Easing, FadeInUp } from "react-native-reanimated";
 import ExchangeRateBadge from "../components/ExchangeRateBadge";
@@ -103,7 +103,15 @@ export default function OrderSummaryScreen() {
   const router = useRouter();
   const { isDark } = useThemeStore();
   const { items, exchangeRate, IVA, clearOrder } = useCreateOrderStore();
+  const setLoadSummary = useCreateOrderStore((s) => s.setLoadSummary);
   const { createOrder } = useCreateOrder("");
+
+  useFocusEffect(
+    useCallback(() => {
+      // Clear the summary loading flag when this screen is focused
+      setLoadSummary(false);
+    }, [setLoadSummary]),
+  );
 
   // Calculate totals for TotalView
   const { totalBruto, totalIVA, totalNeto, usdBruto, usdIva, totalNetoUsd } =
