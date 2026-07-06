@@ -12,7 +12,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.frigiluxsge.mobile",
-      "buildNumber": "1",
+
       "infoPlist": {
         "NSFaceIDUsageDescription": "Esta app usa Face ID para autenticación segura.",
         "ITSAppUsesNonExemptEncryption": false
@@ -23,8 +23,7 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.frigiluxsge.mobile",
-      "versionCode": 1
+      "package": "com.frigiluxsge.mobile"
     },
     "web": {
       "bundler": "metro",
