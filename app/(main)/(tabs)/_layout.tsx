@@ -167,6 +167,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="(orders)/app-orders"
+        options={{
+          href: null,
+          headerShown: true,
+          title: "Pedidos creados desde la app",
+        }}
+      />
+      <Tabs.Screen
         name="(createOrder)/create-order"
         options={{
           href: null,

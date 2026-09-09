@@ -36,6 +36,7 @@ export default function CustomDateTimePicker({
       value={value}
       mode={mode}
       display={display}
+      maximumDate={new Date()}
       onChange={(event, date) => {
         if (Platform.OS === "android") {
           if (event.type === "set") {

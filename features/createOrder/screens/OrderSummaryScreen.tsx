@@ -2,6 +2,7 @@ import ClientModal from "@/components/inputs/ClientModal";
 import CustomTextInput from "@/components/inputs/CustomTextInput";
 import ExchangeInput from "@/components/inputs/ExchangeInput";
 import BottomModal from "@/components/ui/BottomModal";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { useOverlayStore } from "@/stores/useSuccessOverlayStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { ClientData } from "@/types/clients";
@@ -11,17 +12,18 @@ import Ionicons from "@react-native-vector-icons/ionicons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Platform,
-    Pressable,
-    ScrollView,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Animated, { Easing, FadeInUp } from "react-native-reanimated";
+import { registerAppOrder } from "../../orders/services/AppOrderTrackingService";
 import ExchangeRateBadge from "../components/ExchangeRateBadge";
 import OrderSummaryList from "../components/OrderSummaryList";
 import TotalView from "../components/TotalView";
@@ -101,6 +103,7 @@ export default function OrderSummaryScreen() {
   );
 
   const router = useRouter();
+  const { name } = useAuthStore();
   const { isDark } = useThemeStore();
   const { items, exchangeRate, IVA, clearOrder } = useCreateOrderStore();
   const setLoadSummary = useCreateOrderStore((s) => s.setLoadSummary);
@@ -205,6 +208,27 @@ export default function OrderSummaryScreen() {
         });
         return;
       } else {
+        try {
+          const orderNumber = Number(result.factNumber);
+          await registerAppOrder({
+            orderNumber,
+            userName: name,
+            orderSnapshot: {
+              ...pedido,
+              fact_num: orderNumber,
+              reng_ped: pedido.reng_ped.map((line) => ({
+                ...line,
+                fact_num: orderNumber,
+                img: items[line.reng_num - 1]?.img ?? null,
+              })),
+            },
+          });
+        } catch (trackingError) {
+          console.error(
+            "No se pudo registrar el pedido en Supabase:",
+            trackingError,
+          );
+        }
         clearOrder();
         resetForm();
         router.push("/(main)/(tabs)/(createOrder)/create-order");
@@ -229,6 +253,7 @@ export default function OrderSummaryScreen() {
     direction,
     exchangeRate,
     email,
+    name,
   ]);
 
   const buildPedido = useCallback((): PedidoDTO => {

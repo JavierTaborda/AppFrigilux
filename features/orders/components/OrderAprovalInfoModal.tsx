@@ -3,6 +3,7 @@ import { formatDateMMM_dot_dd_yyyy } from "@/utils/datesFormat";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { APP_ORDER_SOURCE } from "../constants";
 import { OrderApproval } from "../types/OrderApproval";
 
 type Props = {
@@ -13,8 +14,9 @@ type Props = {
 
 export default function OrderModal({ visible, onClose, order }: Props) {
   if (!order) return null;
-  
+
   const isAnulada = order.anulada === true;
+  const isFromApp = order.origen?.trim() === APP_ORDER_SOURCE;
   const isRevisado = order.revisado === "1";
   const isAuth = order.aux02 === "Si";
   const Procesado =
@@ -26,8 +28,6 @@ export default function OrderModal({ visible, onClose, order }: Props) {
 
   return (
     <BottomModal visible={visible} onClose={onClose} heightPercentage={0.85}>
-
-
       <Text className="text-2xl font-semibold mb-2 text-foreground dark:text-dark-foreground">
         Pedido #{order.fact_num}
       </Text>
@@ -48,8 +48,28 @@ export default function OrderModal({ visible, onClose, order }: Props) {
           </View>
         )}
 
-        {/* Detalles del pedido */}
+        {isFromApp && (
+          <View className="flex-row items-center rounded-xl border border-green-200 bg-green-50 p-3 mb-4 dark:border-green-800 dark:bg-green-900/25">
+            <View className="h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-800/50">
+              <Ionicons
+                name="phone-portrait-outline"
+                size={21}
+                color="#16a34a"
+              />
+            </View>
+            <View className="ml-3 flex-1">
+              <Text className="text-sm font-bold text-green-800 dark:text-green-300">
+                Desde la aplicación
+              </Text>
+              <Text className="mt-0.5 text-xs text-green-700 dark:text-green-400">
+                Este pedido fue creado desde la app móvil.
+              </Text>
+            </View>
+            <Ionicons name="checkmark-circle" size={21} color="#16a34a" />
+          </View>
+        )}
 
+        {/* Detalles del pedido */}
         <Row
           label="Cliente"
           value={`${order.co_cli.trim()} - ${order.cli_des.trim()}`}

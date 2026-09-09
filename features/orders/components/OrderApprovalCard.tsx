@@ -1,12 +1,20 @@
-import { formatDatedd_dot_MMM_yyyy } from '@/utils/datesFormat';
-import { emojis } from '@/utils/emojis';
-import { currencyDollar, totalVenezuela } from '@/utils/moneyFormat';
-import { safeHaptic } from '@/utils/safeHaptics';
+import { formatDatedd_dot_MMM_yyyy } from "@/utils/datesFormat";
+import { emojis } from "@/utils/emojis";
+import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
+import { safeHaptic } from "@/utils/safeHaptics";
 import Ionicons from "@react-native-vector-icons/ionicons";
-import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, Text, TouchableOpacity, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeOut } from 'react-native-reanimated';
-import { OrderApproval } from '../types/OrderApproval';
+import React, { useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
+import { APP_ORDER_SOURCE } from "../constants";
+import { OrderApproval } from "../types/OrderApproval";
 
 interface Props {
   item: OrderApproval;
@@ -14,35 +22,48 @@ interface Props {
   detailModal?: () => void;
   changeRevisado: (factNum: number, newStatus: string) => void;
 
-  role:string | null;
+  role: string | null;
 }
 
-function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, role }: Props) {
+function OrderApprovalCard({
+  item,
+  onPress,
+  changeRevisado,
+  detailModal,
+  role,
+}: Props) {
   const isAnulada = item.anulada === true;
-  const isRevisado = item.revisado === '1';
+  const isRevisado = item.revisado === "1";
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
-  const formattedDate = useMemo(() => formatDatedd_dot_MMM_yyyy(item.fec_emis), [item.fec_emis]); 
-  const hasPermission= role ==="1" || role==="2";
+  const formattedDate = useMemo(
+    () => formatDatedd_dot_MMM_yyyy(item.fec_emis),
+    [item.fec_emis],
+  );
+  const hasPermission = role === "1" || role === "2";
+  const isFromApp = item.origen?.trim() === APP_ORDER_SOURCE;
+
   const handlePressChangeStatus = () => {
-    const actionLabel = isRevisado ? 'eliminar la revisión' : 'marcar como revisado';
+    const actionLabel = isRevisado
+      ? "eliminar la revisión"
+      : "marcar como revisado";
     Alert.alert(
       `${emojis.warning} Confirmación`,
       `¿Deseas ${actionLabel} el pedido #${item.fact_num}?`,
       [
-        { text: `Cancelar`, style: "destructive" }, 
+        { text: `Cancelar`, style: "destructive" },
         {
           text: `Confirmar`,
-          style:"default", 
+          style: "default",
           onPress: async () => {
             setIsLoadingStatus(true);
             try {
-                 safeHaptic("warning");
+              safeHaptic("warning");
 
               await changeRevisado(item.fact_num, isRevisado ? " " : "1");
             } catch (error) {
               Alert.alert(
                 "Error",
-                "Ocurrió un error al actualizar el estado. Por favor intente de nuevo."
+                "Ocurrió un error al actualizar el estado. Por favor intente de nuevo.",
               );
             } finally {
               setIsLoadingStatus(false);
@@ -50,7 +71,7 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, role }:
           },
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -87,7 +108,6 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, role }:
           onPress={handlePressInfoModal}
         >
           <View className="flex-row items-center gap-2">
-            {/* <Ionicons name="document-text-outline" size={16} color="gray" /> */}
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
               Pedido #{item.fact_num}
             </Text>
@@ -136,6 +156,21 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, role }:
               </Text>
             </View>
           ) : null}
+          {isFromApp && (
+            <View
+              className="flex-row items-center gap-1 
+                      rounded-s-md rounded-e-3xl bg-green-100 dark:bg-green-900/30 px-2 py-1"
+            >
+              <Ionicons
+                name="phone-portrait-outline"
+                size={13}
+                color="#16a34a"
+              />
+              <Text className="text-[11px] font-semibold text-green-800 dark:text-green-400">
+                Desde la aplicación
+              </Text>
+            </View>
+          )}
         </Pressable>
 
         {/* Buttons */}
@@ -153,7 +188,7 @@ function OrderApprovalCard({ item, onPress, changeRevisado, detailModal, role }:
 
           {!isAnulada && (
             <TouchableOpacity
-              onPress={role==='2' ? handlePressChangeStatus : undefined}
+              onPress={role === "2" ? handlePressChangeStatus : undefined}
               disabled={isLoadingStatus}
               className={`flex-row items-center justify-center px-4 py-2 rounded-full ${
                 isRevisado

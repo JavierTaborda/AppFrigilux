@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useSegments } from "expo-router";
+import { Href, useSegments } from "expo-router";
 import { DrawerContentScrollView } from "expo-router/build/react-navigation/drawer";
 import { Image, Text, View } from "react-native";
 import { DrawerItem } from "./DrawerItem";
@@ -48,6 +48,13 @@ export default function CustomDrawerContent(props: any) {
               href="/(main)/(tabs)/(orders)/orderSearch"
               currentPath={currentPath}
             />
+            {role === "1" && (
+              <DrawerItem
+                label="Tracking de Pedidos"
+                href={"/app-orders" as Href}
+                currentPath={currentPath}
+              />
+            )}
             <DrawerItem
               label="Anular Pedidos"
               href="/(main)/(tabs)/(createOrder)/order-cancel"

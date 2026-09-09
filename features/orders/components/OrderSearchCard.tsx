@@ -16,6 +16,7 @@ import {
 import { useThemeStore } from "@/stores/useThemeStore";
 import { safeHaptic } from "@/utils/safeHaptics";
 import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
+import { APP_ORDER_SOURCE } from "../constants";
 import { OrderApproval } from "../types/OrderApproval";
 
 interface Props {
@@ -45,7 +46,7 @@ function OrderSearchCard({
   const isCancelMode = !!onCancel;
 
   const showSwitch = !isCancelMode && !isAnulada;
-
+  const isFromApp = item.origen?.trim() === APP_ORDER_SOURCE;
   const formattedDate = useMemo(
     () => formatDatedd_dot_MMM_yyyy(item.fec_emis),
     [item.fec_emis],
@@ -111,9 +112,11 @@ function OrderSearchCard({
           className="flex-1 gap-1 w-4/6"
           onPress={handlePressInfoModal}
         >
-          <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
-            Pedido #{item.fact_num}
-          </Text>
+          <View className="flex-row items-center gap-2">
+            <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
+              Pedido #{item.fact_num}
+            </Text>
+          </View>
 
           <Text className="text-sm text-gray-500 dark:text-gray-400">
             {formattedDate}
@@ -145,9 +148,26 @@ function OrderSearchCard({
           </View>
 
           {hasPermission && (
-            <Text className="text-xs text-gray-500 dark:text-gray-400">
-              {item.zon_des.trim()} - {item.ven_des.trim()}
-            </Text>
+            <View className="flex-row items-center gap-2 flex-wrap">
+              <Text className="text-xs text-gray-500 dark:text-gray-400">
+                {item.zon_des.trim()} - {item.ven_des.trim()}
+              </Text>
+            </View>
+          )}
+          {isFromApp && (
+            <View
+              className="flex-row items-center gap-1 
+            rounded-s-md rounded-e-3xl bg-green-100 dark:bg-green-900/30 px-2 py-1"
+            >
+              <Ionicons
+                name="phone-portrait-outline"
+                size={13}
+                color="#16a34a"
+              />
+              <Text className="text-[11px] font-semibold text-green-800 dark:text-green-400">
+                Desde la aplicación
+              </Text>
+            </View>
           )}
         </Pressable>
 

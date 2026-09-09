@@ -22,6 +22,7 @@ export type OrderApproval={
   iva: string;
   impresa: number;
   aux02: string;
+  origen?: string;
   tasa: string;
   moneda: string;
   anulada: boolean;
