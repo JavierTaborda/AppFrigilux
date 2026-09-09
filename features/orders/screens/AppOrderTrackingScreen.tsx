@@ -177,48 +177,107 @@ export default function AppOrderTrackingScreen() {
       >
         <CustomFlatList
           data={filteredOrders}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => setSelectedOrder(item)}
-              accessibilityRole="button"
-              accessibilityLabel={`Abrir detalle del pedido ${item.order_number}`}
-              className="mb-3 rounded-2xl border border-gray-200 bg-componentbg p-4 active:opacity-80 dark:border-gray-700 dark:bg-dark-componentbg"
-            >
-              <View className="flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text className="mt-1 text-xl font-bold text-foreground dark:text-dark-foreground">
-                    Pedido #{item.order_number}
-                  </Text>
-                </View>
-                <Ionicons
-                  name="phone-portrait-outline"
-                  size={21}
-                  color="#16a34a"
-                />
-              </View>
-              <Text className="mt-2 text-foreground dark:text-dark-foreground">
-                {item.user_name || item.user_email || item.user_id}
-              </Text>
-              <Text className="text-sm text-gray-500 dark:text-gray-400">
-                {item.user_email || "Sin correo"} ·{" "}
-                {new Date(item.created_at).toLocaleString()}
-              </Text>
-              <Text className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                {item.order_snapshot?.reng_ped?.length ?? 0} artículos
-              </Text>
-              <View className="mt-3 flex-row items-center justify-between">
-                <Text className="text-sm font-semibold text-foreground dark:text-dark-foreground">
-                  Total del pedido
-                </Text>
-                <Text className="text-base font-bold text-primary dark:text-dark-primary">
-                  {formatCurrency(
-                    item.order_snapshot?.tot_neto,
-                    getExchangeRate(item.order_snapshot?.tasa),
-                  )}
-                </Text>
-              </View>
-            </Pressable>
-          )}
+          renderItem={({ item }) =>
+            (() => {
+              const snapshot = item.order_snapshot;
+              const exchangeRate = getExchangeRate(snapshot?.tasa);
+
+              return (
+                <Pressable
+                  onPress={() => setSelectedOrder(item)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Abrir detalle del pedido ${item.order_number}`}
+                  className="mb-2 rounded-2xl border border-gray-200 bg-componentbg p-3 active:opacity-80 dark:border-gray-700 dark:bg-dark-componentbg"
+                >
+                  <View className="flex-row items-center justify-between">
+                    <View className="min-w-0 flex-1">
+                      <Text className="mt-0.5 text-2xl font-bold leading-7 text-foreground dark:text-dark-foreground">
+                        Pedido #{snapshot?.fact_num ?? item.order_number}
+                      </Text>
+                    </View>
+                    <View className="ml-3 items-end">
+                      <View className="flex-row items-center rounded-full bg-green-100 px-2.5 py-0.5 dark:bg-green-900/30">
+                        <Ionicons
+                          name="trending-up-outline"
+                          size={16}
+                          color="#16a34a"
+                        />
+                        <Text className="ml-1 text-[12px] font-bold text-green-700 dark:text-green-400">
+                          {totalVenezuela(exchangeRate)} Bs/$
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <View className="mt-2 rounded-xl bg-gray-100 p-2 dark:bg-gray-800">
+                    <View className="flex-row justify-between gap-3">
+                      <CardField label="Cliente" value={snapshot?.co_cli} />
+                      <CardField
+                        label="Cod Vendedor"
+                        value={snapshot?.co_ven}
+                      />
+                    </View>
+                    <View className="mt-1.5 flex-row justify-between gap-3">
+                      <CardField
+                        label="Vendedor"
+                        value={item.user_name?.trim() || "Sin nombre"}
+                      />
+                      <CardField
+                        label="Fecha y hora"
+                        value={formatOrderDateTime(
+                          snapshot?.fec_emis || item.created_at,
+                        )}
+                      />
+                    </View>
+                  </View>
+
+                  <View className="mt-2 flex-row justify-between gap-2">
+                    <CardAmount
+                      label="Bruto"
+                      value={snapshot?.tot_bruto}
+                      exchangeRate={exchangeRate}
+                    />
+                    <CardAmount
+                      label="IVA"
+                      value={snapshot?.iva}
+                      exchangeRate={exchangeRate}
+                    />
+                    <CardAmount
+                      label="Neto"
+                      value={snapshot?.tot_neto}
+                      exchangeRate={exchangeRate}
+                    />
+                  </View>
+
+                  {snapshot?.reng_ped?.map((line, index) => (
+                    <View
+                      key={`${line.reng_num}-${index}`}
+                      className="mt-2 border-t border-gray-200 pt-2 dark:border-gray-700"
+                    >
+                      <Text className="font-semibold text-foreground dark:text-dark-foreground">
+                        {line.co_art?.trim() || "Artículo sin código"}
+                      </Text>
+                      <View className="mt-1 flex-row flex-wrap justify-between gap-1">
+                        <CardField
+                          label="Cantidad"
+                          value={String(line.total_art ?? 0)}
+                        />
+                        <CardField
+                          label="Precio"
+                          value={totalVenezuela(line?.prec_vta2!)}
+                        />
+                        <CardField label="Descuento" value={line.porc_desc} />
+                        <CardField
+                          label="Total"
+                          value={formatCurrency(line.reng_neto, exchangeRate)}
+                        />
+                      </View>
+                    </View>
+                  ))}
+                </Pressable>
+              );
+            })()
+          }
           keyExtractor={(item) => item.id}
           refreshing={refreshing}
           canRefresh={canRefresh}
@@ -549,6 +608,48 @@ function AppOrderDetailModal({
 function getExchangeRate(value: string | number | null | undefined) {
   const exchangeRate = Number(value ?? 0);
   return exchangeRate > 0 ? exchangeRate : 1;
+}
+
+function formatOrderDateTime(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "Sin fecha" : date.toLocaleString();
+}
+
+function CardField({ label, value }: { label: string; value?: string }) {
+  return (
+    <View className="min-w-0 flex-1">
+      <Text className="text-[10px] font-semibold uppercase text-gray-500 dark:text-gray-400">
+        {label}
+      </Text>
+      <Text
+        className="mt-0.5 text-sm font-semibold text-foreground dark:text-dark-foreground"
+        numberOfLines={1}
+      >
+        {value?.trim() || "-"}
+      </Text>
+    </View>
+  );
+}
+
+function CardAmount({
+  label,
+  value,
+  exchangeRate,
+}: {
+  label: string;
+  value?: number;
+  exchangeRate: number;
+}) {
+  return (
+    <View className="flex-1">
+      <Text className="text-[10px] font-semibold uppercase text-gray-500 dark:text-gray-400">
+        {label}
+      </Text>
+      <Text className="mt-0.5 text-sm font-bold text-primary dark:text-dark-primary">
+        {formatCurrency(value, exchangeRate)}
+      </Text>
+    </View>
+  );
 }
 
 function convertToDollars(

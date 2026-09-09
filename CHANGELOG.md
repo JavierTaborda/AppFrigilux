@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - [Unreleased]
+
+### Added
+
+- Added date, detail, and seller filters to app order tracking.
+- Added month-based loading to fetch only orders from the current calendar month.
+- Added formatted order totals in the list cards and detail modal, including conversion by the order exchange rate.
+- Added pull-to-refresh with a cooldown to app order tracking.
+
+### Changed
+
+- Updated the date picker to allow selecting today while preventing future dates.
+- Added scrolling support to the filter modal content.
+
 ## [1.1.1] - 2026-06-29
 
 ### Added

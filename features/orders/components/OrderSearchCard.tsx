@@ -155,18 +155,12 @@ function OrderSearchCard({
             </View>
           )}
           {isFromApp && (
-            <View
-              className="flex-row items-center gap-1 
-            rounded-s-md rounded-e-3xl bg-green-100 dark:bg-green-900/30 px-2 py-1"
-            >
+            <View className="flex-row items-center  py-1">
               <Ionicons
                 name="phone-portrait-outline"
                 size={13}
                 color="#16a34a"
               />
-              <Text className="text-[11px] font-semibold text-green-800 dark:text-green-400">
-                Desde la aplicación
-              </Text>
             </View>
           )}
         </Pressable>
