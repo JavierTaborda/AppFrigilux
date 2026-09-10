@@ -211,7 +211,10 @@ export default function AppOrderTrackingScreen() {
 
                   <View className="mt-2 rounded-xl bg-gray-100 p-2 dark:bg-gray-800">
                     <View className="flex-row justify-between gap-3">
-                      <CardField label="Cliente" value={snapshot?.co_cli} />
+                      <CardField
+                        label="Cliente"
+                        value={`${snapshot?.co_cli?.trim()}- ${snapshot?.nombre}`}
+                      />
                       <CardField
                         label="Cod Vendedor"
                         value={snapshot?.co_ven}
@@ -701,24 +704,77 @@ function DetailRow({
 }
 
 function AppOrderTrackingSkeleton() {
-  return (
-    <View className="flex-1 bg-background px-4 pt-5 dark:bg-dark-background">
-      <View className="mb-2 h-8 w-3/4 rounded-lg bg-gray-200 dark:bg-gray-700" />
-      <View className="mb-5 h-4 w-11/12 rounded bg-gray-200 dark:bg-gray-700" />
+  const placeholderClass = "bg-gray-200 dark:bg-gray-700";
+  const cards = ["w-3/5", "w-2/5", "w-1/2"];
 
-      {Array.from({ length: 3 }).map((_, index) => (
-        <View
-          key={index}
-          className="mb-3 rounded-xl border border-gray-200 bg-componentbg p-4 dark:border-gray-700 dark:bg-dark-componentbg"
-        >
-          <View className="flex-row items-center justify-between">
-            <View className="h-6 w-2/5 rounded bg-gray-200 dark:bg-gray-700" />
-            <View className="h-6 w-6 rounded-full bg-gray-200 dark:bg-gray-700" />
-          </View>
-          <View className="mt-3 h-5 w-3/5 rounded bg-gray-200 dark:bg-gray-700" />
-          <View className="mt-2 h-4 w-4/5 rounded bg-gray-200 dark:bg-gray-700" />
+  return (
+    <View className="flex-1 ">
+      <View className="flex-1 animate-pulse rounded-t-3xl bg-background px-4 pt-3 dark:bg-dark-background">
+        <View className="mb-2 flex-row items-center gap-3">
+          <View className={`h-11 flex-1 rounded-xl ${placeholderClass}`} />
+          <View className={`h-10 w-10 rounded-xl ${placeholderClass}`} />
         </View>
-      ))}
+        <View className="mb-3 flex-row items-center justify-between">
+          <View className={`h-4 w-2/5 rounded ${placeholderClass}`} />
+          <View className={`h-4 w-1/4 rounded ${placeholderClass}`} />
+        </View>
+
+        {Array.from({ length: 3 }).map((_, cardIndex) => (
+          <View
+            key={cardIndex}
+            className="mb-3 rounded-2xl border border-gray-200 bg-componentbg p-3 dark:border-gray-700 dark:bg-dark-componentbg"
+          >
+            <View className="flex-row items-center justify-between">
+              <View className={`h-7 w-2/5 rounded ${placeholderClass}`} />
+              <View className={`h-6 w-24 rounded-full ${placeholderClass}`} />
+            </View>
+
+            <View className={`mt-3 rounded-xl p-3 ${placeholderClass}`}>
+              <View className="flex-row justify-between gap-3">
+                <View className={`h-4 flex-1 rounded ${placeholderClass}`} />
+                <View className={`h-4 w-1/4 rounded ${placeholderClass}`} />
+              </View>
+              <View className="mt-2 flex-row justify-between gap-3">
+                <View className={`h-4 flex-1 rounded ${placeholderClass}`} />
+                <View className={`h-4 w-1/3 rounded ${placeholderClass}`} />
+              </View>
+            </View>
+
+            <View className="mt-3 flex-row justify-between gap-3">
+              {["w-1/4", "w-1/4", "w-1/4"].map((widthClass, amountIndex) => (
+                <View
+                  key={amountIndex}
+                  className={`h-5 ${widthClass} rounded ${placeholderClass}`}
+                />
+              ))}
+            </View>
+
+            <View className="mt-3 border-t border-gray-200 pt-3 dark:border-gray-700">
+              <View
+                className={`h-4 ${cards[cardIndex]} rounded ${placeholderClass}`}
+              />
+              <View className="mt-2 flex-row justify-between gap-2">
+                <View className={`h-4 w-1/5 rounded ${placeholderClass}`} />
+                <View className={`h-4 w-1/5 rounded ${placeholderClass}`} />
+                <View className={`h-4 w-1/5 rounded ${placeholderClass}`} />
+                <View className={`h-4 w-1/5 rounded ${placeholderClass}`} />
+              </View>
+            </View>
+
+            {cardIndex === 1 && (
+              <View className="mt-3 border-t border-gray-200 pt-3 dark:border-gray-700">
+                <View className={`h-4 w-1/2 rounded ${placeholderClass}`} />
+                <View className="mt-2 flex-row justify-between gap-2">
+                  <View className={`h-4 w-1/5 rounded ${placeholderClass}`} />
+                  <View className={`h-4 w-1/5 rounded ${placeholderClass}`} />
+                  <View className={`h-4 w-1/5 rounded ${placeholderClass}`} />
+                  <View className={`h-4 w-1/5 rounded ${placeholderClass}`} />
+                </View>
+              </View>
+            )}
+          </View>
+        ))}
+      </View>
     </View>
   );
 }

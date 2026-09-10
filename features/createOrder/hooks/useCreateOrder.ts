@@ -7,7 +7,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { CategoryArt } from "../interfaces/CategoryArt";
 import { PedidoDTO } from "../interfaces/pedidoDTO";
-import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA, insertOrder } from "../services/CreateOrderService";
+import { getClients, getConditionsPay, getExchangeRate, getItemsByGoals, getIVA } from "../services/CreateOrderService";
 import useCreateOrderStore from "../stores/useCreateOrderStore";
 import { Conditions } from "../types/conditions";
 import { OrderItem } from "../types/orderItem";
@@ -92,10 +92,12 @@ const useCreateOrder = (searchText: string) => {
     setLoading(true);
 
     try {
-      const response = await insertOrder(pedido);
-      const factNumber: string = response?.factNumber || "N/A";
-
-      return { success: true, factNumber };
+      //const response = await insertOrder(pedido);
+     // const factNumber: string = response?.factNumber || "N/A";
+      const test = { success: true, factNumber: 123456 };
+      return test;
+      
+      //eturn { success: true, factNumber };
 
 
     } catch (err: any) {
