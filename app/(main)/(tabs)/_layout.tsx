@@ -175,6 +175,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="(admin)/login-history"
+        options={{
+          href: null,
+          headerShown: true,
+          title: "Historial de accesos",
+        }}
+      />
+      <Tabs.Screen
         name="(createOrder)/create-order"
         options={{
           href: null,

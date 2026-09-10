@@ -17,11 +17,12 @@ import {
 } from "react-native";
 import pkg from "../../../package.json";
 import BiometricToggle from "../components/BiometricView";
+import LoginHistoryToggle from "../components/LoginHistoryToggle";
 
 const TERMS_URL = `${process.env.EXPO_PUBLIC_WEB_URL}/privacy`;
 
 export default function ProfileScreen() {
-  const { session, name, userId, signOut, signOutSoft, initializeAuth } =
+  const { session, name, userId, role, signOut, signOutSoft, initializeAuth } =
     useAuthStore();
   const expoVersion =
     Constants.expoConfig?.version ?? (Constants.expoVersion as any)?.version;
@@ -117,6 +118,7 @@ export default function ProfileScreen() {
         )}
 
         <BiometricToggle />
+        {role === "1" && <LoginHistoryToggle userId={userId} />}
         <ThemeToggle />
 
         <Pressable

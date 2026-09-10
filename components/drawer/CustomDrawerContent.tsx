@@ -48,13 +48,7 @@ export default function CustomDrawerContent(props: any) {
               href="/(main)/(tabs)/(orders)/orderSearch"
               currentPath={currentPath}
             />
-            {role === "1" && (
-              <DrawerItem
-                label="Tracking de Pedidos"
-                href={"/app-orders" as Href}
-                currentPath={currentPath}
-              />
-            )}
+
             <DrawerItem
               label="Anular Pedidos"
               href="/(main)/(tabs)/(createOrder)/order-cancel"
@@ -75,6 +69,21 @@ export default function CustomDrawerContent(props: any) {
               href="/(main)/(tabs)/(returnReport)"
               currentPath={currentPath}
             />
+
+            {role === "1" && (
+              <>
+                <DrawerItem
+                  label="Tracking de Pedidos"
+                  href={"/app-orders" as Href}
+                  currentPath={currentPath}
+                />
+                <DrawerItem
+                  label="Historial de accesos"
+                  href={"/(main)/(tabs)/(admin)/login-history" as Href}
+                  currentPath={currentPath}
+                />
+              </>
+            )}
           </>
         ) : (
           <DrawerItem

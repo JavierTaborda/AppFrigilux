@@ -1,8 +1,9 @@
+import { recordLoginEvent } from "@/features/admin/services/LoginHistoryService";
 import { supabase } from "@/lib/supabase";
 import { getName, getUserRoleJWT } from "@/services/AuthService";
 import {
-  getBiometricEnabled,
-  setBiometricEnabled,
+    getBiometricEnabled,
+    setBiometricEnabled,
 } from "@/utils/biometricFlag";
 import { getSessionStatus, setSessionStatus } from "@/utils/sessionStatus";
 import { Session } from "@supabase/supabase-js";
@@ -82,6 +83,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           token: data.session?.access_token,
           userId: data.user.id
         });
+        void recordLoginEvent("password").catch(() => undefined);
         
       }
       return { error };
@@ -133,6 +135,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           token: data.session?.access_token,
           userId: data.user?.id
         });
+        void recordLoginEvent(type === "sms" ? "sms_otp" : "email_otp").catch(
+          () => undefined,
+        );
       }
 
       return { error };

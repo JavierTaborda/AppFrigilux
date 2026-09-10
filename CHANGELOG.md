@@ -13,11 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added month-based loading to fetch only orders from the current calendar month.
 - Added formatted order totals in the list cards and detail modal, including conversion by the order exchange rate.
 - Added pull-to-refresh with a cooldown to app order tracking.
+- Added an admin-only login history screen for reviewing successful password and OTP sign-ins.
+- Added date-range filters, current-month default filtering, and pull-to-refresh to login history.
+- Added Supabase SQL setup with login history metadata, indexes, and admin-only RLS policies.
+- Added an admin profile option to disable login tracking for the current user.
 
 ### Changed
 
 - Updated the date picker to allow selecting today while preventing future dates.
 - Added scrolling support to the filter modal content.
+- Updated successful password and OTP sign-ins to respect the login tracking preference.
 
 ## [1.1.1] - 2026-06-29
 
