@@ -111,6 +111,15 @@ function OrderApprovalCard({
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
               Pedido #{item.fact_num}
             </Text>
+            {isFromApp && (
+              <View className="flex-row items-center  py-1">
+                <Ionicons
+                  name="phone-portrait-outline"
+                  size={13}
+                  color="#16a34a"
+                />
+              </View>
+            )}
           </View>
 
           <View className="flex-row items-center gap-2">
@@ -156,15 +165,6 @@ function OrderApprovalCard({
               </Text>
             </View>
           ) : null}
-          {isFromApp && (
-            <View className="flex-row items-center  py-1">
-              <Ionicons
-                name="phone-portrait-outline"
-                size={13}
-                color="#16a34a"
-              />
-            </View>
-          )}
         </Pressable>
 
         {/* Buttons */}

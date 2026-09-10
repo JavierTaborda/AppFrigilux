@@ -116,6 +116,15 @@ function OrderSearchCard({
             <Text className="text-lg font-bold text-foreground dark:text-dark-foreground">
               Pedido #{item.fact_num}
             </Text>
+            {isFromApp && (
+              <View className="flex-row items-center  py-1">
+                <Ionicons
+                  name="phone-portrait-outline"
+                  size={13}
+                  color="#16a34a"
+                />
+              </View>
+            )}
           </View>
 
           <Text className="text-sm text-gray-500 dark:text-gray-400">
@@ -152,15 +161,6 @@ function OrderSearchCard({
               <Text className="text-xs text-gray-500 dark:text-gray-400">
                 {item.zon_des.trim()} - {item.ven_des.trim()}
               </Text>
-            </View>
-          )}
-          {isFromApp && (
-            <View className="flex-row items-center  py-1">
-              <Ionicons
-                name="phone-portrait-outline"
-                size={13}
-                color="#16a34a"
-              />
             </View>
           )}
         </Pressable>
