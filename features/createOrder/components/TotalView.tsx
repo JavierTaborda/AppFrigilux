@@ -58,18 +58,18 @@ export default function TotalView({
   };
 
   return (
-    <View className="mb-2 px-4 py-3 bg-componentbg dark:bg-dark-componentbg rounded-xl">
+    <View className="mb-2 px-4 py-2 bg-componentbg dark:bg-dark-componentbg rounded-xl">
       <View className="space-y-2 border-b border-gray-300 dark:border-gray-600 pb-1">
-        <View className="flex-row justify-between">
-          <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
-            Artículos
+        <View className="flex-row flex-wrap items-center justify-between gap-x-2">
+          <Text className="min-w-0 flex-1 text-base font-semibold text-gray-600 dark:text-gray-400">
+            Artículos totales
           </Text>
           <Text className="text-base font-medium text-foreground dark:text-dark-foreground">
             {totalItems}
           </Text>
         </View>
-        <View className="flex-row justify-between">
-          <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
+        <View className="flex-row flex-wrap items-center justify-between gap-x-2">
+          <Text className="min-w-0 flex-1 text-base font-semibold text-gray-600 dark:text-gray-400">
             Subtotal
           </Text>
           <Pressable onPress={toggleCurrency}>
@@ -82,8 +82,8 @@ export default function TotalView({
           </Pressable>
         </View>
 
-        <View className="flex-row justify-between">
-          <Text className="text-base font-semibold text-gray-600 dark:text-gray-400">
+        <View className="flex-row flex-wrap items-center justify-between gap-x-2">
+          <Text className="min-w-0 flex-1 text-base font-semibold text-gray-600 dark:text-gray-400">
             IVA ({IVA * 100}%)
           </Text>
           <Pressable onPress={toggleCurrency}>
@@ -97,8 +97,8 @@ export default function TotalView({
         </View>
       </View>
 
-      <View className="pt-2 flex-row justify-between items-center">
-        <Text className="text-md font-medium text-foreground dark:text-dark-foreground">
+      <View className="flex-row flex-wrap items-center justify-between gap-x-2 pt-2">
+        <Text className="min-w-0 flex-1 text-md font-medium text-foreground dark:text-dark-foreground">
           Total
         </Text>
         <Pressable onPress={toggleCurrency}>

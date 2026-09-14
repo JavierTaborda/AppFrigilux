@@ -12,15 +12,15 @@ import Ionicons from "@react-native-vector-icons/ionicons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Platform,
-    Pressable,
-    ScrollView,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Animated, { Easing, FadeInUp } from "react-native-reanimated";
 import { registerAppOrder } from "../../orders/services/AppOrderTrackingService";
@@ -515,7 +515,7 @@ export default function OrderSummaryScreen() {
         <BottomModal
           visible={showClientModal}
           onClose={() => setShowClientModal(false)}
-          heightPercentage={0.9}
+          heightPercentage={0.8}
         >
           <ClientModal
             onClose={setShowClientModal}

@@ -7,7 +7,7 @@ import {
 } from "@/utils/moneyFormat";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, useWindowDimensions } from "react-native";
 import Animated, {
   FadeOutLeft,
   LinearTransition,
@@ -24,6 +24,8 @@ type Props = {
 export default function OrderSummaryList({ scrollEnabled = true }: Props) {
   const { items, removeItem, setTotalsVES, exchangeRate, totalsVES, IVA } =
     useCreateOrderStore();
+  const { fontScale } = useWindowDimensions();
+  const useCompactQuantity = fontScale > 1.1;
   const [modalItemVisible, setModalItemVisible] = useState(false);
   const [item, setItem] = useState<OrderItem>({} as OrderItem);
 
@@ -37,7 +39,9 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
       <Animated.ScrollView
         layout={LinearTransition.springify()}
         scrollEnabled={scrollEnabled}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        style={{ flex: 1, minHeight: 0 }}
+        contentContainerStyle={{ paddingBottom: 12 }}
+        showsVerticalScrollIndicator={false}
       >
         {items.map((item) => {
           const { unitUsd, unitBs, reng_neto, reng_iva, reng_total } =
@@ -80,28 +84,28 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
             >
               <Pressable
                 onPress={() => handleOpenItem(item)}
-                className="flex-row items-center py-2 px-3 rounded-xl bg-componentbg dark:bg-dark-componentbg"
+                className="flex-row items-start rounded-xl bg-componentbg px-3 py-3 dark:bg-dark-componentbg"
               >
-                <View className="h-20 w-20 my-1 items-center justify-center overflow-hidden rounded-xl bg-bgimages">
+                <View className="my-1 h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-bgimages">
                   <CustomImagen key={item.codart.trim()} img={item.img!} />
                 </View>
-                <View className="flex-1 ml-2">
+                <View className="ml-2 min-w-0 flex-1">
                   <Text
-                    className="text-sm font-normal text-gray-900 dark:text-gray-100"
-                    numberOfLines={2}
+                    className="leading-5 text-sm font-normal text-gray-900 dark:text-gray-100"
+                    numberOfLines={3}
                   >
                     {item.codart?.trim()} - {item.artdes?.trim()}
                   </Text>
 
                   <Text className="text-sm text-gray-500">Almacén 0001</Text>
 
-                  <View className="flex-row items-center space-x-2">
+                  <View className="flex-row flex-wrap items-center gap-x-2 gap-y-1">
                     {item.discount ? (
                       <>
-                        <Text className="text-sm line-through text-gray-500">
+                        <Text className="shrink leading-5 text-sm line-through text-gray-500">
                           {itemPrice} {currency}
                         </Text>
-                        <View className="mx-2 bg-red-500/10 dark:bg-red-900 px-1 rounded-full border border-red-500">
+                        <View className="shrink-0 rounded-full border border-red-500 bg-red-500/10 px-1 dark:bg-red-900">
                           <Text className="text-xs font-bold text-red-500 dark:text-red-400">
                             {item.discount}%
                           </Text>
@@ -109,21 +113,27 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
                       </>
                     ) : null}
 
-                    <Text className="text-sm font-semibold text-primary dark:text-dark-primary">
+                    <Text className="min-w-0 flex-1 leading-5 text-sm font-semibold text-primary dark:text-dark-primary">
                       {finalPrice} {currency}
                     </Text>
                   </View>
 
-                  <View className="flex-row justify-between mt-1 items-center">
-                    <Text className="text-sm text-gray-800 dark:text-gray-200">
-                      Cantidad {item.quantity}
+                  <View className="mt-2 flex-row flex-wrap items-center gap-x-2 gap-y-1">
+                    <Text
+                      className={`shrink-0 leading-5 text-sm text-gray-800 dark:text-gray-200 ${
+                        useCompactQuantity ? "font-bold" : "font-normal"
+                      }`}
+                    >
+                      {useCompactQuantity
+                        ? `X ${item.quantity}`
+                        : `Cantidad ${item.quantity}`}
                     </Text>
 
-                    <View className="flex-row">
+                    <View className="min-w-0 flex-1 flex-row flex-wrap justify-end">
                       <Text className="text-sm text-gray-800 dark:text-gray-300">
-                        Total{" "}
+                        Total
                       </Text>
-                      <Text className="text-md font-semibold text-primary dark:text-dark-primary">
+                      <Text className="text-right text-md font-semibold text-primary dark:text-dark-primary">
                         {totalPrice} {currency}
                       </Text>
                     </View>
@@ -135,7 +145,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
                     e.stopPropagation();
                     setTimeout(() => removeItem(item.codart), 200);
                   }}
-                  className="p-2"
+                  className="shrink-0 p-2"
                 >
                   <Ionicons name="trash" size={22} color="grey" />
                 </Pressable>
@@ -148,7 +158,7 @@ export default function OrderSummaryList({ scrollEnabled = true }: Props) {
       <BottomModal
         visible={modalItemVisible}
         onClose={() => setModalItemVisible(false)}
-        heightPercentage={0.75}
+        heightPercentage={0.8}
       >
         <ItemModal onClose={setModalItemVisible} item={item} />
       </BottomModal>

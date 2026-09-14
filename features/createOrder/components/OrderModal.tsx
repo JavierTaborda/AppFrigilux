@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from "react-native";
 import Animated, {
   Easing,
@@ -41,6 +42,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
 }) => {
   const { items, clearOrder, exchangeRate, IVA } = useCreateOrderStore();
   const { isDark } = useThemeStore();
+  const { fontScale } = useWindowDimensions();
+  const useStackedActions = fontScale > 1.1;
 
   // let tot_bruto_usd = 0;
   // let tot_bruto_bs = 0;
@@ -150,7 +153,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
             position: "absolute",
             right: 0,
             bottom: 100,
-            height: height * 0.7,
+            height: height * 0.77,
             width: "100%",
             padding: 10,
           },
@@ -158,14 +161,14 @@ const OrderModal: React.FC<OrderModalProps> = ({
         ]}
       >
         <View className="flex-1 rounded-3xl bg-background dark:bg-dark-background px-5 pt-2 pb-3 shadow-lg backdrop-blur-md">
-          <View className="flex-row justify-between items-center mb-2">
-            <View className="flex-row items-center space-x-2">
+          <View className="mb-2 flex-row items-start justify-between gap-2 pr-8">
+            <View className="min-w-0 flex-1 flex-row items-center">
               <Ionicons
                 name="bag-handle"
                 size={26}
                 color={isDark ? "#fff" : "#000"}
               />
-              <View className="ml-2">
+              <View className="ml-2 min-w-0 flex-1">
                 <Text className="text-xl font-extrabold text-foreground dark:text-dark-foreground">
                   Resumen
                 </Text>
@@ -174,7 +177,11 @@ const OrderModal: React.FC<OrderModalProps> = ({
                 </Text>
               </View>
             </View>
-            <ExchangeRateBadge exchangeRate={exchangeRate} onPress={() => {}} />
+            <ExchangeRateBadge
+              exchangeRate={exchangeRate}
+              onPress={() => {}}
+              inline
+            />
           </View>
 
           {items.length === 0 ? (
@@ -198,7 +205,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
             <>
               <OrderSummaryList />
 
-              <View className="mt-2 pt-2 border-t border-gray-300/30 dark:border-white/10">
+              <View className="mt-1 border-t border-gray-300/30 dark:border-white/10">
                 <View className="space-y-1 mb-2">
                   <TotalView
                     totalBruto={totalBruto}
@@ -210,11 +217,17 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   />
                 </View>
 
-                <View className="flex-row items-center space-x-3  gap-1 ">
+                <View
+                  className={
+                    useStackedActions ? "gap-2" : "flex-row items-center gap-2"
+                  }
+                >
                   <Pressable
                     disabled={isEmpty}
                     onPress={onConfirm}
-                    className={`flex-1 py-4 rounded-full items-center ${
+                    className={`items-center rounded-full px-3  ${
+                      useStackedActions ? "w-full py-4 " : "flex-[7] py-5 "
+                    } ${
                       isEmpty
                         ? "bg-gray-300 dark:bg-gray-700"
                         : "bg-primary dark:bg-dark-primary"
@@ -237,13 +250,15 @@ const OrderModal: React.FC<OrderModalProps> = ({
                       handleRemove();
                     }}
                     disabled={isEmpty}
-                    className={`p-4 rounded-full ${
+                    className={`items-center rounded-full px-3 ${
+                      useStackedActions ? "w-full py-4 " : "flex-[3] py-3"
+                    } ${
                       isEmpty
                         ? "bg-gray-300 dark:bg-gray-700"
                         : "bg-red-500 dark:bg-red-600"
                     }`}
                   >
-                    <Text className="text-md font-semibold text-white">
+                    <Text className="text-center text-md font-semibold text-white">
                       Descartar pedido
                     </Text>
                   </Pressable>

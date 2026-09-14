@@ -7,16 +7,22 @@ type ExchangeRateBadgeProps = {
   exchangeRate: ExchangeRate;
 
   onPress: () => void;
+  inline?: boolean;
 };
 
 const ExchangeRateBadge: React.FC<ExchangeRateBadgeProps> = ({
   exchangeRate,
 
   onPress,
+  inline = false,
 }) => {
   return (
     <Pressable
-      className="absolute top-2 right-7 z-40 rounded-2xl bg-componentbg/50 dark:bg-dark-componentbg/50 px-4 py-1"
+      className={`${
+        inline
+          ? "shrink-0 rounded-xl px-3 py-1"
+          : "absolute right-7 top-2 z-40 rounded-2xl px-4 py-1"
+      } bg-componentbg/50 dark:bg-dark-componentbg/50`}
       onPress={onPress}
     >
       <Text className="text-xs font-medium text-gray-600 dark:text-gray-400">
