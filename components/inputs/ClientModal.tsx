@@ -36,7 +36,7 @@ const ClientModal: React.FC<ClientModalProps> = React.memo(
     if (!visible) return null;
 
     return (
-      <View className="p-4">
+      <View className="flex-1 min-h-0 p-4">
         <Text className="text-lg font-semibold mb-2 text-foreground dark:text-dark-foreground">
           Seleccionar cliente
         </Text>
@@ -54,16 +54,16 @@ const ClientModal: React.FC<ClientModalProps> = React.memo(
             No se encontraron clientes.
           </Text>
         ) : (
-          <View className="h-[85%]">
+          <View className="flex-1 min-h-0">
             <CustomFlatList
               data={filteredClients}
               keyExtractor={(item) => item.co_cli.toString()}
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() => handleSelectClient(item)}
-                  className="h-14 py-2 px-4 mb-3 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
+                  className="min-h-14 py-3 px-4 mb-3 justify-center rounded-xl bg-componentbg dark:bg-dark-componentbg"
                 >
-                  <Text className="text-md text-foreground dark:text-dark-foreground">
+                  <Text className="flex-shrink text-foreground dark:text-dark-foreground">
                     {item.co_cli?.trim()} - {item.cli_des?.trim()}
                   </Text>
                 </Pressable>

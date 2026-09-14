@@ -105,13 +105,13 @@ export default function ProfileScreen() {
       <View className="items-center gap-4 pb-40">
         {name && (
           <View className="items-center px-4 py-3 rounded-xl w-[80%] bg-componentbg dark:bg-dark-componentbg">
-            <Text className="text-lg dark:text-white">{name}</Text>
+            <Text className="text-lg text-center dark:text-white">{name}</Text>
           </View>
         )}
 
         {session?.user?.email && (
           <View className="items-center px-4 py-3 rounded-xl w-[80%] bg-componentbg dark:bg-dark-componentbg">
-            <Text className="text-lg dark:text-white">
+            <Text className="text-lg text-center dark:text-white">
               Correo: {session.user.email}
             </Text>
           </View>
@@ -131,7 +131,7 @@ export default function ProfileScreen() {
             size={24}
             color={isDark ? "#fff" : "#000"}
           />
-          <Text className="text-foreground dark:text-dark-foreground font-medium">
+          <Text className="flex-1 text-center text-foreground dark:text-dark-foreground font-medium">
             Políticas y Términos
           </Text>
         </Pressable>
@@ -150,7 +150,7 @@ export default function ProfileScreen() {
                 size={24}
                 color={"white"}
               />
-              <Text className="text-white font-medium">
+              <Text className="flex-1 text-center text-white font-medium">
                 Solicitar eliminación de cuenta
               </Text>
             </>

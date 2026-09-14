@@ -1,23 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Keyboard,
-  Modal,
-  Platform,
-  Pressable,
-  StatusBar,
-  View,
-  useWindowDimensions,
+    Keyboard,
+    Modal,
+    Platform,
+    Pressable,
+    ScrollView,
+    StatusBar,
+    View,
+    useWindowDimensions,
 } from "react-native";
 import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
+    Gesture,
+    GestureDetector,
+    GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming,
 } from "react-native-reanimated";
 
 import { scheduleOnRN } from "react-native-worklets";
@@ -31,6 +32,7 @@ type BottomModalProps = {
   visible: boolean;
   onClose: () => void;
   heightPercentage?: number;
+  scrollable?: boolean;
   children: React.ReactNode;
 };
 
@@ -48,6 +50,7 @@ export default function BottomModal({
   onClose,
   children,
   heightPercentage = 0.8,
+  scrollable = false,
 }: BottomModalProps) {
   const insets = useSafeAreaInsets();
   const { fontScale, height: windowHeight } = useWindowDimensions();
@@ -164,6 +167,34 @@ export default function BottomModal({
     return false;
   };
 
+  const content = scrollable ? (
+    <ScrollView
+      style={{ flex: 1, minHeight: 0 }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        paddingBottom: contentPaddingBottom,
+      }}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      onStartShouldSetResponderCapture={dismissKeyboardIfOpen}
+    >
+      {children}
+    </ScrollView>
+  ) : (
+    <View
+      style={{
+        flex: 1,
+        minHeight: 0,
+        flexShrink: 1,
+        paddingBottom: contentPaddingBottom,
+        overflow: "hidden",
+      }}
+      onStartShouldSetResponderCapture={dismissKeyboardIfOpen}
+    >
+      {children}
+    </View>
+  );
+
   return (
     <Modal
       visible={visible}
@@ -238,14 +269,10 @@ export default function BottomModal({
                 style={{
                   flex: 1,
                   paddingHorizontal: 20,
-                  // Ensure content never sits behind the Android nav bar or
-                  // the iOS home indicator.
-                  paddingBottom: contentPaddingBottom,
-                  overflow: "hidden",
+                  minHeight: 0,
                 }}
-                onStartShouldSetResponderCapture={dismissKeyboardIfOpen}
               >
-                {children}
+                {content}
               </View>
             </AnimatedView>
           </View>
@@ -315,14 +342,10 @@ export default function BottomModal({
                 style={{
                   flex: 1,
                   paddingHorizontal: 20,
-                  // Ensure content never sits behind the Android nav bar or
-                  // the iOS home indicator.
-                  paddingBottom: contentPaddingBottom,
-                  overflow: "hidden",
+                  minHeight: 0,
                 }}
-                onStartShouldSetResponderCapture={dismissKeyboardIfOpen}
               >
-                {children}
+                {content}
               </View>
             </AnimatedView>
           </View>
