@@ -2,8 +2,8 @@ import { recordLoginEvent } from "@/features/admin/services/LoginHistoryService"
 import { supabase } from "@/lib/supabase";
 import { getName, getUserRoleJWT } from "@/services/AuthService";
 import {
-    getBiometricEnabled,
-    setBiometricEnabled,
+  getBiometricEnabled,
+  setBiometricEnabled,
 } from "@/utils/biometricFlag";
 import { getSessionStatus, setSessionStatus } from "@/utils/sessionStatus";
 import { Session } from "@supabase/supabase-js";
@@ -177,6 +177,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         });
         await setSessionStatus("active");
         await setBiometricEnabled(true);
+        void recordLoginEvent("biometric").catch(() => undefined);
 
         return { error: null };
       } else {

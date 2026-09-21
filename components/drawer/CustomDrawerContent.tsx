@@ -48,6 +48,11 @@ export default function CustomDrawerContent(props: any) {
               href="/(main)/(tabs)/(orders)/orderSearch"
               currentPath={currentPath}
             />
+            <DrawerItem
+              label="Cuentas por cobrar"
+              href={"/(main)/(tabs)/(accountsReceivable)" as Href}
+              currentPath={currentPath}
+            />
 
             <DrawerItem
               label="Anular Pedidos"

@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { getLoginHistoryDisabled } from "@/utils/loginHistoryPreference";
 
-export type LoginMethod = "password" | "email_otp" | "sms_otp";
+export type LoginMethod = "password" | "email_otp" | "sms_otp" | "biometric";
 
 export type LoginHistoryEntry = {
   id: string;

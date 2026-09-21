@@ -183,6 +183,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="(accountsReceivable)/index"
+        options={{
+          href: null,
+          headerShown: true,
+          title: "Cuentas por cobrar",
+        }}
+      />
+      <Tabs.Screen
         name="(createOrder)/create-order"
         options={{
           href: null,

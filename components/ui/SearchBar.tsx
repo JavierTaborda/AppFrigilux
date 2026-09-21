@@ -2,18 +2,18 @@ import { useThemeStore } from "@/stores/useThemeStore";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { useEffect, useState } from "react";
 import {
-  Keyboard,
-  Platform,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Keyboard,
+    Platform,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming,
 } from "react-native-reanimated";
 
 type Props = {
@@ -21,6 +21,7 @@ type Props = {
   setSearchText: (text: string) => void;
   placeHolderText?: string;
   isFull?: boolean;
+  onSubmitEditing?: () => void;
 };
 
 export default function SearchBar({
@@ -28,6 +29,7 @@ export default function SearchBar({
   setSearchText,
   placeHolderText = "Buscar...",
   isFull = false,
+  onSubmitEditing,
 }: Props) {
   const { isDark } = useThemeStore();
   const [isFocused, setIsFocused] = useState(false);
@@ -97,6 +99,7 @@ export default function SearchBar({
           placeholderTextColor={isDark ? "#ccc" : "#666"}
           onFocus={() => setIsFocused(true)}
           onBlur={() => !inputValue && setIsFocused(false)}
+          onSubmitEditing={onSubmitEditing}
           returnKeyType="search"
           autoCorrect={false}
         />

@@ -23,6 +23,7 @@ import Animated, { Easing, LinearTransition } from "react-native-reanimated";
 type ScreenSearchLayoutProps = {
   searchText: string;
   setSearchText: (text: string) => void;
+  onSearchSubmit?: () => void;
   placeholder?: string;
   onFilterPress: () => void;
   filterCount?: number;
@@ -36,6 +37,7 @@ type ScreenSearchLayoutProps = {
 export default function ScreenSearchLayout({
   searchText,
   setSearchText,
+  onSearchSubmit,
   placeholder = "",
   onFilterPress,
   children,
@@ -53,6 +55,7 @@ export default function ScreenSearchLayout({
             <SearchBar
               searchText={searchText}
               setSearchText={setSearchText}
+              onSubmitEditing={onSearchSubmit}
               placeHolderText={placeholder}
               isFull={extrafilter}
             />

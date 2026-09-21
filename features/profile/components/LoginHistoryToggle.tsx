@@ -4,7 +4,7 @@ import {
     setLoginHistoryDisabled,
 } from "@/utils/loginHistoryPreference";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Switch, Text, View } from "react-native";
 import Animated, {
     useAnimatedStyle,
@@ -15,8 +15,8 @@ import Animated, {
 export default function LoginHistoryToggle({ userId }: { userId?: string }) {
   const [disabled, setDisabled] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const scale = useSharedValue(1);
-  const initialized = useRef(false);
 
   useEffect(() => {
     let mounted = true;
@@ -25,7 +25,7 @@ export default function LoginHistoryToggle({ userId }: { userId?: string }) {
       const value = await getLoginHistoryDisabled(userId);
       if (mounted) {
         setDisabled(value);
-        initialized.current = true;
+        setInitialized(true);
       }
     };
 
@@ -54,7 +54,7 @@ export default function LoginHistoryToggle({ userId }: { userId?: string }) {
     transform: [{ scale: scale.value }],
   }));
 
-  if (!initialized.current) return null;
+  if (!initialized) return null;
 
   return (
     <Animated.View

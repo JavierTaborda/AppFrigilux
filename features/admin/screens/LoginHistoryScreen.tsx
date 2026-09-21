@@ -17,6 +17,7 @@ const methodLabels = {
   password: "Contraseña",
   email_otp: "Código por correo",
   sms_otp: "Código por SMS",
+  biometric: "Biometría",
 } as const;
 
 export default function LoginHistoryScreen() {

@@ -1,7 +1,8 @@
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appTheme } from "@/utils/appTheme";
-import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { Picker } from "@react-native-picker/picker";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import type { ComponentProps } from "react";
 import { useState } from "react";
 import {
     Modal,
@@ -13,11 +14,13 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+type FontAwesomeIconName = ComponentProps<typeof FontAwesome>["name"];
+
 type CustomPickerProps = {
   selectedValue: string;
   onValueChange: (value: string) => void;
   items: { value: string; label: string }[];
-  icon?: keyof typeof FontAwesome.glyphMap;
+  icon?: FontAwesomeIconName;
   placeholder?: string;
   error?: string;
 };
@@ -45,8 +48,6 @@ export default function CustomPicker({
     // if (Platform.OS === "ios") setIosModalVisible(false);
   };
 
-  const iconName = FontAwesome.glyphMap[icon] ? icon : "list";
-
   return (
     <View className="w-full">
       <View
@@ -57,7 +58,7 @@ export default function CustomPicker({
         }`}
       >
         <FontAwesome
-          name={iconName}
+          name={icon}
           size={20}
           color={
             touched && !isValid
