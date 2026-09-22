@@ -10,6 +10,7 @@ import {
   Pressable,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
 import AccountReceivableCard from "../components/AccountReceivableCard";
 import { useAccountsReceivable } from "../hooks/useAccountsReceivable";
@@ -34,6 +35,8 @@ export default function SearchScreen() {
     detailsLoading,
     detailsError,
   } = useAccountsReceivable();
+  const { fontScale } = useWindowDimensions();
+  const useCompactText = fontScale > 1.1;
   const [selectedClient, setSelectedClient] =
     useState<AccountReceivable | null>(null);
 
@@ -172,7 +175,9 @@ export default function SearchScreen() {
                     </Text>
                   </View>
                 }
-                renderItem={({ item }) => <DetailRow detail={item} />}
+                renderItem={({ item }) => (
+                  <DetailRow detail={item} useCompactText={useCompactText} />
+                )}
               />
             )}
           </View>
@@ -182,7 +187,13 @@ export default function SearchScreen() {
   );
 }
 
-function DetailRow({ detail }: { detail: AccountReceivableDetail }) {
+function DetailRow({
+  detail,
+  useCompactText,
+}: {
+  detail: AccountReceivableDetail;
+  useCompactText: boolean;
+}) {
   return (
     <View className="mb-3 rounded-2xl border border-slate-200 bg-componentbg p-4 shadow-sm shadow-slate-200/50 dark:border-slate-700 dark:bg-dark-componentbg dark:shadow-none">
       {/* Header */}
