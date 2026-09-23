@@ -215,10 +215,10 @@ function DetailRow({
               {detail.tipo_doc}-{detail.nro_doc}
             </Text>
             <View className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600" />
-            <Text className="text-[12px] text-mutedForeground dark:text-dark-mutedForeground">
-              {formatDatedd_dot_MMM_yyyy(detail.fec_emis)}
-            </Text>
           </View>
+          <Text className="text-[12px] text-mutedForeground dark:text-dark-mutedForeground">
+            {formatDatedd_dot_MMM_yyyy(detail.fec_emis)}
+          </Text>
         </View>
 
         <View className="items-end">
