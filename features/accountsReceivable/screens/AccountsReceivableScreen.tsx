@@ -1,6 +1,7 @@
 import ScreenSearchLayout from "@/components/screens/ScreenSearchLayout";
 import BottomModal from "@/components/ui/BottomModal";
 import CustomFlatList from "@/components/ui/CustomFlatList";
+import { formatDatedd_dot_MMM_yyyy } from "@/utils/datesFormat";
 import { currencyDollar, totalVenezuela } from "@/utils/moneyFormat";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { useCallback, useMemo, useState } from "react";
@@ -9,8 +10,8 @@ import {
   FlatList,
   Pressable,
   Text,
-  View,
   useWindowDimensions,
+  View,
 } from "react-native";
 import AccountReceivableCard from "../components/AccountReceivableCard";
 import { useAccountsReceivable } from "../hooks/useAccountsReceivable";
@@ -19,7 +20,6 @@ import type {
   AccountReceivableDetail,
   AccountReceivableFilters,
 } from "../types/AccountsReceivable";
-import { formatDate } from "../utils/formatters";
 
 export default function SearchScreen() {
   const {
@@ -43,6 +43,10 @@ export default function SearchScreen() {
   const clients = useMemo(
     () => [...accounts].sort((a, b) => Number(b.monto) - Number(a.monto)),
     [accounts],
+  );
+  const clientBalance = useMemo(
+    () => details.reduce((total, detail) => total + Number(detail.monto), 0),
+    [details],
   );
 
   const updateFilter = (key: keyof AccountReceivableFilters, value: string) => {
@@ -83,7 +87,7 @@ export default function SearchScreen() {
       extrafilter={false}
       headerVisible={false}
     >
-      <CustomFlatList<AccountReceivable>
+      <CustomFlatList
         data={clients}
         renderItem={renderClient}
         keyExtractor={(item) => item.co_cli}
@@ -93,6 +97,7 @@ export default function SearchScreen() {
         showtitle
         title="Cuentas por cobrar de"
         subtitle={`${clients.length} ${clients.length === 1 ? "cliente" : "clientes"}`}
+        resetScrollKey={filters.clientQuery}
         contentContainerStyle={{ paddingBottom: 110 }}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center px-8 py-16">
@@ -134,9 +139,15 @@ export default function SearchScreen() {
                 >
                   {selectedClient.cli_des.trim()}
                 </Text>
-                <Text className="mt-1 text-sm text-mutedForeground dark:text-dark-mutedForeground">
+                <Text className="mt-1 text-sm text-foreground dark:text-dark-mutedForeground">
                   Cliente {selectedClient.co_cli.trim()} · {details.length}{" "}
                   {details.length === 1 ? "documento" : "documentos"}
+                </Text>
+                <Text className="mt-1 text-sm text-foreground dark:text-dark-foreground">
+                  Saldo{"  "}
+                  <Text className="text-xl font-bold text-primary dark:text-dark-primary">
+                    {totalVenezuela(clientBalance)} {currencyDollar}
+                  </Text>
                 </Text>
               </View>
             </View>
@@ -205,7 +216,7 @@ function DetailRow({
             </Text>
             <View className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600" />
             <Text className="text-[12px] text-mutedForeground dark:text-dark-mutedForeground">
-              {formatDate(detail.fec_emis)}
+              {formatDatedd_dot_MMM_yyyy(detail.fec_emis)}
             </Text>
           </View>
         </View>
@@ -223,26 +234,26 @@ function DetailRow({
       {detail.origen === "E" && detail.origen_d ? (
         <View className="mt-0.5 flex-row items-center gap-1 rounded-xl bg-primary/10 px-3 py-2.5 dark:bg-dark-primary/20">
           <View className="h-7 w-7 items-center justify-center rounded-full bg-primary/15 dark:bg-dark-primary/25">
-            <MaterialIcons name="local-shipping" size={15} color="#0f766e" />
+            <MaterialIcons name="task" size={15} color="#0f766e" />
           </View>
           <Text
             className="flex-1 text-sm font-semibold text-primary dark:text-dark-primary"
             numberOfLines={2}
           >
-            Nota de entrega: {detail.origen_d}
+            NOTA DE ENTREGA {detail.origen_d}
           </Text>
         </View>
       ) : null}
       {detail.tipo_doc.trim() === "FACT" ? (
         <View className="mt-0.5 flex-row items-center gap-1 rounded-xl bg-warning/10 px-3 py-2.5 dark:bg-dark-warning/20">
           <View className="h-7 w-7 items-center justify-center rounded-full bg-warning/15 dark:bg-dark-warning/25">
-            <MaterialIcons name="receipt" size={15} color="#b45309" />
+            <MaterialIcons name="task" size={15} color="#b45309" />
           </View>
           <Text
             className="flex-1 text-sm font-semibold text-foreground dark:text-dark-f"
             numberOfLines={2}
           >
-            Factura: {detail.nro_doc}
+            FACTURA {detail.nro_doc}
           </Text>
         </View>
       ) : null}
@@ -250,13 +261,13 @@ function DetailRow({
       {detail.tipo_doc.trim() === "N/CR" ? (
         <View className="mt-0.5 flex-row items-center gap-1 rounded-xl bg-tertiary/10 px-3 py-2.5 dark:bg-dark-tertiary/20">
           <View className="h-7 w-7 items-center justify-center rounded-full bg-tertiary/15 dark:bg-dark-tertiary/25">
-            <MaterialIcons name="credit-card" size={15} color="#7c3aed" />
+            <MaterialIcons name="task" size={15} color="#7c3aed" />
           </View>
           <Text
             className="flex-1 text-sm font-semibold text-dark-tertiary dark:text-dark-tertiary"
             numberOfLines={2}
           >
-            Nota de crédito: {detail.nro_doc}
+            NOTA DE CRÉDITO {detail.nro_doc}
           </Text>
         </View>
       ) : null}

@@ -1,19 +1,19 @@
 import {
-  FlashList,
-  FlashListProps,
-  FlashListRef,
-  ViewToken,
+    FlashList,
+    FlashListProps,
+    FlashListRef,
+    ViewToken,
 } from "@shopify/flash-list";
 import React, { useEffect, useMemo, useRef } from "react";
 
 import {
-  Platform,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  View,
+    Platform,
+    Pressable,
+    RefreshControl,
+    StyleSheet,
+    Text,
+    ToastAndroid,
+    View,
 } from "react-native";
 
 import { useScrollHeader } from "@/hooks/useScrollHeader";
@@ -46,6 +46,7 @@ type Props<T> = {
   onViewableItemsChanged?: (info: { viewableItems: ViewToken<T>[] }) => void;
 
   contentContainerStyle?: any;
+  resetScrollKey?: string;
 
   onEndReached?: () => void;
   onEndReachedThreshold?: number;
@@ -81,6 +82,7 @@ function CustomFlashList<T>({
   onViewableItemsChanged,
 
   contentContainerStyle,
+  resetScrollKey,
 
   onEndReached,
   onEndReachedThreshold = 0.5,
@@ -94,6 +96,10 @@ function CustomFlashList<T>({
   useEffect(() => {
     onHeaderVisibleChange?.(headerVisible);
   }, [headerVisible, onHeaderVisibleChange]);
+
+  useEffect(() => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: false });
+  }, [resetScrollKey]);
 
   //  toast cooldown
   const showToast = (msg: string) => {
@@ -187,6 +193,7 @@ function CustomFlashList<T>({
       {/* LIST */}
       <FlashList
         ref={listRef}
+        key={resetScrollKey}
         data={data}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
