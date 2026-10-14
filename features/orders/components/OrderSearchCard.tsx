@@ -241,7 +241,7 @@ function OrderSearchCard({
                     : "text-gray-400 dark:text-gray-500"
                 }`}
               >
-                {isFacturable ? "Facturable" : "No facturable"}
+                {isFacturable ? "Facturar" : "No facturable"}
               </Text>
             </View>
           )}

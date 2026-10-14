@@ -110,6 +110,15 @@ export default function HomePrincipalScreen({
             bgColor="bg-green-600 dark:bg-green-600"
           />
         </View>
+        <View className="w-[49%] mb-4">
+          <ModuleButton
+            //icon={emojis.list}
+            //icon={emojis.approved}
+            label="Cuentas por Cobrar "
+            onPress={() => router.push("/(main)/(tabs)/(accountsReceivable)")}
+            bgColor="bg-secondary dark:bg-dark-secondary"
+          />
+        </View>
       </View>
     </View>
   );

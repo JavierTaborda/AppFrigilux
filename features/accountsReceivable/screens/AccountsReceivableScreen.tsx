@@ -216,9 +216,12 @@ function DetailRow({
             </Text>
             <View className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600" />
           </View>
-          <Text className="text-[12px] text-mutedForeground dark:text-dark-mutedForeground">
-            {formatDatedd_dot_MMM_yyyy(detail.fec_emis)}
-          </Text>
+          <View className="mt-1 gap-1 pb-1">
+            <Text className="text-[12px] text-mutedForeground dark:text-dark-mutedForeground">
+              {formatDatedd_dot_MMM_yyyy(detail.fec_emis)} {"  "}
+              {detail.diasCalle} días calle
+            </Text>
+          </View>
         </View>
 
         <View className="items-end">
@@ -240,7 +243,7 @@ function DetailRow({
             className="flex-1 text-sm font-semibold text-primary dark:text-dark-primary"
             numberOfLines={2}
           >
-            NOTA DE ENTREGA {detail.origen_d}
+            NOTA DE ENTREGA {detail.origen_d?.trim()}
           </Text>
         </View>
       ) : null}

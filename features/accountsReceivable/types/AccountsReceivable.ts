@@ -19,6 +19,7 @@ export type AccountReceivableDetail = {
   observa: string | null;
   origen: string | null;
   origen_d: string | null;
+  diasCalle: number;
 };
 
 export type AccountReceivableFilters = {
