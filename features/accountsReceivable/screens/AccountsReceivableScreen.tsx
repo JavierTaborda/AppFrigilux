@@ -216,10 +216,11 @@ function DetailRow({
             </Text>
             <View className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600" />
           </View>
+
           <View className="mt-1 gap-1 pb-1">
             <Text className="text-[12px] text-mutedForeground dark:text-dark-mutedForeground">
               {formatDatedd_dot_MMM_yyyy(detail.fec_emis)} {"  "}
-              {detail.diasCalle} días calle
+              {detail.monto > 0 && `${detail.diasCalle} días calle`}
             </Text>
           </View>
         </View>
