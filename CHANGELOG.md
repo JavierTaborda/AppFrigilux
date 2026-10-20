@@ -5,7 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.3] - [Unreleased]
+## [1.2.0] - [Unreleased]
+
+### Added
+
+- Enabled the React Compiler.
+
+### Changed
+
+- Upgraded Expo from SDK 57 to SDK 58 and updated React Native and related dependencies.
+- Refactored splash-screen rendering to display the app beneath the loading overlay.
+- Updated UI components and utilities for compatibility with the new SDK and React versions.
+
+### Fixed
+
+- Fixed blank screens when navigating to auxiliary screens by hiding their tab buttons without disabling their routes.
+- Fixed the account-deletion status lookup and order-cancellation filters.
+
+## [1.1.3] - [2026-09-25]
 
 ### Added
 
@@ -16,7 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Font size viiew in create orders
-- Fixed blank screens when navigating from Home or the drawer on Expo SDK 58 by hiding auxiliary tab buttons without disabling their routes.
 
 ## [1.1.2] - [2026-06-14]
 
