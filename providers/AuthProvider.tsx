@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 
 import AccountDeletionScreen from "@/components/screens/AccountDeletionScreen";
 import MaintenanceScreen from "@/components/screens/MaintenanceScreen";
@@ -29,19 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   } = useAppStatusStore();
 
   const { session } = useAuthStore();
-
-  // valores compartidos en Reanimated
-  const splashOpacity = useSharedValue(1);
-  const contentOpacity = useSharedValue(0);
-
-  // estilos animados
-  const splashStyle = useAnimatedStyle(() => ({
-    opacity: splashOpacity.value,
-  }));
-
-  const contentStyle = useAnimatedStyle(() => ({
-    opacity: contentOpacity.value,
-  }));
 
   // esperar primer render
   const [isMounted, setIsMounted] = useState(false);
@@ -100,21 +81,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   //   checkAppStatus(session.user.id);
   // }, [session, showSplash]);
 
-  // animaciones splash → contenido
-  useEffect(() => {
-    if (!showSplash) {
-      splashOpacity.value = withTiming(0, {
-        duration: 400,
-        easing: Easing.ease,
-      });
-      contentOpacity.value = withTiming(1, {
-        duration: 400,
-        easing: Easing.ease,
-      });
-    }
-  }, [showSplash]);
-  if (appStatusLoading) return null;
-
   if (maintenance) {
     return <MaintenanceScreen message={maintenanceMessage} />;
   }
@@ -125,15 +91,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <View className="flex-1 bg-background dark:bg-dark-background">
-      {showSplash && (
-        <Animated.View className="absolute " style={splashStyle}>
+      <View className="flex-1">{children}</View>
+      {(showSplash || appStatusLoading) && (
+        <View className="absolute inset-0">
           <SplashScreen />
-        </Animated.View>
-      )}
-      {!showSplash && (
-        <Animated.View className="flex-1" style={contentStyle}>
-          {children}
-        </Animated.View>
+        </View>
       )}
     </View>
   );

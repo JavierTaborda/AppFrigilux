@@ -2,11 +2,12 @@
 import { useThemeStore } from "@/stores/useThemeStore";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { Href, useRouter } from "expo-router";
+import type { ComponentProps } from "react";
 import { Text, TouchableOpacity } from "react-native";
 
 type DrawerItemProps = {
   href: Href;
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: ComponentProps<typeof Ionicons>["name"];
   emoji?: string;
   label: string;
   currentPath: string;

@@ -12,7 +12,7 @@ export default function AccountDeletionScreen({
   return (
     <View className="flex-1 items-center justify-center px-6 bg-componentbg dark:bg-dark-background">
       <View className=" my-safe-or-2">
-        <FontAwesome5 name="trash" size={24} color="red" />
+        <FontAwesome5 name="trash" iconStyle="solid" size={24} color="red" />
       </View>
       <Text className="text-xl font-bold mb-4">
         Solicitud de eliminación recibida

@@ -27,10 +27,10 @@ function matchesAnulado(order: OrderApproval, filters: OrderFilters): boolean {
     if (filters.cancelled === undefined) return true; 
 
     if (filters.cancelled) {
-        return order.anulada === 1; 
+        return order.anulada;
     }
 
-    return order.anulada !== 1; 
+    return !order.anulada;
 }
 
 

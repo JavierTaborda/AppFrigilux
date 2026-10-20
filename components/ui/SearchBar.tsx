@@ -33,7 +33,7 @@ export default function SearchBar({
 }: Props) {
   const { isDark } = useThemeStore();
   const [isFocused, setIsFocused] = useState(false);
-  const [inputValue, setInputValue] = useState(searchText);
+  const inputValue = searchText;
 
   // shared values
   const fadeAnim = useSharedValue(0);
@@ -41,11 +41,6 @@ export default function SearchBar({
   const inputWidthAnim = useSharedValue(1);
 
   const inputHeight = Platform.select({ android: 40, ios: 38 });
-
-  // Sync external changes
-  useEffect(() => {
-    setInputValue(searchText);
-  }, [searchText]);
 
   // Show/hide clear button
   useEffect(() => {
@@ -91,10 +86,7 @@ export default function SearchBar({
           style={{ height: inputHeight }}
           className="ml-2 flex-1 text-black dark:text-white"
           value={inputValue}
-          onChangeText={(text) => {
-            setInputValue(text);
-            setSearchText(text);
-          }}
+          onChangeText={setSearchText}
           placeholder={placeHolderText}
           placeholderTextColor={isDark ? "#ccc" : "#666"}
           onFocus={() => setIsFocused(true)}
@@ -106,7 +98,6 @@ export default function SearchBar({
         <Animated.View style={clearButtonStyle}>
           <TouchableOpacity
             onPress={() => {
-              setInputValue("");
               setSearchText("");
             }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

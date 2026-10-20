@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, type ComponentRef } from "react";
 import {
     Keyboard,
     Modal,
@@ -70,7 +70,7 @@ export default function BottomModal({
   const { isDark } = useThemeStore();
   const translateY = useSharedValue(modalHeight);
   const keyboardOffset = useSharedValue(0);
-  const targetRef = useRef<View | null>(null);
+  const targetRef = useRef<ComponentRef<typeof View>>(null);
   const MIN_MODAL_HEIGHT = 120 + insets.bottom;
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -130,6 +130,8 @@ export default function BottomModal({
   const dragGesture = Gesture.Pan()
     .onUpdate((event) => {
       if (event.translationY > 0) {
+        // Reanimated shared values are intentionally mutable inside worklets.
+        // eslint-disable-next-line react-hooks/immutability
         translateY.value = event.translationY;
       }
     })
@@ -137,6 +139,7 @@ export default function BottomModal({
       if (event.translationY > 120 || event.velocityY > 800) {
         scheduleOnRN(onClose);
       } else {
+        // eslint-disable-next-line react-hooks/immutability
         translateY.value = withSpring(0, ANIMATION_CONFIG);
       }
     });

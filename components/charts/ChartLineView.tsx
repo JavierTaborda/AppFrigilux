@@ -1,6 +1,12 @@
 import { appTheme } from "@/utils/appTheme";
 import { useEffect, useRef } from "react";
-import { Dimensions, ScrollView, Text, View } from "react-native";
+import {
+  Dimensions,
+  ScrollView,
+  Text,
+  View,
+  type ScrollViewInstance,
+} from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
 interface Props {
@@ -49,20 +55,16 @@ export const ChartLineView = ({
       strokeWidth: "3",
     },
   };
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
 
   useEffect(() => {
     if (values.length > 0) {
       setTimeout(() => {
         scrollRef.current?.scrollTo({ x: 0, animated: false });
-        animateScrollToEnd();
+        scrollRef.current?.scrollToEnd({ animated: true });
       }, 400);
     }
   }, [values]);
-
-  const animateScrollToEnd = () => {
-    scrollRef.current?.scrollToEnd({ animated: true });
-  };
   if (values.length === 0) {
     return (
       <View className="flex items-center justify-center py-6">

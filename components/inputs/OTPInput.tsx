@@ -1,5 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { Keyboard, TextInput, View } from 'react-native';
+import {
+  Keyboard,
+  TextInput,
+  View,
+  type TextInputInstance,
+} from 'react-native';
 
 type OTPInputProps = {
   onCodeFilled?: (code: string) => void;
@@ -7,7 +12,7 @@ type OTPInputProps = {
 
 const OTPInput: React.FC<OTPInputProps> = ({ onCodeFilled }) => {
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
-  const inputsRef = useRef<Array<TextInput | null>>([]);
+  const inputsRef = useRef<Array<TextInputInstance | null>>([]);
 
   const handleChange = (text: string, index: number) => {
     if (!/^\d$/.test(text) && text !== '') return;

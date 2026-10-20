@@ -1,13 +1,13 @@
 import { useThemeStore } from "@/stores/useThemeStore";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Animated, Platform, Switch, Text, View } from "react-native";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useThemeStore();
   const isDark = theme === "dark";
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const iconRotate = useRef(new Animated.Value(0)).current;
+  const [pulseAnim] = useState(() => new Animated.Value(1));
+  const [iconRotate] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
   Animated.sequence([
@@ -29,7 +29,7 @@ export default function ThemeToggle() {
     useNativeDriver: true,
   }).start();
 
-}, [theme]);
+}, [theme, isDark, iconRotate, pulseAnim]);
 
   const iconSpin = iconRotate.interpolate({
     inputRange: [0, 1],

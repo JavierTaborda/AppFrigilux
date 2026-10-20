@@ -27,7 +27,12 @@ export default function MaintenanceScreen({
         title="Estamos en mantenimiento"
         message={message ?? "Volveremos pronto"}
         icon={
-          <FontAwesome6 name="screwdriver-wrench" size={48} color="white" />
+          <FontAwesome6
+            name="screwdriver-wrench"
+            iconStyle="solid"
+            size={48}
+            color="white"
+          />
         }
       />
       <Pressable

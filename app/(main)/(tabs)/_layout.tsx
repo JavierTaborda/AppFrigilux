@@ -1,8 +1,8 @@
 import { useThemeStore } from "@/stores/useThemeStore";
 import { appTheme } from "@/utils/appTheme";
 import Ionicons from "@react-native-vector-icons/ionicons";
+import { DrawerToggleButton } from "expo-router/drawer";
 import { Tabs } from "expo-router";
-import { DrawerToggleButton } from "expo-router/build/react-navigation/drawer";
 import type { ComponentProps } from "react";
 import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -141,11 +141,11 @@ export default function TabLayout() {
         options={{ title: "Salir", headerShown: false }}
       />
 
-      {/*  not shown in tab bar */}
+      {/* Hide only the buttons; href: null makes these routes unreachable in SDK 58. */}
       <Tabs.Screen
         name="(pays)/authPays"
         options={{
-          href: null, // makes route invisible in tabs
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Autorización de Pagos",
         }}
@@ -153,7 +153,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(orders)/orderApproval"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Aprobación de Pedidos",
         }}
@@ -161,7 +161,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(orders)/orderSearch"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Consultar Pedidos",
         }}
@@ -169,7 +169,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(orders)/app-orders"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Pedidos creados desde la app",
         }}
@@ -177,7 +177,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(admin)/login-history"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Historial de accesos",
         }}
@@ -185,7 +185,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(accountsReceivable)/index"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Cuentas por cobrar",
         }}
@@ -193,7 +193,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(createOrder)/create-order"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Registrar Pedido",
         }}
@@ -201,7 +201,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(createOrder)/order-cancel"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Anular Pedidos",
         }}
@@ -209,7 +209,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(createOrder)/order-summary"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "",
         }}
@@ -217,7 +217,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(goals)/goalsResumen"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Resumen Metas Ventas",
         }}
@@ -225,7 +225,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(returnReport)/index"
         options={{
-          href: null,
+          tabBarItemStyle: { display: "none" },
           headerShown: true,
           title: "Registrar Devolución",
         }}

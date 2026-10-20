@@ -1,16 +1,17 @@
 import * as Battery from "expo-battery";
 import * as Haptics from "expo-haptics";
+import { Platform } from "react-native";
 
 // Cache for Low Power Mode state
 let lowPowerMode = false;
 
-// Initialize state on module load
-Battery.isLowPowerModeEnabledAsync().then((v) => (lowPowerMode = v));
+if (Platform.OS !== "web") {
+  Battery.isLowPowerModeEnabledAsync().then((v) => (lowPowerMode = v));
 
-// Listen for Low Power Mode changes
-Battery.addLowPowerModeListener(({ lowPowerMode: v }) => {
+  Battery.addLowPowerModeListener(({ lowPowerMode: v }) => {
     lowPowerMode = v;
-});
+  });
+}
 
 /**
  * CUSTOM HAPTIC MAP 
@@ -53,6 +54,8 @@ export type HapticCustomType = keyof typeof CUSTOM_NOTIFICATION_MAP;
  * MAIN FUNCTION: Safely triggers haptic feedback 
  */
 export async function safeHaptic(type: HapticCustomType) {
+    if (Platform.OS === "web") return;
+
     // Skip when Low Power Mode is enabled
     if (lowPowerMode) return;
 

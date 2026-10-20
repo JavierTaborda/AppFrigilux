@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Font size viiew in create orders
+- Fixed blank screens when navigating from Home or the drawer on Expo SDK 58 by hiding auxiliary tab buttons without disabling their routes.
 
 ## [1.1.2] - [2026-06-14]
 

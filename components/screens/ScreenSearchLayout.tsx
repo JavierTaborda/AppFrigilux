@@ -18,8 +18,6 @@ import FilterButton from "@/components/ui/FilterButton";
 import { ScrollView, View } from "react-native";
 import SearchBar from "../ui/SearchBar";
 
-import Animated, { Easing, LinearTransition } from "react-native-reanimated";
-
 type ScreenSearchLayoutProps = {
   searchText: string;
   setSearchText: (text: string) => void;
@@ -68,11 +66,7 @@ export default function ScreenSearchLayout({
           )}
         </View>
 
-        <Animated.View
-          layout={LinearTransition.duration(280).easing(Easing.out(Easing.exp))}
-          style={{ overflow: "hidden" }}
-          className="px-4"
-        >
+        <View style={{ overflow: "hidden" }} className="px-4">
           {extrafilter && headerVisible && (
             <View className="flex-row">
               <ScrollView
@@ -97,7 +91,7 @@ export default function ScreenSearchLayout({
               </ScrollView>
             </View>
           )}
-        </Animated.View>
+        </View>
 
         {children}
       </View>

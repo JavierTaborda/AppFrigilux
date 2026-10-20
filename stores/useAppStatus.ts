@@ -52,7 +52,7 @@ export const useAppStatusStore = create<AppStatusState>((set) => ({
                 const { data: account_deletion_requests } = await supabase
                     .from("account_deletion_requests")
                     .select("requested, requested_at, message")
-                    .eq("user_id ", userId)
+                    .eq("user_id", userId)
                     .single();
 
                 if (account_deletion_requests?.requested) {
