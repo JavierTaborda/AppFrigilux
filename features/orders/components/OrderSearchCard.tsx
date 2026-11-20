@@ -165,17 +165,22 @@ function OrderSearchCard({
             </View>
           )}
           <View
-            className={`self-start rounded-full border px-3 py-1 ${
+            className={`self-start flex-row items-center gap-2 rounded-full border px-3 py-1.5 ${
               isAuth
-                ? "border-blue-600 bg-tertiary/70 dark:border-cyan-500 dark:bg-dark-tertiary"
-                : "border-yellow-500 bg-warning/30 dark:bg-dark-warning"
+                ? "border-blue-200 bg-blue-50 dark:border-cyan-800 dark:bg-cyan-950/40"
+                : "border-yellow-300 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/30"
             }`}
           >
+            <View
+              className={`h-1.5 w-1.5 rounded-full ${
+                isAuth ? "bg-blue-600 dark:bg-cyan-400" : "bg-yellow-600 dark:bg-yellow-400"
+              }`}
+            />
             <Text
-              className={`text-xs font-semibold ${
+              className={`text-xs font-bold ${
                 isAuth
-                  ? "text-blue-950 dark:text-dark-foreground"
-                  : "text-yellow-700 dark:text-yellow-300"
+                  ? "text-blue-800 dark:text-cyan-200"
+                  : "text-yellow-800 dark:text-yellow-200"
               }`}
             >
               {isAuth ? "Aprobado" : "Por aprobar"}
