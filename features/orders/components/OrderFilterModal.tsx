@@ -49,6 +49,9 @@ export default function OrderFilterModal({
   );
   const [endDate, setEndDate] = useState<Date | undefined>(filters.endDate);
   const [status, setStatus] = useState<OrderStatus>(filters.status);
+  const [approval, setApproval] = useState<boolean | undefined>(
+    filters.approval,
+  );
   const [procesado, setProcesado] = useState<OrderProcesado>(filters.procesado);
   const [zone, setZone] = useState<string | undefined>(filters.zone);
   const [seller, setSeller] = useState<string | undefined>(filters.seller);
@@ -68,6 +71,7 @@ export default function OrderFilterModal({
           startDate,
           endDate,
           status,
+          approval,
           procesado,
           zone,
           seller,
@@ -78,6 +82,7 @@ export default function OrderFilterModal({
         setStartDate(undefined);
         setEndDate(undefined);
         setStatus(undefined);
+        setApproval(undefined);
         setProcesado(undefined);
         setZone(undefined);
         setSeller(undefined);
@@ -157,6 +162,38 @@ export default function OrderFilterModal({
                 <Text
                   className={`text-sm ${
                     status === opt.value
+                      ? "text-white"
+                      : "text-foreground dark:text-dark-foreground"
+                  }`}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Aprobación */}
+          <Text className="mb-1 font-medium text-mutedForeground dark:text-dark-mutedForeground">
+            Aprobación
+          </Text>
+          <View className="flex-row flex-wrap gap-2 mb-3">
+            {[
+              { label: "Todos", value: undefined },
+              { label: "Aprobado", value: true },
+              { label: "Por aprobar", value: false },
+            ].map((opt) => (
+              <TouchableOpacity
+                key={opt.label}
+                className={`px-4 py-2 rounded-full border ${
+                  approval === opt.value
+                    ? "bg-primary border-primary"
+                    : "bg-transparent border-muted"
+                }`}
+                onPress={() => setApproval(opt.value)}
+              >
+                <Text
+                  className={`text-sm ${
+                    approval === opt.value
                       ? "text-white"
                       : "text-foreground dark:text-dark-foreground"
                   }`}

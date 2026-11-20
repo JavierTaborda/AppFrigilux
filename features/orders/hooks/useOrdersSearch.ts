@@ -129,6 +129,12 @@ export function useOrderSearch(searchText: string, statusFilter?: string) {
     const filteredOrders = useMemo(() => {
         let filtered = orders;
 
+        if (filters.approval !== undefined) {
+            filtered = filtered.filter(
+                (order) => (order.aux02 === "Si") === filters.approval
+            );
+        }
+
         // if (statusFilter) {
         //     filtered = filtered.filter((order: OrderApproval) => order.estatus === statusFilter);
         // }
@@ -146,7 +152,7 @@ export function useOrderSearch(searchText: string, statusFilter?: string) {
                 numero.includes(searchText.toLowerCase())
             );
         });
-    }, [orders, searchText, statusFilter]);
+    }, [orders, searchText, statusFilter, filters.approval]);
 
     const { totalOrders, totalUSD } = useMemo(() => {
         const totalUSD = filteredOrders

@@ -5,6 +5,7 @@ export type OrderFilters = {
   startDate?: Date;
   endDate?: Date;
   status?: OrderStatus;
+  approval?: boolean;
   procesado?:OrderProcesado;
   cancelled?: boolean;
   seller?: string;
