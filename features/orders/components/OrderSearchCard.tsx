@@ -44,6 +44,7 @@ function OrderSearchCard({
 
   const isAnulada = item.anulada === true;
   const isCancelMode = !!onCancel;
+  const isAuth = item.aux02 === "Si";
 
   const showSwitch = !isCancelMode && !isAnulada;
   const isFromApp = item.origen?.trim() === APP_ORDER_SOURCE;
@@ -163,6 +164,23 @@ function OrderSearchCard({
               </Text>
             </View>
           )}
+          <View
+            className={`self-start rounded-full border px-3 py-1 ${
+              isAuth
+                ? "border-blue-600 bg-tertiary/70 dark:border-cyan-500 dark:bg-dark-tertiary"
+                : "border-yellow-500 bg-warning/30 dark:bg-dark-warning"
+            }`}
+          >
+            <Text
+              className={`text-xs font-semibold ${
+                isAuth
+                  ? "text-blue-950 dark:text-dark-foreground"
+                  : "text-yellow-700 dark:text-yellow-300"
+              }`}
+            >
+              {isAuth ? "Aprobado" : "Por aprobar"}
+            </Text>
+          </View>
         </Pressable>
 
         {/* 🔹 Acciones */}
