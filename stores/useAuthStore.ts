@@ -177,7 +177,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         });
         await setSessionStatus("active");
         await setBiometricEnabled(true);
-        void recordLoginEvent("biometric").catch(() => undefined);
+        try {
+          await recordLoginEvent("biometric", data.session.user.id);
+        } catch (error) {
+          console.error("Error registrando acceso biométrico:", error);
+        }
 
         return { error: null };
       } else {

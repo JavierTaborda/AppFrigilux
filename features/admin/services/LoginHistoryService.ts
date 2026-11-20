@@ -14,20 +14,29 @@ export type LoginHistoryEntry = {
   created_at: string;
 };
 
-export async function recordLoginEvent(method: LoginMethod): Promise<void> {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+export async function recordLoginEvent(
+  method: LoginMethod,
+  authenticatedUserId?: string,
+): Promise<void> {
+  let userId = authenticatedUserId;
 
-  if (userError || !user) {
-    throw userError ?? new Error("No hay una sesión de Supabase activa");
+  if (!userId) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      throw userError ?? new Error("No hay una sesión de Supabase activa");
+    }
+
+    userId = user.id;
   }
 
-  if (await getLoginHistoryDisabled(user.id)) return;
+  if (await getLoginHistoryDisabled(userId)) return;
 
   const { error } = await supabase.from("login_history").insert({
-    user_id: user.id,
+    user_id: userId,
     method,
   });
 
