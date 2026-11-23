@@ -164,27 +164,67 @@ function OrderSearchCard({
               </Text>
             </View>
           )}
-          <View
-            className={`self-start flex-row items-center gap-2 rounded-full border px-3 py-1.5 ${
-              isAuth
-                ? "border-blue-200 bg-blue-50 dark:border-cyan-800 dark:bg-cyan-950/40"
-                : "border-yellow-300 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/30"
-            }`}
-          >
+          <View className="flex-row items-center gap-1">
             <View
-              className={`h-1.5 w-1.5 rounded-full ${
-                isAuth ? "bg-blue-600 dark:bg-cyan-400" : "bg-yellow-600 dark:bg-yellow-400"
-              }`}
-            />
-            <Text
-              className={`text-xs font-bold ${
+              className={`self-start flex-row items-center gap-1 rounded-full border px-2 py-1.5 ${
                 isAuth
-                  ? "text-blue-800 dark:text-cyan-200"
-                  : "text-yellow-800 dark:text-yellow-200"
+                  ? "border-blue-200 bg-blue-50 dark:border-cyan-800 dark:bg-cyan-950/40"
+                  : "border-yellow-300 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/30"
               }`}
             >
-              {isAuth ? "Aprobado" : "Por aprobar"}
-            </Text>
+              <View
+                className={`h-1.5 w-1.5 rounded-full ${
+                  isAuth
+                    ? "bg-blue-600 dark:bg-cyan-400"
+                    : "bg-yellow-600 dark:bg-yellow-400"
+                }`}
+              />
+              <Text
+                className={`text-[10px] font-bold ${
+                  isAuth
+                    ? "text-blue-800 dark:text-cyan-200"
+                    : "text-yellow-800 dark:text-yellow-200"
+                }`}
+                numberOfLines={1}
+              >
+                {isAuth ? "Aprobado" : "Por aprobar"}
+              </Text>
+            </View>
+            <View
+              className={`self-start flex-row items-center gap-1 rounded-full border px-2 py-1.5 ${
+                item.estatus === "0"
+                  ? "border-yellow-300 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/30"
+                  : item.estatus === "1"
+                    ? "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/30"
+                    : "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30"
+              }`}
+            >
+              <View
+                className={`h-1.5 w-1.5 rounded-full ${
+                  item.estatus === "0"
+                    ? "bg-yellow-600 dark:bg-yellow-400"
+                    : item.estatus === "1"
+                      ? "bg-blue-600 dark:bg-blue-400"
+                      : "bg-green-600 dark:bg-green-400"
+                }`}
+              />
+              <Text
+                className={`text-[10px] font-bold ${
+                  item.estatus === "0"
+                    ? "text-yellow-800 dark:text-yellow-200"
+                    : item.estatus === "1"
+                      ? "text-blue-800 dark:text-blue-200"
+                      : "text-green-800 dark:text-green-200"
+                }`}
+                numberOfLines={1}
+              >
+                {item.estatus === "0"
+                  ? "Por Procesar"
+                  : item.estatus === "1"
+                    ? "ParcProcesado"
+                    : "Procesado"}
+              </Text>
+            </View>
           </View>
         </Pressable>
 

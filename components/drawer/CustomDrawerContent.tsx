@@ -36,13 +36,15 @@ export default function CustomDrawerContent(props: any) {
         <Text className="text-sm font-semibold  justify-center text-center text-foreground dark:text-dark-foreground mt-1 mb-1">
           plataforma SGE
         </Text>
+        {(role === "1" || role === "2") && (
+          <DrawerItem
+            label="Aprobación Pedidos"
+            href="/(main)/(tabs)/(orders)/orderApproval"
+            currentPath={currentPath}
+          />
+        )}
         {role != "8" ? (
           <>
-            <DrawerItem
-              label="Aprobación Pedidos"
-              href="/(main)/(tabs)/(orders)/orderApproval"
-              currentPath={currentPath}
-            />
             <DrawerItem
               label="Consultar Pedidos"
               href="/(main)/(tabs)/(orders)/orderSearch"
