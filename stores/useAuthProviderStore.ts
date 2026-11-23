@@ -1,6 +1,7 @@
 import { authenticateWithBiometrics } from "@/utils/biometricAuth";
 import { getBiometricEnabled } from "@/utils/biometricFlag";
 import { getSessionStatus } from "@/utils/sessionStatus";
+import { recordLoginEvent } from "@/features/admin/services/LoginHistoryService";
 import { Alert, Platform } from "react-native";
 import { create } from "zustand";
 import { useAuthStore } from "./useAuthStore";
@@ -54,6 +55,12 @@ export const useAuthProviderStore = create<AuthProviderState>((set) => ({
             set({ showSplash: false });
             await signOutSoft();
             return;
+          }
+
+          try {
+            await recordLoginEvent("biometric", session.user.id);
+          } catch (error) {
+            console.error("Error registrando acceso biométrico:", error);
           }
 
           set({ hasAuthenticated: true });
