@@ -164,7 +164,7 @@ function OrderSearchCard({
               </Text>
             </View>
           )}
-          <View className="flex-row items-center gap-1">
+          <View className="flex-row items-center gap-1 ">
             <View
               className={`self-start flex-row items-center gap-1 rounded-full border px-2 py-1.5 ${
                 isAuth
@@ -172,20 +172,20 @@ function OrderSearchCard({
                   : "border-yellow-300 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/30"
               }`}
             >
-              <View
+              {/* <View
                 className={`h-1.5 w-1.5 rounded-full ${
                   isAuth
                     ? "bg-blue-600 dark:bg-cyan-400"
                     : "bg-yellow-600 dark:bg-yellow-400"
                 }`}
-              />
+              /> */}
               <Text
-                className={`text-[10px] font-bold ${
+                className={`text-[12px] font-bold uppercase ${
                   isAuth
                     ? "text-blue-800 dark:text-cyan-200"
                     : "text-yellow-800 dark:text-yellow-200"
                 }`}
-                numberOfLines={1}
+                numberOfLines={2}
               >
                 {isAuth ? "Aprobado" : "Por aprobar"}
               </Text>
@@ -199,7 +199,7 @@ function OrderSearchCard({
                     : "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30"
               }`}
             >
-              <View
+              {/* <View
                 className={`h-1.5 w-1.5 rounded-full ${
                   item.estatus === "0"
                     ? "bg-yellow-600 dark:bg-yellow-400"
@@ -207,16 +207,16 @@ function OrderSearchCard({
                       ? "bg-blue-600 dark:bg-blue-400"
                       : "bg-green-600 dark:bg-green-400"
                 }`}
-              />
+              /> */}
               <Text
-                className={`text-[10px] font-bold ${
+                className={`text-[12px] font-bold uppercase ${
                   item.estatus === "0"
                     ? "text-yellow-800 dark:text-yellow-200"
                     : item.estatus === "1"
                       ? "text-blue-800 dark:text-blue-200"
                       : "text-green-800 dark:text-green-200"
                 }`}
-                numberOfLines={1}
+                numberOfLines={2}
               >
                 {item.estatus === "0"
                   ? "Por Procesar"
@@ -304,7 +304,7 @@ function OrderSearchCard({
                     : "text-gray-400 dark:text-gray-500"
                 }`}
               >
-                {isFacturable ? "Facturar" : "No facturable"}
+                {isFacturable ? "Facturar" : "Facturar"}
               </Text>
             </View>
           )}

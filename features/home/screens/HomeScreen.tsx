@@ -47,6 +47,7 @@ export default function HomeScreen() {
           values={values}
           dotLabels={dotLabels}
           isDark={isDark}
+          role={role ?? undefined}
         />
       ) : (
         <ReturnHome name={name} />

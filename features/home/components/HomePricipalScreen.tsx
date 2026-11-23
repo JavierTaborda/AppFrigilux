@@ -14,6 +14,7 @@ export default function HomePrincipalScreen({
   values,
   dotLabels,
   isDark,
+  role,
 }: {
   name: string | null;
   totalPedidos: number;
@@ -23,6 +24,7 @@ export default function HomePrincipalScreen({
   values: number[];
   dotLabels: string[];
   isDark: boolean;
+  role?: string;
 }) {
   return (
     <View>
@@ -63,15 +65,18 @@ export default function HomePrincipalScreen({
       />
 
       <View className="flex-row flex-wrap justify-between pt-4">
-        <View className="w-[49%] mb-4">
-          <ModuleButton
-            //icon={emojis.approved}
-            //icon={   emojis.package}
-            label="Aprobación Pedidos"
-            onPress={() => router.push("/(main)/(tabs)/(orders)/orderApproval")}
-            bgColor="bg-primary dark:bg-dark-primary"
-          />
-        </View>
+        {(role === "1" || role === "2") && (
+          <View className="w-[49%] mb-4">
+            <ModuleButton
+              label="Aprobación Pedidos"
+              onPress={() =>
+                router.push("/(main)/(tabs)/(orders)/orderApproval")
+              }
+              bgColor="bg-primary dark:bg-dark-primary"
+            />
+          </View>
+        )}
+
         <View className="w-[49%] mb-4">
           <ModuleButton
             //icon={emojis.list}

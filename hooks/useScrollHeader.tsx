@@ -6,6 +6,7 @@ export function useScrollHeader() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const lastScrollY = useRef(0);
   const scrollDirection = useRef<"up" | "down">("up");
+  const accumulatedScroll = useRef(0);
 
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -19,19 +20,30 @@ export function useScrollHeader() {
       }
 
       // Show/hide header
-      if (currentY <= 0 && !headerVisible) {
-        setHeaderVisible(true);
+      if (currentY <= 0) {
+        if (!headerVisible) setHeaderVisible(true);
         scrollDirection.current = "up";
+        accumulatedScroll.current = 0;
       }
 
       const delta = currentY - lastScrollY.current;
-      if (Math.abs(delta) > 15) {
-        if (delta > 0 && scrollDirection.current !== "down") {
-          scrollDirection.current = "down";
-          setHeaderVisible(false);
-        } else if (delta < 0 && scrollDirection.current !== "up") {
-          scrollDirection.current = "up";
-          setHeaderVisible(true);
+      if (currentY > 0 && Math.abs(delta) > 1) {
+        const nextDirection = delta > 0 ? "down" : "up";
+
+        if (scrollDirection.current !== nextDirection) {
+          scrollDirection.current = nextDirection;
+          accumulatedScroll.current = 0;
+        }
+
+        accumulatedScroll.current += Math.abs(delta);
+
+        if (accumulatedScroll.current >= 48) {
+          if (nextDirection === "down" && headerVisible) {
+            setHeaderVisible(false);
+          } else if (nextDirection === "up" && !headerVisible) {
+            setHeaderVisible(true);
+          }
+          accumulatedScroll.current = 0;
         }
       }
 
