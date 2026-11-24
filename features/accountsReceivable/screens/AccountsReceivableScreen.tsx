@@ -130,7 +130,7 @@ export default function SearchScreen() {
           <View className="flex-1  pt-4">
             <View className="mb-4 flex-row items-center gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
               <View className="h-12 w-12 items-center justify-center rounded-2xl bg-primary dark:bg-dark-primary">
-                <MaterialIcons name="receipt-long" size={25} color="#fff" />
+                <MaterialIcons name="person" size={25} color="#fff" />
               </View>
               <View className="flex-1">
                 <Text
@@ -275,6 +275,20 @@ function DetailRow({
           </Text>
         </View>
       ) : null}
+
+      {/* {detail.tipo_doc.trim().startsWith("ADEL") ? (
+        <View className="mt-0.5 flex-row items-center gap-1 rounded-xl bg-orange-50 px-3 py-2.5 dark:bg-orange-950/30">
+          <View className="h-7 w-7 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/40">
+            <MaterialIcons name="payments" size={15} color="#ea580c" />
+          </View>
+          <Text
+            className="flex-1 text-sm font-semibold text-orange-800 dark:text-orange-200"
+            numberOfLines={2}
+          >
+            ADELANTO {detail.nro_doc}
+          </Text>
+        </View>
+      ) : null} */}
 
       {detail.observa ? (
         <View className="mt-0.5 border-t border-slate-100 pt-1 dark:border-slate-700">
